@@ -41,9 +41,14 @@
       margin-bottom: 80px;
     }
 
+    .hero-text {
+      text-align: center;
+    }
+
     .logo {
       max-width: 180px;
-      margin-bottom: 24px;
+      margin: 0 auto 24px auto;
+      display: block;
     }
 
     .headline {
@@ -56,11 +61,12 @@
       font-size: 1.1rem;
       color: var(--text-muted);
       max-width: 560px;
+      margin: 0 auto;
     }
 
     .tagline span {
       display: block;
-      font-size: 0.9rem;
+      font-size: 1.1rem; /* SAME size as line above */
       color: #8f8f8f;
       margin-top: 8px;
     }
@@ -194,8 +200,7 @@
 
     @media (min-width: 768px) {
       .hero {
-        grid-template-columns: 1.1fr 0.9fr;
-        align-items: center;
+        grid-template-columns: 1fr;
       }
     }
 
@@ -215,7 +220,8 @@
         font-size: 2.1rem;
       }
 
-      .tagline {
+      .tagline,
+      .tagline span {
         font-size: 1rem;
       }
 
@@ -288,7 +294,7 @@
 
     <!-- HERO -->
     <section class="hero">
-      <div>
+      <div class="hero-text">
         <img src="images/vitalink-logo-1.png" alt="VitaLink" class="logo" />
 
         <h1 class="headline">Prepared. Protected. Connected.</h1>
@@ -297,7 +303,6 @@
           <span>Private. Secure. Always under your control.</span>
         </p>
       </div>
-      <div></div>
     </section>
 
     <!-- FEATURES -->
