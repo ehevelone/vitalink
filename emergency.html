@@ -16,6 +16,7 @@
       justify-content: center;
       padding: 20px;
     }
+
     .card {
       width: 100%;
       max-width: 520px;
@@ -24,8 +25,15 @@
       background: #1c1c1c;
       box-shadow: 0 20px 60px rgba(0,0,0,0.5);
     }
-    .logo { text-align: center; margin-bottom: 20px; }
-    .logo img { height: 120px; }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .logo img {
+      height: 120px;
+    }
 
     h1 {
       color: #e53935;
@@ -39,21 +47,25 @@
       border-top: 1px solid #333;
       padding-top: 14px;
     }
+
     .section:first-of-type {
       border-top: none;
       padding-top: 0;
     }
+
     .label {
       font-size: 13px;
       color: #aaa;
       text-transform: uppercase;
       letter-spacing: 0.04em;
     }
+
     .value {
       font-size: 17px;
       margin-top: 4px;
       line-height: 1.35;
     }
+
     .alert {
       background: #2a0000;
       border-left: 4px solid #e53935;
@@ -61,13 +73,18 @@
       border-radius: 8px;
       margin-bottom: 16px;
     }
-    .expired { text-align: center; }
+
+    .expired {
+      text-align: center;
+    }
+
     .expired p {
       color: #ddd;
       font-size: 16px;
       line-height: 1.45;
       margin: 10px 0;
     }
+
     .hint {
       margin-top: 18px;
       font-size: 14px;
@@ -78,8 +95,8 @@
 </head>
 <body>
 
+  <!-- SAFE DEFAULT: EXPIRED VIEW -->
   <div class="card" id="app">
-    <!-- Default static content (safe fallback) -->
     <div class="logo">
       <img src="/images/vitalink-logo.png" alt="VitaLink" />
     </div>
@@ -96,22 +113,25 @@
 
   <script>
     (function () {
-      // HARD SAFETY: never let JS crash the page
       try {
         const params = new URLSearchParams(window.location.search);
         const raw = params.get("data");
         if (!raw) return;
 
-        // Decode Base64 → JSON
+        // Convert URL-safe Base64 → standard Base64
+        const normalized = raw.replace(/-/g, '+').replace(/_/g, '/');
+
         let decoded;
         try {
-          decoded = JSON.parse(atob(raw));
+          decoded = JSON.parse(atob(normalized));
         } catch {
-          return; // invalid QR → stay expired
+          return; // invalid payload → remain expired
         }
 
+        if (!decoded || typeof decoded !== "object") return;
+
         const app = document.getElementById("app");
-        if (!app || !decoded) return;
+        if (!app) return;
 
         app.innerHTML = `
           <div class="logo">
@@ -165,7 +185,7 @@
           </div>
         `;
       } catch {
-        // Absolute final guard — do nothing
+        // absolute final guard — do nothing
       }
     })();
   </script>
