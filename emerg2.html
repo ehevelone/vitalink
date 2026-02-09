@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Emergency Info | VitaLink</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      background: #111;
+      color: #fff;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+    .card {
+      width: 100%;
+      max-width: 520px;
+      padding: 28px;
+      border-radius: 18px;
+      background: #1c1c1c;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    .logo { text-align: center; margin-bottom: 20px; }
+    .logo img { height: 120px; }
+    h1 {
+      color: #e53935;
+      font-size: 24px;
+      text-align: center;
+      margin-bottom: 18px;
+    }
+    .expired { text-align: center; }
+    .expired p {
+      color: #ddd;
+      font-size: 16px;
+      line-height: 1.45;
+      margin: 10px 0;
+    }
+    .hint {
+      margin-top: 18px;
+      font-size: 14px;
+      color: #aaa;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">
+      <img src="/images/vitalink-logo.png" alt="VitaLink" />
+    </div>
+
+    <h1>Emergency Session Expired</h1>
+
+    <div class="expired">
+      <p>This emergency information is no longer active.</p>
+      <p>Please rescan the QR code on the patient’s device to view current details.</p>
+    </div>
+
+    <div class="hint">VitaLink Emergency Access</div>
+  </div>
+</body>
+</html>
