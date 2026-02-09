@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>Emergency Info | VitaLink</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <style>
     body {
       margin: 0;
@@ -25,11 +26,40 @@
     }
     .logo { text-align: center; margin-bottom: 20px; }
     .logo img { height: 120px; }
+
     h1 {
       color: #e53935;
       font-size: 24px;
       text-align: center;
       margin-bottom: 18px;
+    }
+
+    .section {
+      margin-bottom: 18px;
+      border-top: 1px solid #333;
+      padding-top: 14px;
+    }
+    .section:first-of-type {
+      border-top: none;
+      padding-top: 0;
+    }
+    .label {
+      font-size: 13px;
+      color: #aaa;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .value {
+      font-size: 17px;
+      margin-top: 4px;
+      line-height: 1.35;
+    }
+    .alert {
+      background: #2a0000;
+      border-left: 4px solid #e53935;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 16px;
     }
     .expired { text-align: center; }
     .expired p {
@@ -47,7 +77,9 @@
   </style>
 </head>
 <body>
-  <div class="card">
+
+  <div class="card" id="app">
+    <!-- Default static content (safe fallback) -->
     <div class="logo">
       <img src="/images/vitalink-logo.png" alt="VitaLink" />
     </div>
@@ -61,5 +93,82 @@
 
     <div class="hint">VitaLink Emergency Access</div>
   </div>
+
+  <script>
+    (function () {
+      // HARD SAFETY: never let JS crash the page
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const raw = params.get("data");
+        if (!raw) return;
+
+        // Decode Base64 → JSON
+        let decoded;
+        try {
+          decoded = JSON.parse(atob(raw));
+        } catch {
+          return; // invalid QR → stay expired
+        }
+
+        const app = document.getElementById("app");
+        if (!app || !decoded) return;
+
+        app.innerHTML = `
+          <div class="logo">
+            <img src="/images/vitalink-logo.png" alt="VitaLink" />
+          </div>
+
+          <h1>Emergency Information</h1>
+
+          <div class="section">
+            <div class="label">Name</div>
+            <div class="value">${decoded.name || "N/A"}</div>
+          </div>
+
+          <div class="section">
+            <div class="label">Date of Birth</div>
+            <div class="value">${decoded.dob || "N/A"}</div>
+          </div>
+
+          <div class="section alert">
+            <div class="label">Allergies</div>
+            <div class="value">${decoded.allergies || "None reported"}</div>
+          </div>
+
+          <div class="section">
+            <div class="label">Medical Conditions</div>
+            <div class="value">${decoded.conditions || "None reported"}</div>
+          </div>
+
+          <div class="section">
+            <div class="label">Blood Type</div>
+            <div class="value">${decoded.bloodType || "Unknown"}</div>
+          </div>
+
+          <div class="section">
+            <div class="label">Organ Donor</div>
+            <div class="value">${decoded.organDonor ? "YES" : "NO"}</div>
+          </div>
+
+          <div class="section">
+            <div class="label">Emergency Contact</div>
+            <div class="value">${decoded.emergencyContactName || "N/A"}</div>
+          </div>
+
+          <div class="section">
+            <div class="label">Emergency Phone</div>
+            <div class="value">${decoded.emergencyContactPhone || "N/A"}</div>
+          </div>
+
+          <div class="hint">
+            Scan session ends when this page is closed.
+          </div>
+        `;
+      } catch {
+        // Absolute final guard — do nothing
+      }
+    })();
+  </script>
+
 </body>
 </html>
