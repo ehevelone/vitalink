@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>VitaLink – Emergency Information</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background: #f4f6f8;
+      color: #111;
+    }
+
+    header {
+      background: #8b0000;
+      color: white;
+      padding: 18px 16px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: 0.5px;
+    }
+
+    main {
+      padding: 16px;
+      max-width: 720px;
+      margin: auto;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+    }
+
+    .row {
+      margin-bottom: 10px;
+    }
+
+    .label {
+      font-size: 13px;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .value {
+      font-size: 17px;
+      font-weight: 500;
+    }
+
+    .alert {
+      background: #fff3f3;
+      border-left: 5px solid #c00000;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .yes {
+      background: #d4f4dd;
+      color: #0a6b2b;
+    }
+
+    .no {
+      background: #f8d7da;
+      color: #842029;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 12px;
+      color: #666;
+      padding: 14px;
+    }
+
+    .loading {
+      text-align: center;
+      font-size: 16px;
+      padding: 40px;
+    }
+
+    .error {
+      text-align: center;
+      color: #b00020;
+      font-weight: bold;
+      padding: 40px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🚑 VitaLink Emergency Information</h1>
+</header>
+
+<main id="app">
+  <div class="loading">Loading emergency data…</div>
+</main>
+
+<footer>
+  This information is provided for emergency use only.<br />
+  Powered by VitaLink
+</footer>
+
+<script>
+  const app = document.getElementById("app");
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+
+  if (!id) {
+    app.innerHTML = '<div class="error">Missing emergency ID</div>';
+    throw new Error("No ID provided");
+  }
+
+  fetch(`/.netlify/functions/emergency_view?id=${encodeURIComponent(id)}`)
+    .then(res => {
+      if (!res.ok) throw new Error("Request failed");
+      return res.json();
+    })
+    .then(data => {
+      app.innerHTML = `
+        <div class="card">
+          <div class="row">
+            <div class="label">Name</div>
+            <div class="value">${data.name || "N/A"}</div>
+          </div>
+
+          <div class="row">
+            <div class="label">Date of Birth</div>
+            <div class="value">${data.dob || "N/A"}</div>
+          </div>
+        </div>
+
+        <div class="card alert">
+          <div class="row">
+            <div class="label">Allergies</div>
+            <div class="value">${data.allergies || "None reported"}</div>
+          </div>
+
+          <div class="row">
+            <div class="label">Medical Conditions</div>
+            <div class="value">${data.conditions || "None reported"}</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="row">
+            <div class="label">Blood Type</div>
+            <div class="value">${data.bloodType || "Unknown"}</div>
+          </div>
+
+          <div class="row">
+            <div class="label">Organ Donor</div>
+            <div class="value">
+              <span class="badge ${data.organDonor ? "yes" : "no"}">
+                ${data.organDonor ? "YES" : "NO"}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="row">
+            <div class="label">Emergency Contact</div>
+            <div class="value">${data.emergencyContactName || "N/A"}</div>
+          </div>
+
+          <div class="row">
+            <div class="label">Phone</div>
+            <div class="value">${data.emergencyContactPhone || "N/A"}</div>
+          </div>
+        </div>
+      `;
+    })
+    .catch(err => {
+      console.error(err);
+      app.innerHTML = '<div class="error">Unable to load emergency information</div>';
+    });
+</script>
+
+</body>
+</html>
