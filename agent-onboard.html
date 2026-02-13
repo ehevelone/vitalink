@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VitaLink Agent Setup</title>
+
+  <style>
+    :root {
+      --bg-black: #0c0c0c;
+      --text-primary: #eaeaea;
+      --text-muted: #b5b5b5;
+      --accent-blue: #7cc6e8;
+      --accent-blue-dark: #4aaed8;
+      --card-bg: #151515;
+      --divider: #1e1e1e;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg-black);
+      color: var(--text-primary);
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 80px 24px;
+      animation: fadeIn 0.6s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    img.logo {
+      width: 150px;
+      margin-bottom: 30px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+
+    p {
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      padding: 30px;
+      border-radius: 18px;
+      margin-top: 30px;
+      box-shadow: 0 0 0 1px var(--divider);
+    }
+
+    #unlockCode {
+      font-size: 1.6rem;
+      font-weight: bold;
+      color: var(--accent-blue);
+      letter-spacing: 2px;
+      margin-bottom: 15px;
+      user-select: all;
+      cursor: pointer;
+    }
+
+    button {
+      background: var(--accent-blue);
+      color: #000;
+      border: none;
+      padding: 12px 26px;
+      border-radius: 999px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    button:hover {
+      background: var(--accent-blue-dark);
+      transform: translateY(-2px);
+    }
+
+    .store-buttons {
+      margin-top: 40px;
+    }
+
+    .store-buttons a {
+      display: inline-block;
+      padding: 12px 24px;
+      margin: 8px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 600;
+      background: var(--accent-blue);
+      color: #000;
+      transition: all 0.25s ease;
+    }
+
+    .store-buttons a:hover {
+      background: var(--accent-blue-dark);
+      transform: translateY(-2px);
+    }
+
+    footer {
+      margin-top: 80px;
+      padding-top: 20px;
+      border-top: 1px solid var(--divider);
+      font-size: 0.85rem;
+      color: #666;
+    }
+  </style>
+
+  <script>
+    function getQueryParam(param) {
+      const params = new URLSearchParams(window.location.search);
+      return params.get(param);
+    }
+
+    async function generateCode(agentId) {
+      try {
+        const response = await fetch("/.netlify/functions/generateAgentQR", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ agentId })
+        });
+
+        const data = await response.json();
+
+        if (!data.success) {
+          throw new Error(data.error || "Failed to generate code");
+        }
+
+        return data;
+      } catch (err) {
+        console.error("QR generation error:", err);
+        return null;
+      }
+    }
+
+    function copyCode() {
+      const codeElem = document.getElementById("unlockCode");
+      const btn = document.getElementById("copyBtn");
+      const code = codeElem.innerText.trim();
+      if (!code) return;
+
+      navigator.clipboard.writeText(code).then(() => {
+        btn.textContent = "Copied ✓";
+        setTimeout(() => (btn.textContent = "Copy Code"), 2000);
+      });
+    }
+
+    async function openApp() {
+      const agentId = getQueryParam("agentId");
+
+      if (!agentId) {
+        console.error("Missing agentId in URL");
+        document.getElementById("fallback").style.display = "block";
+        return;
+      }
+
+      const result = await generateCode(agentId);
+
+      if (!result) {
+        document.getElementById("fallback").style.display = "block";
+        return;
+      }
+
+      const { code, deepLink } = result;
+
+      // Show unlock code
+      document.getElementById("unlockCode").innerText = code;
+      document.getElementById("unlockBox").style.display = "block";
+
+      // Attempt deep link into app
+      window.location = deepLink;
+
+      // Show fallback after delay
+      setTimeout(() => {
+        document.getElementById("fallback").style.display = "block";
+      }, 1800);
+    }
+
+    window.onload = openApp;
+  </script>
+</head>
+
+<body>
+  <main>
+
+    <img src="/vitalink-logo-1.png" alt="VitaLink Logo" class="logo" />
+
+    <h1>VitaLink Agent Setup</h1>
+    <p>If the VitaLink app is installed, it will open automatically.</p>
+
+    <div id="unlockBox" class="card" style="display: none;">
+      <p>Your unlock code:</p>
+      <div id="unlockCode" onclick="copyCode()"></div>
+      <button id="copyBtn" onclick="copyCode()">Copy Code</button>
+    </div>
+
+    <div id="fallback" class="store-buttons" style="display: none;">
+      <p>Don’t have the app yet?</p>
+      <a href="https://play.google.com/store/apps/details?id=com.etenterprises.vitalink" target="_blank">
+        Google Play
+      </a>
+      <a href="https://apps.apple.com/app/vitalink/id123456789" target="_blank">
+        App Store
+      </a>
+    </div>
+
+    <footer>
+      © 2026 VitaLink · 
+      <a href="/privacy.html" style="color:#777;">Privacy</a> · 
+      <a href="/terms.html" style="color:#777;">Terms</a>
+    </footer>
+
+  </main>
+</body>
+</html>
