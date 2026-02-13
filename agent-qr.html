@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VitaLink Agent QR</title>
+
+  <style>
+    :root {
+      --bg-black: #0c0c0c;
+      --text-primary: #eaeaea;
+      --text-muted: #b5b5b5;
+      --accent-blue: #7cc6e8;
+      --divider: #1e1e1e;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg-black);
+      color: var(--text-primary);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 500px;
+      width: 100%;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 12px;
+    }
+
+    p {
+      color: var(--text-muted);
+      margin-bottom: 32px;
+      font-size: 0.95rem;
+    }
+
+    .qr-wrapper {
+      background: #111;
+      border: 1px solid var(--divider);
+      border-radius: 16px;
+      padding: 24px;
+    }
+
+    img {
+      width: 100%;
+      max-width: 360px;
+      height: auto;
+      border-radius: 12px;
+    }
+
+    footer {
+      margin-top: 40px;
+      font-size: 0.8rem;
+      color: #666;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.5rem;
+      }
+      img {
+        max-width: 280px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <h1>Scan to Connect with VitaLink</h1>
+    <p>Securely link your profile to your licensed VitaLink agent.</p>
+
+    <div class="qr-wrapper">
+      <img src="agent-qr.png" alt="VitaLink Agent QR Code" />
+    </div>
+
+    <footer>
+      © 2026 VitaLink
+    </footer>
+
+  </div>
+</body>
+</html>
