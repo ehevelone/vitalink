@@ -1,146 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VitaLink — Secure Access</title>
-
-  <meta name="robots" content="noindex, nofollow" />
-
-  <style>
-    :root {
-      --bg-black: #0c0c0c;
-      --text-primary: #eaeaea;
-      --text-muted: #b5b5b5;
-      --accent-blue: #7cc6e8;
-      --divider: #1e1e1e;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background: var(--bg-black);
-      color: var(--text-primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-    }
-
-    .login-wrapper {
-      width: 100%;
-      max-width: 420px;
-      padding: 40px 28px;
-      border: 1px solid var(--divider);
-      border-radius: 16px;
-      background: #111;
-    }
-
-    .logo {
-      max-width: 140px;
-      margin: 0 auto 28px auto;
-      display: block;
-    }
-
-    h1 {
-      text-align: center;
-      font-size: 1.6rem;
-      margin-bottom: 28px;
-      font-weight: 600;
-    }
-
-    input {
-      width: 100%;
-      padding: 14px;
-      margin-bottom: 16px;
-      border-radius: 8px;
-      border: 1px solid var(--divider);
-      background: #0f0f0f;
-      color: var(--text-primary);
-      font-size: 0.95rem;
-    }
-
-    input:focus {
-      outline: none;
-      border-color: var(--accent-blue);
-    }
-
-    button {
-      width: 100%;
-      padding: 14px;
-      border-radius: 999px;
-      border: none;
-      background: var(--accent-blue);
-      color: #000;
-      font-weight: 600;
-      font-size: 0.95rem;
-      cursor: pointer;
-    }
-
-    button:hover {
-      opacity: 0.9;
-    }
-
-    .error {
-      margin-top: 14px;
-      text-align: center;
-      font-size: 0.85rem;
-      color: #ff5f5f;
-      display: none;
-    }
-
-    .subtle {
-      text-align: center;
-      margin-top: 18px;
-      font-size: 0.75rem;
-      color: #555;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>VitaLink — Admin Access</title>
+<meta name="robots" content="noindex, nofollow" />
+<style>
+:root{--bg-black:#0c0c0c;--card:#111;--text-primary:#eaeaea;--text-muted:#b5b5b5;--accent-blue:#7cc6e8;--divider:#1e1e1e;}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg-black);color:var(--text-primary);display:flex;justify-content:center;align-items:center;height:100vh;}
+.card{background:var(--card);border:1px solid var(--divider);border-radius:14px;padding:40px;width:100%;max-width:400px;}
+h1{margin-top:0;margin-bottom:30px;font-size:1.5rem;}
+input{width:100%;padding:12px;margin-bottom:16px;border-radius:8px;border:1px solid var(--divider);background:#000;color:var(--text-primary);font-size:.95rem;}
+button{width:100%;padding:12px;border-radius:999px;border:none;background:var(--accent-blue);font-weight:600;cursor:pointer;font-size:.95rem;}
+button:hover{opacity:.9;}
+.hidden{display:none;}
+.error{color:#ff6b6b;font-size:.9rem;margin-bottom:12px;min-height:18px;}
+</style>
 </head>
-
 <body>
 
-  <div class="login-wrapper">
-    <img src="/images/vitalink-logo-1.png" alt="VitaLink" class="logo" />
+<div class="card">
+  <h1>Core Node Admin</h1>
+  <div id="error" class="error hidden"></div>
 
-    <h1>Secure System Access</h1>
-
-    <form id="loginForm">
-      <input type="email" id="email" placeholder="Email address" required />
-      <input type="password" id="password" placeholder="Password" required />
-      <button type="submit">Enter</button>
-      <div class="error" id="errorMsg">Access denied.</div>
-    </form>
-
-    <div class="subtle">
-      Authorized access only
-    </div>
+  <div id="step1">
+    <input type="email" id="email" placeholder="Email" required />
+    <input type="password" id="password" placeholder="Password" required />
+    <button id="loginBtn">Login</button>
   </div>
 
-  <script>
-    document.getElementById("loginForm").addEventListener("submit", async function(e) {
-      e.preventDefault();
+  <div id="step2" class="hidden">
+    <input type="text" id="smsCode" placeholder="Enter 6-digit code" />
+    <button id="verifyBtn">Verify Code</button>
+  </div>
+</div>
 
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+<script>
+let currentEmail = "";
 
-      const res = await fetch("/.netlify/functions/admin-login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-      });
+document.getElementById("loginBtn").addEventListener("click", login);
+document.getElementById("verifyBtn").addEventListener("click", verifyCode);
 
-      const data = await res.json();
+async function login() {
+  hideError();
 
-      if (data.success) {
-        window.location.href = "/core-node/dashboard.html";
-      } else {
-        document.getElementById("errorMsg").style.display = "block";
-      }
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+
+  if (!email || !password) return showError("Enter email and password.");
+
+  currentEmail = email;
+
+  try {
+    const res = await fetch("https://vitalink-app.netlify.app/.netlify/functions/admin-login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
     });
-  </script>
+
+    if (!res.ok) {
+      const t = await res.text();
+      return showError(t || "Login failed.");
+    }
+
+    const data = await res.json();
+    if (data.step === "verify_code") {
+      document.getElementById("step1").classList.add("hidden");
+      document.getElementById("step2").classList.remove("hidden");
+    } else {
+      showError("Unexpected response.");
+    }
+  } catch (e) {
+    showError("Server error. Try again.");
+  }
+}
+
+async function verifyCode() {
+  hideError();
+
+  const code = document.getElementById("smsCode").value.trim();
+  if (!code) return showError("Enter the SMS code.");
+
+  try {
+    const res = await fetch("https://vitalink-app.netlify.app/.netlify/functions/admin-verify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: currentEmail, code })
+    });
+
+    if (!res.ok) {
+      const t = await res.text();
+      return showError(t || "Invalid or expired code.");
+    }
+
+    const data = await res.json();
+    if (!data.token) return showError("Missing session token.");
+
+    sessionStorage.setItem("adminSessionToken", data.token);
+    window.location.href = "rsm_access.html";
+  } catch (e) {
+    showError("Verification failed.");
+  }
+}
+
+function showError(msg) {
+  const err = document.getElementById("error");
+  err.innerText = msg;
+  err.classList.remove("hidden");
+}
+function hideError() {
+  const err = document.getElementById("error");
+  err.classList.add("hidden");
+  err.innerText = "";
+}
+</script>
 
 </body>
 </html>
