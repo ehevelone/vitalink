@@ -1,101 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>VitaLink — Admin Access</title>
-<meta name="robots" content="noindex, nofollow" />
-
-<style>
-:root{
-  --bg-black:#0c0c0c;
-  --card:#111;
-  --text-primary:#eaeaea;
-  --text-muted:#b5b5b5;
-  --accent-blue:#7cc6e8;
-  --divider:#1e1e1e;
-}
-body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  background:var(--bg-black);
-  color:var(--text-primary);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-}
-.card{
-  background:var(--card);
-  border:1px solid var(--divider);
-  border-radius:14px;
-  padding:40px;
-  width:100%;
-  max-width:400px;
-}
-h1{
-  margin-top:0;
-  margin-bottom:30px;
-  font-size:1.5rem;
-}
-input{
-  width:100%;
-  padding:12px;
-  margin-bottom:16px;
-  border-radius:8px;
-  border:1px solid var(--divider);
-  background:#000;
-  color:var(--text-primary);
-  font-size:.95rem;
-}
-button{
-  width:100%;
-  padding:12px;
-  border-radius:999px;
-  border:none;
-  background:var(--accent-blue);
-  font-weight:600;
-  cursor:pointer;
-  font-size:.95rem;
-}
-button:hover{opacity:.9;}
-.hidden{display:none;}
-.error{
-  color:#ff6b6b;
-  font-size:.9rem;
-  margin-bottom:12px;
-  min-height:18px;
-}
-</style>
-
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-
-</head>
-<body>
-
-<div class="card">
-  <h1>Core Node Admin</h1>
-  <div id="error" class="error hidden"></div>
-
-  <div id="step1">
-    <input type="email" id="email" placeholder="Email" required />
-    <input type="password" id="password" placeholder="Password" required />
-    <button id="loginBtn">Login</button>
-  </div>
-
-  <div id="step2" class="hidden">
-    <input type="text" id="smsCode" placeholder="Enter 6-digit code" />
-    <button id="verifyBtn">Verify Code</button>
-  </div>
-
-  <div id="recaptcha-container"></div>
-</div>
-
 <script>
 
-// 🔥 REPLACE THESE WITH YOUR REAL FIREBASE CONFIG
 const firebaseConfig = {
   apiKey: "YOUR_FIREBASE_API_KEY",
   authDomain: "YOUR_FIREBASE_AUTH_DOMAIN",
@@ -137,19 +41,20 @@ async function login() {
       return showError(t || "Invalid credentials.");
     }
 
+    const data = await res.json();
+
+    if (data.step !== "firebase_2fa" || !data.phone) {
+      return showError("Unexpected response.");
+    }
+
     // Setup invisible reCAPTCHA
     window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
       "recaptcha-container",
       { size: "invisible" }
     );
 
-    // IMPORTANT: This must match phone stored in rsms table
-    // For now we let backend enforce phone match
-    // Firebase will verify phone via SMS
-    const phoneNumber = await fetchAdminPhone(email);
-
     confirmationResult = await firebase.auth().signInWithPhoneNumber(
-      phoneNumber,
+      data.phone,
       window.recaptchaVerifier
     );
 
@@ -159,20 +64,6 @@ async function login() {
   } catch (e) {
     showError("Login failed.");
   }
-}
-
-async function fetchAdminPhone(email) {
-  const res = await fetch(
-    "https://vitalink-app.netlify.app/.netlify/functions/admin-login",
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password: "__phone_lookup__" })
-    }
-  );
-
-  const data = await res.json();
-  return data.phone;
 }
 
 async function verifyCode() {
@@ -222,6 +113,3 @@ function hideError() {
 }
 
 </script>
-
-</body>
-</html>
