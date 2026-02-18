@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>VitaLink — RSM Setup</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: #0c0c0c;
+  color: #eaeaea;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.card {
+  background: #111;
+  border: 1px solid #1e1e1e;
+  border-radius: 14px;
+  padding: 40px;
+  width: 100%;
+  max-width: 420px;
+}
+
+h1 {
+  margin-top: 0;
+  margin-bottom: 25px;
+  font-size: 1.4rem;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  border: 1px solid #1e1e1e;
+  background: #000;
+  color: #fff;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 999px;
+  border: none;
+  background: #7cc6e8;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: .9;
+}
+
+.message {
+  margin-top: 15px;
+  font-size: 0.9rem;
+}
+
+.error { color: #ff6b6b; }
+.success { color: #4cd964; }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h1>RSM Account Setup</h1>
+
+  <input type="text" id="name" placeholder="Full Name" />
+  <input type="text" id="region" placeholder="Region / Agency Name" />
+  <input type="password" id="password" placeholder="Create Password" />
+  <input type="password" id="confirmPassword" placeholder="Confirm Password" />
+
+  <button id="submitBtn">Activate Account</button>
+
+  <div id="message" class="message"></div>
+</div>
+
+<script>
+const BACKEND = "https://vitalink-app.netlify.app/.netlify/functions";
+
+const params = new URLSearchParams(window.location.search);
+const token = params.get("token");
+
+const messageBox = document.getElementById("message");
+
+if (!token) {
+  messageBox.innerText = "Invalid onboarding link.";
+  messageBox.classList.add("error");
+}
+
+document.getElementById("submitBtn").onclick = async () => {
+
+  const name = document.getElementById("name").value.trim();
+  const region = document.getElementById("region").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const confirmPassword = document.getElementById("confirmPassword").value.trim();
+
+  if (!name || !region || !password || !confirmPassword) {
+    messageBox.innerText = "All fields required.";
+    messageBox.className = "message error";
+    return;
+  }
+
+  if (password.length < 8) {
+    messageBox.innerText = "Password must be at least 8 characters.";
+    messageBox.className = "message error";
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    messageBox.innerText = "Passwords do not match.";
+    messageBox.className = "message error";
+    return;
+  }
+
+  try {
+    const res = await fetch(`${BACKEND}/rsm-onboard`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        token,
+        password,
+        name,
+        region
+      })
+    });
+
+    const text = await res.text();
+
+    if (!res.ok) {
+      messageBox.innerText = text || "Activation failed.";
+      messageBox.className = "message error";
+      return;
+    }
+
+    messageBox.innerText = "Account activated. You may now log in.";
+    messageBox.className = "message success";
+
+    setTimeout(() => {
+      window.location.href = "admin.html";
+    }, 2500);
+
+  } catch (err) {
+    messageBox.innerText = "Server error.";
+    messageBox.className = "message error";
+  }
+};
+</script>
+
+</body>
+</html>

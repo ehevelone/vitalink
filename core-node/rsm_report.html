@@ -2,14 +2,79 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>RSM Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>VitaLink — RSM Dashboard</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: #0c0c0c;
+  color: #eaeaea;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  border-bottom: 1px solid #1e1e1e;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.logout {
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: none;
+  background: #7cc6e8;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.container {
+  padding: 30px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background: #111;
+  border: 1px solid #1e1e1e;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.card h2 {
+  margin: 0 0 10px 0;
+  font-size: 0.9rem;
+  color: #b5b5b5;
+}
+
+.card p {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+</style>
 </head>
 <body>
 
-<h2>RSM Dashboard</h2>
-<button id="logout">Logout</button>
+<div class="header">
+  <h1>RSM Dashboard</h1>
+  <button class="logout">Logout</button>
+</div>
 
-<p>Your Active Agents: <span id="rsmAgents">0</span></p>
+<div class="container">
+  <div class="card">
+    <h2>Your Active Agents</h2>
+    <p id="rsmAgents">0</p>
+  </div>
+</div>
 
 <script>
 const BACKEND = "https://vitalink-app.netlify.app/.netlify/functions";
@@ -20,7 +85,7 @@ if (!token || role !== "rsm") {
   window.location.href = "admin.html";
 }
 
-document.getElementById("logout").onclick = () => {
+document.querySelector(".logout").onclick = () => {
   sessionStorage.clear();
   window.location.href = "admin.html";
 };
@@ -30,7 +95,11 @@ async function load() {
     headers: { "x-rsm-token": token }
   });
 
-  if (!res.ok) return;
+  if (!res.ok) {
+    sessionStorage.clear();
+    window.location.href = "admin.html";
+    return;
+  }
 
   const data = await res.json();
   document.getElementById("rsmAgents").innerText = data.active_agents;

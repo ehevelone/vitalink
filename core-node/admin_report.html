@@ -2,16 +2,154 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Admin Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>VitaLink — Admin Dashboard</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: #0c0c0c;
+  color: #eaeaea;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  border-bottom: 1px solid #1e1e1e;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.logout {
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: none;
+  background: #7cc6e8;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.container {
+  padding: 30px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background: #111;
+  border: 1px solid #1e1e1e;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.card h2 {
+  margin: 0 0 10px 0;
+  font-size: 0.9rem;
+  color: #b5b5b5;
+}
+
+.card p {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: bold;
+}
+
+.section {
+  padding: 0 30px 30px 30px;
+}
+
+input {
+  padding: 10px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  background: #000;
+  border: 1px solid #333;
+  color: #fff;
+  border-radius: 6px;
+}
+
+button.primary {
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: none;
+  background: #7cc6e8;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#qrContainer {
+  margin-top: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #111;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+th, td {
+  padding: 12px;
+  border-bottom: 1px solid #1e1e1e;
+  text-align: left;
+}
+
+th {
+  color: #999;
+  font-size: 0.85rem;
+}
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 
-<h2>Admin Dashboard</h2>
-<button id="logout">Logout</button>
+<div class="header">
+  <h1>Admin Dashboard</h1>
+  <button class="logout">Logout</button>
+</div>
 
-<div>
-  <p>Total RSMs: <span id="totalRSMs">0</span></p>
-  <p>Total Enrolled Agents: <span id="totalAgents">0</span></p>
+<div class="container">
+  <div class="card">
+    <h2>Total RSMs</h2>
+    <p id="totalRSMs">0</p>
+  </div>
+
+  <div class="card">
+    <h2>Total Enrolled Agents</h2>
+    <p id="totalAgents">0</p>
+  </div>
+</div>
+
+<div class="section">
+  <h2>Create RSM</h2>
+  <input id="rsmEmail" placeholder="RSM Email" />
+  <input id="rsmPhone" placeholder="RSM Phone (+1...)" />
+  <button class="primary" id="createBtn">Create RSM</button>
+  <div id="createMessage"></div>
+
+  <div id="qrContainer"></div>
+</div>
+
+<div class="section">
+  <h2>Breakdown by RSM</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>RSM Email</th>
+        <th>Active Agents</th>
+      </tr>
+    </thead>
+    <tbody id="rsmBreakdown"></tbody>
+  </table>
 </div>
 
 <script>
@@ -23,25 +161,80 @@ if (!token || role !== "admin") {
   window.location.href = "admin.html";
 }
 
-document.getElementById("logout").onclick = () => {
+document.querySelector(".logout").onclick = () => {
   sessionStorage.clear();
   window.location.href = "admin.html";
 };
 
-async function load() {
+async function loadStats() {
   const res = await fetch(`${BACKEND}/admin-stats`, {
     headers: { "x-admin-token": token }
   });
 
-  if (!res.ok) return;
+  if (!res.ok) {
+    sessionStorage.clear();
+    window.location.href = "admin.html";
+    return;
+  }
 
   const data = await res.json();
 
   document.getElementById("totalRSMs").innerText = data.total_rsms;
   document.getElementById("totalAgents").innerText = data.total_enrolled_agents;
+
+  const tbody = document.getElementById("rsmBreakdown");
+  tbody.innerHTML = "";
+
+  data.breakdown.forEach(rsm => {
+    const row = `
+      <tr>
+        <td>${rsm.email}</td>
+        <td>${rsm.active_agents}</td>
+      </tr>
+    `;
+    tbody.innerHTML += row;
+  });
 }
 
-load();
+document.getElementById("createBtn").onclick = async () => {
+  const email = document.getElementById("rsmEmail").value.trim();
+  const phone = document.getElementById("rsmPhone").value.trim();
+
+  if (!email || !phone) return;
+
+  const res = await fetch(`${BACKEND}/create-rsm`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-admin-token": token
+    },
+    body: JSON.stringify({ email, phone })
+  });
+
+  if (!res.ok) {
+    document.getElementById("createMessage").innerText = "Error creating RSM";
+    return;
+  }
+
+  const data = await res.json();
+
+  document.getElementById("createMessage").innerText = "RSM Created";
+
+  const qrContainer = document.getElementById("qrContainer");
+  qrContainer.innerHTML = "";
+
+  const onboardingUrl = `https://myvitalink.app/onboard?token=${data.onboard_token}`;
+
+  new QRCode(qrContainer, {
+    text: onboardingUrl,
+    width: 180,
+    height: 180
+  });
+
+  loadStats();
+};
+
+loadStats();
 </script>
 
 </body>
