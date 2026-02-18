@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Admin Dashboard</title>
+</head>
+<body>
+
+<h2>Admin Dashboard</h2>
+<button id="logout">Logout</button>
+
+<div>
+  <p>Total RSMs: <span id="totalRSMs">0</span></p>
+  <p>Total Enrolled Agents: <span id="totalAgents">0</span></p>
+</div>
+
+<script>
+const BACKEND = "https://vitalink-app.netlify.app/.netlify/functions";
+const token = sessionStorage.getItem("adminSessionToken");
+const role = sessionStorage.getItem("userRole");
+
+if (!token || role !== "admin") {
+  window.location.href = "admin.html";
+}
+
+document.getElementById("logout").onclick = () => {
+  sessionStorage.clear();
+  window.location.href = "admin.html";
+};
+
+async function load() {
+  const res = await fetch(`${BACKEND}/admin-stats`, {
+    headers: { "x-admin-token": token }
+  });
+
+  if (!res.ok) return;
+
+  const data = await res.json();
+
+  document.getElementById("totalRSMs").innerText = data.total_rsms;
+  document.getElementById("totalAgents").innerText = data.total_enrolled_agents;
+}
+
+load();
+</script>
+
+</body>
+</html>

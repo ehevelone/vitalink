@@ -46,7 +46,6 @@ input{
   border:1px solid var(--divider);
   background:#000;
   color:var(--text-primary);
-  font-size:.95rem;
 }
 button{
   width:100%;
@@ -56,32 +55,26 @@ button{
   background:var(--accent-blue);
   font-weight:600;
   cursor:pointer;
-  font-size:.95rem;
 }
-button:hover{opacity:.9;}
 .hidden{display:none;}
 .error{
   color:#ff6b6b;
-  font-size:.9rem;
   margin-bottom:12px;
-  min-height:18px;
 }
 </style>
 
-<!-- Firebase Compat SDK (REQUIRED for firebase.auth syntax) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-
 </head>
 <body>
 
 <div class="card">
-  <h1>Core Node Admin</h1>
+  <h1>Core Node Access</h1>
   <div id="error" class="error hidden"></div>
 
   <div id="step1">
-    <input type="email" id="email" placeholder="Email" required />
-    <input type="password" id="password" placeholder="Password" required />
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
     <button id="loginBtn">Login</button>
   </div>
 
@@ -95,7 +88,6 @@ button:hover{opacity:.9;}
 
 <script>
 
-// 🔥 REAL FIREBASE CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyCTZiiluPy5ydX62RfM-E7f8EIWHNG12S8",
   authDomain: "vitalink-7e832.firebaseapp.com",
@@ -114,103 +106,68 @@ document.getElementById("loginBtn").addEventListener("click", login);
 document.getElementById("verifyBtn").addEventListener("click", verifyCode);
 
 async function login() {
-  hideError();
-
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
 
-  if (!email || !password) {
-    return showError("Enter email and password.");
-  }
+  if (!email || !password) return;
 
   currentEmail = email;
 
-  try {
-    const res = await fetch(
-      "https://vitalink-app.netlify.app/.netlify/functions/admin-login",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-      }
-    );
-
-    if (!res.ok) {
-      const t = await res.text();
-      return showError(t || "Invalid credentials.");
+  const res = await fetch(
+    "https://vitalink-app.netlify.app/.netlify/functions/admin-login",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
     }
+  );
 
-    const data = await res.json();
+  if (!res.ok) return;
 
-    if (data.step !== "firebase_2fa" || !data.phone) {
-      return showError("Unexpected response.");
-    }
+  const data = await res.json();
 
-    // Invisible reCAPTCHA
-    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
-      "recaptcha-container",
-      { size: "invisible" }
-    );
+  window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
+    "recaptcha-container",
+    { size: "invisible" }
+  );
 
-    confirmationResult = await firebase.auth().signInWithPhoneNumber(
-      data.phone,
-      window.recaptchaVerifier
-    );
+  confirmationResult = await firebase.auth().signInWithPhoneNumber(
+    data.phone,
+    window.recaptchaVerifier
+  );
 
-    document.getElementById("step1").classList.add("hidden");
-    document.getElementById("step2").classList.remove("hidden");
-
-  } catch (e) {
-    console.error(e);
-    showError("Login failed.");
-  }
+  document.getElementById("step1").classList.add("hidden");
+  document.getElementById("step2").classList.remove("hidden");
 }
 
 async function verifyCode() {
-  hideError();
-
   const code = document.getElementById("smsCode").value.trim();
-  if (!code) return showError("Enter the SMS code.");
+  if (!code) return;
 
-  try {
-    const result = await confirmationResult.confirm(code);
-    const idToken = await result.user.getIdToken();
+  const result = await confirmationResult.confirm(code);
+  const idToken = await result.user.getIdToken();
 
-    const res = await fetch(
-      "https://vitalink-app.netlify.app/.netlify/functions/admin-verify",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idToken, email: currentEmail })
-      }
-    );
-
-    if (!res.ok) {
-      const t = await res.text();
-      return showError(t || "Verification failed.");
+  const res = await fetch(
+    "https://vitalink-app.netlify.app/.netlify/functions/admin-verify",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ idToken, email: currentEmail })
     }
+  );
 
-    const data = await res.json();
-    sessionStorage.setItem("adminSessionToken", data.token);
+  if (!res.ok) return;
 
-    window.location.href = "rsm_access.html";
+  const data = await res.json();
 
-  } catch (e) {
-    console.error(e);
-    showError("Invalid code.");
+  sessionStorage.setItem("adminSessionToken", data.token);
+  sessionStorage.setItem("userRole", data.role);
+
+  if (data.role === "admin") {
+    window.location.href = "admin_report.html";
+  } else {
+    window.location.href = "rsm_report.html";
   }
-}
-
-function showError(msg) {
-  const err = document.getElementById("error");
-  err.innerText = msg;
-  err.classList.remove("hidden");
-}
-
-function hideError() {
-  const err = document.getElementById("error");
-  err.classList.add("hidden");
-  err.innerText = "";
 }
 
 </script>
