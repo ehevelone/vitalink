@@ -113,7 +113,7 @@ document.querySelector(".logout").addEventListener("click", async () => {
   try {
     await fetch(`${BACKEND}/admin-logout`, {
       method: "POST",
-      headers: { "x-admin-session": token }
+      headers: { "x-admin-token": token }
     });
   } catch (e) {}
 
@@ -124,7 +124,8 @@ document.querySelector(".logout").addEventListener("click", async () => {
 async function loadStats() {
   try {
     const res = await fetch(`${BACKEND}/admin-stats`, {
-      headers: { "x-admin-session": token }
+      method: "GET",
+      headers: { "x-admin-token": token }
     });
 
     if (!res.ok) {
@@ -135,8 +136,8 @@ async function loadStats() {
 
     const data = await res.json();
 
-    document.getElementById('totalRSMs').innerText = data.totalRSMs || 0;
-    document.getElementById('totalAgents').innerText = data.totalAgents || 0;
+    document.getElementById('totalRSMs').innerText = data.rsms || 0;
+    document.getElementById('totalAgents').innerText = data.agents || 0;
     document.getElementById('activeAgents').innerText = data.activeAgents || 0;
     document.getElementById('totalUsers').innerText = data.totalUsers || 0;
     document.getElementById('totalProfiles').innerText = data.totalProfiles || 0;
