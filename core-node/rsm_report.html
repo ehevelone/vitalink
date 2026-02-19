@@ -21,11 +21,6 @@ body {
   border-bottom: 1px solid #1e1e1e;
 }
 
-.header h1 {
-  margin: 0;
-  font-size: 1.4rem;
-}
-
 .logout {
   padding: 8px 16px;
   border-radius: 999px;
@@ -37,9 +32,6 @@ body {
 
 .container {
   padding: 30px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
 }
 
 .card {
@@ -47,18 +39,40 @@ body {
   border: 1px solid #1e1e1e;
   border-radius: 12px;
   padding: 20px;
+  margin-bottom: 20px;
 }
 
-.card h2 {
-  margin: 0 0 10px 0;
-  font-size: 0.9rem;
-  color: #b5b5b5;
+input {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #333;
+  background: #000;
+  color: #fff;
+  margin-right: 10px;
 }
 
-.card p {
-  margin: 0;
-  font-size: 1.8rem;
-  font-weight: bold;
+button.primary {
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: none;
+  background: #7cc6e8;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #111;
+}
+
+th, td {
+  padding: 12px;
+  border-bottom: 1px solid #1e1e1e;
+}
+
+th {
+  color: #999;
 }
 </style>
 </head>
@@ -70,10 +84,33 @@ body {
 </div>
 
 <div class="container">
+
   <div class="card">
-    <h2>Your Active Agents</h2>
+    <h2>Active Agents</h2>
     <p id="rsmAgents">0</p>
   </div>
+
+  <div class="card">
+    <h2>Search Agents</h2>
+    <input id="searchInput" placeholder="Search by name or email" />
+    <button class="primary" onclick="load()">Search</button>
+    <button class="primary" onclick="downloadCSV()">Download CSV</button>
+  </div>
+
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Status</th>
+          <th>Download</th>
+        </tr>
+      </thead>
+      <tbody id="agentTable"></tbody>
+    </table>
+  </div>
+
 </div>
 
 <script>
@@ -91,9 +128,15 @@ document.querySelector(".logout").onclick = () => {
 };
 
 async function load() {
-  const res = await fetch(`${BACKEND}/rsm-summary-report`, {
-    headers: { "x-rsm-token": token }
-  });
+
+  const search = document.getElementById("searchInput").value;
+
+  const res = await fetch(
+    `${BACKEND}/rsm-summary-report?search=${encodeURIComponent(search)}`,
+    {
+      headers: { "x-rsm-token": token }
+    }
+  );
 
   if (!res.ok) {
     sessionStorage.clear();
@@ -102,7 +145,58 @@ async function load() {
   }
 
   const data = await res.json();
+
   document.getElementById("rsmAgents").innerText = data.active_agents;
+
+  const tbody = document.getElementById("agentTable");
+  tbody.innerHTML = "";
+
+  data.agents.forEach(agent => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${agent.name || ""}</td>
+        <td>${agent.email}</td>
+        <td>${agent.active ? "Active" : "Inactive"}</td>
+        <td>
+          <button class="primary" onclick='downloadAgent(${JSON.stringify(agent)})'>
+            JSON
+          </button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+function downloadAgent(agent) {
+  const blob = new Blob([JSON.stringify(agent, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `agent_${agent.id}.json`;
+  a.click();
+}
+
+async function downloadCSV() {
+
+  const res = await fetch(
+    `${BACKEND}/rsm-summary-report`,
+    { headers: { "x-rsm-token": token } }
+  );
+
+  const data = await res.json();
+
+  let csv = "Name,Email,Active\n";
+
+  data.agents.forEach(a => {
+    csv += `"${a.name || ""}","${a.email}","${a.active}"\n`;
+  });
+
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "rsm_agents.csv";
+  a.click();
 }
 
 load();
