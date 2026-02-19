@@ -135,7 +135,6 @@ th {
   <input id="rsmPhone" placeholder="RSM Phone (+1...)" />
   <button class="primary" id="createBtn">Create RSM</button>
   <div id="createMessage"></div>
-
   <div id="qrContainer"></div>
 </div>
 
@@ -223,7 +222,9 @@ document.getElementById("createBtn").onclick = async () => {
   const qrContainer = document.getElementById("qrContainer");
   qrContainer.innerHTML = "";
 
-  const onboardingUrl = `https://myvitalink.app/onboard?token=${data.onboard_token}`;
+  // 🔥 THIS IS THE CORRECT QR TARGET
+  const onboardingUrl =
+    `https://vitalink-app.netlify.app/.netlify/functions/rsm-onboard?token=${data.onboard_token}`;
 
   new QRCode(qrContainer, {
     text: onboardingUrl,

@@ -52,15 +52,9 @@ button {
   cursor: pointer;
 }
 
-button:hover {
-  opacity: .9;
-}
+button:hover { opacity: .9; }
 
-.message {
-  margin-top: 15px;
-  font-size: 0.9rem;
-}
-
+.message { margin-top: 15px; font-size: 0.9rem; }
 .error { color: #ff6b6b; }
 .success { color: #4cd964; }
 </style>
@@ -88,12 +82,16 @@ const token = params.get("token");
 
 const messageBox = document.getElementById("message");
 
-if (!token) {
-  messageBox.innerText = "Invalid onboarding link.";
-  messageBox.classList.add("error");
-}
+// Do NOT show error automatically.
+// Only block submit if token missing.
 
-document.getElementById("submitBtn").onclick = async () => {
+document.getElementById("submitBtn").onclick = async function () {
+
+  if (!token) {
+    messageBox.innerText = "Invalid invite link.";
+    messageBox.className = "message error";
+    return;
+  }
 
   const name = document.getElementById("name").value.trim();
   const region = document.getElementById("region").value.trim();
@@ -119,14 +117,14 @@ document.getElementById("submitBtn").onclick = async () => {
   }
 
   try {
-    const res = await fetch(`${BACKEND}/rsm-onboard`, {
+    const res = await fetch(BACKEND + "/rsm-onboard", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        token,
-        password,
-        name,
-        region
+        token: token,
+        password: password,
+        name: name,
+        region: region
       })
     });
 
@@ -138,12 +136,12 @@ document.getElementById("submitBtn").onclick = async () => {
       return;
     }
 
-    messageBox.innerText = "Account activated. You may now log in.";
+    messageBox.innerText = "Account activated.";
     messageBox.className = "message success";
 
-    setTimeout(() => {
+    setTimeout(function () {
       window.location.href = "admin.html";
-    }, 2500);
+    }, 2000);
 
   } catch (err) {
     messageBox.innerText = "Server error.";
