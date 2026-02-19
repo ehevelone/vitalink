@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>VitaLink — Admin Dashboard</title>
 
-<!-- BUILD MARKER v2 -->
+<!-- BUILD MARKER v3 QR HARD TEST -->
 
 <style>
 body {
@@ -119,10 +119,6 @@ th {
   <button class="logout">Logout</button>
 </div>
 
-<div style="padding:10px 30px; color:#4cd964; font-size:0.9rem;">
-  LIVE BUILD MARKER — v2
-</div>
-
 <div class="container">
   <div class="card">
     <h2>Total RSMs</h2>
@@ -225,16 +221,16 @@ document.getElementById("createBtn").onclick = async function () {
     return;
   }
 
-  const data = await res.json();
+  await res.json();
 
   document.getElementById("createMessage").innerText = "RSM Created";
 
   const qrContainer = document.getElementById("qrContainer");
   qrContainer.innerHTML = "";
 
+  // HARD TEST QR
   const onboardingUrl =
-    "https://vitalink-app.netlify.app/.netlify/functions/rsm-onboard?token=" +
-    data.onboard_token;
+    "https://vitalink-app.netlify.app/.netlify/functions/rsm-onboard?token=TEST123";
 
   new QRCode(qrContainer, {
     text: onboardingUrl,
