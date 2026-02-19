@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>VitaLink — Admin Dashboard</title>
 
-<!-- DEPLOY TOUCH: force Netlify rebuild -->
+<!-- DEPLOY TOUCH: full dashboard restored -->
 
 <style>
 body {
@@ -51,6 +51,18 @@ body {
   padding: 20px;
 }
 
+.card h2 {
+  margin: 0 0 10px 0;
+  font-size: 0.9rem;
+  color: #b5b5b5;
+}
+
+.card p {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: bold;
+}
+
 .section {
   padding: 0 30px 30px 30px;
 }
@@ -77,6 +89,25 @@ button.primary {
 #qrContainer {
   margin-top: 20px;
 }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #111;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+th, td {
+  padding: 12px;
+  border-bottom: 1px solid #1e1e1e;
+  text-align: left;
+}
+
+th {
+  color: #999;
+  font-size: 0.85rem;
+}
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -88,6 +119,18 @@ button.primary {
   <button class="logout">Logout</button>
 </div>
 
+<div class="container">
+  <div class="card">
+    <h2>Total RSMs</h2>
+    <p id="totalRSMs">0</p>
+  </div>
+
+  <div class="card">
+    <h2>Total Enrolled Agents</h2>
+    <p id="totalAgents">0</p>
+  </div>
+</div>
+
 <div class="section">
   <h2>Create RSM</h2>
   <input id="rsmEmail" placeholder="RSM Email" />
@@ -95,6 +138,19 @@ button.primary {
   <button class="primary" id="createBtn">Create RSM</button>
   <div id="createMessage"></div>
   <div id="qrContainer"></div>
+</div>
+
+<div class="section">
+  <h2>Breakdown by RSM</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>RSM Email</th>
+        <th>Active Agents</th>
+      </tr>
+    </thead>
+    <tbody id="rsmBreakdown"></tbody>
+  </table>
 </div>
 
 <script>
@@ -110,6 +166,35 @@ document.querySelector(".logout").onclick = () => {
   sessionStorage.clear();
   window.location.href = "admin.html";
 };
+
+async function loadStats() {
+  const res = await fetch(BACKEND + "/admin-stats", {
+    headers: { "x-admin-token": token }
+  });
+
+  if (!res.ok) {
+    sessionStorage.clear();
+    window.location.href = "admin.html";
+    return;
+  }
+
+  const data = await res.json();
+
+  document.getElementById("totalRSMs").innerText = data.total_rsms;
+  document.getElementById("totalAgents").innerText = data.total_enrolled_agents;
+
+  const tbody = document.getElementById("rsmBreakdown");
+  tbody.innerHTML = "";
+
+  data.breakdown.forEach(rsm => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${rsm.email}</td>
+        <td>${rsm.active_agents}</td>
+      </tr>
+    `;
+  });
+}
 
 document.getElementById("createBtn").onclick = async function () {
 
@@ -127,7 +212,7 @@ document.getElementById("createBtn").onclick = async function () {
       "Content-Type": "application/json",
       "x-admin-token": token
     },
-    body: JSON.stringify({ email: email, phone: phone })
+    body: JSON.stringify({ email, phone })
   });
 
   if (!res.ok) {
@@ -152,7 +237,11 @@ document.getElementById("createBtn").onclick = async function () {
     width: 180,
     height: 180
   });
+
+  loadStats();
 };
+
+loadStats();
 </script>
 
 </body>
