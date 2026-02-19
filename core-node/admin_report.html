@@ -49,18 +49,6 @@ body {
   padding: 20px;
 }
 
-.card h2 {
-  margin: 0 0 10px 0;
-  font-size: 0.9rem;
-  color: #b5b5b5;
-}
-
-.card p {
-  margin: 0;
-  font-size: 1.6rem;
-  font-weight: bold;
-}
-
 .section {
   padding: 0 30px 30px 30px;
 }
@@ -87,25 +75,6 @@ button.primary {
 #qrContainer {
   margin-top: 20px;
 }
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #111;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-th, td {
-  padding: 12px;
-  border-bottom: 1px solid #1e1e1e;
-  text-align: left;
-}
-
-th {
-  color: #999;
-  font-size: 0.85rem;
-}
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -117,18 +86,6 @@ th {
   <button class="logout">Logout</button>
 </div>
 
-<div class="container">
-  <div class="card">
-    <h2>Total RSMs</h2>
-    <p id="totalRSMs">0</p>
-  </div>
-
-  <div class="card">
-    <h2>Total Enrolled Agents</h2>
-    <p id="totalAgents">0</p>
-  </div>
-</div>
-
 <div class="section">
   <h2>Create RSM</h2>
   <input id="rsmEmail" placeholder="RSM Email" />
@@ -136,19 +93,6 @@ th {
   <button class="primary" id="createBtn">Create RSM</button>
   <div id="createMessage"></div>
   <div id="qrContainer"></div>
-</div>
-
-<div class="section">
-  <h2>Breakdown by RSM</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>RSM Email</th>
-        <th>Active Agents</th>
-      </tr>
-    </thead>
-    <tbody id="rsmBreakdown"></tbody>
-  </table>
 </div>
 
 <script>
@@ -165,53 +109,28 @@ document.querySelector(".logout").onclick = () => {
   window.location.href = "admin.html";
 };
 
-async function loadStats() {
-  const res = await fetch(`${BACKEND}/admin-stats`, {
-    headers: { "x-admin-token": token }
-  });
+document.getElementById("createBtn").onclick = async function () {
 
-  if (!res.ok) {
-    sessionStorage.clear();
-    window.location.href = "admin.html";
-    return;
-  }
-
-  const data = await res.json();
-
-  document.getElementById("totalRSMs").innerText = data.total_rsms;
-  document.getElementById("totalAgents").innerText = data.total_enrolled_agents;
-
-  const tbody = document.getElementById("rsmBreakdown");
-  tbody.innerHTML = "";
-
-  data.breakdown.forEach(rsm => {
-    const row = `
-      <tr>
-        <td>${rsm.email}</td>
-        <td>${rsm.active_agents}</td>
-      </tr>
-    `;
-    tbody.innerHTML += row;
-  });
-}
-
-document.getElementById("createBtn").onclick = async () => {
   const email = document.getElementById("rsmEmail").value.trim();
   const phone = document.getElementById("rsmPhone").value.trim();
 
-  if (!email || !phone) return;
+  if (!email || !phone) {
+    document.getElementById("createMessage").innerText = "Email and phone required.";
+    return;
+  }
 
-  const res = await fetch(`${BACKEND}/create-rsm`, {
+  const res = await fetch(BACKEND + "/create-rsm", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "x-admin-token": token
     },
-    body: JSON.stringify({ email, phone })
+    body: JSON.stringify({ email: email, phone: phone })
   });
 
   if (!res.ok) {
-    document.getElementById("createMessage").innerText = "Error creating RSM";
+    const text = await res.text();
+    document.getElementById("createMessage").innerText = text || "Error creating RSM";
     return;
   }
 
@@ -222,20 +141,16 @@ document.getElementById("createBtn").onclick = async () => {
   const qrContainer = document.getElementById("qrContainer");
   qrContainer.innerHTML = "";
 
-  // 🔥 THIS IS THE CORRECT QR TARGET
   const onboardingUrl =
-    `https://vitalink-app.netlify.app/.netlify/functions/rsm-onboard?token=${data.onboard_token}`;
+    "https://vitalink-app.netlify.app/.netlify/functions/rsm-onboard?token=" +
+    data.onboard_token;
 
   new QRCode(qrContainer, {
     text: onboardingUrl,
     width: 180,
     height: 180
   });
-
-  loadStats();
 };
-
-loadStats();
 </script>
 
 </body>
