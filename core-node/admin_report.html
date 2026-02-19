@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>VitaLink — Admin Dashboard</title>
 
-<!-- BUILD MARKER v3 QR HARD TEST -->
+<!-- BUILD v4 REAL TOKEN QR -->
 
 <style>
 body {
@@ -109,8 +109,6 @@ th {
   font-size: 0.85rem;
 }
 </style>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 
@@ -221,22 +219,19 @@ document.getElementById("createBtn").onclick = async function () {
     return;
   }
 
-  await res.json();
+  const data = await res.json();
 
   document.getElementById("createMessage").innerText = "RSM Created";
 
   const qrContainer = document.getElementById("qrContainer");
   qrContainer.innerHTML = "";
 
-  // HARD TEST QR
   const onboardingUrl =
-    "https://vitalink-app.netlify.app/.netlify/functions/rsm-onboard?token=TEST123";
+    "https://vitalink-app.netlify.app/.netlify/functions/rsm-onboard?token=" +
+    data.onboard_token;
 
-  new QRCode(qrContainer, {
-    text: onboardingUrl,
-    width: 180,
-    height: 180
-  });
+  qrContainer.innerHTML =
+    `<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(onboardingUrl)}" />`;
 
   loadStats();
 };
