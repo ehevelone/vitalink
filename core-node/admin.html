@@ -101,7 +101,6 @@ firebase.initializeApp(firebaseConfig);
 
 let confirmationResult = null;
 let currentEmail = null;
-let currentRole = null;
 
 document.getElementById("loginBtn").addEventListener("click", login);
 document.getElementById("verifyBtn").addEventListener("click", verifyCode);
@@ -128,10 +127,10 @@ async function login() {
 
   const data = await res.json();
 
-  currentRole = data.role;
-
-  // 🔥 ADMIN → 2FA REQUIRED
-  if (data.role === "admin") {
+  // ==========================
+  // ADMIN FLOW
+  // ==========================
+  if (data.step === "firebase_2fa") {
 
     window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
       "recaptcha-container",
@@ -145,14 +144,15 @@ async function login() {
 
     document.getElementById("step1").classList.add("hidden");
     document.getElementById("step2").classList.remove("hidden");
-
     return;
   }
 
-  // 🔥 RSM → DIRECT LOGIN (NO 2FA)
-  if (data.role === "rsm") {
+  // ==========================
+  // RSM FLOW
+  // ==========================
+  if (data.step === "login_success") {
 
-    sessionStorage.setItem("adminSessionToken", "rsm_logged_in");
+    sessionStorage.setItem("adminSessionToken", data.token);
     sessionStorage.setItem("userRole", "rsm");
 
     window.location.href = "rsm_report.html";
