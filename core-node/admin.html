@@ -101,11 +101,13 @@ firebase.initializeApp(firebaseConfig);
 
 let confirmationResult = null;
 let currentEmail = null;
+let currentRole = null;
 
 document.getElementById("loginBtn").addEventListener("click", login);
 document.getElementById("verifyBtn").addEventListener("click", verifyCode);
 
 async function login() {
+
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
 
@@ -126,21 +128,40 @@ async function login() {
 
   const data = await res.json();
 
-  window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
-    "recaptcha-container",
-    { size: "invisible" }
-  );
+  currentRole = data.role;
 
-  confirmationResult = await firebase.auth().signInWithPhoneNumber(
-    data.phone,
-    window.recaptchaVerifier
-  );
+  // 🔥 ADMIN → 2FA REQUIRED
+  if (data.role === "admin") {
 
-  document.getElementById("step1").classList.add("hidden");
-  document.getElementById("step2").classList.remove("hidden");
+    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
+      "recaptcha-container",
+      { size: "invisible" }
+    );
+
+    confirmationResult = await firebase.auth().signInWithPhoneNumber(
+      data.phone,
+      window.recaptchaVerifier
+    );
+
+    document.getElementById("step1").classList.add("hidden");
+    document.getElementById("step2").classList.remove("hidden");
+
+    return;
+  }
+
+  // 🔥 RSM → DIRECT LOGIN (NO 2FA)
+  if (data.role === "rsm") {
+
+    sessionStorage.setItem("adminSessionToken", "rsm_logged_in");
+    sessionStorage.setItem("userRole", "rsm");
+
+    window.location.href = "rsm_report.html";
+    return;
+  }
 }
 
 async function verifyCode() {
+
   const code = document.getElementById("smsCode").value.trim();
   if (!code) return;
 
