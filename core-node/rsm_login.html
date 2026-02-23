@@ -97,6 +97,18 @@
       cursor: not-allowed;
     }
 
+    .forgot {
+      text-align: center;
+      margin-top: 14px;
+      font-size: 0.85rem;
+      color: var(--accent-blue);
+      cursor: pointer;
+    }
+
+    .forgot:hover {
+      text-decoration: underline;
+    }
+
     .result {
       margin-top: 16px;
       text-align: center;
@@ -140,6 +152,10 @@
 
       <button id="btn" onclick="loginRSM()">Login</button>
 
+      <div class="forgot" onclick="forgotPassword()">
+        Forgot your password?
+      </div>
+
       <div class="result" id="result"></div>
 
     </div>
@@ -151,7 +167,6 @@
   </main>
 
   <script>
-    // If already logged in, bounce straight to enroll
     (function boot() {
       const token = localStorage.getItem("rsmToken");
       if (token) {
@@ -178,7 +193,7 @@
       resultDiv.textContent = "Signing in...";
 
       try {
-        const res = await fetch("/.netlify/functions/rsm-login", {
+        const res = await fetch("https://vitalink-app.netlify.app/.netlify/functions/rsm-login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password })
@@ -195,12 +210,16 @@
         resultDiv.classList.add("error");
         resultDiv.textContent = data.error || "Login failed.";
 
-      } catch (err) {
+      } catch {
         resultDiv.classList.add("error");
         resultDiv.textContent = "Server error.";
       } finally {
         btn.disabled = false;
       }
+    }
+
+    function forgotPassword() {
+      window.location.href = "/core-node/rsm_reset_request.html";
     }
   </script>
 
