@@ -167,10 +167,13 @@
   </main>
 
   <script>
+    const REPORT_PAGE = "/core-node/rsm_report.html";
+
+    // If already logged in, bounce straight to report page
     (function boot() {
       const token = localStorage.getItem("rsmToken");
       if (token) {
-        window.location.href = "/core-node/rsm_enroll.html";
+        window.location.href = REPORT_PAGE;
       }
     })();
 
@@ -203,7 +206,7 @@
 
         if (res.ok && data.success && data.token) {
           localStorage.setItem("rsmToken", data.token);
-          window.location.href = "/core-node/rsm_enroll.html";
+          window.location.href = REPORT_PAGE; // ✅ go to report page
           return;
         }
 
