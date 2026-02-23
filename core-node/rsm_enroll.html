@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VitaLink — RSM Enrollment</title>
+  <title>VitaLink — Agent Enrollment</title>
 
-  <meta name="description" content="Create your VitaLink Regional Sales Manager account." />
   <meta name="robots" content="noindex, nofollow" />
 
   <style>
@@ -57,27 +56,7 @@
       border: 1px solid var(--divider);
       border-radius: 12px;
       padding: 28px;
-    }
-
-    .field {
-      margin-bottom: 18px;
-    }
-
-    label {
-      display: block;
-      font-size: 0.85rem;
-      margin-bottom: 6px;
-      color: var(--text-muted);
-    }
-
-    input {
-      width: 100%;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid var(--divider);
-      background: #000;
-      color: #fff;
-      font-size: 0.95rem;
+      text-align: center;
     }
 
     button {
@@ -95,7 +74,6 @@
 
     .result {
       margin-top: 20px;
-      text-align: center;
       font-size: 0.9rem;
     }
 
@@ -118,36 +96,16 @@
 <body>
   <main>
 
-    <img src="images/vitalink-logo-1.png" alt="VitaLink" class="logo" />
+    <img src="../images/vitalink-logo-1.png" alt="VitaLink" class="logo" />
 
-    <h1>Regional Sales Manager Enrollment</h1>
+    <h1>Agent Enrollment</h1>
     <div class="sub">
-      Create your VitaLink RSM account to manage agents and reporting.
+      Generate a QR code to enroll a new agent under your account.
     </div>
 
     <div class="card">
 
-      <div class="field">
-        <label>Name</label>
-        <input type="text" id="name" />
-      </div>
-
-      <div class="field">
-        <label>Email</label>
-        <input type="email" id="email" />
-      </div>
-
-      <div class="field">
-        <label>Password</label>
-        <input type="password" id="password" />
-      </div>
-
-      <div class="field">
-        <label>Master Key</label>
-        <input type="password" id="masterKey" />
-      </div>
-
-      <button onclick="createRSM()">Create RSM Account</button>
+      <button onclick="generateAgent()">Generate Agent QR</button>
 
       <div class="result" id="result"></div>
 
@@ -159,54 +117,57 @@
 
   </main>
 
-  <!-- QR Library -->
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 
   <script>
-    async function createRSM() {
-      const name = document.getElementById("name").value;
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      const masterKey = document.getElementById("masterKey").value;
+    const BACKEND = "https://vitalink-app.netlify.app/.netlify/functions";
+
+    // 🔐 Require login
+    const rsmToken = localStorage.getItem("rsmToken");
+    if (!rsmToken) {
+      window.location.href = "/core-node/rsm_login.html";
+    }
+
+    async function generateAgent() {
 
       const resultDiv = document.getElementById("result");
-      resultDiv.innerHTML = "Processing...";
+      resultDiv.innerHTML = "Generating...";
 
       try {
-        const res = await fetch("/.netlify/functions/create-rsm", {
+
+        const res = await fetch(BACKEND + "/new_agent_code", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, email, password, masterKey })
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "x-rsm-token": rsmToken
+          }
         });
 
         const data = await res.json();
 
-        if (data.success) {
-
-          const enrollCode = data.agent_enroll_code;
-
-          const enrollUrl =
-            `https://myvitalink.app/.netlify/functions/agent_onboard?rsm=${encodeURIComponent(enrollCode)}`;
-
-          resultDiv.innerHTML = `
-            <p><strong>RSM Created Successfully</strong></p>
-            <p>Agent Enrollment Code:</p>
-            <p style="font-size:18px; font-weight:bold; margin:10px 0;">
-              ${enrollCode}
-            </p>
-            <div id="qr"></div>
-          `;
-
-          const qrContainer = document.getElementById("qr");
-          QRCode.toCanvas(document.createElement("canvas"), enrollUrl, function (err, canvas) {
-            if (!err) {
-              qrContainer.appendChild(canvas);
-            }
-          });
-
-        } else {
-          resultDiv.innerText = data.error || "Error creating RSM.";
+        if (!res.ok || !data.success) {
+          resultDiv.innerText = data.error || "Error generating agent.";
+          return;
         }
+
+        const unlockCode = data.unlockCode;
+
+        const enrollUrl =
+          `${BACKEND}/agent_onboard?rsm=${encodeURIComponent(unlockCode)}`;
+
+        resultDiv.innerHTML = `
+          <p><strong>Agent Unlock Code</strong></p>
+          <p style="font-size:18px; font-weight:bold; margin:10px 0;">
+            ${unlockCode}
+          </p>
+          <div id="qr"></div>
+        `;
+
+        const qrContainer = document.getElementById("qr");
+        QRCode.toCanvas(document.createElement("canvas"), enrollUrl, function (err, canvas) {
+          if (!err) qrContainer.appendChild(canvas);
+        });
 
       } catch (err) {
         resultDiv.innerText = "Server error.";
