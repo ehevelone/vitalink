@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VitaLink — RSM Enrollment</title>
+
+  <meta name="description" content="Create your VitaLink Regional Sales Manager account." />
+  <meta name="robots" content="noindex, nofollow" />
+
+  <style>
+    :root {
+      --bg-black: #0c0c0c;
+      --text-primary: #eaeaea;
+      --text-muted: #b5b5b5;
+      --accent-blue: #7cc6e8;
+      --divider: #1e1e1e;
+      --card-bg: #111;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg-black);
+      color: var(--text-primary);
+    }
+
+    main {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 60px 24px;
+    }
+
+    .logo {
+      max-width: 180px;
+      margin: 0 auto 40px auto;
+      display: block;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 12px;
+    }
+
+    .sub {
+      text-align: center;
+      color: var(--text-muted);
+      margin-bottom: 40px;
+      font-size: 0.95rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--divider);
+      border-radius: 12px;
+      padding: 28px;
+    }
+
+    .field {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      margin-bottom: 6px;
+      color: var(--text-muted);
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--divider);
+      background: #000;
+      color: #fff;
+      font-size: 0.95rem;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border-radius: 999px;
+      border: none;
+      background: var(--accent-blue);
+      color: #000;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+
+    .result {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+
+    #qr canvas {
+      margin-top: 16px;
+      background: #fff;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    footer {
+      margin-top: 60px;
+      text-align: center;
+      color: #666;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+
+    <img src="images/vitalink-logo-1.png" alt="VitaLink" class="logo" />
+
+    <h1>Regional Sales Manager Enrollment</h1>
+    <div class="sub">
+      Create your VitaLink RSM account to manage agents and reporting.
+    </div>
+
+    <div class="card">
+
+      <div class="field">
+        <label>Name</label>
+        <input type="text" id="name" />
+      </div>
+
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="email" />
+      </div>
+
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="password" />
+      </div>
+
+      <div class="field">
+        <label>Master Key</label>
+        <input type="password" id="masterKey" />
+      </div>
+
+      <button onclick="createRSM()">Create RSM Account</button>
+
+      <div class="result" id="result"></div>
+
+    </div>
+
+    <footer>
+      © 2026 VitaLink. All rights reserved.
+    </footer>
+
+  </main>
+
+  <!-- QR Library -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+
+  <script>
+    async function createRSM() {
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const masterKey = document.getElementById("masterKey").value;
+
+      const resultDiv = document.getElementById("result");
+      resultDiv.innerHTML = "Processing...";
+
+      try {
+        const res = await fetch("/.netlify/functions/create-rsm", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, password, masterKey })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+
+          const enrollCode = data.agent_enroll_code;
+
+          const enrollUrl =
+            `https://myvitalink.app/.netlify/functions/agent_onboard?rsm=${encodeURIComponent(enrollCode)}`;
+
+          resultDiv.innerHTML = `
+            <p><strong>RSM Created Successfully</strong></p>
+            <p>Agent Enrollment Code:</p>
+            <p style="font-size:18px; font-weight:bold; margin:10px 0;">
+              ${enrollCode}
+            </p>
+            <div id="qr"></div>
+          `;
+
+          const qrContainer = document.getElementById("qr");
+          QRCode.toCanvas(document.createElement("canvas"), enrollUrl, function (err, canvas) {
+            if (!err) {
+              qrContainer.appendChild(canvas);
+            }
+          });
+
+        } else {
+          resultDiv.innerText = data.error || "Error creating RSM.";
+        }
+
+      } catch (err) {
+        resultDiv.innerText = "Server error.";
+      }
+    }
+  </script>
+
+</body>
+</html>
