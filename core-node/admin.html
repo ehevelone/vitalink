@@ -1,3 +1,4 @@
+<!-- FORCE REDEPLOY - Rename Core Node Access to Admin Access - 2026-02-23 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -69,7 +70,7 @@ button{
 <body>
 
 <div class="card">
-  <h1>Core Node Access</h1>
+  <h1>Admin Access</h1>
   <div id="error" class="error hidden"></div>
 
   <div id="step1">
@@ -127,9 +128,6 @@ async function login() {
 
   const data = await res.json();
 
-  // ==========================
-  // ADMIN FLOW
-  // ==========================
   if (data.step === "firebase_2fa") {
 
     window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
@@ -147,9 +145,6 @@ async function login() {
     return;
   }
 
-  // ==========================
-  // RSM FLOW
-  // ==========================
   if (data.step === "login_success") {
 
     sessionStorage.setItem("adminSessionToken", data.token);
