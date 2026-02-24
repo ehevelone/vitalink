@@ -144,11 +144,9 @@
   <script>
     const BACKEND = "https://vitalink-app.netlify.app/.netlify/functions";
 
-    // ✅ PUBLIC enroll page (this is what the QR should open)
-    const ENROLL_BASE = "https://vitalink.app/onboard?code=";
+    // 🔥 TEMP FIX: send QR to Netlify directly (NOT nginx VPS)
+    const ENROLL_BASE = "https://vitalink-app.netlify.app/onboard?code=";
 
-    // 🔐 Require login
-    // ✅ Check BOTH localStorage and sessionStorage + common token names
     const rsmToken =
       sessionStorage.getItem("adminSessionToken") ||
       sessionStorage.getItem("rsmToken") ||
@@ -169,8 +167,6 @@
           headers: {
             "Content-Type": "application/json",
             "Accept": "application/json",
-
-            // ✅ IMPORTANT: backend validates admin session token
             "x-admin-session": rsmToken
           }
         });
@@ -191,39 +187,20 @@
             ${unlockCode}
           </p>
 
-          <p style="margin: 10px 0 6px 0;"><strong>Enrollment Link</strong></p>
-          <p style="margin: 0;">
-            <a class="link" href="${enrollUrl}" target="_blank" rel="noopener">${enrollUrl}</a>
+          <p><strong>Enrollment Link</strong></p>
+          <p>
+            <a class="link" href="${enrollUrl}" target="_blank">${enrollUrl}</a>
           </p>
-
-          <button class="mini-btn" id="copyLinkBtn">Copy Link</button>
 
           <div id="qr"></div>
         `;
 
-        // Copy button
-        const copyBtn = document.getElementById("copyLinkBtn");
-        copyBtn.onclick = async () => {
-          try {
-            await navigator.clipboard.writeText(enrollUrl);
-            copyBtn.textContent = "Copied!";
-            setTimeout(() => copyBtn.textContent = "Copy Link", 1200);
-          } catch (e) {
-            alert("Copy failed — please copy the link manually.");
-          }
-        };
-
-        // Render QR (clear old one first)
         const qrContainer = document.getElementById("qr");
         qrContainer.innerHTML = "";
 
         const canvas = document.createElement("canvas");
         QRCode.toCanvas(canvas, enrollUrl, { width: 260 }, function (err) {
-          if (err) {
-            qrContainer.innerHTML = "<p style='color:#ff6b6b;'>QR generation failed.</p>";
-            return;
-          }
-          qrContainer.appendChild(canvas);
+          if (!err) qrContainer.appendChild(canvas);
         });
 
       } catch (err) {
