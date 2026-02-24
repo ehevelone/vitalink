@@ -33,6 +33,12 @@
       margin-bottom: 20px;
     }
 
+    .version {
+      margin-top: 20px;
+      font-size: 12px;
+      color: #666;
+    }
+
     a.button {
       display: block;
       margin-top: 14px;
@@ -58,14 +64,20 @@
   <a class="button" href="https://apps.apple.com/app/idYOUR_APP_ID">
     Download on the App Store
   </a>
+
+  <!-- 👇 visible deploy marker -->
+  <div class="version">
+    Build: AGENT_ONBOARD_V2
+  </div>
 </div>
 
 <script>
+  console.log("AGENT_ONBOARD_V2 loaded");
+
   const params = new URLSearchParams(window.location.search);
   const code = params.get("code");
 
   if (code && code.startsWith("AG-")) {
-    // Store unlock code for app registration
     localStorage.setItem("agentUnlockCode", code);
     document.getElementById("status").innerText =
       "Agent code saved. Continue in the VitaLink app to complete registration.";
