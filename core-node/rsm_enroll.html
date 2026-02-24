@@ -93,21 +93,6 @@
       color: var(--accent-blue);
       text-decoration: none;
     }
-    a.link:hover { text-decoration: underline; }
-
-    .mini-btn {
-      width: auto;
-      display: inline-block;
-      padding: 10px 14px;
-      margin-top: 10px;
-      border-radius: 999px;
-      border: none;
-      background: #222;
-      color: var(--text-primary);
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 0.85rem;
-    }
 
     footer {
       margin-top: 60px;
@@ -144,8 +129,8 @@
   <script>
     const BACKEND = "https://vitalink-app.netlify.app/.netlify/functions";
 
-    // 🔥 TEMP FIX: send QR to Netlify directly (NOT nginx VPS)
-    const ENROLL_BASE = "https://vitalink-app.netlify.app/onboard?code=";
+    // ✅ NOW POINTING TO YOUR NEW LANDING PAGE
+    const ENROLL_BASE = "https://vitalink.app/agent_onboard?code=";
 
     const rsmToken =
       sessionStorage.getItem("adminSessionToken") ||
