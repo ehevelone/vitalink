@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VitaLink — Agent Onboarding</title>
+  <meta name="robots" content="noindex, nofollow" />
+
+  <style>
+    body {
+      margin: 0;
+      background: #0c0c0c;
+      color: #eaeaea;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+
+    .box {
+      max-width: 420px;
+      padding: 30px;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #b5b5b5;
+      margin-bottom: 20px;
+    }
+
+    a.button {
+      display: block;
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 999px;
+      background: #7cc6e8;
+      color: #000;
+      text-decoration: none;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+<div class="box">
+  <h2>Welcome to VitaLink</h2>
+  <p id="status">Preparing your agent enrollment…</p>
+
+  <a class="button" href="https://play.google.com/store/apps/details?id=YOUR_APP_ID">
+    Get it on Google Play
+  </a>
+
+  <a class="button" href="https://apps.apple.com/app/idYOUR_APP_ID">
+    Download on the App Store
+  </a>
+</div>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get("code");
+
+  if (code && code.startsWith("AG-")) {
+    // Store unlock code for app registration
+    localStorage.setItem("agentUnlockCode", code);
+    document.getElementById("status").innerText =
+      "Agent code saved. Continue in the VitaLink app to complete registration.";
+  } else {
+    document.getElementById("status").innerText =
+      "Invalid or missing agent code.";
+  }
+</script>
+
+</body>
+</html>
