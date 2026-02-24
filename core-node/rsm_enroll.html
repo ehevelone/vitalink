@@ -75,6 +75,11 @@
     .result {
       margin-top: 20px;
       font-size: 0.9rem;
+      word-break: break-word;
+    }
+
+    #qr {
+      margin-top: 12px;
     }
 
     #qr canvas {
@@ -82,6 +87,26 @@
       background: #fff;
       padding: 10px;
       border-radius: 8px;
+    }
+
+    a.link {
+      color: var(--accent-blue);
+      text-decoration: none;
+    }
+    a.link:hover { text-decoration: underline; }
+
+    .mini-btn {
+      width: auto;
+      display: inline-block;
+      padding: 10px 14px;
+      margin-top: 10px;
+      border-radius: 999px;
+      border: none;
+      background: #222;
+      color: var(--text-primary);
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
     }
 
     footer {
@@ -104,11 +129,8 @@
     </div>
 
     <div class="card">
-
       <button onclick="generateAgent()">Generate Agent QR</button>
-
       <div class="result" id="result"></div>
-
     </div>
 
     <footer>
@@ -122,6 +144,9 @@
   <script>
     const BACKEND = "https://vitalink-app.netlify.app/.netlify/functions";
 
+    // ✅ PUBLIC enroll page (this is what the QR should open)
+    const ENROLL_BASE = "https://vitalink.app/onboard?code=";
+
     // 🔐 Require login
     const rsmToken = localStorage.getItem("rsmToken");
     if (!rsmToken) {
@@ -129,12 +154,10 @@
     }
 
     async function generateAgent() {
-
       const resultDiv = document.getElementById("result");
       resultDiv.innerHTML = "Generating...";
 
       try {
-
         const res = await fetch(BACKEND + "/new_agent_code", {
           method: "POST",
           headers: {
@@ -152,21 +175,47 @@
         }
 
         const unlockCode = data.unlockCode;
-
-        const enrollUrl =
-          `${BACKEND}/agent_onboard?rsm=${encodeURIComponent(unlockCode)}`;
+        const enrollUrl = ENROLL_BASE + encodeURIComponent(unlockCode);
 
         resultDiv.innerHTML = `
           <p><strong>Agent Unlock Code</strong></p>
           <p style="font-size:18px; font-weight:bold; margin:10px 0;">
             ${unlockCode}
           </p>
+
+          <p style="margin: 10px 0 6px 0;"><strong>Enrollment Link</strong></p>
+          <p style="margin: 0;">
+            <a class="link" href="${enrollUrl}" target="_blank" rel="noopener">${enrollUrl}</a>
+          </p>
+
+          <button class="mini-btn" id="copyLinkBtn">Copy Link</button>
+
           <div id="qr"></div>
         `;
 
+        // Copy button
+        const copyBtn = document.getElementById("copyLinkBtn");
+        copyBtn.onclick = async () => {
+          try {
+            await navigator.clipboard.writeText(enrollUrl);
+            copyBtn.textContent = "Copied!";
+            setTimeout(() => copyBtn.textContent = "Copy Link", 1200);
+          } catch (e) {
+            alert("Copy failed — please copy the link manually.");
+          }
+        };
+
+        // Render QR (clear old one first)
         const qrContainer = document.getElementById("qr");
-        QRCode.toCanvas(document.createElement("canvas"), enrollUrl, function (err, canvas) {
-          if (!err) qrContainer.appendChild(canvas);
+        qrContainer.innerHTML = "";
+
+        const canvas = document.createElement("canvas");
+        QRCode.toCanvas(canvas, enrollUrl, { width: 260 }, function (err) {
+          if (err) {
+            qrContainer.innerHTML = "<p style='color:#ff6b6b;'>QR generation failed.</p>";
+            return;
+          }
+          qrContainer.appendChild(canvas);
         });
 
       } catch (err) {
