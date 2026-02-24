@@ -148,7 +148,13 @@
     const ENROLL_BASE = "https://vitalink.app/onboard?code=";
 
     // 🔐 Require login
-    const rsmToken = localStorage.getItem("rsmToken");
+    // ✅ Check BOTH localStorage and sessionStorage + common token names
+    const rsmToken =
+      sessionStorage.getItem("adminSessionToken") ||
+      sessionStorage.getItem("rsmToken") ||
+      localStorage.getItem("adminSessionToken") ||
+      localStorage.getItem("rsmToken");
+
     if (!rsmToken) {
       window.location.href = "/core-node/rsm_login.html";
     }
@@ -163,7 +169,9 @@
           headers: {
             "Content-Type": "application/json",
             "Accept": "application/json",
-            "x-rsm-token": rsmToken
+
+            // ✅ IMPORTANT: backend validates admin session token
+            "x-admin-session": rsmToken
           }
         });
 
