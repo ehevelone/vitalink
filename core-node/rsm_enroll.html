@@ -129,8 +129,8 @@
   <script>
     const BACKEND = "https://vitalink-app.netlify.app/.netlify/functions";
 
-    // ✅ NOW POINTING TO YOUR NEW LANDING PAGE
-    const ENROLL_BASE = "https://vitalink.app/agent_onboard?code=";
+    // ✅ BYPASS VPS — send QR directly to Netlify
+    const ENROLL_BASE = "https://vitalink-app.netlify.app/agent_onboard?code=";
 
     const rsmToken =
       sessionStorage.getItem("adminSessionToken") ||
