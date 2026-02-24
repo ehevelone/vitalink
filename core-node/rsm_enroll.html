@@ -127,10 +127,11 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 
   <script>
+    // Backend still runs on Netlify functions
     const BACKEND = "https://vitalink-app.netlify.app/.netlify/functions";
 
-    // ✅ CORRECT PATH (includes core-node + .html)
-    const ENROLL_BASE = "https://vitalink-app.netlify.app/core-node/agent_onboard.html?code=";
+    // 🔥 EVERYTHING LIVES UNDER MYVITALINK.APP
+    const ENROLL_BASE = "https://myvitalink.app/core-node/agent_onboard.html?code=";
 
     const rsmToken =
       sessionStorage.getItem("adminSessionToken") ||
