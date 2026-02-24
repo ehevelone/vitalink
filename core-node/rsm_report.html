@@ -94,13 +94,11 @@ th {
 
 <div class="container">
 
-  <!-- ACTIVE COUNT -->
   <div class="card">
     <h2>Active Agents</h2>
     <p id="rsmAgents">0</p>
   </div>
 
-  <!-- SEARCH -->
   <div class="card">
     <h2>Search Agents</h2>
     <input id="searchInput" placeholder="Search by name or email" />
@@ -108,7 +106,6 @@ th {
     <button class="primary" onclick="downloadCSV()">Download CSV</button>
   </div>
 
-  <!-- TABLE -->
   <div class="card">
     <table>
       <thead>
@@ -145,7 +142,7 @@ async function load() {
   const res = await fetch(
     `${BACKEND}/rsm-summary-report?search=${encodeURIComponent(search)}`,
     {
-      headers: { "x-rsm-token": token }
+      headers: { "x-admin-session": token }
     }
   );
 
@@ -177,7 +174,7 @@ async function downloadCSV() {
 
   const res = await fetch(
     `${BACKEND}/rsm-summary-report`,
-    { headers: { "x-rsm-token": token } }
+    { headers: { "x-admin-session": token } }
   );
 
   const data = await res.json();
