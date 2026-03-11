@@ -186,93 +186,22 @@
       font-size: 0.95rem;
     }
 
+    .recover {
+      margin-top: 18px;
+      font-size: 0.9rem;
+      color: #8f8f8f;
+    }
+
+    .recover a {
+      color: var(--accent-blue);
+      text-decoration: none;
+    }
+
     footer {
       margin-top: 80px;
       text-align: center;
       color: #666;
       font-size: 0.8rem;
-    }
-
-    @media (max-width: 600px) {
-
-      main {
-        padding: 36px 18px;
-      }
-
-      .hero {
-        gap: 28px;
-        margin-bottom: 56px;
-      }
-
-      .headline {
-        font-size: 2.1rem;
-      }
-
-      .tagline,
-      .tagline span {
-        font-size: 1rem;
-      }
-
-      .features {
-        padding: 44px 0;
-        margin-bottom: 56px;
-      }
-
-      .feature-list {
-        gap: 24px;
-      }
-
-      .feature h3 {
-        font-size: 1rem;
-      }
-
-      .feature p {
-        font-size: 0.9rem;
-      }
-
-      .screenshots {
-        margin-bottom: 56px;
-      }
-
-      .screenshots h2 {
-        font-size: 1.6rem;
-      }
-
-      .shot-grid {
-        gap: 20px;
-      }
-
-      .shot {
-        padding: 10px;
-      }
-
-      .shot img {
-        max-height: 420px;
-        object-fit: contain;
-      }
-
-      .why {
-        margin-bottom: 56px;
-      }
-
-      .why h2 {
-        font-size: 1.6rem;
-      }
-
-      .cta {
-        padding-top: 44px;
-      }
-
-      .cta h2 {
-        font-size: 1.8rem;
-      }
-
-      .cta a {
-        width: 100%;
-        max-width: 320px;
-        padding: 16px;
-        font-size: 1rem;
-      }
     }
   </style>
 </head>
@@ -292,6 +221,7 @@
       </div>
     </section>
 
+    <!-- FEATURES -->
     <section class="features">
       <div class="feature-list">
 
@@ -358,42 +288,18 @@
       </div>
     </section>
 
-    <section class="screenshots">
-      <h2>Inside the VitaLink app</h2>
-      <div class="sub">Real screens from the VitaLink app</div>
-
-      <div class="shot-grid">
-        <div class="shot">
-          <img src="images/landing.png">
-          Welcome & profile selection
-        </div>
-
-        <div class="shot">
-          <img src="images/usermenu.png">
-          User overview & key information
-        </div>
-
-        <div class="shot">
-          <img src="images/emergency.png">
-          Emergency access & responder view
-        </div>
-      </div>
-    </section>
-
-    <section class="why">
-      <h2>Why VitaLink exists</h2>
-      <p>
-        Important health and insurance information is often scattered, outdated, or unavailable when it’s needed most — especially during Annual Enrollment.
-      </p>
-      <p>
-        VitaLink was built to eliminate repeated data entry, reduce errors, and keep critical information current for both clients and their insurance agent.
-      </p>
-    </section>
-
+    <!-- CTA -->
     <section class="cta">
       <h2>Scan. Set up. Be prepared.</h2>
       <p>VitaLink helps you organize critical health and insurance information in minutes.</p>
+
       <a href="/activate.html">Get VitaLink Now</a>
+
+      <div class="recover">
+        Already purchased VitaLink?<br>
+        <a href="/recover.html">Recover your activation code</a>
+      </div>
+
     </section>
 
     <footer>
