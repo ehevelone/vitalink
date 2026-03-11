@@ -164,14 +164,22 @@ async function loadCode() {
 
   try {
 
-    const res = await fetch(
-      "https://vitalink-app.netlify.app/.netlify/functions/vl-get-code?session_id=" + sessionId
-    );
+    const url = "https://vitalink-app.netlify.app/.netlify/functions/vl-get-code?session_id=" + sessionId;
+
+    const res = await fetch(url, { method: "GET" });
+
+    if(!res.ok){
+      document.getElementById("code").innerText = "Server error";
+      return;
+    }
 
     const data = await res.json();
 
-    document.getElementById("code").innerText =
-      data.code || "Code not found";
+    if(data.code){
+      document.getElementById("code").innerText = data.code;
+    } else {
+      document.getElementById("code").innerText = "Code not found";
+    }
 
   } catch(err){
 
