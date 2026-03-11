@@ -150,7 +150,7 @@ After receiving your activation code:
 async function startCheckout() {
   try {
 
-    const res = await fetch('/.netlify/functions/vl-checkout', {
+    const res = await fetch('https://vitalink-app.netlify.app/.netlify/functions/vl-checkout', {
       method: 'POST'
     });
 
