@@ -88,6 +88,13 @@ button{
   margin:20px 0;
 }
 
+.copy-status{
+  color:#6fdc6f;
+  margin-top:10px;
+  font-size:.9rem;
+  display:none;
+}
+
 .warning{
   background:#111;
   border:1px solid var(--divider);
@@ -132,7 +139,6 @@ Enter your name and email to receive your VitaLink activation code.
 <div class="form-box" id="formBox">
 
 <input id="name" placeholder="Full Name">
-
 <input id="email" placeholder="Email Address">
 
 <button onclick="registerPurchase()">
@@ -147,6 +153,13 @@ Get My Activation Code
 
 <div id="code" class="code">
 Loading...
+</div>
+
+<button onclick="copyCode()">Copy Code</button>
+<button onclick="openApp()">Open VitaLink App</button>
+
+<div id="copyStatus" class="copy-status">
+Activation code copied to clipboard ✓
 </div>
 
 <div class="warning">
@@ -248,14 +261,74 @@ async function loadCode(){
 
     const data = await res.json();
 
-    document.getElementById("code").innerText =
-      data.code || "Code not found";
+    const code = data.code || "Code not found";
+
+    document.getElementById("code").innerText = code;
+
+    if(code !== "Code not found"){
+      autoCopy(code);
+    }
 
   }catch(err){
 
     document.getElementById("code").innerText = "Error loading code";
 
   }
+
+}
+
+function copyCode(){
+
+  const code = document.getElementById("code").innerText;
+
+  navigator.clipboard.writeText(code);
+
+  showCopied();
+
+}
+
+function autoCopy(code){
+
+  navigator.clipboard.writeText(code).then(() => {
+    showCopied();
+  });
+
+}
+
+function showCopied(){
+
+  const msg = document.getElementById("copyStatus");
+  msg.style.display = "block";
+
+  setTimeout(()=>{
+    msg.style.display = "none";
+  },3000);
+
+}
+
+function openApp(){
+
+  const code = document.getElementById("code").innerText;
+
+  const deepLink = "vitalink://activate?code=" + code;
+
+  const iosStore = "https://apps.apple.com/";
+  const androidStore = "https://play.google.com/store/apps/";
+
+  const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const isAndroid = /Android/i.test(navigator.userAgent);
+
+  window.location = deepLink;
+
+  setTimeout(() => {
+
+    if(isIOS){
+      window.location = iosStore;
+    } else if(isAndroid){
+      window.location = androidStore;
+    }
+
+  },1500);
 
 }
 
