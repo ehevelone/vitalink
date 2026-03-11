@@ -38,11 +38,46 @@ h1{
   margin-bottom:16px;
 }
 
+p{
+  color:var(--text-muted);
+}
+
+.form-box{
+  border-top:1px solid var(--divider);
+  border-bottom:1px solid var(--divider);
+  margin:40px 0;
+  padding:40px 0;
+}
+
+input{
+  width:100%;
+  max-width:420px;
+  padding:14px;
+  margin:10px auto;
+  display:block;
+  border-radius:8px;
+  border:1px solid var(--divider);
+  background:#111;
+  color:#fff;
+  font-size:1rem;
+}
+
+button{
+  padding:14px 28px;
+  border-radius:999px;
+  border:none;
+  background:var(--accent-blue);
+  font-weight:600;
+  cursor:pointer;
+  margin-top:10px;
+}
+
 .code-box{
   border-top:1px solid var(--divider);
   border-bottom:1px solid var(--divider);
   margin:40px 0;
   padding:40px 0;
+  display:none;
 }
 
 .code{
@@ -72,12 +107,6 @@ h1{
 
 .download button{
   margin:10px;
-  padding:14px 28px;
-  border-radius:999px;
-  border:none;
-  background:var(--accent-blue);
-  font-weight:600;
-  cursor:pointer;
 }
 
 footer{
@@ -94,16 +123,30 @@ footer{
 
 <img src="images/vitalink-logo-1.png" class="logo">
 
-<h1>Your VitaLink Activation Code</h1>
+<h1>Complete Registration</h1>
 
-<div class="code-box">
+<p>
+Enter your name and email to receive your VitaLink activation code.
+</p>
+
+<div class="form-box" id="formBox">
+
+<input id="name" placeholder="Full Name">
+
+<input id="email" placeholder="Email Address">
+
+<button onclick="registerPurchase()">
+Get My Activation Code
+</button>
+
+</div>
+
+<div class="code-box" id="codeBox">
 
 <div>Your activation code:</div>
 
 <div id="code" class="code">
 Loading...
-</div>
-
 </div>
 
 <div class="warning">
@@ -117,6 +160,8 @@ Write down or screenshot this activation code.
 <br><br>
 
 Do NOT close this page until the code has been successfully entered in the VitaLink app.
+
+</div>
 
 </div>
 
@@ -152,44 +197,67 @@ After saving your code:
 
 <script>
 
-async function loadCode() {
+const params = new URLSearchParams(window.location.search);
+const sessionId = params.get("session_id");
 
-  const params = new URLSearchParams(window.location.search);
-  const sessionId = params.get("session_id");
+async function registerPurchase(){
 
-  if(!sessionId){
-    document.getElementById("code").innerText = "Missing session";
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+
+  if(!name || !email){
+    alert("Please enter your name and email.");
     return;
   }
 
-  try {
+  try{
 
-    const url = "https://vitalink-app.netlify.app/.netlify/functions/vl-get-latest-code?session_id=" + sessionId;
+    await fetch(
+      "https://vitalink-app.netlify.app/.netlify/functions/vl-register-purchase",
+      {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body:JSON.stringify({
+          name,
+          email,
+          session_id:sessionId
+        })
+      }
+    );
 
-    const res = await fetch(url);
+    loadCode();
 
-    if(!res.ok){
-      document.getElementById("code").innerText = "Server error";
-      return;
-    }
+  }catch(err){
+
+    alert("Registration failed. Please try again.");
+
+  }
+
+}
+
+async function loadCode(){
+
+  document.getElementById("formBox").style.display = "none";
+  document.getElementById("codeBox").style.display = "block";
+
+  try{
+
+    const res = await fetch(
+      "https://vitalink-app.netlify.app/.netlify/functions/vl-get-latest-code?session_id=" + sessionId
+    );
 
     const data = await res.json();
 
-    if(data.code){
-      document.getElementById("code").innerText = data.code;
-    } else {
-      document.getElementById("code").innerText = "Code not found";
-    }
+    document.getElementById("code").innerText =
+      data.code || "Code not found";
 
-  } catch(err){
+  }catch(err){
 
     document.getElementById("code").innerText = "Error loading code";
 
   }
 
 }
-
-loadCode();
 
 </script>
 
