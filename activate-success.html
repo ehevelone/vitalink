@@ -164,9 +164,9 @@ async function loadCode() {
 
   try {
 
-    const url = "https://vitalink-app.netlify.app/.netlify/functions/vl-get-code?session_id=" + sessionId;
+    const url = "https://vitalink-app.netlify.app/.netlify/functions/vl-get-latest-code?session_id=" + sessionId;
 
-    const res = await fetch(url, { method: "GET" });
+    const res = await fetch(url);
 
     if(!res.ok){
       document.getElementById("code").innerText = "Server error";
