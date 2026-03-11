@@ -33,7 +33,6 @@
       padding: 60px 24px;
     }
 
-    /* HERO */
     .hero {
       display: grid;
       grid-template-columns: 1fr;
@@ -66,12 +65,11 @@
 
     .tagline span {
       display: block;
-      font-size: 1.1rem; /* SAME size as line above */
+      font-size: 1.1rem;
       color: #8f8f8f;
       margin-top: 8px;
     }
 
-    /* FEATURES */
     .features {
       border-top: 1px solid var(--divider);
       border-bottom: 1px solid var(--divider);
@@ -109,7 +107,6 @@
       font-size: 0.95rem;
     }
 
-    /* SCREENSHOTS */
     .screenshots {
       margin-bottom: 80px;
     }
@@ -147,7 +144,6 @@
       margin-bottom: 8px;
     }
 
-    /* WHY */
     .why {
       max-width: 760px;
       margin-bottom: 80px;
@@ -163,7 +159,6 @@
       margin-bottom: 16px;
     }
 
-    /* CTA */
     .cta {
       border-top: 1px solid var(--divider);
       padding-top: 60px;
@@ -198,13 +193,6 @@
       font-size: 0.8rem;
     }
 
-    @media (min-width: 768px) {
-      .hero {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    /* MOBILE OPTIMIZATION FOR QR TRAFFIC */
     @media (max-width: 600px) {
 
       main {
@@ -292,7 +280,6 @@
 <body>
   <main>
 
-    <!-- HERO -->
     <section class="hero">
       <div class="hero-text">
         <img src="images/vitalink-logo-1.png" alt="VitaLink" class="logo" />
@@ -305,7 +292,6 @@
       </div>
     </section>
 
-    <!-- FEATURES -->
     <section class="features">
       <div class="feature-list">
 
@@ -372,30 +358,28 @@
       </div>
     </section>
 
-    <!-- SCREENSHOTS -->
     <section class="screenshots">
       <h2>Inside the VitaLink app</h2>
       <div class="sub">Real screens from the VitaLink app</div>
 
       <div class="shot-grid">
         <div class="shot">
-          <img src="images/landing.png" alt="VitaLink welcome screen">
+          <img src="images/landing.png">
           Welcome & profile selection
         </div>
 
         <div class="shot">
-          <img src="images/usermenu.png" alt="VitaLink user menu">
+          <img src="images/usermenu.png">
           User overview & key information
         </div>
 
         <div class="shot">
-          <img src="images/emergency.png" alt="VitaLink emergency screen">
+          <img src="images/emergency.png">
           Emergency access & responder view
         </div>
       </div>
     </section>
 
-    <!-- WHY -->
     <section class="why">
       <h2>Why VitaLink exists</h2>
       <p>
@@ -406,11 +390,10 @@
       </p>
     </section>
 
-    <!-- CTA -->
     <section class="cta">
       <h2>Scan. Set up. Be prepared.</h2>
       <p>VitaLink helps you organize critical health and insurance information in minutes.</p>
-      <a href="#">Get VitaLink Now</a>
+      <a href="/activate.html">Get VitaLink Now</a>
     </section>
 
     <footer>

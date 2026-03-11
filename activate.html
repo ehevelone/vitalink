@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VitaLink Activation</title>
+
+<style>
+:root {
+  --bg-black:#0c0c0c;
+  --text-primary:#eaeaea;
+  --text-muted:#b5b5b5;
+  --accent-blue:#7cc6e8;
+  --divider:#1e1e1e;
+}
+
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:var(--bg-black);
+  color:var(--text-primary);
+}
+
+main{
+  max-width:900px;
+  margin:auto;
+  padding:60px 24px;
+  text-align:center;
+}
+
+.logo{
+  max-width:160px;
+  margin-bottom:30px;
+}
+
+h1{
+  font-size:2.4rem;
+  margin-bottom:16px;
+}
+
+p{
+  color:var(--text-muted);
+  max-width:520px;
+  margin:auto;
+}
+
+.activate-box{
+  border-top:1px solid var(--divider);
+  border-bottom:1px solid var(--divider);
+  margin:60px 0;
+  padding:40px 0;
+}
+
+.price{
+  font-size:1.8rem;
+  margin:20px 0;
+}
+
+button{
+  padding:14px 28px;
+  border-radius:999px;
+  border:none;
+  background:var(--accent-blue);
+  font-weight:600;
+  font-size:.95rem;
+  cursor:pointer;
+}
+
+.instructions{
+  margin-top:60px;
+  color:var(--text-muted);
+}
+
+.download{
+  margin-top:30px;
+}
+
+.download a{
+  text-decoration:none;
+}
+
+.download button{
+  margin:10px;
+}
+
+footer{
+  margin-top:80px;
+  color:#666;
+  font-size:.8rem;
+}
+</style>
+</head>
+
+<body>
+
+<main>
+
+<img src="images/vitalink-logo-1.png" class="logo">
+
+<h1>Get Your VitaLink Activation Code</h1>
+
+<p>
+VitaLink requires an activation code to use the mobile app.
+Clients of participating insurance agents receive a code from their agent.
+</p>
+
+<div class="activate-box">
+
+<div class="price">$20 Personal Activation</div>
+
+<button onclick="startCheckout()">
+Get Activation Code
+</button>
+
+</div>
+
+<div class="instructions">
+
+After receiving your activation code:
+
+<br><br>
+
+1. Download the VitaLink app<br>
+2. Register your account<br>
+3. Enter your activation code
+
+<div class="download">
+
+<br>
+
+<a href="#">
+<button>Download for iPhone</button>
+</a>
+
+<a href="#">
+<button>Download for Android</button>
+</a>
+
+</div>
+
+</div>
+
+<footer>
+© 2026 VitaLink
+</footer>
+
+</main>
+
+<script>
+async function startCheckout() {
+  try {
+
+    const res = await fetch('/.netlify/functions/vl-checkout', {
+      method: 'POST'
+    });
+
+    const data = await res.json();
+
+    if (data.url) {
+      window.location = data.url;
+    } else {
+      alert("Checkout failed. Please try again.");
+    }
+
+  } catch (err) {
+    alert("Error connecting to payment system.");
+  }
+}
+</script>
+
+</body>
+</html>
