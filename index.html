@@ -105,58 +105,6 @@ color:var(--text-muted);
 font-size:0.95rem;
 }
 
-.screenshots{
-margin-bottom:80px;
-}
-
-.screenshots h2{
-font-size:1.8rem;
-margin-bottom:8px;
-}
-
-.screenshots .sub{
-color:#8f8f8f;
-margin-bottom:32px;
-font-size:0.95rem;
-}
-
-.shot-grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:24px;
-}
-
-.shot{
-background:#111;
-border:1px solid var(--divider);
-border-radius:12px;
-padding:12px;
-text-align:center;
-color:var(--text-muted);
-font-size:0.9rem;
-}
-
-.shot img{
-width:100%;
-border-radius:8px;
-margin-bottom:8px;
-}
-
-.why{
-max-width:760px;
-margin-bottom:80px;
-}
-
-.why h2{
-font-size:1.8rem;
-margin-bottom:16px;
-}
-
-.why p{
-color:var(--text-muted);
-margin-bottom:16px;
-}
-
 .cta{
 border-top:1px solid var(--divider);
 padding-top:60px;
@@ -316,7 +264,7 @@ async function startCheckout(){
 
   try{
 
-    const res = await fetch("/.netlify/functions/checkout-vitalink",{
+    const res = await fetch("/.netlify/functions/vl-checkout",{
       method:"POST"
     });
 
