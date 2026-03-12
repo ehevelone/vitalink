@@ -339,7 +339,7 @@ async function load(){
       </td>
 
       <td>
-        <button class="primary" onclick="toggleAgent('${agent.id}')">
+        <button class="primary" onclick="confirmToggle('${agent.id}','${agent.name}','${agent.active}')">
           ${agent.active ? "Deactivate" : "Activate"}
         </button>
       </td>
@@ -349,6 +349,52 @@ async function load(){
 
   });
 
+}
+
+/* CONFIRM TOGGLE */
+
+function confirmToggle(id,name,isActive){
+
+  const action=isActive==="true"||isActive===true
+    ?"DEACTIVATE"
+    :"ACTIVATE";
+
+  const confirmed=confirm(
+`${action} agent:
+
+${name || "Unnamed Agent"}
+
+Are you sure?`
+  );
+
+  if(!confirmed) return;
+
+  toggleAgent(id);
+
+}
+
+/* ACTIVATE / DEACTIVATE */
+
+async function toggleAgent(id){
+
+  const res = await fetch(
+    `${BACKEND}/rsm-toggle-agent`,
+    {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "x-admin-session":token
+      },
+      body:JSON.stringify({agentId:id})
+    }
+  );
+
+  if(!res.ok){
+    alert("Unable to update agent.");
+    return;
+  }
+
+  load();
 }
 
 /* EXPORT SINGLE AGENT */
@@ -378,30 +424,6 @@ async function exportAgent(id){
  a.download=`agent_${data.name||"record"}.csv`;
  a.click();
 
-}
-
-/* ACTIVATE / DEACTIVATE */
-
-async function toggleAgent(id){
-
-  const res = await fetch(
-    `${BACKEND}/rsm-toggle-agent`,
-    {
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json",
-        "x-admin-session":token
-      },
-      body:JSON.stringify({agentId:id})
-    }
-  );
-
-  if(!res.ok){
-    alert("Unable to update agent.");
-    return;
-  }
-
-  load();
 }
 
 /* CSV */
