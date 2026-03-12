@@ -158,7 +158,6 @@ tr:nth-child(even){
   .card,
   .stat{
     border:none;
-    box-shadow:none;
   }
 
   table{
@@ -194,8 +193,6 @@ tr:nth-child(even){
 </div>
 
 <div class="container">
-
-<!-- STATS ROW -->
 
 <div class="stats">
 
@@ -238,6 +235,8 @@ tr:nth-child(even){
 <th>Name</th>
 <th>Email</th>
 <th>Status</th>
+<th>Export</th>
+<th>Action</th>
 </tr>
 </thead>
 
@@ -332,11 +331,77 @@ async function load(){
       <td>${agent.name||""}</td>
       <td>${agent.email||""}</td>
       <td>${agent.active?"Active":"Inactive"}</td>
+
+      <td>
+        <button class="primary" onclick="exportAgent('${agent.id}')">
+          Download
+        </button>
+      </td>
+
+      <td>
+        <button class="primary" onclick="toggleAgent('${agent.id}')">
+          ${agent.active ? "Deactivate" : "Activate"}
+        </button>
+      </td>
+
     </tr>
     `;
 
   });
 
+}
+
+/* EXPORT SINGLE AGENT */
+
+async function exportAgent(id){
+
+ const res = await fetch(
+   `${BACKEND}/rsm-agent-export?id=${id}`,
+   { headers:{ "x-admin-session":token } }
+ );
+
+ if(!res.ok){
+   alert("Unable to export agent.");
+   return;
+ }
+
+ const data = await res.json();
+
+ let csv="Name,Email,Phone\n";
+ csv+=`"${data.name||""}","${data.email||""}","${data.phone||""}"`;
+
+ const blob=new Blob([csv],{type:"text/csv"});
+ const url=URL.createObjectURL(blob);
+
+ const a=document.createElement("a");
+ a.href=url;
+ a.download=`agent_${data.name||"record"}.csv`;
+ a.click();
+
+}
+
+/* ACTIVATE / DEACTIVATE */
+
+async function toggleAgent(id){
+
+  const res = await fetch(
+    `${BACKEND}/rsm-toggle-agent`,
+    {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "x-admin-session":token
+      },
+      body:JSON.stringify({agentId:id})
+    }
+  );
+
+  if(!res.ok){
+    alert("Unable to update agent.");
+    return;
+  }
+
+  load();
 }
 
 /* CSV */
@@ -347,6 +412,11 @@ async function downloadCSV(){
     `${BACKEND}/rsm-summary-report`,
     { headers:{ "x-admin-session":token } }
   );
+
+  if(!res.ok){
+    alert("Unable to download CSV.");
+    return;
+  }
 
   const data=await res.json();
 
