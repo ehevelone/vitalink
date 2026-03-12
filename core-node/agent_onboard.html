@@ -89,14 +89,14 @@ Open VitaLink App
 </div>
 
 <div class="version">
-Build: AGENT_ONBOARD_V3
+Build: AGENT_ONBOARD_V4
 </div>
 
 </div>
 
 <script>
 
-console.log("AGENT_ONBOARD_V3 loaded");
+console.log("AGENT_ONBOARD_V4 loaded");
 
 const params = new URLSearchParams(window.location.search);
 const code = params.get("code");
@@ -104,19 +104,19 @@ const code = params.get("code");
 const status = document.getElementById("status");
 const openBtn = document.getElementById("openApp");
 
-if(code && code.startsWith("AG-")){
+if(code){
 
 localStorage.setItem("agentUnlockCode", code);
 
 status.innerText =
 "Agent code saved. Opening VitaLink…";
 
-/* Correct deep link scheme */
-const deepLink = `vitalink://agent?code=${encodeURIComponent(code)}`;
+/* 🔹 Route through REGISTER so Terms cannot be skipped */
+const deepLink = `vitalink://register?code=${encodeURIComponent(code)}`;
 
 openBtn.href = deepLink;
 
-/* Auto open attempt */
+/* Attempt auto-open */
 setTimeout(()=>{
 window.location.href = deepLink;
 },700);
