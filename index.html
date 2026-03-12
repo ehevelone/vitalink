@@ -105,6 +105,58 @@ color:var(--text-muted);
 font-size:0.95rem;
 }
 
+.screenshots{
+margin-bottom:80px;
+}
+
+.screenshots h2{
+font-size:1.8rem;
+margin-bottom:8px;
+}
+
+.screenshots .sub{
+color:#8f8f8f;
+margin-bottom:32px;
+font-size:0.95rem;
+}
+
+.shot-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:24px;
+}
+
+.shot{
+background:#111;
+border:1px solid var(--divider);
+border-radius:12px;
+padding:12px;
+text-align:center;
+color:var(--text-muted);
+font-size:0.9rem;
+}
+
+.shot img{
+width:100%;
+border-radius:8px;
+margin-bottom:8px;
+}
+
+.why{
+max-width:760px;
+margin-bottom:80px;
+}
+
+.why h2{
+font-size:1.8rem;
+margin-bottom:16px;
+}
+
+.why p{
+color:var(--text-muted);
+margin-bottom:16px;
+}
+
 .cta{
 border-top:1px solid var(--divider);
 padding-top:60px;
@@ -130,7 +182,6 @@ color:#000;
 text-decoration:none;
 font-weight:600;
 font-size:0.95rem;
-cursor:pointer;
 }
 
 .recover{
@@ -172,7 +223,6 @@ font-size:0.8rem;
 
 <section class="hero">
 <div class="hero-text">
-
 <img src="images/vitalink-logo-1.png" alt="VitaLink" class="logo"/>
 
 <h1 class="headline">Prepared. Protected. Connected.</h1>
@@ -244,7 +294,7 @@ Critical health & insurance information — accessible when it matters most.
 <h2>Scan. Set up. Be prepared.</h2>
 <p>VitaLink helps you organize critical health and insurance information in minutes.</p>
 
-<a onclick="openVitaLink()">Get VitaLink Now</a>
+<a href="/.netlify/functions/checkout-vitalink">Get VitaLink Now</a>
 
 <div class="recover">
 Already purchased VitaLink?<br>
@@ -258,30 +308,6 @@ Already purchased VitaLink?<br>
 </footer>
 
 </main>
-
-<script>
-function openVitaLink(){
-
-const now = Date.now()
-
-window.location="vitalink://activate"
-
-setTimeout(function(){
-
-if(Date.now()-now<1500){
-
-if(/iPhone|iPad|iPod/i.test(navigator.userAgent)){
-window.location="https://apps.apple.com"
-}else{
-window.location="https://play.google.com/store"
-}
-
-}
-
-},1200)
-
-}
-</script>
 
 </body>
 </html>
