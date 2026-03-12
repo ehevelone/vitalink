@@ -31,7 +31,10 @@ justify-content:center;
 padding:24px;
 }
 
-.wrap{width:100%;max-width:520px;}
+.wrap{
+width:100%;
+max-width:520px;
+}
 
 .card{
 background:var(--card);
@@ -99,12 +102,6 @@ background:var(--accent-blue);
 color:#000;
 }
 
-.btn-secondary{
-background:transparent;
-color:var(--accent-blue);
-border:1px solid var(--accent-blue);
-}
-
 .store-buttons{
 margin-top:26px;
 display:flex;
@@ -150,12 +147,8 @@ margin-top:10px;
 <div class="code" id="codeDisplay">Loading...</div>
 </div>
 
-<button class="btn btn-primary" id="openAppBtn">
+<a class="btn btn-primary" id="openAppBtn">
 Open VitaLink App
-</button>
-
-<a class="btn btn-secondary" id="fallbackBtn">
-Continue on Website
 </a>
 
 <div class="store-buttons">
@@ -183,54 +176,38 @@ If the app does not open automatically, tap “Open VitaLink App.”
 
 (function(){
 
-const params=new URLSearchParams(window.location.search);
-const code=(params.get("code")||"").trim().toUpperCase();
+const params = new URLSearchParams(window.location.search);
+const code = (params.get("code") || "").trim().toUpperCase();
 
-const codeDisplay=document.getElementById("codeDisplay");
-const openAppBtn=document.getElementById("openAppBtn");
-const fallbackBtn=document.getElementById("fallbackBtn");
-const errorText=document.getElementById("errorText");
+const codeDisplay = document.getElementById("codeDisplay");
+const openAppBtn = document.getElementById("openAppBtn");
+const errorText = document.getElementById("errorText");
 
 if(!code){
 
-codeDisplay.textContent="No code found";
+codeDisplay.textContent = "No code found";
 
-errorText.style.display="block";
-errorText.textContent="This link is missing an access code.";
+errorText.style.display = "block";
+errorText.textContent = "This link is missing an access code.";
 
-openAppBtn.disabled=true;
-
-fallbackBtn.href="/activate.html";
+openAppBtn.style.opacity = "0.5";
+openAppBtn.style.pointerEvents = "none";
 
 return;
 
 }
 
-codeDisplay.textContent=code;
+codeDisplay.textContent = code;
 
-const appUrl=`myvitalink://activate?code=${encodeURIComponent(code)}`;
+/* CORRECT deep link scheme */
+const appUrl = `vitalink://activate?code=${encodeURIComponent(code)}`;
 
-fallbackBtn.href=`/activate.html?code=${encodeURIComponent(code)}`;
+openAppBtn.href = appUrl;
 
-function openApp(){
-
-const iframe=document.createElement("iframe");
-
-iframe.style.display="none";
-
-iframe.src=appUrl;
-
-document.body.appendChild(iframe);
-
-}
-
-/* Button launch */
-
-openAppBtn.addEventListener("click",openApp);
-
-/* Auto launch */
-
-setTimeout(openApp,500);
+/* auto-open attempt */
+setTimeout(function(){
+window.location.href = appUrl;
+},800);
 
 })();
 
