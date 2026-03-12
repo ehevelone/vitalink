@@ -31,10 +31,7 @@ justify-content:center;
 padding:24px;
 }
 
-.wrap{
-width:100%;
-max-width:520px;
-}
+.wrap{width:100%;max-width:520px;}
 
 .card{
 background:var(--card);
@@ -113,12 +110,6 @@ margin-top:26px;
 display:flex;
 flex-direction:column;
 gap:12px;
-}
-
-.store-btn{
-display:block;
-border-radius:12px;
-overflow:hidden;
 }
 
 .store-btn img{
@@ -212,26 +203,34 @@ openAppBtn.disabled=true;
 fallbackBtn.href="/activate.html";
 
 return;
+
 }
 
 codeDisplay.textContent=code;
 
-/* deep link */
 const appUrl=`myvitalink://activate?code=${encodeURIComponent(code)}`;
 
-/* fallback */
 fallbackBtn.href=`/activate.html?code=${encodeURIComponent(code)}`;
 
 function openApp(){
 
-window.location.replace(appUrl);
+const iframe=document.createElement("iframe");
+
+iframe.style.display="none";
+
+iframe.src=appUrl;
+
+document.body.appendChild(iframe);
 
 }
 
+/* Button launch */
+
 openAppBtn.addEventListener("click",openApp);
 
-/* auto open */
-setTimeout(openApp,600);
+/* Auto launch */
+
+setTimeout(openApp,500);
 
 })();
 
