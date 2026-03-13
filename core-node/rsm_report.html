@@ -440,6 +440,10 @@ body:JSON.stringify({agentId:id})
 }
 );
 
+/* WAIT FOR BACKEND + STRIPE UPDATE */
+
+setTimeout(async () => {
+
 if(!res.ok){
 alert("Unable to update agent.");
 return;
@@ -447,7 +451,7 @@ return;
 
 const data = await res.json();
 
-/* UPDATE DASHBOARD STATS INSTANTLY */
+/* UPDATE DASHBOARD STATS */
 
 document.getElementById("activeAgents").innerText = data.active_agents;
 document.getElementById("billingEstimate").innerText =
@@ -456,6 +460,8 @@ document.getElementById("billingEstimate").innerText =
 /* RELOAD TABLE */
 
 load();
+
+}, 2500);
 
 }
 
