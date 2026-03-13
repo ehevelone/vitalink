@@ -495,9 +495,20 @@ function copyInvite(){
 
 const link = document.getElementById("inviteLink").innerText;
 
-navigator.clipboard.writeText(link);
+navigator.clipboard.writeText(link).then(()=>{
+alert("Invite link copied");
+}).catch(()=>{
+
+const textarea=document.createElement("textarea");
+textarea.value=link;
+document.body.appendChild(textarea);
+textarea.select();
+document.execCommand("copy");
+document.body.removeChild(textarea);
 
 alert("Invite link copied");
+
+});
 
 }
 
