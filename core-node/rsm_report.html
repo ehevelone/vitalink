@@ -151,6 +151,10 @@ onclick="window.location.href='rsm_enroll.html'">
 Enroll Agent
 </button>
 
+<button class="primary" onclick="openBillingPortal()">
+Manage Billing
+</button>
+
 <button id="themeToggle" class="primary">Light Mode</button>
 
 <button class="logout">Logout</button>
@@ -252,6 +256,31 @@ sessionStorage.clear();
 window.location.href="admin.html";
 };
 
+/* BILLING PORTAL */
+
+async function openBillingPortal(){
+
+const res = await fetch(
+`${BACKEND}/create-billing-portal`,
+{
+method:"POST",
+headers:{
+"x-admin-session":token
+}
+}
+);
+
+if(!res.ok){
+alert("Unable to open billing portal.");
+return;
+}
+
+const data = await res.json();
+
+window.location.href = data.url;
+
+}
+
 /* THEME */
 
 const toggle=document.getElementById("themeToggle");
@@ -323,8 +352,6 @@ const inactive=data.agents.filter(a=>!a.active).length;
 document.getElementById("inactiveAgents").innerText=inactive;
 
 document.getElementById("totalAgents").innerText=data.agents.length;
-
-/* BILLING ESTIMATE */
 
 document.getElementById("billingEstimate").innerText =
 "$" + (data.active_agents * 10);
