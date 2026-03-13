@@ -98,12 +98,12 @@ const code = params.get("code");
 document.getElementById("agentCode").innerText =
 code ? code : "Agent Code Ready";
 
-/* AUTO OPEN APP LIKE QR PAGE */
+/* AUTO OPEN APP */
 
 if(code){
 
 setTimeout(()=>{
-window.location.href = `vitalink://activate?code=${code}`;
+window.location.href = `vitalink://activate/${code}`;
 },1000);
 
 }
@@ -118,7 +118,7 @@ return;
 }
 
 window.location.href =
-`vitalink://activate?code=${code}`;
+`vitalink://activate/${code}`;
 
 }
 
