@@ -341,7 +341,9 @@ const data=await res.json();
 
 /* BILLING LOCK */
 
-if(!data.billing_active){
+const billingActive = data.billing_active === true || data.billing_active === "true";
+
+if(!billingActive){
 
 document.getElementById("billingBlock").style.display="block";
 document.getElementById("dashboardContent").style.display="none";
@@ -349,13 +351,11 @@ document.getElementById("enrollBtn").disabled=true;
 
 return;
 
-}else{
+}
 
 document.getElementById("billingBlock").style.display="none";
 document.getElementById("dashboardContent").style.display="block";
 document.getElementById("enrollBtn").disabled=false;
-
-}
 
 /* STATS */
 
