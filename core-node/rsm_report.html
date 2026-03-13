@@ -146,6 +146,16 @@ tr:nth-child(even){
 
 <div class="header-buttons">
 
+  <div class="card">
+
+<h2>Agent Invite Link</h2>
+
+<p id="inviteLink"></p>
+
+<button class="primary" onclick="copyInvite()">Copy Invite Link</button>
+
+</div>
+
 <button id="enrollBtn" class="primary" disabled
 onclick="window.location.href='rsm_enroll.html'">
 Enroll Agent
@@ -475,6 +485,16 @@ a.click();
 
 }
 
+function copyInvite(){
+
+const link = document.getElementById("inviteLink").innerText;
+
+navigator.clipboard.writeText(link);
+
+alert("Invite link copied");
+
+}
+
 /* CSV */
 
 async function downloadCSV(){
@@ -490,6 +510,9 @@ return;
 }
 
 const data=await res.json();
+
+document.getElementById("inviteLink").innerText =
+`https://myvitalink.app/core-node/agent_signup.html?rsm=${data.invite_code}`;
 
 let csv="Name,Email,Active\n";
 
