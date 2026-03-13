@@ -528,8 +528,12 @@ return;
 
 const data=await res.json();
 
-document.getElementById("inviteLink").innerText =
-`https://myvitalink.app/core-node/agent_signup.html?rsm=${data.invite_code}`;
+/* DISPLAY INVITE LINK */
+
+const invite = `https://myvitalink.app/core-node/agent_signup.html?rsm=${data.invite_code}`;
+document.getElementById("inviteLink").innerText = invite;
+
+/* BUILD CSV */
 
 let csv="Name,Email,Active\n";
 
