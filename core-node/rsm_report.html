@@ -512,6 +512,9 @@ a.click();
 
 load();
 
+/* retry once after Stripe webhook finishes */
+setTimeout(load,2000);
+
 </script>
 
 </body>
