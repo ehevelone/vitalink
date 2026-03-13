@@ -428,7 +428,7 @@ toggleAgent(id);
 
 async function toggleAgent(id){
 
-const res = await fetch(
+await fetch(
 `${BACKEND}/rsm-toggle-agent`,
 {
 method:"POST",
@@ -440,28 +440,9 @@ body:JSON.stringify({agentId:id})
 }
 );
 
-/* WAIT FOR BACKEND + STRIPE UPDATE */
-
-setTimeout(async () => {
-
-if(!res.ok){
-alert("Unable to update agent.");
-return;
-}
-
-const data = await res.json();
-
-/* UPDATE DASHBOARD STATS */
-
-document.getElementById("activeAgents").innerText = data.active_agents;
-document.getElementById("billingEstimate").innerText =
-"$" + (data.active_agents * 10);
-
-/* RELOAD TABLE */
+/* RELOAD DASHBOARD IMMEDIATELY */
 
 load();
-
-}, 2500);
 
 }
 
