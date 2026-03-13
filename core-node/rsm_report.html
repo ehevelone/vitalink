@@ -152,16 +152,6 @@ tr:nth-child(even){
 
 <div class="header-buttons">
 
-  <div class="card">
-
-<h2>Agent Invite Link</h2>
-
-<p id="inviteLink"></p>
-
-<div id="inviteLink" style="margin-top:10px;font-size:14px;word-break:break-all;"></div>
-
-</div>
-
 <button id="enrollBtn" class="primary" disabled
 onclick="window.location.href='rsm_enroll.html'">
 Enroll Agent
@@ -180,14 +170,21 @@ Manage Billing
 
 <div class="container">
 
+<div class="card">
+
+<h2>Agent Invite Link</h2>
+
+<div id="inviteLink" style="margin-top:12px;font-size:14px;color:#7cc6e8;word-break:break-all;"></div>
+
+</div>
+
 <div id="billingBlock" class="card" style="display:none">
 
 <h2>Office Billing Required</h2>
 
 <p>$10 per active agent per month</p>
 
-<button class="primary"
-onclick="window.open('https://buy.stripe.com/test_dRm9AT2OKe2G4493Io8ww00')">
+<button class="primary" onclick="openBillingPortal()">
 Activate / Update Billing
 </button>
 
@@ -273,10 +270,7 @@ const params = new URLSearchParams(window.location.search);
 
 if(params.get("billing") === "success"){
 
-  // remove query string
   window.history.replaceState({}, document.title, "/core-node/rsm_report.html");
-
-  // allow webhook time to update billing
   setTimeout(load,1500);
 
 }
@@ -354,6 +348,11 @@ return;
 }
 
 const data=await res.json();
+
+/* DISPLAY INVITE LINK */
+
+const invite = `https://myvitalink.app/core-node/agent_signup.html?rsm=${data.invite_code}`;
+document.getElementById("inviteLink").innerText = invite;
 
 /* BILLING LOCK */
 
@@ -456,8 +455,6 @@ body:JSON.stringify({agentId:id})
 }
 );
 
-/* RELOAD DASHBOARD IMMEDIATELY */
-
 load();
 
 }
@@ -491,27 +488,6 @@ a.click();
 
 }
 
-function copyInvite(){
-
-const link = document.getElementById("inviteLink").innerText;
-
-navigator.clipboard.writeText(link).then(()=>{
-alert("Invite link copied");
-}).catch(()=>{
-
-const textarea=document.createElement("textarea");
-textarea.value=link;
-document.body.appendChild(textarea);
-textarea.select();
-document.execCommand("copy");
-document.body.removeChild(textarea);
-
-alert("Invite link copied");
-
-});
-
-}
-
 /* CSV */
 
 async function downloadCSV(){
@@ -527,13 +503,6 @@ return;
 }
 
 const data=await res.json();
-
-/* DISPLAY INVITE LINK */
-
-const invite = `https://myvitalink.app/core-node/agent_signup.html?rsm=${data.invite_code}`;
-document.getElementById("inviteLink").innerText = invite;
-
-/* BUILD CSV */
 
 let csv="Name,Email,Active\n";
 
