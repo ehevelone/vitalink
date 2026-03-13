@@ -445,6 +445,16 @@ alert("Unable to update agent.");
 return;
 }
 
+const data = await res.json();
+
+/* UPDATE DASHBOARD STATS INSTANTLY */
+
+document.getElementById("activeAgents").innerText = data.active_agents;
+document.getElementById("billingEstimate").innerText =
+"$" + (data.active_agents * 10);
+
+/* RELOAD TABLE */
+
 load();
 
 }
