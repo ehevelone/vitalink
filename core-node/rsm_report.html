@@ -251,6 +251,20 @@ if(!token||role!=="rsm"){
 window.location.href="admin.html";
 }
 
+/* BILLING SUCCESS RETURN */
+
+const params = new URLSearchParams(window.location.search);
+
+if(params.get("billing") === "success"){
+
+  // remove query string
+  window.history.replaceState({}, document.title, "/rsm_report.html");
+
+  // allow webhook time to update billing
+  setTimeout(load,1500);
+
+}
+
 document.querySelector(".logout").onclick=()=>{
 sessionStorage.clear();
 window.location.href="admin.html";
