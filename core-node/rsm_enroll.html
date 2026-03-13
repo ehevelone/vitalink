@@ -127,11 +127,11 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 
   <script>
-    // Backend still runs on Netlify functions
+
     const BACKEND = "https://vitalink-app.netlify.app/.netlify/functions";
 
-    // 🔥 EVERYTHING LIVES UNDER MYVITALINK.APP
-    const ENROLL_BASE = "https://myvitalink.app/core-node/agent_onboard.html?code=";
+    /* FIXED LANDING PAGE */
+    const ENROLL_BASE = "https://myvitalink.app/core-node/agent_enrolled.html?code=";
 
     const rsmToken =
       sessionStorage.getItem("adminSessionToken") ||
@@ -144,10 +144,12 @@
     }
 
     async function generateAgent() {
+
       const resultDiv = document.getElementById("result");
       resultDiv.innerHTML = "Generating...";
 
       try {
+
         const res = await fetch(BACKEND + "/new_agent_code", {
           method: "POST",
           headers: {
@@ -165,17 +167,23 @@
         }
 
         const unlockCode = data.unlockCode;
-        const enrollUrl = ENROLL_BASE + encodeURIComponent(unlockCode);
+
+        const enrollUrl =
+          ENROLL_BASE + encodeURIComponent(unlockCode);
 
         resultDiv.innerHTML = `
           <p><strong>Agent Unlock Code</strong></p>
-          <p style="font-size:18px; font-weight:bold; margin:10px 0;">
+
+          <p style="font-size:18px;font-weight:bold;margin:10px 0;">
             ${unlockCode}
           </p>
 
           <p><strong>Enrollment Link</strong></p>
+
           <p>
-            <a class="link" href="${enrollUrl}" target="_blank">${enrollUrl}</a>
+            <a class="link" href="${enrollUrl}" target="_blank">
+              ${enrollUrl}
+            </a>
           </p>
 
           <div id="qr"></div>
@@ -185,14 +193,23 @@
         qrContainer.innerHTML = "";
 
         const canvas = document.createElement("canvas");
-        QRCode.toCanvas(canvas, enrollUrl, { width: 260 }, function (err) {
-          if (!err) qrContainer.appendChild(canvas);
-        });
 
-      } catch (err) {
+        QRCode.toCanvas(
+          canvas,
+          enrollUrl,
+          { width: 260 },
+          function (err) {
+            if (!err) qrContainer.appendChild(canvas);
+          }
+        );
+
+      }
+      catch (err) {
         resultDiv.innerText = "Server error.";
       }
+
     }
+
   </script>
 
 </body>
