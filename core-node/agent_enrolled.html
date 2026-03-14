@@ -38,7 +38,7 @@ color:#7cc6e8;
 word-break:break-all;
 }
 
-button{
+.button{
 display:block;
 width:100%;
 margin:10px 0;
@@ -48,6 +48,8 @@ border:none;
 background:#7cc6e8;
 font-weight:600;
 cursor:pointer;
+text-decoration:none;
+color:black;
 }
 
 .store{
@@ -72,7 +74,7 @@ margin:6px 0;
 
 <div id="agentCode" class="code"></div>
 
-<button onclick="openApp()">Open VitaLink</button>
+<a id="openAppBtn" class="button">Open VitaLink</a>
 
 <div class="store">
 
@@ -93,32 +95,35 @@ margin:6px 0;
 const params = new URLSearchParams(window.location.search);
 const code = params.get("code");
 
-/* DISPLAY AGENT CODE */
-
-document.getElementById("agentCode").innerText =
-code ? code : "Agent Code Ready";
-
-/* AUTO OPEN APP */
+const codeEl = document.getElementById("agentCode");
+const openBtn = document.getElementById("openAppBtn");
 
 if(code){
+codeEl.innerText = code;
+}else{
+codeEl.innerText = "Agent Code Ready";
+}
+
+const scheme = code ? `vitalink://activate/${code}` : "vitalink://";
+
+const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+const isAndroid = /Android/.test(navigator.userAgent);
+
+openBtn.href = scheme;
+
+/* ANDROID: auto open app */
+if(isAndroid){
 
 setTimeout(()=>{
-window.location.href = `vitalink://activate/${code}`;
-},1000);
+window.location.href = scheme;
+},500);
 
 }
 
-/* MANUAL OPEN BUTTON */
+/* iOS: must tap button (Safari blocks auto redirect) */
+if(isiOS){
 
-function openApp(){
-
-if(!code){
-alert("Agent code missing.");
-return;
-}
-
-window.location.href =
-`vitalink://activate/${code}`;
+openBtn.innerText = "Open VitaLink";
 
 }
 

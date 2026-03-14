@@ -75,12 +75,9 @@ button{
   margin-top:30px;
 }
 
-.download a{
-  text-decoration:none;
-}
-
-.download button{
-  margin:10px;
+.download img{
+  height:55px;
+  margin:8px;
 }
 
 footer{
@@ -128,12 +125,14 @@ After receiving your activation code:
 
 <br>
 
-<a href="#">
-<button>Download for iPhone</button>
+<!-- APP STORE -->
+<a href="https://apps.apple.com/app/id6759175096" target="_blank">
+<img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg">
 </a>
 
-<a href="#">
-<button>Download for Android</button>
+<!-- GOOGLE PLAY -->
+<a href="https://play.google.com/store/apps/details?id=com.etenterprises.vitalink" target="_blank">
+<img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg">
 </a>
 
 </div>
@@ -147,7 +146,9 @@ After receiving your activation code:
 </main>
 
 <script>
+
 async function startCheckout() {
+
   try {
 
     const res = await fetch('https://vitalink-app.netlify.app/.netlify/functions/vl-checkout', {
@@ -157,15 +158,23 @@ async function startCheckout() {
     const data = await res.json();
 
     if (data.url) {
+
       window.location = data.url;
+
     } else {
+
       alert("Checkout failed. Please try again.");
+
     }
 
   } catch (err) {
+
     alert("Error connecting to payment system.");
+
   }
+
 }
+
 </script>
 
 </body>
