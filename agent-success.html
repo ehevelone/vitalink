@@ -100,7 +100,7 @@ return;
 try{
 
 const res = await fetch(
-`/.netlify/functions/get-agent-code?session_id=${sessionId}`
+`https://vitalink-app.netlify.app/.netlify/functions/get-agent-code?session_id=${sessionId}`
 );
 
 const data = await res.json();
