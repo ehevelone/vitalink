@@ -1,194 +1,321 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Emergency Info | VitaLink</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8" />
+<title>Emergency Info | VitaLink</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <style>
-    body {
-      margin: 0;
-      background: #111;
-      color: #fff;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      padding: 20px;
-    }
+<style>
 
-    .card {
-      width: 100%;
-      max-width: 520px;
-      padding: 28px;
-      border-radius: 18px;
-      background: #1c1c1c;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-    }
+:root{
+--bg:#000000;
+--card:#0c0c0c;
+--text:#ffffff;
+--muted:#aaaaaa;
+--divider:#1e1e1e;
+--alert-bg:#2a0000;
+--alert-border:#e53935;
+}
 
-    .logo {
-      text-align: center;
-      margin-bottom: 20px;
-    }
+/* LIGHT MODE */
+body.light{
+--bg:#f5f5f5;
+--card:#ffffff;
+--text:#111;
+--muted:#555;
+--divider:#ddd;
+--alert-bg:#ffeaea;
+--alert-border:#e53935;
+}
 
-    .logo img {
-      height: 120px;
-    }
+/* EMS MODE */
+body.ems{
+--text:#ffffff;
+--muted:#cccccc;
+--divider:#333;
+}
 
-    h1 {
-      color: #e53935;
-      font-size: 24px;
-      text-align: center;
-      margin-bottom: 18px;
-    }
+body{
+margin:0;
+background:var(--bg);
+color:var(--text);
+font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+min-height:100vh;
+display:flex;
+justify-content:center;
+padding:20px;
+}
 
-    .section {
-      margin-bottom: 18px;
-      border-top: 1px solid #333;
-      padding-top: 14px;
-    }
+.card{
+width:100%;
+max-width:520px;
+padding:28px;
+border-radius:18px;
+background:var(--card);
+box-shadow:0 20px 60px rgba(0,0,0,0.6);
+position:relative;
+}
 
-    .section:first-of-type {
-      border-top: none;
-      padding-top: 0;
-    }
+.logo{
+text-align:center;
+margin-bottom:20px;
+}
 
-    .label {
-      font-size: 13px;
-      color: #aaa;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
+.logo img{
+height:120px;
+}
 
-    .value {
-      font-size: 17px;
-      margin-top: 4px;
-      line-height: 1.35;
-    }
+h1{
+color:#e53935;
+font-size:24px;
+text-align:center;
+margin-bottom:18px;
+}
 
-    .alert {
-      background: #2a0000;
-      border-left: 4px solid #e53935;
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 16px;
-    }
+.section{
+margin-bottom:18px;
+border-top:1px solid var(--divider);
+padding-top:14px;
+}
 
-    .expired {
-      text-align: center;
-    }
+.section:first-of-type{
+border-top:none;
+padding-top:0;
+}
 
-    .expired p {
-      color: #ddd;
-      font-size: 16px;
-      line-height: 1.45;
-      margin: 10px 0;
-    }
+.label{
+font-size:13px;
+color:var(--muted);
+text-transform:uppercase;
+letter-spacing:0.04em;
+}
 
-    .hint {
-      margin-top: 18px;
-      font-size: 14px;
-      color: #aaa;
-      text-align: center;
-    }
-  </style>
+.value{
+font-size:17px;
+margin-top:4px;
+line-height:1.35;
+}
+
+/* EMS text boost */
+body.ems .value{
+font-size:20px;
+font-weight:600;
+}
+
+body.ems .label{
+font-size:14px;
+}
+
+body.ems .section{
+padding-top:16px;
+margin-bottom:22px;
+}
+
+.alert{
+background:var(--alert-bg);
+border-left:4px solid var(--alert-border);
+padding:12px;
+border-radius:8px;
+margin-bottom:16px;
+}
+
+body.ems .alert{
+border-left:6px solid #ff3b30;
+background:#3a0000;
+}
+
+.expired{
+text-align:center;
+}
+
+.expired p{
+font-size:16px;
+line-height:1.45;
+margin:10px 0;
+}
+
+.hint{
+margin-top:18px;
+font-size:14px;
+color:var(--muted);
+text-align:center;
+}
+
+/* TOGGLE BUTTONS */
+
+.toggle-wrap{
+position:absolute;
+top:14px;
+right:14px;
+display:flex;
+gap:6px;
+}
+
+.theme-toggle{
+background:none;
+border:1px solid var(--divider);
+color:var(--text);
+padding:6px 12px;
+border-radius:999px;
+font-size:12px;
+cursor:pointer;
+}
+
+.theme-toggle:hover{
+border-color:#7cc6e8;
+}
+
+</style>
 </head>
+
 <body>
 
-  <!-- SAFE DEFAULT: EXPIRED VIEW -->
-  <div class="card" id="app">
-    <div class="logo">
-      <img src="/images/vitalink-logo.png" alt="VitaLink" />
-    </div>
+<div class="card" id="app">
 
-    <h1>Emergency Session Expired</h1>
+<div class="toggle-wrap">
+<button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">Light</button>
+<button class="theme-toggle" onclick="toggleEMS()" id="emsBtn">EMS</button>
+</div>
 
-    <div class="expired">
-      <p>This emergency information is no longer active.</p>
-      <p>Please rescan the QR code on the patient’s device to view current details.</p>
-    </div>
+<div class="logo">
+<img src="/images/vitalink-logo.png" alt="VitaLink" />
+</div>
 
-    <div class="hint">VitaLink Emergency Access</div>
-  </div>
+<h1>Emergency Session Expired</h1>
 
-  <script>
-    (function () {
-      try {
-        const params = new URLSearchParams(window.location.search);
-        const raw = params.get("data");
-        if (!raw) return;
+<div class="expired">
+<p>This emergency information is no longer active.</p>
+<p>Please rescan the QR code on the patient’s device to view current details.</p>
+</div>
 
-        // Convert URL-safe Base64 → standard Base64
-        const normalized = raw.replace(/-/g, '+').replace(/_/g, '/');
+<div class="hint">VitaLink Emergency Access</div>
 
-        let decoded;
-        try {
-          decoded = JSON.parse(atob(normalized));
-        } catch {
-          return; // invalid payload → remain expired
-        }
+</div>
 
-        if (!decoded || typeof decoded !== "object") return;
+<script>
 
-        const app = document.getElementById("app");
-        if (!app) return;
+/* THEME TOGGLE */
+function toggleTheme(){
+document.body.classList.toggle("light");
 
-        app.innerHTML = `
-          <div class="logo">
-            <img src="/images/vitalink-logo.png" alt="VitaLink" />
-          </div>
+const btn = document.getElementById("themeBtn");
 
-          <h1>Emergency Information</h1>
+if(document.body.classList.contains("light")){
+localStorage.setItem("vl_theme","light");
+btn.innerText = "Dark";
+}else{
+localStorage.setItem("vl_theme","dark");
+btn.innerText = "Light";
+}
+}
 
-          <div class="section">
-            <div class="label">Name</div>
-            <div class="value">${decoded.name || "N/A"}</div>
-          </div>
+/* EMS TOGGLE */
+function toggleEMS(){
 
-          <div class="section">
-            <div class="label">Date of Birth</div>
-            <div class="value">${decoded.dob || "N/A"}</div>
-          </div>
+document.body.classList.toggle("ems");
 
-          <div class="section alert">
-            <div class="label">Allergies</div>
-            <div class="value">${decoded.allergies || "None reported"}</div>
-          </div>
+const btn = document.getElementById("emsBtn");
 
-          <div class="section">
-            <div class="label">Medical Conditions</div>
-            <div class="value">${decoded.conditions || "None reported"}</div>
-          </div>
+if(document.body.classList.contains("ems")){
+btn.innerText = "Normal";
+}else{
+btn.innerText = "EMS";
+}
 
-          <div class="section">
-            <div class="label">Blood Type</div>
-            <div class="value">${decoded.bloodType || "Unknown"}</div>
-          </div>
+}
 
-          <div class="section">
-            <div class="label">Organ Donor</div>
-            <div class="value">${decoded.organDonor ? "YES" : "NO"}</div>
-          </div>
+/* LOAD SAVED THEME */
+(function(){
+const saved = localStorage.getItem("vl_theme");
 
-          <div class="section">
-            <div class="label">Emergency Contact</div>
-            <div class="value">${decoded.emergencyContactName || "N/A"}</div>
-          </div>
+if(saved === "light"){
+document.body.classList.add("light");
+}
+})();
 
-          <div class="section">
-            <div class="label">Emergency Phone</div>
-            <div class="value">${decoded.emergencyContactPhone || "N/A"}</div>
-          </div>
+/* LOAD DATA */
+(function () {
+try {
 
-          <div class="hint">
-            Scan session ends when this page is closed.
-          </div>
-        `;
-      } catch {
-        // absolute final guard — do nothing
-      }
-    })();
-  </script>
+const params = new URLSearchParams(window.location.search);
+const raw = params.get("data");
+if (!raw) return;
+
+const normalized = raw.replace(/-/g, '+').replace(/_/g, '/');
+
+let decoded;
+try {
+decoded = JSON.parse(atob(normalized));
+} catch {
+return;
+}
+
+if (!decoded || typeof decoded !== "object") return;
+
+const app = document.getElementById("app");
+
+app.innerHTML = `
+<div class="toggle-wrap">
+<button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">Light</button>
+<button class="theme-toggle" onclick="toggleEMS()" id="emsBtn">EMS</button>
+</div>
+
+<div class="logo">
+<img src="/images/vitalink-logo.png" alt="VitaLink" />
+</div>
+
+<h1>Emergency Information</h1>
+
+<div class="section">
+<div class="label">Name</div>
+<div class="value">${decoded.name || "N/A"}</div>
+</div>
+
+<div class="section">
+<div class="label">Date of Birth</div>
+<div class="value">${decoded.dob || "N/A"}</div>
+</div>
+
+<div class="section alert">
+<div class="label">Allergies</div>
+<div class="value">${decoded.allergies || "None reported"}</div>
+</div>
+
+<div class="section">
+<div class="label">Medical Conditions</div>
+<div class="value">${decoded.conditions || "None reported"}</div>
+</div>
+
+<div class="section">
+<div class="label">Blood Type</div>
+<div class="value">${decoded.bloodType || "Unknown"}</div>
+</div>
+
+<div class="section">
+<div class="label">Organ Donor</div>
+<div class="value">${decoded.organDonor ? "YES" : "NO"}</div>
+</div>
+
+<div class="section">
+<div class="label">Emergency Contact</div>
+<div class="value">${decoded.emergencyContactName || "N/A"}</div>
+</div>
+
+<div class="section">
+<div class="label">Emergency Phone</div>
+<div class="value">${decoded.emergencyContactPhone || "N/A"}</div>
+</div>
+
+<div class="hint">
+Scan session ends when this page is closed.
+</div>
+`;
+
+} catch {}
+
+})();
+
+</script>
 
 </body>
 </html>

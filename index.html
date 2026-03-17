@@ -9,8 +9,9 @@
 <meta name="robots" content="index, follow" />
 
 <style>
+
 :root{
---bg-black:#0c0c0c;
+--bg-black:#000000;
 --text-primary:#eaeaea;
 --text-muted:#b5b5b5;
 --accent-blue:#7cc6e8;
@@ -68,6 +69,8 @@ color:#8f8f8f;
 margin-top:8px;
 }
 
+/* FEATURES */
+
 .features{
 border-top:1px solid var(--divider);
 border-bottom:1px solid var(--divider);
@@ -104,6 +107,38 @@ margin:0;
 color:var(--text-muted);
 font-size:0.95rem;
 }
+
+/* HOW IT WORKS */
+
+.how{
+margin-bottom:80px;
+text-align:center;
+}
+
+.how h2{
+margin-bottom:40px;
+}
+
+.steps{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:40px;
+}
+
+.step img{
+width:100%;
+max-width:260px;
+border-radius:18px;
+border:1px solid #1e1e1e;
+box-shadow:0 10px 40px rgba(0,0,0,.6);
+margin-bottom:16px;
+}
+
+.step p{
+color:var(--text-muted);
+}
+
+/* CTA */
 
 .cta{
 border-top:1px solid var(--divider);
@@ -148,12 +183,85 @@ text-decoration:none;
 font-weight:600;
 font-size:0.9rem;
 margin-top:10px;
-transition:all .2s ease;
 }
 
 .recover-btn:hover{
 background:var(--accent-blue);
 color:#000;
+}
+
+/* AGENT LINKS */
+
+.agent-access{
+border-top:1px solid var(--divider);
+margin-top:80px;
+padding-top:40px;
+text-align:center;
+}
+
+.agent-access h3{
+margin-bottom:12px;
+}
+
+.agent-access p{
+color:#8f8f8f;
+}
+
+.agent-links{
+margin-top:18px;
+display:flex;
+gap:16px;
+justify-content:center;
+flex-wrap:wrap;
+}
+
+.agent-links a{
+padding:12px 24px;
+border-radius:999px;
+border:1px solid var(--accent-blue);
+color:var(--accent-blue);
+text-decoration:none;
+font-weight:600;
+font-size:0.9rem;
+}
+
+.agent-links a:hover{
+background:var(--accent-blue);
+color:#000;
+}
+
+/* INPUT / INSERT BOXES */
+
+input,
+textarea,
+select{
+
+background:#000000;
+color:#eaeaea;
+
+border:1px solid #1e1e1e;
+border-radius:8px;
+
+padding:10px 12px;
+font-size:0.95rem;
+
+outline:none;
+width:100%;
+
+}
+
+input::placeholder,
+textarea::placeholder{
+color:#8f8f8f;
+}
+
+input:focus,
+textarea:focus,
+select:focus{
+
+border:1px solid #7cc6e8;
+box-shadow:0 0 0 1px #7cc6e8;
+
 }
 
 footer{
@@ -162,6 +270,7 @@ text-align:center;
 color:#666;
 font-size:0.8rem;
 }
+
 </style>
 </head>
 
@@ -170,6 +279,7 @@ font-size:0.8rem;
 <main>
 
 <section class="hero">
+
 <div class="hero-text">
 
 <img src="images/vitalink-logo-1.png" alt="VitaLink" class="logo"/>
@@ -182,16 +292,18 @@ Critical health & insurance information — accessible when it matters most.
 </p>
 
 </div>
+
 </section>
 
 <section class="features">
+
 <div class="feature-list">
 
 <div class="feature">
 <div class="feature-icon">🆔</div>
 <div>
 <h3>Emergency contacts</h3>
-<p>Instant access to the people who matter most — family, caregivers, or trusted contacts — when every second counts.</p>
+<p>Instant access to family or trusted contacts when every second counts.</p>
 </div>
 </div>
 
@@ -199,7 +311,7 @@ Critical health & insurance information — accessible when it matters most.
 <div class="feature-icon">❤</div>
 <div>
 <h3>Emergency information</h3>
-<p>Critical emergency information for rescue personnel, including blood type, allergies, medical conditions, and more.</p>
+<p>Critical medical information available instantly for emergency personnel.</p>
 </div>
 </div>
 
@@ -207,7 +319,7 @@ Critical health & insurance information — accessible when it matters most.
 <div class="feature-icon">💊</div>
 <div>
 <h3>Prescriptions & medications</h3>
-<p>Current prescriptions and medications captured directly from bottle labels.</p>
+<p>Capture prescriptions and medications directly from bottle labels.</p>
 </div>
 </div>
 
@@ -215,7 +327,7 @@ Critical health & insurance information — accessible when it matters most.
 <div class="feature-icon">🩺</div>
 <div>
 <h3>Doctors & care teams</h3>
-<p>Your doctors and care teams clearly listed and linked to your medications.</p>
+<p>Your doctors and care teams clearly listed with contact information.</p>
 </div>
 </div>
 
@@ -231,29 +343,81 @@ Critical health & insurance information — accessible when it matters most.
 <div class="feature-icon">📞</div>
 <div>
 <h3>Insurance agent access</h3>
-<p>Your health insurance agent’s information with the ability to send prescriptions and doctor lists instantly.</p>
+<p>Your insurance agent’s information available instantly when you need help.</p>
 </div>
 </div>
 
 </div>
+
 </section>
+
+
+<section class="how">
+
+<h2>How VitaLink Works</h2>
+
+<div class="steps">
+
+<div class="step">
+<img src="images/landing.png" alt="VitaLink landing screen">
+<p>Create your secure VitaLink profile and get started in minutes.</p>
+</div>
+
+<div class="step">
+<img src="images/usermenu.png" alt="VitaLink user menu">
+<p>Add medications, doctors, insurance cards, and emergency contacts.</p>
+</div>
+
+<div class="step">
+<img src="images/emergency.png" alt="Emergency info screen">
+<p>Emergency responders can instantly access critical information when every second matters.</p>
+</div>
+
+</div>
+
+</section>
+
 
 <section class="cta">
 
 <h2>Scan. Set up. Be prepared.</h2>
+
 <p>VitaLink helps you organize critical health and insurance information in minutes.</p>
 
 <a href="/activate.html">Get VitaLink Now</a>
 
 <div class="recover">
+
 Already purchased VitaLink?<br>
+
 <a class="recover-btn" href="/recover.html">Recover Activation Code</a>
+
 </div>
 
 </section>
 
+
+<section class="agent-access">
+
+<h3>Agent & Agency Access</h3>
+
+<p>Client reporting and management tools for licensed agents and agency owners.</p>
+
+<div class="agent-links">
+
+<a href="/agent-login.html">Agent Portal</a>
+
+<a href="/rsm_report.html">Agency Management</a>
+
+</div>
+
+</section>
+
+
 <footer>
+
 © 2026 VitaLink. All rights reserved.
+
 </footer>
 
 </main>
