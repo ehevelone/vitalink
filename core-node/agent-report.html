@@ -154,40 +154,15 @@ footer{
 
 <img src="../images/vitalink-logo-1.png" class="logo" />
 
-<h1>Agent Access</h1>
-<div class="sub">Sign in to manage your clients and data</div>
+<h1>Agent Dashboard</h1>
+<div class="sub">Your clients</div>
 
 <div class="card">
 
 <div id="error" class="result error hidden"></div>
 
-<div id="step1">
-
-  <div class="field">
-    <label>Email</label>
-    <input type="email" id="email" />
-  </div>
-
-  <div class="field">
-    <label>Password</label>
-    <input type="password" id="password" />
-  </div>
-
-  <button id="loginBtn">Login</button>
-
-  <div class="forgot" onclick="openReset()">Forgot your password?</div>
-
-</div>
-
-<div id="step2" class="hidden">
-  <div class="field">
-    <label>Verification Code</label>
-    <input type="text" id="smsCode" />
-  </div>
-  <button id="verifyBtn">Verify Code</button>
-</div>
-
-<div id="recaptcha-container"></div>
+<!-- 🔥 REPLACED LOGIN UI WITH CLIENT LIST -->
+<div id="clients">Loading clients...</div>
 
 </div>
 
@@ -197,7 +172,7 @@ footer{
 
 </main>
 
-<!-- RESET MODAL -->
+<!-- RESET MODAL (unchanged) -->
 <div id="resetModal" class="modal">
   <div class="modal-card">
     <h3>Reset Password</h3>
@@ -216,81 +191,63 @@ footer{
 
 const API = "https://vitalink-app.netlify.app/.netlify/functions";
 
-const firebaseConfig = {
+firebase.initializeApp({
   apiKey: "AIzaSyCTZiiluPy5ydX62RfM-E7f8EIWHNG12S8",
   authDomain: "vitalink-7e832.firebaseapp.com",
   projectId: "vitalink-7e832",
   storageBucket: "vitalink-7e832.firebasestorage.app",
   messagingSenderId: "776534002769",
   appId: "1:776534002769:web:f2460535613304e12efc70"
-};
+});
 
-firebase.initializeApp(firebaseConfig);
+// ✅ SESSION GUARD
+const token = sessionStorage.getItem("agentSessionToken");
+const agentId = sessionStorage.getItem("agentId");
 
-let confirmationResult = null;
-let currentEmail = null;
+console.log("SESSION:", { token, agentId });
 
-document.getElementById("loginBtn").addEventListener("click", login);
-document.getElementById("verifyBtn").addEventListener("click", verifyCode);
-
-function showError(msg){
-  const el = document.getElementById("error");
-  el.innerText = msg;
-  el.classList.remove("hidden");
+if (!token || !agentId){
+  window.location.href = "agent-login.html";
 }
 
-// ---------------------- LOGIN (🔥 FIXED HERE)
-async function login() {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
-
-  if (!email || !password){
-    showError("Enter email and password");
-    return;
-  }
+// ✅ LOAD CLIENTS
+async function loadClients(){
 
   try {
 
-    const res = await fetch(`${API}/agent-login`, {
+    const res = await fetch(`${API}/get_agent_clients`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password })
+      headers: { "Content-Type":"application/json" },
+      body: JSON.stringify({ agentId: Number(agentId) })
     });
 
     const data = await res.json();
 
-    console.log("LOGIN RESPONSE:", data);
+    console.log("CLIENT DATA:", data);
 
-    if (data.step === "login_success") {
+    const el = document.getElementById("clients");
 
-      // ✅ SAVE TOKEN
-      sessionStorage.setItem("agentSessionToken", data.token);
-
-      // ✅ SAVE AGENT ID (CRITICAL FIX)
-      if (data.agent && data.agent.id){
-        sessionStorage.setItem("agentId", data.agent.id);
-        console.log("Saved agentId:", data.agent.id);
-      } else {
-        showError("Agent ID missing from server");
-        return;
-      }
-
-      window.location.href = "agent-report.html";
+    if (!data.clients || data.clients.length === 0){
+      el.innerHTML = "No clients found";
       return;
     }
 
-    showError("Unexpected response");
+    el.innerHTML = data.clients.map(c => `
+      <div style="margin-bottom:12px;">
+        <strong>${c.first_name || ""} ${c.last_name || ""}</strong><br/>
+        ${c.email || ""}
+      </div>
+    `).join("");
 
-  } catch (err) {
+  } catch (err){
     console.error(err);
-    showError("Something went wrong");
+    document.getElementById("clients").innerText = "Error loading clients";
   }
 }
 
-// ---------------------- VERIFY (unused for now)
-async function verifyCode(){}
+loadClients();
 
-// ---------------------- RESET
+// ---------------------- RESET (unchanged)
 function openReset(){ document.getElementById("resetModal").classList.add("active"); }
 function closeReset(){ document.getElementById("resetModal").classList.remove("active"); }
 
@@ -305,7 +262,6 @@ async function requestReset(){
 
   const data = await res.json();
   if (data.success) alert("Reset code sent");
-  else showError(data.error || "Failed");
 }
 
 async function submitReset(){
@@ -328,8 +284,6 @@ async function submitReset(){
   if (data.success){
     alert("Password reset successful");
     closeReset();
-  } else {
-    showError(data.error || "Reset failed");
   }
 }
 
