@@ -1,128 +1,71 @@
-<!-- ADMIN ACCESS LOGIN - RSM DESIGN -->
+<!-- ADMIN ACCESS LOGIN - ROLE BASED ROUTING - 2026-02-23 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>VitaLink — Access</title>
+<title>VitaLink — Admin Access</title>
 <meta name="robots" content="noindex, nofollow" />
 
 <style>
-:root {
-  --bg-black: #0c0c0c;
-  --text-primary: #eaeaea;
-  --text-muted: #b5b5b5;
-  --accent-blue: #7cc6e8;
-  --divider: #1e1e1e;
-  --card-bg: #111;
-  --danger: #ff5a5a;
+:root{
+  --bg-black:#0c0c0c;
+  --card:#111;
+  --text-primary:#eaeaea;
+  --text-muted:#b5b5b5;
+  --accent-blue:#7cc6e8;
+  --divider:#1e1e1e;
 }
-
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  background: var(--bg-black);
-  color: var(--text-primary);
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
+  background:var(--bg-black);
+  color:var(--text-primary);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
 }
-
-main {
-  max-width: 520px;
-  margin: 0 auto;
-  padding: 60px 24px;
+.card{
+  background:var(--card);
+  border:1px solid var(--divider);
+  border-radius:14px;
+  padding:40px;
+  width:100%;
+  max-width:400px;
 }
-
-.logo {
-  max-width: 180px;
-  margin: 0 auto 40px auto;
-  display: block;
+h1{
+  margin-top:0;
+  margin-bottom:30px;
+  font-size:1.5rem;
 }
-
-h1 {
-  text-align: center;
-  font-size: 2rem;
-  margin-bottom: 10px;
+input{
+  width:100%;
+  padding:12px;
+  margin-bottom:16px;
+  border-radius:8px;
+  border:1px solid var(--divider);
+  background:#000;
+  color:#fff;
 }
-
-.sub {
-  text-align: center;
-  color: var(--text-muted);
-  margin-bottom: 36px;
-  font-size: 0.95rem;
+button{
+  width:100%;
+  padding:12px;
+  border-radius:999px;
+  border:none;
+  background:var(--accent-blue);
+  font-weight:600;
+  cursor:pointer;
 }
+.hidden{display:none;}
+.error{ color:#ff6b6b; margin-bottom:12px; }
 
-.card {
-  background: var(--card-bg);
-  border: 1px solid var(--divider);
-  border-radius: 12px;
-  padding: 28px;
-}
-
-.field { margin-bottom: 18px; }
-
-label {
-  display: block;
-  font-size: 0.85rem;
-  margin-bottom: 6px;
-  color: var(--text-muted);
-}
-
-input {
-  width: 100%;
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid var(--divider);
-  background: #000;
-  color: #fff;
-  font-size: 0.95rem;
-}
-
-button {
-  width: 100%;
-  padding: 14px;
-  border-radius: 999px;
-  border: none;
-  background: var(--accent-blue);
-  color: #000;
-  font-weight: 600;
-  font-size: 0.95rem;
-  cursor: pointer;
-  margin-top: 10px;
-}
-
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.forgot {
-  text-align: center;
-  margin-top: 14px;
-  font-size: 0.85rem;
-  color: var(--accent-blue);
-  cursor: pointer;
-}
-
-.forgot:hover {
-  text-decoration: underline;
-}
-
-.result {
-  margin-top: 16px;
-  text-align: center;
-  font-size: 0.9rem;
-  color: var(--text-muted);
-  min-height: 22px;
-}
-
-.error { color: var(--danger); }
-
-footer {
-  margin-top: 60px;
-  text-align: center;
-  color: #666;
-  font-size: 0.8rem;
+.link{
+  text-align:center;
+  margin-top:10px;
+  font-size:0.9rem;
+  color:var(--accent-blue);
+  cursor:pointer;
 }
 </style>
 
@@ -132,66 +75,40 @@ footer {
 
 <body>
 
-<main>
+<div class="card">
+  <h1>Admin Access</h1>
+  <div id="error" class="error hidden"></div>
 
-  <img src="../images/vitalink-logo-1.png" class="logo" />
+  <!-- LOGIN -->
+  <div id="step1">
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
+    <button id="loginBtn">Login</button>
 
-  <h1>Secure Access</h1>
-  <div class="sub">Admin & RSM Portal</div>
-
-  <div class="card">
-
-    <!-- LOGIN -->
-    <div id="step1">
-
-      <div class="field">
-        <label>Email</label>
-        <input type="email" id="email" />
-      </div>
-
-      <div class="field">
-        <label>Password</label>
-        <input type="password" id="password" />
-      </div>
-
-      <button id="loginBtn">Login</button>
-
-      <div class="forgot" onclick="showReset()">
-        Forgot your password?
-      </div>
-
-      <div id="result" class="result"></div>
-
-    </div>
-
-    <!-- 2FA -->
-    <div id="step2" class="hidden">
-      <input type="text" id="smsCode" placeholder="Enter 6-digit code" />
-      <button id="verifyBtn">Verify Code</button>
-    </div>
-
-    <!-- RESET REQUEST -->
-    <div id="reset1" class="hidden">
-      <input type="email" id="resetEmail" placeholder="Enter your email" />
-      <button onclick="sendReset()">Send Code</button>
-    </div>
-
-    <!-- RESET CONFIRM -->
-    <div id="reset2" class="hidden">
-      <input type="text" id="resetCode" placeholder="Enter code" />
-      <input type="password" id="newPassword" placeholder="New password" />
-      <button onclick="confirmReset()">Reset Password</button>
-    </div>
-
+    <div class="link" onclick="showReset()">Forgot Password?</div>
   </div>
 
-  <footer>
-    © 2026 VitaLink. All rights reserved.
-  </footer>
+  <!-- 2FA -->
+  <div id="step2" class="hidden">
+    <input type="text" id="smsCode" placeholder="Enter 6-digit code" />
+    <button id="verifyBtn">Verify Code</button>
+  </div>
 
-</main>
+  <!-- RESET REQUEST -->
+  <div id="reset1" class="hidden">
+    <input type="email" id="resetEmail" placeholder="Enter your email" />
+    <button onclick="sendReset()">Send Code</button>
+  </div>
 
-<div id="recaptcha-container"></div>
+  <!-- RESET CONFIRM -->
+  <div id="reset2" class="hidden">
+    <input type="text" id="resetCode" placeholder="Enter code" />
+    <input type="password" id="newPassword" placeholder="New password" />
+    <button onclick="confirmReset()">Reset Password</button>
+  </div>
+
+  <div id="recaptcha-container"></div>
+</div>
 
 <script>
 
@@ -200,6 +117,7 @@ const API = "https://vitalink-app.netlify.app/.netlify/functions";
 const firebaseConfig = {
   apiKey: "AIzaSyCTZiiluPy5ydX62RfM-E7f8EIWHNG12S8",
   authDomain: "vitalink-7e832.firebaseapp.com",
+  projectId: "vitalink-7e832",
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -211,9 +129,9 @@ document.getElementById("loginBtn").addEventListener("click", login);
 document.getElementById("verifyBtn").addEventListener("click", verifyCode);
 
 function showError(msg){
-  const el = document.getElementById("result");
-  el.className = "result error";
+  const el = document.getElementById("error");
   el.innerText = msg;
+  el.classList.remove("hidden");
 }
 
 // ---------------- LOGIN ----------------
@@ -221,19 +139,13 @@ async function login() {
 
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
-  const resultDiv = document.getElementById("result");
-
-  resultDiv.className = "result";
-  resultDiv.innerText = "";
 
   if (!email || !password){
-    showError("Email and password required");
+    showError("Enter email and password");
     return;
   }
 
   currentEmail = email;
-
-  resultDiv.innerText = "Signing in...";
 
   const res = await fetch(`${API}/admin-login`, {
     method:"POST",
@@ -297,6 +209,8 @@ async function verifyCode() {
     body: JSON.stringify({ idToken, email: currentEmail })
   });
 
+  if (!res.ok) return;
+
   const data = await res.json();
 
   sessionStorage.setItem("adminSessionToken", data.token);
@@ -309,7 +223,7 @@ async function verifyCode() {
   }
 }
 
-// ---------------- RESET ----------------
+// ---------------- RESET FLOW ----------------
 function showReset(){
   document.getElementById("step1").classList.add("hidden");
   document.getElementById("reset1").classList.remove("hidden");
