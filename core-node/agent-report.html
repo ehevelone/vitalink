@@ -38,9 +38,6 @@ header{
   padding:16px;
   margin-bottom:12px;
 }
-.client{
-  cursor:pointer;
-}
 .meta{
   color:var(--muted);
   font-size:0.9rem;
@@ -78,14 +75,8 @@ input{
   color:#fff;
 }
 
-.filter-btn{
-  background:#222;
-}
-
-.filter-active{
-  background:var(--accent);
-  color:#000;
-}
+.filter-btn{ background:#222; }
+.filter-active{ background:var(--accent); color:#000; }
 
 .detail{
   margin-top:10px;
@@ -107,9 +98,12 @@ input{
   <div class="controls">
     <input id="search" placeholder="Search clients..." oninput="applyFilters()" />
 
-    <button class="filter-btn filter-active" onclick="setFilter('all')">All</button>
-    <button class="filter-btn" onclick="setFilter('active')">Active</button>
-    <button class="filter-btn" onclick="setFilter('inactive')">Inactive</button>
+    <button class="filter-btn filter-active" onclick="setFilter(event,'all')">All</button>
+    <button class="filter-btn" onclick="setFilter(event,'active')">Active</button>
+    <button class="filter-btn" onclick="setFilter(event,'inactive')">Inactive</button>
+
+    <button onclick="downloadCSV()">Export CSV</button>
+    <button onclick="window.print()">Print</button>
   </div>
 
   <div id="stats" class="card"></div>
@@ -139,6 +133,8 @@ function logout(){
 // ----------------------
 async function loadClients(){
 
+  console.log("CALLING:", `${API}/get_agent_clients`);
+
   const res = await fetch(`${API}/get_agent_clients`, {
     method:"POST",
     headers:{
@@ -149,12 +145,11 @@ async function loadClients(){
 
   const data = await res.json();
 
-  // CLIENTS
   CLIENTS = data.clients || [];
 
-  // 🔥 AGENT NAME
+  // ✅ FIXED NAME
   if (data.agent){
-    const name = `${data.agent.first_name || ""} ${data.agent.last_name || ""}`.trim();
+    const name = data.agent.name || "";
     document.getElementById("welcome").innerText =
       name ? `Welcome, ${name}` : "Agent Dashboard";
   }
@@ -186,7 +181,7 @@ function applyFilters(){
     return matchesSearch && matchesFilter;
   });
 
-  // SORT: Active → A-Z
+  // SORT
   filtered.sort((a,b)=>{
     if (a.active !== b.active) return a.active ? -1 : 1;
 
@@ -200,7 +195,7 @@ function applyFilters(){
 }
 
 // ----------------------
-function setFilter(type){
+function setFilter(e,type){
 
   FILTER = type;
 
@@ -208,7 +203,7 @@ function setFilter(type){
     btn.classList.remove("filter-active");
   });
 
-  event.target.classList.add("filter-active");
+  e.target.classList.add("filter-active");
 
   applyFilters();
 }
@@ -218,11 +213,9 @@ function buildStatus(c){
 
   let html = "";
 
-  if (c.active){
-    html += `<span class="badge active">Active</span>`;
-  } else {
-    html += `<span class="badge inactive">Inactive</span>`;
-  }
+  html += c.active
+    ? `<span class="badge active">Active</span>`
+    : `<span class="badge inactive">Inactive</span>`;
 
   if (c.last_notified_at){
     html += `<span class="badge">Notified</span>`;
@@ -253,7 +246,7 @@ function render(list){
   container.innerHTML = list.map(c => {
 
     return `
-      <div class="card client" onclick="toggleDetail(${c.id})">
+      <div class="card" onclick="toggleDetail(${c.id})">
 
         <div><b>${c.first_name || ""} ${c.last_name || ""}</b></div>
         <div class="meta">${c.email || ""}</div>
@@ -283,11 +276,13 @@ function renderStats(){
 
   const total = CLIENTS.length;
   const active = CLIENTS.filter(c => c.active).length;
+  const responded = CLIENTS.filter(c => c.profile_complete).length;
 
   document.getElementById("stats").innerHTML = `
     Total: <b>${total}</b> |
     Active: <b>${active}</b> |
-    Inactive: <b>${total - active}</b>
+    Responded: <b>${responded}</b> |
+    No Response: <b>${total - responded}</b>
   `;
 }
 
@@ -314,6 +309,26 @@ async function toggleClient(userId, newState){
   if (client) client.active = newState;
 
   applyFilters();
+}
+
+// ----------------------
+function downloadCSV(){
+
+  let csv = "Name,Email,Phone,Active,Responded,Last Notified\n";
+
+  CLIENTS.forEach(c=>{
+    const name = `${c.first_name || ""} ${c.last_name || ""}`.trim();
+
+    csv += `"${name}","${c.email || ""}","${c.phone || ""}","${c.active}","${c.profile_complete}","${c.last_notified_at || ""}"\n`;
+  });
+
+  const blob = new Blob([csv], { type:"text/csv" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "agent_clients.csv";
+  a.click();
 }
 
 // ----------------------

@@ -41,7 +41,7 @@ h1{
 input{
   width:100%;
   padding:12px;
-  margin-bottom:16px;
+  margin-bottom:12px;
   border-radius:8px;
   border:1px solid var(--divider);
   background:#000;
@@ -61,6 +61,28 @@ button{
   color:#ff6b6b;
   margin-bottom:12px;
 }
+
+/* RESET MODAL */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.8);
+  display:none;
+  align-items:center;
+  justify-content:center;
+}
+.modal.active{
+  display:flex;
+}
+.modal-card{
+  background:#111;
+  padding:20px;
+  border-radius:12px;
+  width:300px;
+}
+.modal-card h3{
+  margin-top:0;
+}
 </style>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -76,6 +98,10 @@ button{
     <input type="email" id="email" placeholder="Email" />
     <input type="password" id="password" placeholder="Password" />
     <button id="loginBtn">Login</button>
+
+    <div style="margin-top:10px; text-align:center;">
+      <a href="#" onclick="openReset()" style="color:#7cc6e8;">Forgot Password?</a>
+    </div>
   </div>
 
   <div id="step2" class="hidden">
@@ -86,7 +112,24 @@ button{
   <div id="recaptcha-container"></div>
 </div>
 
+<!-- RESET MODAL -->
+<div id="resetModal" class="modal">
+  <div class="modal-card">
+    <h3>Reset Password</h3>
+
+    <input id="resetEmail" placeholder="Email" />
+    <input id="resetCode" placeholder="Code" />
+    <input id="resetPassword" type="password" placeholder="New Password" />
+
+    <button onclick="requestReset()">Send Code</button>
+    <button onclick="submitReset()" style="margin-top:10px;">Reset Password</button>
+    <button onclick="closeReset()" style="margin-top:10px; background:#444;">Cancel</button>
+  </div>
+</div>
+
 <script>
+
+const API = "https://vitalink-app.netlify.app/.netlify/functions";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCTZiiluPy5ydX62RfM-E7f8EIWHNG12S8",
@@ -111,6 +154,7 @@ function showError(msg){
   el.classList.remove("hidden");
 }
 
+// ---------------------- LOGIN
 async function login() {
 
   const email = document.getElementById("email").value.trim();
@@ -125,14 +169,11 @@ async function login() {
 
   try {
 
-    const res = await fetch(
-      "https://vitalink-app.netlify.app/.netlify/functions/agent-login",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-      }
-    );
+    const res = await fetch(`${API}/agent-login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
 
     if (!res.ok){
       showError("Login failed");
@@ -141,12 +182,10 @@ async function login() {
 
     const data = await res.json();
 
-    // 🔥 2FA FLOW (FIXED)
     if (data.step === "firebase_2fa") {
 
       try {
 
-        // ✅ HARD RESET (CRITICAL FIX)
         document.getElementById("recaptcha-container").innerHTML = "";
 
         const verifier = new firebase.auth.RecaptchaVerifier(
@@ -186,6 +225,7 @@ async function login() {
   }
 }
 
+// ---------------------- VERIFY
 async function verifyCode() {
 
   const code = document.getElementById("smsCode").value.trim();
@@ -199,14 +239,11 @@ async function verifyCode() {
     const result = await confirmationResult.confirm(code);
     const idToken = await result.user.getIdToken();
 
-    const res = await fetch(
-      "https://vitalink-app.netlify.app/.netlify/functions/agent-verify",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idToken, email: currentEmail })
-      }
-    );
+    const res = await fetch(`${API}/agent-verify`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ idToken, email: currentEmail })
+    });
 
     if (!res.ok){
       showError("Verification failed");
@@ -216,12 +253,81 @@ async function verifyCode() {
     const data = await res.json();
 
     sessionStorage.setItem("agentSessionToken", data.token);
-
     window.location.href = "agent-report.html";
 
   } catch (err) {
     console.error("VERIFY ERROR:", err);
     showError("Invalid code");
+  }
+}
+
+// ---------------------- RESET UI
+function openReset(){
+  document.getElementById("resetModal").classList.add("active");
+}
+
+function closeReset(){
+  document.getElementById("resetModal").classList.remove("active");
+}
+
+// ---------------------- REQUEST RESET CODE
+async function requestReset(){
+
+  const email = document.getElementById("resetEmail").value;
+
+  if (!email){
+    showError("Enter email");
+    return;
+  }
+
+  const res = await fetch(`${API}/request_reset`, {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({
+      emailOrPhone: email,
+      role: "agents"
+    })
+  });
+
+  const data = await res.json();
+
+  if (data.success){
+    alert("Reset code sent");
+  } else {
+    showError(data.error || "Failed to send code");
+  }
+}
+
+// ---------------------- SUBMIT RESET
+async function submitReset(){
+
+  const email = document.getElementById("resetEmail").value;
+  const code = document.getElementById("resetCode").value;
+  const password = document.getElementById("resetPassword").value;
+
+  if (!email || !code || !password){
+    showError("Fill all fields");
+    return;
+  }
+
+  const res = await fetch(`${API}/reset_password`, {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({
+      emailOrPhone: email,
+      code: code,
+      newPassword: password,
+      role: "agents"
+    })
+  });
+
+  const data = await res.json();
+
+  if (data.success){
+    alert("Password reset successful");
+    closeReset();
+  } else {
+    showError(data.error || "Reset failed");
   }
 }
 
