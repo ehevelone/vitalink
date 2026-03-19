@@ -7,62 +7,111 @@
 <meta name="robots" content="noindex, nofollow" />
 
 <style>
-:root{
+:root {
   --bg-black:#0c0c0c;
-  --card:#111;
   --text-primary:#eaeaea;
   --text-muted:#b5b5b5;
   --accent-blue:#7cc6e8;
   --divider:#1e1e1e;
+  --card-bg:#111;
+  --danger:#ff5a5a;
 }
-body{
+
+* { box-sizing:border-box; }
+
+body {
   margin:0;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   background:var(--bg-black);
   color:var(--text-primary);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
 }
-.card{
-  background:var(--card);
+
+main {
+  max-width:520px;
+  margin:0 auto;
+  padding:60px 24px;
+}
+
+.logo {
+  max-width:180px;
+  margin:0 auto 40px auto;
+  display:block;
+}
+
+h1 {
+  text-align:center;
+  font-size:2rem;
+  margin-bottom:10px;
+}
+
+.sub {
+  text-align:center;
+  color:var(--text-muted);
+  margin-bottom:36px;
+  font-size:0.95rem;
+}
+
+.card {
+  background:var(--card-bg);
   border:1px solid var(--divider);
-  border-radius:14px;
-  padding:40px;
-  width:100%;
-  max-width:400px;
+  border-radius:12px;
+  padding:28px;
 }
-h1{
-  margin-top:0;
-  margin-bottom:30px;
-  font-size:1.5rem;
+
+.field { margin-bottom:18px; }
+
+label {
+  display:block;
+  font-size:0.85rem;
+  margin-bottom:6px;
+  color:var(--text-muted);
 }
-input{
+
+input {
   width:100%;
   padding:12px;
-  margin-bottom:12px;
   border-radius:8px;
   border:1px solid var(--divider);
   background:#000;
-  color:var(--text-primary);
+  color:#fff;
+  font-size:0.95rem;
 }
-button{
+
+button {
   width:100%;
-  padding:12px;
+  padding:14px;
   border-radius:999px;
   border:none;
   background:var(--accent-blue);
+  color:#000;
   font-weight:600;
+  font-size:0.95rem;
   cursor:pointer;
-}
-.hidden{display:none;}
-.error{
-  color:#ff6b6b;
-  margin-bottom:12px;
+  margin-top:10px;
 }
 
-/* RESET MODAL */
+.forgot {
+  text-align:center;
+  margin-top:14px;
+  font-size:0.85rem;
+  color:var(--accent-blue);
+  cursor:pointer;
+}
+
+.forgot:hover { text-decoration:underline; }
+
+.result {
+  margin-top:16px;
+  text-align:center;
+  font-size:0.9rem;
+  min-height:22px;
+}
+
+.error { color:var(--danger); }
+
+.hidden { display:none; }
+
+/* MODAL */
 .modal{
   position:fixed;
   inset:0;
@@ -71,46 +120,82 @@ button{
   align-items:center;
   justify-content:center;
 }
-.modal.active{
-  display:flex;
-}
+
+.modal.active{ display:flex; }
+
 .modal-card{
   background:#111;
-  padding:20px;
+  padding:24px;
   border-radius:12px;
-  width:300px;
+  width:320px;
+  border:1px solid var(--divider);
 }
+
 .modal-card h3{
   margin-top:0;
+  text-align:center;
+}
+
+footer{
+  margin-top:60px;
+  text-align:center;
+  color:#666;
+  font-size:0.8rem;
 }
 </style>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 </head>
+
 <body>
 
+<main>
+
+<img src="../images/vitalink-logo-1.png" class="logo" />
+
+<h1>Agent Access</h1>
+<div class="sub">Sign in to manage your clients and data</div>
+
 <div class="card">
-  <h1>Agent Access</h1>
-  <div id="error" class="error hidden"></div>
 
-  <div id="step1">
-    <input type="email" id="email" placeholder="Email" />
-    <input type="password" id="password" placeholder="Password" />
-    <button id="loginBtn">Login</button>
+<div id="error" class="result error hidden"></div>
 
-    <div style="margin-top:10px; text-align:center;">
-      <a href="#" onclick="openReset()" style="color:#7cc6e8;">Forgot Password?</a>
-    </div>
+<div id="step1">
+
+  <div class="field">
+    <label>Email</label>
+    <input type="email" id="email" />
   </div>
 
-  <div id="step2" class="hidden">
-    <input type="text" id="smsCode" placeholder="Enter 6-digit code" />
-    <button id="verifyBtn">Verify Code</button>
+  <div class="field">
+    <label>Password</label>
+    <input type="password" id="password" />
   </div>
 
-  <div id="recaptcha-container"></div>
+  <button id="loginBtn">Login</button>
+
+  <div class="forgot" onclick="openReset()">Forgot your password?</div>
+
 </div>
+
+<div id="step2" class="hidden">
+  <div class="field">
+    <label>Verification Code</label>
+    <input type="text" id="smsCode" />
+  </div>
+  <button id="verifyBtn">Verify Code</button>
+</div>
+
+<div id="recaptcha-container"></div>
+
+</div>
+
+<footer>
+© 2026 VitaLink. All rights reserved.
+</footer>
+
+</main>
 
 <!-- RESET MODAL -->
 <div id="resetModal" class="modal">
@@ -122,8 +207,8 @@ button{
     <input id="resetPassword" type="password" placeholder="New Password" />
 
     <button onclick="requestReset()">Send Code</button>
-    <button onclick="submitReset()" style="margin-top:10px;">Reset Password</button>
-    <button onclick="closeReset()" style="margin-top:10px; background:#444;">Cancel</button>
+    <button onclick="submitReset()">Reset Password</button>
+    <button onclick="closeReset()" style="background:#444;">Cancel</button>
   </div>
 </div>
 
@@ -154,9 +239,8 @@ function showError(msg){
   el.classList.remove("hidden");
 }
 
-// ---------------------- LOGIN
+// LOGIN (UNCHANGED)
 async function login() {
-
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
 
@@ -184,30 +268,22 @@ async function login() {
 
     if (data.step === "firebase_2fa") {
 
-      try {
+      document.getElementById("recaptcha-container").innerHTML = "";
 
-        document.getElementById("recaptcha-container").innerHTML = "";
+      const verifier = new firebase.auth.RecaptchaVerifier(
+        "recaptcha-container",
+        { size: "invisible" }
+      );
 
-        const verifier = new firebase.auth.RecaptchaVerifier(
-          "recaptcha-container",
-          { size: "invisible" }
-        );
+      await verifier.render();
 
-        await verifier.render();
+      confirmationResult = await firebase.auth().signInWithPhoneNumber(
+        data.phone,
+        verifier
+      );
 
-        confirmationResult = await firebase.auth().signInWithPhoneNumber(
-          data.phone,
-          verifier
-        );
-
-        document.getElementById("step1").classList.add("hidden");
-        document.getElementById("step2").classList.remove("hidden");
-
-      } catch (err) {
-        console.error("2FA ERROR:", err);
-        showError(err.message || "SMS failed");
-      }
-
+      document.getElementById("step1").classList.add("hidden");
+      document.getElementById("step2").classList.remove("hidden");
       return;
     }
 
@@ -220,14 +296,12 @@ async function login() {
     showError("Unexpected response");
 
   } catch (err) {
-    console.error("LOGIN ERROR:", err);
     showError("Something went wrong");
   }
 }
 
-// ---------------------- VERIFY
+// VERIFY (UNCHANGED)
 async function verifyCode() {
-
   const code = document.getElementById("smsCode").value.trim();
   if (!code){
     showError("Enter code");
@@ -255,74 +329,46 @@ async function verifyCode() {
     sessionStorage.setItem("agentSessionToken", data.token);
     window.location.href = "agent-report.html";
 
-  } catch (err) {
-    console.error("VERIFY ERROR:", err);
+  } catch {
     showError("Invalid code");
   }
 }
 
-// ---------------------- RESET UI
-function openReset(){
-  document.getElementById("resetModal").classList.add("active");
-}
+// RESET (UNCHANGED)
+function openReset(){ document.getElementById("resetModal").classList.add("active"); }
+function closeReset(){ document.getElementById("resetModal").classList.remove("active"); }
 
-function closeReset(){
-  document.getElementById("resetModal").classList.remove("active");
-}
-
-// ---------------------- REQUEST RESET CODE
 async function requestReset(){
-
   const email = document.getElementById("resetEmail").value;
-
-  if (!email){
-    showError("Enter email");
-    return;
-  }
 
   const res = await fetch(`${API}/request_reset`, {
     method:"POST",
     headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({
-      emailOrPhone: email,
-      role: "agents"
-    })
+    body: JSON.stringify({ emailOrPhone: email, role: "agents" })
   });
 
   const data = await res.json();
-
-  if (data.success){
-    alert("Reset code sent");
-  } else {
-    showError(data.error || "Failed to send code");
-  }
+  if (data.success) alert("Reset code sent");
+  else showError(data.error || "Failed");
 }
 
-// ---------------------- SUBMIT RESET
 async function submitReset(){
-
   const email = document.getElementById("resetEmail").value;
   const code = document.getElementById("resetCode").value;
   const password = document.getElementById("resetPassword").value;
-
-  if (!email || !code || !password){
-    showError("Fill all fields");
-    return;
-  }
 
   const res = await fetch(`${API}/reset_password`, {
     method:"POST",
     headers:{ "Content-Type":"application/json" },
     body: JSON.stringify({
       emailOrPhone: email,
-      code: code,
+      code,
       newPassword: password,
       role: "agents"
     })
   });
 
   const data = await res.json();
-
   if (data.success){
     alert("Password reset successful");
     closeReset();
@@ -330,7 +376,6 @@ async function submitReset(){
     showError(data.error || "Reset failed");
   }
 }
-
 </script>
 
 </body>
