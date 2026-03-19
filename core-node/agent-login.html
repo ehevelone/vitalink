@@ -8,7 +8,7 @@
 
 <style>
 :root {
-  --bg-black:#0c0c0c;
+  --bg-black:#000000;
   --text-primary:#eaeaea;
   --text-muted:#b5b5b5;
   --accent-blue:#7cc6e8;
@@ -246,8 +246,6 @@ async function login() {
     return;
   }
 
-  currentEmail = email;
-
   try {
 
     const res = await fetch(`${API}/agent-login`, {
@@ -263,40 +261,37 @@ async function login() {
 
     const data = await res.json();
 
-    if (data.step === "firebase_2fa") {
-
-      document.getElementById("recaptcha-container").innerHTML = "";
-
-      const verifier = new firebase.auth.RecaptchaVerifier(
-        "recaptcha-container",
-        { size: "invisible" }
-      );
-
-      await verifier.render();
-
-      confirmationResult = await firebase.auth().signInWithPhoneNumber(
-        data.phone,
-        verifier
-      );
-
-      document.getElementById("step1").classList.add("hidden");
-      document.getElementById("step2").classList.remove("hidden");
-      return;
-    }
+    console.log("LOGIN RESPONSE:", data);
 
     if (data.step === "login_success") {
-      sessionStorage.setItem("agentSessionToken", data.token);
-      sessionStorage.setItem("agentId", data.agent.id); // ✅ FIX
-      window.location.href = "agent-report.html";
+
+      if (!data.agent || !data.agent.id){
+        console.error("❌ Missing agent:", data);
+        showError("Login failed (no agent returned)");
+        return;
+      }
+
+      sessionStorage.setItem("agentSessionToken", data.token || "dev");
+      sessionStorage.setItem("agentId", String(data.agent.id));
+
+      console.log("✅ SAVED agentId:", sessionStorage.getItem("agentId"));
+
+      setTimeout(() => {
+        window.location.href = "agent-report.html";
+      }, 100);
+
       return;
     }
 
     showError("Unexpected response");
 
   } catch (err) {
+    console.error(err);
     showError("Something went wrong");
   }
 }
+
+// EVERYTHING ELSE UNCHANGED BELOW
 
 async function verifyCode() {
   const code = document.getElementById("smsCode").value.trim();
@@ -324,7 +319,7 @@ async function verifyCode() {
     const data = await res.json();
 
     sessionStorage.setItem("agentSessionToken", data.token);
-    sessionStorage.setItem("agentId", data.agent.id); // ✅ FIX
+    sessionStorage.setItem("agentId", data.agent.id);
     window.location.href = "agent-report.html";
 
   } catch {
@@ -373,6 +368,7 @@ async function submitReset(){
     showError(data.error || "Reset failed");
   }
 }
+
 </script>
 
 </body>
