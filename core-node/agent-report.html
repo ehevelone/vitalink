@@ -98,7 +98,7 @@ input{
 <body>
 
 <header>
-  <h2>Agent Dashboard</h2>
+  <h2 id="welcome">Agent Dashboard</h2>
   <button onclick="logout()">Logout</button>
 </header>
 
@@ -149,7 +149,15 @@ async function loadClients(){
 
   const data = await res.json();
 
+  // CLIENTS
   CLIENTS = data.clients || [];
+
+  // 🔥 AGENT NAME
+  if (data.agent){
+    const name = `${data.agent.first_name || ""} ${data.agent.last_name || ""}`.trim();
+    document.getElementById("welcome").innerText =
+      name ? `Welcome, ${name}` : "Agent Dashboard";
+  }
 
   applyFilters();
 }
@@ -205,8 +213,6 @@ function setFilter(type){
   applyFilters();
 }
 
-// ----------------------
-// 🔥 STATUS BUILDER (USING YOUR REAL FIELDS)
 // ----------------------
 function buildStatus(c){
 
