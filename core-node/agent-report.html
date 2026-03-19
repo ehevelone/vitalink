@@ -3,145 +3,111 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>VitaLink — Agent Access</title>
+<title>VitaLink — Agent Dashboard</title>
 <meta name="robots" content="noindex, nofollow" />
 
 <style>
-:root {
-  --bg-black:#000000;
-  --text-primary:#eaeaea;
-  --text-muted:#b5b5b5;
-  --accent-blue:#7cc6e8;
-  --divider:#1e1e1e;
-  --card-bg:#111;
-  --danger:#ff5a5a;
+
+:root{
+  --bg:#000000;
+  --card:#111;
+  --text:#eaeaea;
+  --border:#1e1e1e;
+  --input:#000;
 }
 
-* { box-sizing:border-box; }
-
-body {
+body{
   margin:0;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  background:var(--bg-black);
-  color:var(--text-primary);
+  background:var(--bg);
+  color:var(--text);
 }
 
-main {
-  max-width:520px;
-  margin:0 auto;
-  padding:60px 24px;
+/* HEADER */
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:20px 30px;
+  border-bottom:1px solid var(--border);
 }
 
-.logo {
-  max-width:180px;
-  margin:0 auto 40px auto;
-  display:block;
-}
-
-h1 {
-  text-align:center;
-  font-size:2rem;
-  margin-bottom:10px;
-}
-
-.sub {
-  text-align:center;
-  color:var(--text-muted);
-  margin-bottom:36px;
-  font-size:0.95rem;
-}
-
-.card {
-  background:var(--card-bg);
-  border:1px solid var(--divider);
-  border-radius:12px;
-  padding:28px;
-}
-
-.field { margin-bottom:18px; }
-
-label {
-  display:block;
-  font-size:0.85rem;
-  margin-bottom:6px;
-  color:var(--text-muted);
-}
-
-input {
-  width:100%;
-  padding:12px;
-  border-radius:8px;
-  border:1px solid var(--divider);
-  background:#000;
-  color:#fff;
-  font-size:0.95rem;
-}
-
-button {
-  width:100%;
-  padding:14px;
+.logout{
+  padding:8px 16px;
   border-radius:999px;
   border:none;
-  background:var(--accent-blue);
-  color:#000;
+  background:#e74c3c;
+  color:#fff;
   font-weight:600;
-  font-size:0.95rem;
-  cursor:pointer;
-  margin-top:10px;
-}
-
-.forgot {
-  text-align:center;
-  margin-top:14px;
-  font-size:0.85rem;
-  color:var(--accent-blue);
   cursor:pointer;
 }
 
-.forgot:hover { text-decoration:underline; }
-
-.result {
-  margin-top:16px;
-  text-align:center;
-  font-size:0.9rem;
-  min-height:22px;
+/* CONTAINER */
+.container{
+  padding:30px;
 }
 
-.error { color:var(--danger); }
-
-.hidden { display:none; }
-
-/* MODAL */
-.modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.8);
-  display:none;
-  align-items:center;
-  justify-content:center;
-}
-
-.modal.active{ display:flex; }
-
-.modal-card{
-  background:#111;
-  padding:24px;
+/* CARD */
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
   border-radius:12px;
-  width:320px;
-  border:1px solid var(--divider);
+  padding:20px;
+  margin-bottom:20px;
 }
 
-.modal-card h3{
-  margin-top:0;
-  text-align:center;
+/* TABLE */
+table{
+  width:100%;
+  border-collapse:collapse;
+  background:var(--card);
+}
+
+th,td{
+  padding:12px;
+  border-bottom:1px solid var(--border);
+}
+
+th{
+  color:#999;
+  text-align:left;
+}
+
+tr:nth-child(even){
+  background:rgba(255,255,255,.03);
+}
+
+/* STATUS COLORS */
+.status-active{
+  color:#4caf50;
+  font-weight:600;
+}
+
+.status-inactive{
+  color:#999;
+}
+
+/* BUTTON */
+button.primary{
+  padding:6px 12px;
+  border-radius:999px;
+  border:none;
+  background:#7cc6e8;
+  font-weight:600;
+  cursor:pointer;
+}
+
+button.primary:hover{
+  opacity:.9;
 }
 
 footer{
-  margin-top:60px;
+  margin-top:40px;
   text-align:center;
   color:#666;
   font-size:0.8rem;
 }
+
 </style>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -150,70 +116,39 @@ footer{
 
 <body>
 
-<main>
+<!-- HEADER -->
+<div class="header">
+  <h1>Agent Dashboard</h1>
+  <button class="logout" onclick="logout()">Logout</button>
+</div>
 
-<img src="../images/vitalink-logo-1.png" class="logo" />
-
-<h1>Agent Access</h1>
-<div class="sub">Sign in to manage your clients and data</div>
+<div class="container">
 
 <div class="card">
 
-<div id="error" class="result error hidden"></div>
+<h2>Your Clients</h2>
 
-<div id="step1">
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Email</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
 
-  <div class="field">
-    <label>Email</label>
-    <input type="email" id="email" />
-  </div>
+<tbody id="clientTable"></tbody>
 
-  <div class="field">
-    <label>Password</label>
-    <input type="password" id="password" />
-  </div>
-
-  <button id="loginBtn">Login</button>
-
-  <div class="forgot" onclick="openReset()">Forgot your password?</div>
+</table>
 
 </div>
-
-<div id="step2" class="hidden">
-  <div class="field">
-    <label>Verification Code</label>
-    <input type="text" id="smsCode" />
-  </div>
-  <button id="verifyBtn">Verify Code</button>
-</div>
-
-<div id="recaptcha-container"></div>
-
-<!-- 🔥 NEW CLIENT DISPLAY (keeps layout intact) -->
-<div id="clients" class="hidden" style="margin-top:20px;"></div>
 
 </div>
 
 <footer>
 © 2026 VitaLink. All rights reserved.
 </footer>
-
-</main>
-
-<!-- RESET MODAL -->
-<div id="resetModal" class="modal">
-  <div class="modal-card">
-    <h3>Reset Password</h3>
-
-    <input id="resetEmail" placeholder="Email" />
-    <input id="resetCode" placeholder="Code" />
-    <input id="resetPassword" type="password" placeholder="New Password" />
-
-    <button onclick="requestReset()">Send Code</button>
-    <button onclick="submitReset()">Reset Password</button>
-    <button onclick="closeReset()" style="background:#444;">Cancel</button>
-  </div>
-</div>
 
 <script>
 
@@ -222,70 +157,25 @@ const API = "https://vitalink-app.netlify.app/.netlify/functions";
 firebase.initializeApp({
   apiKey: "AIzaSyCTZiiluPy5ydX62RfM-E7f8EIWHNG12S8",
   authDomain: "vitalink-7e832.firebaseapp.com",
-  projectId: "vitalink-7e832",
-  storageBucket: "vitalink-7e832.firebasestorage.app",
-  messagingSenderId: "776534002769",
-  appId: "1:776534002769:web:f2460535613304e12efc70"
+  projectId: "vitalink-7e832"
 });
 
-// ---------------------- HELPERS
-function showError(msg){
-  const el = document.getElementById("error");
-  el.innerText = msg;
-  el.classList.remove("hidden");
+// SESSION GUARD
+const token = sessionStorage.getItem("agentSessionToken");
+const agentId = sessionStorage.getItem("agentId");
+
+if (!token || !agentId){
+  window.location.href = "agent-login.html";
 }
 
-// ---------------------- LOGIN (UPDATED FLOW)
-document.getElementById("loginBtn").addEventListener("click", login);
-
-async function login() {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
-
-  if (!email || !password){
-    showError("Enter email and password");
-    return;
-  }
-
-  try {
-
-    const res = await fetch(`${API}/agent-login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password })
-    });
-
-    const data = await res.json();
-
-    if (data.step === "login_success") {
-
-      sessionStorage.setItem("agentSessionToken", data.token);
-      sessionStorage.setItem("agentId", data.agent.id);
-
-      // 🔥 SWITCH UI (NO REDIRECT)
-      document.getElementById("step1").classList.add("hidden");
-
-      loadClients();
-
-      return;
-    }
-
-    showError("Invalid login");
-
-  } catch (err) {
-    console.error(err);
-    showError("Something went wrong");
-  }
+// LOGOUT
+function logout(){
+  sessionStorage.clear();
+  window.location.href = "agent-login.html";
 }
 
-// ---------------------- LOAD CLIENTS (FROM WORKING FILE)
+// LOAD CLIENTS
 async function loadClients(){
-
-  const agentId = sessionStorage.getItem("agentId");
-
-  const el = document.getElementById("clients");
-  el.classList.remove("hidden");
-  el.innerHTML = "Loading clients...";
 
   try {
 
@@ -297,70 +187,66 @@ async function loadClients(){
 
     const data = await res.json();
 
-    if (!data.clients || data.clients.length === 0){
-      el.innerHTML = "No clients found";
+    let clients = data.clients || [];
+
+    // 🔥 SORT: Active first, then A-Z
+    clients.sort((a,b)=>{
+
+      if(a.active !== b.active){
+        return a.active ? -1 : 1;
+      }
+
+      const nameA = `${a.first_name||""} ${a.last_name||""}`.toLowerCase();
+      const nameB = `${b.first_name||""} ${b.last_name||""}`.toLowerCase();
+
+      return nameA.localeCompare(nameB);
+    });
+
+    const tbody = document.getElementById("clientTable");
+
+    if (clients.length === 0){
+      tbody.innerHTML = "<tr><td colspan='4'>No clients found</td></tr>";
       return;
     }
 
-    el.innerHTML = data.clients.map(c => `
-      <div style="margin-bottom:12px;">
-        <strong>${c.first_name || ""} ${c.last_name || ""}</strong><br/>
-        ${c.email || ""}
-      </div>
+    tbody.innerHTML = clients.map(c => `
+      <tr>
+        <td>${c.first_name || ""} ${c.last_name || ""}</td>
+        <td>${c.email || ""}</td>
+
+        <td class="${c.active ? 'status-active' : 'status-inactive'}">
+          ${c.active ? "Active" : "Inactive"}
+        </td>
+
+        <td>
+          <button class="primary"
+          onclick="toggleClient('${c.id}')">
+            ${c.active ? "Deactivate" : "Activate"}
+          </button>
+        </td>
+      </tr>
     `).join("");
 
   } catch (err){
     console.error(err);
-    el.innerHTML = "Error loading clients";
+    document.getElementById("clientTable").innerHTML =
+      "<tr><td colspan='4'>Error loading clients</td></tr>";
   }
 }
 
-// ---------------------- VERIFY (unchanged placeholder)
-document.getElementById("verifyBtn").addEventListener("click", verifyCode);
-async function verifyCode(){}
+// TOGGLE CLIENT
+async function toggleClient(id){
 
-// ---------------------- RESET (UNCHANGED)
-function openReset(){ document.getElementById("resetModal").classList.add("active"); }
-function closeReset(){ document.getElementById("resetModal").classList.remove("active"); }
-
-async function requestReset(){
-  const email = document.getElementById("resetEmail").value;
-
-  const res = await fetch(`${API}/request_reset`, {
+  await fetch(`${API}/agent-toggle-client`, {
     method:"POST",
     headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({ emailOrPhone: email, role: "agents" })
+    body: JSON.stringify({ clientId:id })
   });
 
-  const data = await res.json();
-  if (data.success) alert("Reset code sent");
-  else showError(data.error || "Failed");
+  loadClients();
 }
 
-async function submitReset(){
-  const email = document.getElementById("resetEmail").value;
-  const code = document.getElementById("resetCode").value;
-  const password = document.getElementById("resetPassword").value;
-
-  const res = await fetch(`${API}/reset_password`, {
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({
-      emailOrPhone: email,
-      code,
-      newPassword: password,
-      role: "agents"
-    })
-  });
-
-  const data = await res.json();
-  if (data.success){
-    alert("Password reset successful");
-    closeReset();
-  } else {
-    showError(data.error || "Reset failed");
-  }
-}
+loadClients();
 
 </script>
 
