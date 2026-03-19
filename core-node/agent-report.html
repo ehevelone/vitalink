@@ -146,35 +146,53 @@ async function loadClients(){
 
   console.log("🚀 CALLING API with agentId:", id);
 
-  const res = await fetch(`${API}/get_agent_clients`, {
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      "Authorization": token
-    },
-    body: JSON.stringify({ agentId: id })
-  });
+  try {
 
-  const data = await res.json();
+    const res = await fetch(`${API}/get_agent_clients`, {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization": token
+      },
+      body: JSON.stringify({ agentId: id })
+    });
 
-  console.log("📥 RESPONSE:", data);
+    console.log("📡 STATUS:", res.status);
 
-  if (!data.success){
-    alert(data.error || "Failed to load clients");
-    return;
+    const text = await res.text();
+    console.log("📦 RAW RESPONSE:", text);
+
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (e) {
+      alert("Invalid server response");
+      return;
+    }
+
+    console.log("📥 PARSED:", data);
+
+    if (!data.success){
+      alert(data.error || "Failed to load clients");
+      return;
+    }
+
+    CLIENTS = data.clients || [];
+
+    console.log("👥 CLIENT COUNT:", CLIENTS.length);
+
+    if (data.agent){
+      const name = data.agent.name || "";
+      document.getElementById("welcome").innerText =
+        name ? `Welcome, ${name}` : "Agent Dashboard";
+    }
+
+    applyFilters();
+
+  } catch (e) {
+    console.error("❌ FETCH ERROR:", e);
+    alert("Request failed — check console");
   }
-
-  CLIENTS = data.clients || [];
-
-  console.log("👥 CLIENT COUNT:", CLIENTS.length);
-
-  if (data.agent){
-    const name = data.agent.name || "";
-    document.getElementById("welcome").innerText =
-      name ? `Welcome, ${name}` : "Agent Dashboard";
-  }
-
-  applyFilters();
 }
 
 // ----------------------
@@ -216,6 +234,7 @@ function setFilter(e,type){
 
 // ----------------------
 function render(list){
+
   renderStats();
 
   const container = document.getElementById("clients");
