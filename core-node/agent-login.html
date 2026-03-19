@@ -111,7 +111,6 @@ button {
 
 .hidden { display:none; }
 
-/* MODAL */
 .modal{
   position:fixed;
   inset:0;
@@ -197,7 +196,6 @@ footer{
 
 </main>
 
-<!-- RESET MODAL -->
 <div id="resetModal" class="modal">
   <div class="modal-card">
     <h3>Reset Password</h3>
@@ -239,7 +237,6 @@ function showError(msg){
   el.classList.remove("hidden");
 }
 
-// LOGIN (UNCHANGED)
 async function login() {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
@@ -289,6 +286,7 @@ async function login() {
 
     if (data.step === "login_success") {
       sessionStorage.setItem("agentSessionToken", data.token);
+      sessionStorage.setItem("agentId", data.agent.id); // ✅ FIX
       window.location.href = "agent-report.html";
       return;
     }
@@ -300,7 +298,6 @@ async function login() {
   }
 }
 
-// VERIFY (UNCHANGED)
 async function verifyCode() {
   const code = document.getElementById("smsCode").value.trim();
   if (!code){
@@ -327,6 +324,7 @@ async function verifyCode() {
     const data = await res.json();
 
     sessionStorage.setItem("agentSessionToken", data.token);
+    sessionStorage.setItem("agentId", data.agent.id); // ✅ FIX
     window.location.href = "agent-report.html";
 
   } catch {
@@ -334,7 +332,6 @@ async function verifyCode() {
   }
 }
 
-// RESET (UNCHANGED)
 function openReset(){ document.getElementById("resetModal").classList.add("active"); }
 function closeReset(){ document.getElementById("resetModal").classList.remove("active"); }
 
