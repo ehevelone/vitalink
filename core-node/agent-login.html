@@ -8,11 +8,11 @@
 
 <style>
 :root{
-  --bg-black:#000;
+  --bg-black:#0c0c0c;
   --card:#111;
   --text-primary:#eaeaea;
   --text-muted:#b5b5b5;
-  --accent-blue:#79CAE3;
+  --accent-blue:#7cc6e8;
   --divider:#1e1e1e;
 }
 body{
@@ -99,19 +99,6 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
-// ✅ INIT RECAPTCHA
-window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
-  "recaptcha-container",
-  {
-    size: "invisible",
-    callback: function(response) {
-      console.log("reCAPTCHA solved");
-    }
-  }
-);
-
-window.recaptchaVerifier.render();
-
 let confirmationResult = null;
 let currentEmail = null;
 
@@ -136,59 +123,46 @@ async function login() {
 
   currentEmail = email;
 
-  try {
+  const res = await fetch(
+    "https://vitalink-app.netlify.app/.netlify/functions/agent-login",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    }
+  );
 
-    const res = await fetch(
-      "https://vitalink-app.netlify.app/.netlify/functions/agent-login",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-      }
+  if (!res.ok){
+    showError("Login failed");
+    return;
+  }
+
+  const data = await res.json();
+
+  // ✅ EXACT SAME FLOW AS ADMIN (THIS IS THE FIX)
+  if (data.step === "firebase_2fa") {
+
+    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
+      "recaptcha-container",
+      { size: "invisible" }
     );
 
-    if (!res.ok){
-      showError("Login failed");
-      return;
-    }
+    confirmationResult = await firebase.auth().signInWithPhoneNumber(
+      data.phone,
+      window.recaptchaVerifier
+    );
 
-    const data = await res.json();
+    document.getElementById("step1").classList.add("hidden");
+    document.getElementById("step2").classList.remove("hidden");
+    return;
+  }
 
-    if (data.step === "firebase_2fa") {
+  if (data.step === "login_success") {
 
-      try {
+    sessionStorage.setItem("agentSessionToken", data.token);
 
-        console.log("PHONE:", data.phone);
-
-        confirmationResult = await firebase.auth().signInWithPhoneNumber(
-          data.phone,
-          window.recaptchaVerifier
-        );
-
-        console.log("SMS SENT");
-
-        document.getElementById("step1").classList.add("hidden");
-        document.getElementById("step2").classList.remove("hidden");
-
-      } catch (err) {
-        console.error("🔥 FIREBASE ERROR:", err);
-        showError(err.message || "SMS failed");
-      }
-
-      return;
-    }
-
-    if (data.step === "login_success") {
-      localStorage.setItem("agentToken", data.token);
-      window.location.href = "agent-report.html";
-      return;
-    }
-
-    showError("Unexpected response");
-
-  } catch (err) {
-    console.error("LOGIN ERROR:", err);
-    showError("Something went wrong");
+    window.location.href = "agent-report.html";
+    return;
   }
 }
 
@@ -221,12 +195,12 @@ async function verifyCode() {
 
     const data = await res.json();
 
-    localStorage.setItem("agentToken", data.token);
+    sessionStorage.setItem("agentSessionToken", data.token);
 
     window.location.href = "agent-report.html";
 
   } catch (err) {
-    console.error("VERIFY ERROR:", err);
+    console.error(err);
     showError("Invalid code");
   }
 }
