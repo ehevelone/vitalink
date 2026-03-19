@@ -99,7 +99,7 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
-// ✅ INIT RECAPTCHA ON LOAD (FIX)
+// ✅ INIT RECAPTCHA
 window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
   "recaptcha-container",
   {
@@ -110,7 +110,6 @@ window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
   }
 );
 
-// render once
 window.recaptchaVerifier.render();
 
 let confirmationResult = null;
@@ -137,42 +136,59 @@ async function login() {
 
   currentEmail = email;
 
-  const res = await fetch(
-    "https://vitalink-app.netlify.app/.netlify/functions/agent-login",
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password })
-    }
-  );
+  try {
 
-  if (!res.ok){
-    showError("Login failed");
-    return;
-  }
-
-  const data = await res.json();
-
-  // 🔥 2FA FLOW
-  if (data.step === "firebase_2fa") {
-
-    confirmationResult = await firebase.auth().signInWithPhoneNumber(
-      data.phone,
-      window.recaptchaVerifier
+    const res = await fetch(
+      "https://vitalink-app.netlify.app/.netlify/functions/agent-login",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      }
     );
 
-    document.getElementById("step1").classList.add("hidden");
-    document.getElementById("step2").classList.remove("hidden");
-    return;
-  }
+    if (!res.ok){
+      showError("Login failed");
+      return;
+    }
 
-  // 🔥 DIRECT SUCCESS
-  if (data.step === "login_success") {
+    const data = await res.json();
 
-    localStorage.setItem("agentToken", data.token);
+    if (data.step === "firebase_2fa") {
 
-    window.location.href = "agent-report.html";
-    return;
+      try {
+
+        console.log("PHONE:", data.phone);
+
+        confirmationResult = await firebase.auth().signInWithPhoneNumber(
+          data.phone,
+          window.recaptchaVerifier
+        );
+
+        console.log("SMS SENT");
+
+        document.getElementById("step1").classList.add("hidden");
+        document.getElementById("step2").classList.remove("hidden");
+
+      } catch (err) {
+        console.error("🔥 FIREBASE ERROR:", err);
+        showError(err.message || "SMS failed");
+      }
+
+      return;
+    }
+
+    if (data.step === "login_success") {
+      localStorage.setItem("agentToken", data.token);
+      window.location.href = "agent-report.html";
+      return;
+    }
+
+    showError("Unexpected response");
+
+  } catch (err) {
+    console.error("LOGIN ERROR:", err);
+    showError("Something went wrong");
   }
 }
 
@@ -184,28 +200,35 @@ async function verifyCode() {
     return;
   }
 
-  const result = await confirmationResult.confirm(code);
-  const idToken = await result.user.getIdToken();
+  try {
 
-  const res = await fetch(
-    "https://vitalink-app.netlify.app/.netlify/functions/agent-verify",
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ idToken, email: currentEmail })
+    const result = await confirmationResult.confirm(code);
+    const idToken = await result.user.getIdToken();
+
+    const res = await fetch(
+      "https://vitalink-app.netlify.app/.netlify/functions/agent-verify",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken, email: currentEmail })
+      }
+    );
+
+    if (!res.ok){
+      showError("Verification failed");
+      return;
     }
-  );
 
-  if (!res.ok){
-    showError("Verification failed");
-    return;
+    const data = await res.json();
+
+    localStorage.setItem("agentToken", data.token);
+
+    window.location.href = "agent-report.html";
+
+  } catch (err) {
+    console.error("VERIFY ERROR:", err);
+    showError("Invalid code");
   }
-
-  const data = await res.json();
-
-  localStorage.setItem("agentToken", data.token);
-
-  window.location.href = "agent-report.html";
 }
 
 </script>
