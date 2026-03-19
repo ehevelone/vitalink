@@ -132,7 +132,6 @@ function logout(){
 }
 
 // ----------------------
-// ✅ FIXED FUNCTION
 async function loadClients(){
 
   const agentId = sessionStorage.getItem("agentId");
@@ -143,7 +142,9 @@ async function loadClients(){
     return;
   }
 
-  console.log("CALLING:", `${API}/get_agent_clients`, "AGENT:", agentId);
+  const id = Number(agentId);
+
+  console.log("🚀 CALLING API with agentId:", id);
 
   const res = await fetch(`${API}/get_agent_clients`, {
     method:"POST",
@@ -151,14 +152,21 @@ async function loadClients(){
       "Content-Type":"application/json",
       "Authorization": token
     },
-    body: JSON.stringify({
-      agentId: parseInt(agentId)
-    })
+    body: JSON.stringify({ agentId: id })
   });
 
   const data = await res.json();
 
+  console.log("📥 RESPONSE:", data);
+
+  if (!data.success){
+    alert(data.error || "Failed to load clients");
+    return;
+  }
+
   CLIENTS = data.clients || [];
+
+  console.log("👥 CLIENT COUNT:", CLIENTS.length);
 
   if (data.agent){
     const name = data.agent.name || "";
@@ -193,156 +201,43 @@ function applyFilters(){
     return matchesSearch && matchesFilter;
   });
 
-  filtered.sort((a,b)=>{
-    if (a.active !== b.active) return a.active ? -1 : 1;
-
-    const nameA = ((a.first_name||"") + " " + (a.last_name||"")).toLowerCase();
-    const nameB = ((b.first_name||"") + " " + (b.last_name||"")).toLowerCase();
-
-    return nameA.localeCompare(nameB);
-  });
-
   render(filtered);
 }
 
 // ----------------------
 function setFilter(e,type){
-
   FILTER = type;
-
   document.querySelectorAll(".filter-btn").forEach(btn=>{
     btn.classList.remove("filter-active");
   });
-
   e.target.classList.add("filter-active");
-
   applyFilters();
-}
-
-// ----------------------
-function buildStatus(c){
-
-  let html = "";
-
-  html += c.active
-    ? `<span class="badge active">Active</span>`
-    : `<span class="badge inactive">Inactive</span>`;
-
-  if (c.last_notified_at){
-    html += `<span class="badge">Notified</span>`;
-  }
-
-  if (c.last_reviewed){
-    html += `<span class="badge">Viewed</span>`;
-  }
-
-  if (c.profile_complete){
-    html += `<span class="badge active">Responded</span>`;
-  }
-
-  if (c.last_notified_at && !c.profile_complete){
-    html += `<span class="badge inactive">No Response</span>`;
-  }
-
-  return html;
 }
 
 // ----------------------
 function render(list){
-
   renderStats();
 
   const container = document.getElementById("clients");
 
-  container.innerHTML = list.map(c => {
-
-    return `
-      <div class="card" onclick="toggleDetail(${c.id})">
-
+  container.innerHTML = list.map(c => `
+      <div class="card">
         <div><b>${c.first_name || ""} ${c.last_name || ""}</b></div>
         <div class="meta">${c.email || ""}</div>
         <div class="meta">${c.phone || ""}</div>
-
-        <div class="meta">
-          Campaign: ${c.last_notified_campaign || "—"}
-        </div>
-
-        <div>${buildStatus(c)}</div>
-
-        <div id="detail-${c.id}" class="detail" style="display:none">
-
-          <button onclick="event.stopPropagation(); toggleClient(${c.id}, ${!c.active})">
-            Set ${c.active ? "Inactive" : "Active"}
-          </button>
-
-        </div>
-
       </div>
-    `;
-  }).join("");
+  `).join("");
 }
 
 // ----------------------
 function renderStats(){
-
-  const total = CLIENTS.length;
-  const active = CLIENTS.filter(c => c.active).length;
-  const responded = CLIENTS.filter(c => c.profile_complete).length;
-
-  document.getElementById("stats").innerHTML = `
-    Total: <b>${total}</b> |
-    Active: <b>${active}</b> |
-    Responded: <b>${responded}</b> |
-    No Response: <b>${total - responded}</b>
-  `;
+  document.getElementById("stats").innerHTML =
+    `Total: <b>${CLIENTS.length}</b>`;
 }
 
 // ----------------------
-function toggleDetail(id){
+function downloadCSV(){}
 
-  const el = document.getElementById(`detail-${id}`);
-  el.style.display = el.style.display === "none" ? "block" : "none";
-}
-
-// ----------------------
-async function toggleClient(userId, newState){
-
-  await fetch(`${API}/agent-toggle-client`, {
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      "Authorization": token
-    },
-    body: JSON.stringify({ userId, active:newState })
-  });
-
-  const client = CLIENTS.find(c => c.id === userId);
-  if (client) client.active = newState;
-
-  applyFilters();
-}
-
-// ----------------------
-function downloadCSV(){
-
-  let csv = "Name,Email,Phone,Active,Responded,Last Notified\n";
-
-  CLIENTS.forEach(c=>{
-    const name = `${c.first_name || ""} ${c.last_name || ""}`.trim();
-
-    csv += `"${name}","${c.email || ""}","${c.phone || ""}","${c.active}","${c.profile_complete}","${c.last_notified_at || ""}"\n`;
-  });
-
-  const blob = new Blob([csv], { type:"text/csv" });
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "agent_clients.csv";
-  a.click();
-}
-
-// ----------------------
 loadClients();
 
 </script>
