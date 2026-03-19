@@ -4,7 +4,6 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>VitaLink — Agent Dashboard</title>
-<meta name="robots" content="noindex, nofollow" />
 
 <style>
 
@@ -13,7 +12,6 @@
   --card:#111;
   --text:#eaeaea;
   --border:#1e1e1e;
-  --input:#000;
 }
 
 body{
@@ -38,7 +36,6 @@ body{
   border:none;
   background:#e74c3c;
   color:#fff;
-  font-weight:600;
   cursor:pointer;
 }
 
@@ -56,11 +53,27 @@ body{
   margin-bottom:20px;
 }
 
+/* SEARCH + ACTIONS */
+.top-bar{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:20px;
+}
+
+.top-bar input{
+  flex:1;
+  padding:10px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  background:#000;
+  color:#fff;
+}
+
 /* TABLE */
 table{
   width:100%;
   border-collapse:collapse;
-  background:var(--card);
 }
 
 th,td{
@@ -70,21 +83,15 @@ th,td{
 
 th{
   color:#999;
-  text-align:left;
 }
 
 tr:nth-child(even){
   background:rgba(255,255,255,.03);
 }
 
-/* STATUS COLORS */
-.status-active{
-  color:#4caf50;
-  font-weight:600;
-}
-
-.status-inactive{
-  color:#999;
+tr:hover{
+  background:rgba(255,255,255,.08);
+  cursor:pointer;
 }
 
 /* BUTTON */
@@ -93,30 +100,44 @@ button.primary{
   border-radius:999px;
   border:none;
   background:#7cc6e8;
-  font-weight:600;
   cursor:pointer;
 }
 
-button.primary:hover{
-  opacity:.9;
+/* MODAL */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.8);
+  display:none;
+  align-items:center;
+  justify-content:center;
 }
 
-footer{
-  margin-top:40px;
-  text-align:center;
-  color:#666;
-  font-size:0.8rem;
+.modal.active{ display:flex; }
+
+.modal-card{
+  background:#111;
+  padding:20px;
+  border-radius:12px;
+  width:300px;
+  border:1px solid var(--border);
+}
+
+@media print{
+  body{
+    background:#fff;
+    color:#000;
+  }
+  .header, .top-bar, button{
+    display:none;
+  }
 }
 
 </style>
-
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 </head>
 
 <body>
 
-<!-- HEADER -->
 <div class="header">
   <h1>Agent Dashboard</h1>
   <button class="logout" onclick="logout()">Logout</button>
@@ -127,6 +148,13 @@ footer{
 <div class="card">
 
 <h2>Your Clients</h2>
+
+<div class="top-bar">
+  <input id="searchInput" placeholder="Search clients..." />
+  <button class="primary" onclick="loadClients()">Search</button>
+  <button class="primary" onclick="downloadCSV()">CSV</button>
+  <button class="primary" onclick="window.print()">Print</button>
+</div>
 
 <table>
 <thead>
@@ -146,104 +174,148 @@ footer{
 
 </div>
 
-<footer>
-© 2026 VitaLink. All rights reserved.
-</footer>
+<!-- CLIENT DETAIL MODAL -->
+<div id="clientModal" class="modal">
+  <div class="modal-card">
+    <h3 id="modalName"></h3>
+    <p id="modalEmail"></p>
+    <p id="modalStatus"></p>
+    <button onclick="closeModal()">Close</button>
+  </div>
+</div>
 
 <script>
 
-const API = "https://vitalink-app.netlify.app/.netlify/functions";
+const API="https://vitalink-app.netlify.app/.netlify/functions";
 
-firebase.initializeApp({
-  apiKey: "AIzaSyCTZiiluPy5ydX62RfM-E7f8EIWHNG12S8",
-  authDomain: "vitalink-7e832.firebaseapp.com",
-  projectId: "vitalink-7e832"
-});
+const token=sessionStorage.getItem("agentSessionToken");
+const agentId=sessionStorage.getItem("agentId");
 
-// SESSION GUARD
-const token = sessionStorage.getItem("agentSessionToken");
-const agentId = sessionStorage.getItem("agentId");
-
-if (!token || !agentId){
-  window.location.href = "agent-login.html";
+if(!token||!agentId){
+  window.location.href="agent-login.html";
 }
 
-// LOGOUT
 function logout(){
   sessionStorage.clear();
-  window.location.href = "agent-login.html";
+  window.location.href="agent-login.html";
 }
 
-// LOAD CLIENTS
+let allClients=[];
+
+// LOAD
 async function loadClients(){
 
-  try {
-
-    const res = await fetch(`${API}/get_agent_clients`, {
-      method: "POST",
-      headers: { "Content-Type":"application/json" },
-      body: JSON.stringify({ agentId: Number(agentId) })
+  if(allClients.length===0){
+    const res=await fetch(`${API}/get_agent_clients`,{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify({ agentId:Number(agentId) })
     });
 
-    const data = await res.json();
-
-    let clients = data.clients || [];
-
-    // 🔥 SORT: Active first, then A-Z
-    clients.sort((a,b)=>{
-
-      if(a.active !== b.active){
-        return a.active ? -1 : 1;
-      }
-
-      const nameA = `${a.first_name||""} ${a.last_name||""}`.toLowerCase();
-      const nameB = `${b.first_name||""} ${b.last_name||""}`.toLowerCase();
-
-      return nameA.localeCompare(nameB);
-    });
-
-    const tbody = document.getElementById("clientTable");
-
-    if (clients.length === 0){
-      tbody.innerHTML = "<tr><td colspan='4'>No clients found</td></tr>";
-      return;
-    }
-
-    tbody.innerHTML = clients.map(c => `
-      <tr>
-        <td>${c.first_name || ""} ${c.last_name || ""}</td>
-        <td>${c.email || ""}</td>
-
-        <td class="${c.active ? 'status-active' : 'status-inactive'}">
-          ${c.active ? "Active" : "Inactive"}
-        </td>
-
-        <td>
-          <button class="primary"
-          onclick="toggleClient('${c.id}')">
-            ${c.active ? "Deactivate" : "Activate"}
-          </button>
-        </td>
-      </tr>
-    `).join("");
-
-  } catch (err){
-    console.error(err);
-    document.getElementById("clientTable").innerHTML =
-      "<tr><td colspan='4'>Error loading clients</td></tr>";
+    const data=await res.json();
+    allClients=data.clients||[];
   }
-}
 
-// TOGGLE CLIENT
-async function toggleClient(id){
+  let clients=[...allClients];
 
-  await fetch(`${API}/agent-toggle-client`, {
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({ clientId:id })
+  // SEARCH
+  const search=document.getElementById("searchInput").value.toLowerCase();
+
+  if(search){
+    clients=clients.filter(c=>{
+      const name=(c.first_name+" "+c.last_name).toLowerCase();
+      const email=(c.email||"").toLowerCase();
+      return name.includes(search)||email.includes(search);
+    });
+  }
+
+  // SORT
+  clients.sort((a,b)=>{
+    if(a.active!==b.active){
+      return a.active?-1:1;
+    }
+    const aName=(a.first_name+" "+a.last_name).toLowerCase();
+    const bName=(b.first_name+" "+b.last_name).toLowerCase();
+    return aName.localeCompare(bName);
   });
 
+  const tbody=document.getElementById("clientTable");
+
+  tbody.innerHTML=clients.map(c=>`
+    <tr onclick="openClient('${c.id}')">
+      <td>${c.first_name||""} ${c.last_name||""}</td>
+      <td>${c.email||""}</td>
+      <td>${c.active?"Active":"Inactive"}</td>
+      <td>
+        <button class="primary"
+        onclick="event.stopPropagation();confirmToggle('${c.id}','${c.first_name}','${c.active}')">
+        ${c.active?"Deactivate":"Activate"}
+        </button>
+      </td>
+    </tr>
+  `).join("");
+}
+
+// CONFIRM TOGGLE
+function confirmToggle(id,name,isActive){
+
+  const action=isActive==="true"||isActive===true?"DEACTIVATE":"ACTIVATE";
+
+  const ok=confirm(`${action} client:\n\n${name}`);
+
+  if(!ok) return;
+
+  toggleClient(id);
+}
+
+// TOGGLE
+async function toggleClient(id){
+
+  await fetch(`${API}/agent-toggle-client`,{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({ clientId:id })
+  });
+
+  allClients=[];
   loadClients();
+}
+
+// CSV
+function downloadCSV(){
+
+  let csv="Name,Email,Status\n";
+
+  allClients.forEach(c=>{
+    csv+=`"${c.first_name} ${c.last_name}","${c.email}","${c.active}"\n`;
+  });
+
+  const blob=new Blob([csv],{type:"text/csv"});
+  const url=URL.createObjectURL(blob);
+
+  const a=document.createElement("a");
+  a.href=url;
+  a.download="clients.csv";
+  a.click();
+}
+
+// MODAL
+function openClient(id){
+
+  const c=allClients.find(x=>x.id==id);
+
+  document.getElementById("modalName").innerText=
+    `${c.first_name} ${c.last_name}`;
+
+  document.getElementById("modalEmail").innerText=c.email;
+  document.getElementById("modalStatus").innerText=
+    c.active?"Active":"Inactive";
+
+  document.getElementById("clientModal").classList.add("active");
+}
+
+function closeModal(){
+  document.getElementById("clientModal").classList.remove("active");
 }
 
 loadClients();
