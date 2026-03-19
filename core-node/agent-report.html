@@ -7,7 +7,7 @@
 
 <style>
 :root{
-  --bg:#0c0c0c;
+  --bg:#000000;
   --card:#111;
   --text:#eaeaea;
   --muted:#b5b5b5;
@@ -127,27 +127,39 @@ if (!token) {
 // ----------------------
 function logout(){
   sessionStorage.removeItem("agentSessionToken");
+  sessionStorage.removeItem("agentId");
   window.location.href = "agent-login.html";
 }
 
 // ----------------------
+// ✅ FIXED FUNCTION
 async function loadClients(){
 
-  console.log("CALLING:", `${API}/get_agent_clients`);
+  const agentId = sessionStorage.getItem("agentId");
+
+  if (!agentId){
+    alert("Missing agent session");
+    window.location.href = "agent-login.html";
+    return;
+  }
+
+  console.log("CALLING:", `${API}/get_agent_clients`, "AGENT:", agentId);
 
   const res = await fetch(`${API}/get_agent_clients`, {
     method:"POST",
     headers:{
       "Content-Type":"application/json",
       "Authorization": token
-    }
+    },
+    body: JSON.stringify({
+      agentId: parseInt(agentId)
+    })
   });
 
   const data = await res.json();
 
   CLIENTS = data.clients || [];
 
-  // ✅ FIXED NAME
   if (data.agent){
     const name = data.agent.name || "";
     document.getElementById("welcome").innerText =
@@ -181,7 +193,6 @@ function applyFilters(){
     return matchesSearch && matchesFilter;
   });
 
-  // SORT
   filtered.sort((a,b)=>{
     if (a.active !== b.active) return a.active ? -1 : 1;
 
@@ -331,7 +342,7 @@ function downloadCSV(){
   a.click();
 }
 
-// ---------------------- LOAD CLIENT SECTION
+// ----------------------
 loadClients();
 
 </script>
