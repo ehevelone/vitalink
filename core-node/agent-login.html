@@ -172,7 +172,7 @@ footer{
     <input type="password" id="password" />
   </div>
 
-  <button id="loginBtn">Login</button>
+  <button id="loginBtn" type="button">Login</button>
 
   <div class="forgot" onclick="openReset()">Forgot your password?</div>
 
@@ -183,7 +183,7 @@ footer{
     <label>Verification Code</label>
     <input type="text" id="smsCode" />
   </div>
-  <button id="verifyBtn">Verify Code</button>
+  <button id="verifyBtn" type="button">Verify Code</button>
 </div>
 
 <div id="recaptcha-container"></div>
@@ -228,8 +228,11 @@ firebase.initializeApp(firebaseConfig);
 let confirmationResult = null;
 let currentEmail = null;
 
-document.getElementById("loginBtn").addEventListener("click", login);
-document.getElementById("verifyBtn").addEventListener("click", verifyCode);
+// ✅ FIX: wait for DOM
+window.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("loginBtn").addEventListener("click", login);
+  document.getElementById("verifyBtn").addEventListener("click", verifyCode);
+});
 
 function showError(msg){
   const el = document.getElementById("error");
@@ -238,6 +241,8 @@ function showError(msg){
 }
 
 async function login() {
+  console.log("LOGIN CLICKED");
+
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
 
@@ -291,7 +296,7 @@ async function login() {
   }
 }
 
-// EVERYTHING ELSE UNCHANGED BELOW
+// rest unchanged...
 
 async function verifyCode() {
   const code = document.getElementById("smsCode").value.trim();
