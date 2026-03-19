@@ -154,43 +154,15 @@ footer{
 
 <img src="../images/vitalink-logo-1.png" class="logo" />
 
-<h1>Agent Access</h1>
-<div class="sub">Sign in to manage your clients and data</div>
+<h1>Agent Dashboard</h1>
+<div class="sub">Your clients</div>
 
 <div class="card">
 
 <div id="error" class="result error hidden"></div>
 
-<div id="step1">
-
-  <div class="field">
-    <label>Email</label>
-    <input type="email" id="email" />
-  </div>
-
-  <div class="field">
-    <label>Password</label>
-    <input type="password" id="password" />
-  </div>
-
-  <button id="loginBtn">Login</button>
-
-  <div class="forgot" onclick="openReset()">Forgot your password?</div>
-
-</div>
-
-<div id="step2" class="hidden">
-  <div class="field">
-    <label>Verification Code</label>
-    <input type="text" id="smsCode" />
-  </div>
-  <button id="verifyBtn">Verify Code</button>
-</div>
-
-<div id="recaptcha-container"></div>
-
-<!-- 🔥 NEW CLIENT DISPLAY (keeps layout intact) -->
-<div id="clients" class="hidden" style="margin-top:20px;"></div>
+<!-- 🔥 REPLACED LOGIN UI WITH CLIENT LIST -->
+<div id="clients">Loading clients...</div>
 
 </div>
 
@@ -200,7 +172,7 @@ footer{
 
 </main>
 
-<!-- RESET MODAL -->
+<!-- RESET MODAL (unchanged) -->
 <div id="resetModal" class="modal">
   <div class="modal-card">
     <h3>Reset Password</h3>
@@ -228,64 +200,18 @@ firebase.initializeApp({
   appId: "1:776534002769:web:f2460535613304e12efc70"
 });
 
-// ---------------------- HELPERS
-function showError(msg){
-  const el = document.getElementById("error");
-  el.innerText = msg;
-  el.classList.remove("hidden");
+// ✅ SESSION GUARD
+const token = sessionStorage.getItem("agentSessionToken");
+const agentId = sessionStorage.getItem("agentId");
+
+console.log("SESSION:", { token, agentId });
+
+if (!token || !agentId){
+  window.location.href = "agent-login.html";
 }
 
-// ---------------------- LOGIN (UPDATED FLOW)
-document.getElementById("loginBtn").addEventListener("click", login);
-
-async function login() {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
-
-  if (!email || !password){
-    showError("Enter email and password");
-    return;
-  }
-
-  try {
-
-    const res = await fetch(`${API}/agent-login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password })
-    });
-
-    const data = await res.json();
-
-    if (data.step === "login_success") {
-
-      sessionStorage.setItem("agentSessionToken", data.token);
-      sessionStorage.setItem("agentId", data.agent.id);
-
-      // 🔥 SWITCH UI (NO REDIRECT)
-      document.getElementById("step1").classList.add("hidden");
-
-      loadClients();
-
-      return;
-    }
-
-    showError("Invalid login");
-
-  } catch (err) {
-    console.error(err);
-    showError("Something went wrong");
-  }
-}
-
-// ---------------------- LOAD CLIENTS (FROM WORKING FILE)
+// ✅ LOAD CLIENTS
 async function loadClients(){
-
-  const agentId = sessionStorage.getItem("agentId");
-
-  const el = document.getElementById("clients");
-  el.classList.remove("hidden");
-  el.innerHTML = "Loading clients...";
 
   try {
 
@@ -296,6 +222,10 @@ async function loadClients(){
     });
 
     const data = await res.json();
+
+    console.log("CLIENT DATA:", data);
+
+    const el = document.getElementById("clients");
 
     if (!data.clients || data.clients.length === 0){
       el.innerHTML = "No clients found";
@@ -311,15 +241,13 @@ async function loadClients(){
 
   } catch (err){
     console.error(err);
-    el.innerHTML = "Error loading clients";
+    document.getElementById("clients").innerText = "Error loading clients";
   }
 }
 
-// ---------------------- VERIFY (unchanged placeholder)
-document.getElementById("verifyBtn").addEventListener("click", verifyCode);
-async function verifyCode(){}
+loadClients();
 
-// ---------------------- RESET (UNCHANGED)
+// ---------------------- RESET (unchanged)
 function openReset(){ document.getElementById("resetModal").classList.add("active"); }
 function closeReset(){ document.getElementById("resetModal").classList.remove("active"); }
 
@@ -334,7 +262,6 @@ async function requestReset(){
 
   const data = await res.json();
   if (data.success) alert("Reset code sent");
-  else showError(data.error || "Failed");
 }
 
 async function submitReset(){
@@ -357,8 +284,6 @@ async function submitReset(){
   if (data.success){
     alert("Password reset successful");
     closeReset();
-  } else {
-    showError(data.error || "Reset failed");
   }
 }
 
