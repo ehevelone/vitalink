@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Agent Dashboard</title>
 
 <style>
@@ -26,13 +26,6 @@ header{
   display:flex;
   justify-content:space-between;
 }
-button{
-  background:var(--accent);
-  border:none;
-  padding:8px 14px;
-  border-radius:999px;
-  cursor:pointer;
-}
 .container{
   padding:20px;
   max-width:900px;
@@ -46,9 +39,7 @@ button{
   margin-bottom:12px;
 }
 .client{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+  cursor:pointer;
 }
 .meta{
   color:var(--muted);
@@ -58,17 +49,52 @@ button{
   padding:4px 10px;
   border-radius:999px;
   font-size:0.8rem;
-  margin-bottom:6px;
+  margin:4px 4px 4px 0;
+  display:inline-block;
 }
 .active{ background:#1e8e3e; }
 .inactive{ background:#444; }
-.toggle{
-  margin-top:6px;
-  font-size:0.8rem;
-  padding:6px 10px;
+
+button{
+  background:var(--accent);
+  border:none;
+  padding:8px 14px;
+  border-radius:999px;
+  cursor:pointer;
+}
+
+.controls{
+  display:flex;
+  gap:10px;
+  margin-bottom:16px;
+  flex-wrap:wrap;
+}
+
+input{
+  padding:10px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:#000;
+  color:#fff;
+}
+
+.filter-btn{
+  background:#222;
+}
+
+.filter-active{
+  background:var(--accent);
+  color:#000;
+}
+
+.detail{
+  margin-top:10px;
+  padding:10px;
+  border-top:1px solid var(--border);
 }
 </style>
 </head>
+
 <body>
 
 <header>
@@ -78,8 +104,15 @@ button{
 
 <div class="container">
 
-  <div id="stats" class="card"></div>
+  <div class="controls">
+    <input id="search" placeholder="Search clients..." oninput="applyFilters()" />
 
+    <button class="filter-btn filter-active" onclick="setFilter('all')">All</button>
+    <button class="filter-btn" onclick="setFilter('active')">Active</button>
+    <button class="filter-btn" onclick="setFilter('inactive')">Inactive</button>
+  </div>
+
+  <div id="stats" class="card"></div>
   <div id="clients"></div>
 
 </div>
@@ -90,6 +123,8 @@ const API = "https://vitalink-app.netlify.app/.netlify/functions";
 const token = sessionStorage.getItem("agentSessionToken");
 
 let CLIENTS = [];
+let FILTER = "all";
+let SEARCH = "";
 
 if (!token) {
   window.location.href = "agent-login.html";
@@ -116,35 +151,125 @@ async function loadClients(){
 
   CLIENTS = data.clients || [];
 
-  sortClients();
-  render();
+  applyFilters();
 }
 
 // ----------------------
-// SORT LOGIC (ACTIVE FIRST + A-Z)
-// ----------------------
-function sortClients(){
+function applyFilters(){
 
-  CLIENTS.sort((a,b)=>{
+  SEARCH = document.getElementById("search").value.toLowerCase();
 
-    // Active first
-    if (a.active !== b.active) {
-      return a.active ? -1 : 1;
-    }
+  let filtered = CLIENTS.filter(c => {
 
-    // Alphabetical
-    const nameA = (a.first_name + " " + a.last_name).toLowerCase();
-    const nameB = (b.first_name + " " + b.last_name).toLowerCase();
+    const name = ((c.first_name||"") + " " + (c.last_name||"")).toLowerCase();
+    const email = (c.email||"").toLowerCase();
+    const phone = (c.phone||"");
+
+    const matchesSearch =
+      name.includes(SEARCH) ||
+      email.includes(SEARCH) ||
+      phone.includes(SEARCH);
+
+    const matchesFilter =
+      FILTER === "all" ||
+      (FILTER === "active" && c.active) ||
+      (FILTER === "inactive" && !c.active);
+
+    return matchesSearch && matchesFilter;
+  });
+
+  // SORT: Active → A-Z
+  filtered.sort((a,b)=>{
+    if (a.active !== b.active) return a.active ? -1 : 1;
+
+    const nameA = ((a.first_name||"") + " " + (a.last_name||"")).toLowerCase();
+    const nameB = ((b.first_name||"") + " " + (b.last_name||"")).toLowerCase();
 
     return nameA.localeCompare(nameB);
   });
+
+  render(filtered);
 }
 
 // ----------------------
-function render(){
+function setFilter(type){
+
+  FILTER = type;
+
+  document.querySelectorAll(".filter-btn").forEach(btn=>{
+    btn.classList.remove("filter-active");
+  });
+
+  event.target.classList.add("filter-active");
+
+  applyFilters();
+}
+
+// ----------------------
+// 🔥 STATUS BUILDER (USING YOUR REAL FIELDS)
+// ----------------------
+function buildStatus(c){
+
+  let html = "";
+
+  if (c.active){
+    html += `<span class="badge active">Active</span>`;
+  } else {
+    html += `<span class="badge inactive">Inactive</span>`;
+  }
+
+  if (c.last_notified_at){
+    html += `<span class="badge">Notified</span>`;
+  }
+
+  if (c.last_reviewed){
+    html += `<span class="badge">Viewed</span>`;
+  }
+
+  if (c.profile_complete){
+    html += `<span class="badge active">Responded</span>`;
+  }
+
+  if (c.last_notified_at && !c.profile_complete){
+    html += `<span class="badge inactive">No Response</span>`;
+  }
+
+  return html;
+}
+
+// ----------------------
+function render(list){
 
   renderStats();
-  renderClients();
+
+  const container = document.getElementById("clients");
+
+  container.innerHTML = list.map(c => {
+
+    return `
+      <div class="card client" onclick="toggleDetail(${c.id})">
+
+        <div><b>${c.first_name || ""} ${c.last_name || ""}</b></div>
+        <div class="meta">${c.email || ""}</div>
+        <div class="meta">${c.phone || ""}</div>
+
+        <div class="meta">
+          Campaign: ${c.last_notified_campaign || "—"}
+        </div>
+
+        <div>${buildStatus(c)}</div>
+
+        <div id="detail-${c.id}" class="detail" style="display:none">
+
+          <button onclick="event.stopPropagation(); toggleClient(${c.id}, ${!c.active})">
+            Set ${c.active ? "Inactive" : "Active"}
+          </button>
+
+        </div>
+
+      </div>
+    `;
+  }).join("");
 }
 
 // ----------------------
@@ -161,63 +286,28 @@ function renderStats(){
 }
 
 // ----------------------
-function renderClients(){
+function toggleDetail(id){
 
-  const container = document.getElementById("clients");
-
-  container.innerHTML = CLIENTS.map(c => {
-
-    const status = c.active ? "Active" : "Inactive";
-    const badgeClass = c.active ? "active" : "inactive";
-
-    return `
-      <div class="card client">
-        <div>
-          <div><b>${c.first_name} ${c.last_name}</b></div>
-          <div class="meta">${c.email || ""}</div>
-          <div class="meta">${c.phone || ""}</div>
-
-          <div class="badge ${badgeClass}">${status}</div>
-
-          <button class="toggle" onclick="toggleClient(${c.id}, ${!c.active})">
-            Set ${c.active ? "Inactive" : "Active"}
-          </button>
-        </div>
-      </div>
-    `;
-
-  }).join("");
+  const el = document.getElementById(`detail-${id}`);
+  el.style.display = el.style.display === "none" ? "block" : "none";
 }
 
 // ----------------------
-// TOGGLE ACTIVE
-// ----------------------
 async function toggleClient(userId, newState){
 
-  try {
+  await fetch(`${API}/agent-toggle-client`, {
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "Authorization": token
+    },
+    body: JSON.stringify({ userId, active:newState })
+  });
 
-    await fetch(`${API}/agent-toggle-client`, {
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json",
-        "Authorization": token
-      },
-      body: JSON.stringify({
-        userId,
-        active: newState
-      })
-    });
+  const client = CLIENTS.find(c => c.id === userId);
+  if (client) client.active = newState;
 
-    // Update locally
-    const client = CLIENTS.find(c => c.id === userId);
-    if (client) client.active = newState;
-
-    sortClients();
-    render();
-
-  } catch (err) {
-    alert("Failed to update client");
-  }
+  applyFilters();
 }
 
 // ----------------------
