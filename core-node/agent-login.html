@@ -123,46 +123,66 @@ async function login() {
 
   currentEmail = email;
 
-  const res = await fetch(
-    "https://vitalink-app.netlify.app/.netlify/functions/agent-login",
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password })
+  try {
+
+    const res = await fetch(
+      "https://vitalink-app.netlify.app/.netlify/functions/agent-login",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      }
+    );
+
+    if (!res.ok){
+      showError("Login failed");
+      return;
     }
-  );
 
-  if (!res.ok){
-    showError("Login failed");
-    return;
-  }
+    const data = await res.json();
 
-  const data = await res.json();
+    // 🔥 2FA FLOW (FIXED)
+    if (data.step === "firebase_2fa") {
 
-  // ✅ EXACT SAME FLOW AS ADMIN (THIS IS THE FIX)
-  if (data.step === "firebase_2fa") {
+      try {
 
-    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
-      "recaptcha-container",
-      { size: "invisible" }
-    );
+        // ✅ HARD RESET (CRITICAL FIX)
+        document.getElementById("recaptcha-container").innerHTML = "";
 
-    confirmationResult = await firebase.auth().signInWithPhoneNumber(
-      data.phone,
-      window.recaptchaVerifier
-    );
+        const verifier = new firebase.auth.RecaptchaVerifier(
+          "recaptcha-container",
+          { size: "invisible" }
+        );
 
-    document.getElementById("step1").classList.add("hidden");
-    document.getElementById("step2").classList.remove("hidden");
-    return;
-  }
+        await verifier.render();
 
-  if (data.step === "login_success") {
+        confirmationResult = await firebase.auth().signInWithPhoneNumber(
+          data.phone,
+          verifier
+        );
 
-    sessionStorage.setItem("agentSessionToken", data.token);
+        document.getElementById("step1").classList.add("hidden");
+        document.getElementById("step2").classList.remove("hidden");
 
-    window.location.href = "agent-report.html";
-    return;
+      } catch (err) {
+        console.error("2FA ERROR:", err);
+        showError(err.message || "SMS failed");
+      }
+
+      return;
+    }
+
+    if (data.step === "login_success") {
+      sessionStorage.setItem("agentSessionToken", data.token);
+      window.location.href = "agent-report.html";
+      return;
+    }
+
+    showError("Unexpected response");
+
+  } catch (err) {
+    console.error("LOGIN ERROR:", err);
+    showError("Something went wrong");
   }
 }
 
@@ -200,7 +220,7 @@ async function verifyCode() {
     window.location.href = "agent-report.html";
 
   } catch (err) {
-    console.error(err);
+    console.error("VERIFY ERROR:", err);
     showError("Invalid code");
   }
 }
