@@ -139,7 +139,7 @@ function logout(){
 // ----------------------
 async function loadClients(){
 
-  const res = await fetch(`${API}/agent-get-clients`, {
+  const res = await fetch(`${API}/get_agent_clients`, {
     method:"POST",
     headers:{
       "Content-Type":"application/json",
