@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Agent Dashboard</title>
+
+<style>
+:root{
+  --bg:#0c0c0c;
+  --card:#111;
+  --text:#eaeaea;
+  --muted:#b5b5b5;
+  --accent:#7cc6e8;
+  --border:#1e1e1e;
+}
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
+  background:var(--bg);
+  color:var(--text);
+}
+header{
+  padding:20px;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  justify-content:space-between;
+}
+button{
+  background:var(--accent);
+  border:none;
+  padding:8px 14px;
+  border-radius:999px;
+  cursor:pointer;
+}
+.container{
+  padding:20px;
+  max-width:900px;
+  margin:auto;
+}
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:12px;
+}
+.client{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.meta{
+  color:var(--muted);
+  font-size:0.9rem;
+}
+.badge{
+  padding:4px 10px;
+  border-radius:999px;
+  font-size:0.8rem;
+  margin-bottom:6px;
+}
+.active{ background:#1e8e3e; }
+.inactive{ background:#444; }
+.toggle{
+  margin-top:6px;
+  font-size:0.8rem;
+  padding:6px 10px;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h2>Agent Dashboard</h2>
+  <button onclick="logout()">Logout</button>
+</header>
+
+<div class="container">
+
+  <div id="stats" class="card"></div>
+
+  <div id="clients"></div>
+
+</div>
+
+<script>
+
+const API = "https://vitalink-app.netlify.app/.netlify/functions";
+const token = sessionStorage.getItem("agentSessionToken");
+
+let CLIENTS = [];
+
+if (!token) {
+  window.location.href = "agent-login.html";
+}
+
+// ----------------------
+function logout(){
+  sessionStorage.removeItem("agentSessionToken");
+  window.location.href = "agent-login.html";
+}
+
+// ----------------------
+async function loadClients(){
+
+  const res = await fetch(`${API}/agent-get-clients`, {
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "Authorization": token
+    }
+  });
+
+  const data = await res.json();
+
+  CLIENTS = data.clients || [];
+
+  sortClients();
+  render();
+}
+
+// ----------------------
+// SORT LOGIC (ACTIVE FIRST + A-Z)
+// ----------------------
+function sortClients(){
+
+  CLIENTS.sort((a,b)=>{
+
+    // Active first
+    if (a.active !== b.active) {
+      return a.active ? -1 : 1;
+    }
+
+    // Alphabetical
+    const nameA = (a.first_name + " " + a.last_name).toLowerCase();
+    const nameB = (b.first_name + " " + b.last_name).toLowerCase();
+
+    return nameA.localeCompare(nameB);
+  });
+}
+
+// ----------------------
+function render(){
+
+  renderStats();
+  renderClients();
+}
+
+// ----------------------
+function renderStats(){
+
+  const total = CLIENTS.length;
+  const active = CLIENTS.filter(c => c.active).length;
+
+  document.getElementById("stats").innerHTML = `
+    Total: <b>${total}</b> |
+    Active: <b>${active}</b> |
+    Inactive: <b>${total - active}</b>
+  `;
+}
+
+// ----------------------
+function renderClients(){
+
+  const container = document.getElementById("clients");
+
+  container.innerHTML = CLIENTS.map(c => {
+
+    const status = c.active ? "Active" : "Inactive";
+    const badgeClass = c.active ? "active" : "inactive";
+
+    return `
+      <div class="card client">
+        <div>
+          <div><b>${c.first_name} ${c.last_name}</b></div>
+          <div class="meta">${c.email || ""}</div>
+          <div class="meta">${c.phone || ""}</div>
+
+          <div class="badge ${badgeClass}">${status}</div>
+
+          <button class="toggle" onclick="toggleClient(${c.id}, ${!c.active})">
+            Set ${c.active ? "Inactive" : "Active"}
+          </button>
+        </div>
+      </div>
+    `;
+
+  }).join("");
+}
+
+// ----------------------
+// TOGGLE ACTIVE
+// ----------------------
+async function toggleClient(userId, newState){
+
+  try {
+
+    await fetch(`${API}/agent-toggle-client`, {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization": token
+      },
+      body: JSON.stringify({
+        userId,
+        active: newState
+      })
+    });
+
+    // Update locally
+    const client = CLIENTS.find(c => c.id === userId);
+    if (client) client.active = newState;
+
+    sortClients();
+    render();
+
+  } catch (err) {
+    alert("Failed to update client");
+  }
+}
+
+// ----------------------
+loadClients();
+
+</script>
+
+</body>
+</html>
