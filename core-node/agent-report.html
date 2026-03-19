@@ -2,261 +2,336 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Agent Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>VitaLink — Agent Access</title>
+<meta name="robots" content="noindex, nofollow" />
 
 <style>
-:root{
-  --bg:#000000;
-  --card:#111;
-  --text:#eaeaea;
-  --muted:#b5b5b5;
-  --accent:#7cc6e8;
-  --border:#1e1e1e;
+:root {
+  --bg-black:#000000;
+  --text-primary:#eaeaea;
+  --text-muted:#b5b5b5;
+  --accent-blue:#7cc6e8;
+  --divider:#1e1e1e;
+  --card-bg:#111;
+  --danger:#ff5a5a;
 }
-body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
-  background:var(--bg);
-  color:var(--text);
-}
-header{
-  padding:20px;
-  border-bottom:1px solid var(--border);
-  display:flex;
-  justify-content:space-between;
-}
-.container{
-  padding:20px;
-  max-width:900px;
-  margin:auto;
-}
-.card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:16px;
-  margin-bottom:12px;
-}
-.meta{
-  color:var(--muted);
-  font-size:0.9rem;
-}
-.badge{
-  padding:4px 10px;
-  border-radius:999px;
-  font-size:0.8rem;
-  margin:4px 4px 4px 0;
-  display:inline-block;
-}
-.active{ background:#1e8e3e; }
-.inactive{ background:#444; }
 
-button{
-  background:var(--accent);
-  border:none;
-  padding:8px 14px;
+* { box-sizing:border-box; }
+
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:var(--bg-black);
+  color:var(--text-primary);
+}
+
+main {
+  max-width:520px;
+  margin:0 auto;
+  padding:60px 24px;
+}
+
+.logo {
+  max-width:180px;
+  margin:0 auto 40px auto;
+  display:block;
+}
+
+h1 {
+  text-align:center;
+  font-size:2rem;
+  margin-bottom:10px;
+}
+
+.sub {
+  text-align:center;
+  color:var(--text-muted);
+  margin-bottom:36px;
+  font-size:0.95rem;
+}
+
+.card {
+  background:var(--card-bg);
+  border:1px solid var(--divider);
+  border-radius:12px;
+  padding:28px;
+}
+
+.field { margin-bottom:18px; }
+
+label {
+  display:block;
+  font-size:0.85rem;
+  margin-bottom:6px;
+  color:var(--text-muted);
+}
+
+input {
+  width:100%;
+  padding:12px;
+  border-radius:8px;
+  border:1px solid var(--divider);
+  background:#000;
+  color:#fff;
+  font-size:0.95rem;
+}
+
+button {
+  width:100%;
+  padding:14px;
   border-radius:999px;
+  border:none;
+  background:var(--accent-blue);
+  color:#000;
+  font-weight:600;
+  font-size:0.95rem;
+  cursor:pointer;
+  margin-top:10px;
+}
+
+.forgot {
+  text-align:center;
+  margin-top:14px;
+  font-size:0.85rem;
+  color:var(--accent-blue);
   cursor:pointer;
 }
 
-.controls{
-  display:flex;
-  gap:10px;
-  margin-bottom:16px;
-  flex-wrap:wrap;
+.forgot:hover { text-decoration:underline; }
+
+.result {
+  margin-top:16px;
+  text-align:center;
+  font-size:0.9rem;
+  min-height:22px;
 }
 
-input{
-  padding:10px;
-  border-radius:8px;
-  border:1px solid var(--border);
-  background:#000;
-  color:#fff;
+.error { color:var(--danger); }
+
+.hidden { display:none; }
+
+/* MODAL */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.8);
+  display:none;
+  align-items:center;
+  justify-content:center;
 }
 
-.filter-btn{ background:#222; }
-.filter-active{ background:var(--accent); color:#000; }
+.modal.active{ display:flex; }
 
-.detail{
-  margin-top:10px;
-  padding:10px;
-  border-top:1px solid var(--border);
+.modal-card{
+  background:#111;
+  padding:24px;
+  border-radius:12px;
+  width:320px;
+  border:1px solid var(--divider);
+}
+
+.modal-card h3{
+  margin-top:0;
+  text-align:center;
+}
+
+footer{
+  margin-top:60px;
+  text-align:center;
+  color:#666;
+  font-size:0.8rem;
 }
 </style>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 </head>
 
 <body>
 
-<header>
-  <h2 id="welcome">Agent Dashboard</h2>
-  <button onclick="logout()">Logout</button>
-</header>
+<main>
 
-<div class="container">
+<img src="../images/vitalink-logo-1.png" class="logo" />
 
-  <div class="controls">
-    <input id="search" placeholder="Search clients..." oninput="applyFilters()" />
+<h1>Agent Access</h1>
+<div class="sub">Sign in to manage your clients and data</div>
 
-    <button class="filter-btn filter-active" onclick="setFilter(event,'all')">All</button>
-    <button class="filter-btn" onclick="setFilter(event,'active')">Active</button>
-    <button class="filter-btn" onclick="setFilter(event,'inactive')">Inactive</button>
+<div class="card">
 
-    <button onclick="downloadCSV()">Export CSV</button>
-    <button onclick="window.print()">Print</button>
+<div id="error" class="result error hidden"></div>
+
+<div id="step1">
+
+  <div class="field">
+    <label>Email</label>
+    <input type="email" id="email" />
   </div>
 
-  <div id="stats" class="card"></div>
-  <div id="clients"></div>
+  <div class="field">
+    <label>Password</label>
+    <input type="password" id="password" />
+  </div>
 
+  <button id="loginBtn">Login</button>
+
+  <div class="forgot" onclick="openReset()">Forgot your password?</div>
+
+</div>
+
+<div id="step2" class="hidden">
+  <div class="field">
+    <label>Verification Code</label>
+    <input type="text" id="smsCode" />
+  </div>
+  <button id="verifyBtn">Verify Code</button>
+</div>
+
+<div id="recaptcha-container"></div>
+
+</div>
+
+<footer>
+© 2026 VitaLink. All rights reserved.
+</footer>
+
+</main>
+
+<!-- RESET MODAL -->
+<div id="resetModal" class="modal">
+  <div class="modal-card">
+    <h3>Reset Password</h3>
+
+    <input id="resetEmail" placeholder="Email" />
+    <input id="resetCode" placeholder="Code" />
+    <input id="resetPassword" type="password" placeholder="New Password" />
+
+    <button onclick="requestReset()">Send Code</button>
+    <button onclick="submitReset()">Reset Password</button>
+    <button onclick="closeReset()" style="background:#444;">Cancel</button>
+  </div>
 </div>
 
 <script>
 
 const API = "https://vitalink-app.netlify.app/.netlify/functions";
-const token = sessionStorage.getItem("agentSessionToken");
 
-let CLIENTS = [];
-let FILTER = "all";
-let SEARCH = "";
+const firebaseConfig = {
+  apiKey: "AIzaSyCTZiiluPy5ydX62RfM-E7f8EIWHNG12S8",
+  authDomain: "vitalink-7e832.firebaseapp.com",
+  projectId: "vitalink-7e832",
+  storageBucket: "vitalink-7e832.firebasestorage.app",
+  messagingSenderId: "776534002769",
+  appId: "1:776534002769:web:f2460535613304e12efc70"
+};
 
-if (!token) {
-  window.location.href = "agent-login.html";
+firebase.initializeApp(firebaseConfig);
+
+let confirmationResult = null;
+let currentEmail = null;
+
+document.getElementById("loginBtn").addEventListener("click", login);
+document.getElementById("verifyBtn").addEventListener("click", verifyCode);
+
+function showError(msg){
+  const el = document.getElementById("error");
+  el.innerText = msg;
+  el.classList.remove("hidden");
 }
 
-// ----------------------
-function logout(){
-  sessionStorage.removeItem("agentSessionToken");
-  sessionStorage.removeItem("agentId");
-  window.location.href = "agent-login.html";
-}
+// ---------------------- LOGIN (🔥 FIXED HERE)
+async function login() {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
 
-// ----------------------
-async function loadClients(){
-
-  const agentId = sessionStorage.getItem("agentId");
-
-  if (!agentId){
-    alert("Missing agent session");
-    window.location.href = "agent-login.html";
+  if (!email || !password){
+    showError("Enter email and password");
     return;
   }
 
-  const id = Number(agentId);
-
-  console.log("🚀 CALLING API with agentId:", id);
-
   try {
 
-    const res = await fetch(`${API}/get_agent_clients`, {
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json",
-      },
-      body: JSON.stringify({ agentId: id })
+    const res = await fetch(`${API}/agent-login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
     });
 
-    console.log("📡 STATUS:", res.status);
+    const data = await res.json();
 
-    const text = await res.text();
-    console.log("📦 RAW RESPONSE:", text);
+    console.log("LOGIN RESPONSE:", data);
 
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch (e) {
-      alert("Invalid server response");
+    if (data.step === "login_success") {
+
+      // ✅ SAVE TOKEN
+      sessionStorage.setItem("agentSessionToken", data.token);
+
+      // ✅ SAVE AGENT ID (CRITICAL FIX)
+      if (data.agent && data.agent.id){
+        sessionStorage.setItem("agentId", data.agent.id);
+        console.log("Saved agentId:", data.agent.id);
+      } else {
+        showError("Agent ID missing from server");
+        return;
+      }
+
+      window.location.href = "agent-report.html";
       return;
     }
 
-    console.log("📥 PARSED:", data);
+    showError("Unexpected response");
 
-    if (!data.success){
-      alert(data.error || "Failed to load clients");
-      return;
-    }
-
-    CLIENTS = data.clients || [];
-
-    console.log("👥 CLIENT COUNT:", CLIENTS.length);
-
-    if (data.agent){
-      const name = data.agent.name || "";
-      document.getElementById("welcome").innerText =
-        name ? `Welcome, ${name}` : "Agent Dashboard";
-    }
-
-    applyFilters();
-
-  } catch (e) {
-    console.error("❌ FETCH ERROR:", e);
-    alert("Request failed — check console");
+  } catch (err) {
+    console.error(err);
+    showError("Something went wrong");
   }
 }
 
-// ----------------------
-function applyFilters(){
+// ---------------------- VERIFY (unused for now)
+async function verifyCode(){}
 
-  SEARCH = document.getElementById("search").value.toLowerCase();
+// ---------------------- RESET
+function openReset(){ document.getElementById("resetModal").classList.add("active"); }
+function closeReset(){ document.getElementById("resetModal").classList.remove("active"); }
 
-  let filtered = CLIENTS.filter(c => {
+async function requestReset(){
+  const email = document.getElementById("resetEmail").value;
 
-    const name = ((c.first_name||"") + " " + (c.last_name||"")).toLowerCase();
-    const email = (c.email||"").toLowerCase();
-    const phone = (c.phone||"");
-
-    const matchesSearch =
-      name.includes(SEARCH) ||
-      email.includes(SEARCH) ||
-      phone.includes(SEARCH);
-
-    const matchesFilter =
-      FILTER === "all" ||
-      (FILTER === "active" && c.active) ||
-      (FILTER === "inactive" && !c.active);
-
-    return matchesSearch && matchesFilter;
+  const res = await fetch(`${API}/request_reset`, {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ emailOrPhone: email, role: "agents" })
   });
 
-  render(filtered);
+  const data = await res.json();
+  if (data.success) alert("Reset code sent");
+  else showError(data.error || "Failed");
 }
 
-// ----------------------
-function setFilter(e,type){
-  FILTER = type;
-  document.querySelectorAll(".filter-btn").forEach(btn=>{
-    btn.classList.remove("filter-active");
+async function submitReset(){
+  const email = document.getElementById("resetEmail").value;
+  const code = document.getElementById("resetCode").value;
+  const password = document.getElementById("resetPassword").value;
+
+  const res = await fetch(`${API}/reset_password`, {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({
+      emailOrPhone: email,
+      code,
+      newPassword: password,
+      role: "agents"
+    })
   });
-  e.target.classList.add("filter-active");
-  applyFilters();
+
+  const data = await res.json();
+  if (data.success){
+    alert("Password reset successful");
+    closeReset();
+  } else {
+    showError(data.error || "Reset failed");
+  }
 }
-
-// ----------------------
-function render(list){
-
-  renderStats();
-
-  const container = document.getElementById("clients");
-
-  container.innerHTML = list.map(c => `
-      <div class="card">
-        <div><b>${c.first_name || ""} ${c.last_name || ""}</b></div>
-        <div class="meta">${c.email || ""}</div>
-        <div class="meta">${c.phone || ""}</div>
-      </div>
-  `).join("");
-}
-
-// ----------------------
-function renderStats(){
-  document.getElementById("stats").innerHTML =
-    `Total: <b>${CLIENTS.length}</b>`;
-}
-
-// ----------------------
-function downloadCSV(){}
-
-loadClients();
 
 </script>
 
