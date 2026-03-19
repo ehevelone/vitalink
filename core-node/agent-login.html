@@ -228,7 +228,6 @@ firebase.initializeApp(firebaseConfig);
 let confirmationResult = null;
 let currentEmail = null;
 
-// ✅ FIX: wait for DOM
 window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("loginBtn").addEventListener("click", login);
   document.getElementById("verifyBtn").addEventListener("click", verifyCode);
@@ -240,8 +239,8 @@ function showError(msg){
   el.classList.remove("hidden");
 }
 
+// ---------------- LOGIN ----------------
 async function login() {
-  console.log("LOGIN CLICKED");
 
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
@@ -256,34 +255,41 @@ async function login() {
     const res = await fetch(`${API}/agent-login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ email, password, step: "login" })
     });
 
-    if (!res.ok){
-      showError("Login failed");
-      return;
-    }
-
     const data = await res.json();
-
     console.log("LOGIN RESPONSE:", data);
 
+    // ✅ normal login
     if (data.step === "login_success") {
-
-      if (!data.agent || !data.agent.id){
-        console.error("❌ Missing agent:", data);
-        showError("Login failed (no agent returned)");
-        return;
-      }
 
       sessionStorage.setItem("agentSessionToken", data.token || "dev");
       sessionStorage.setItem("agentId", String(data.agent.id));
 
-      console.log("✅ SAVED agentId:", sessionStorage.getItem("agentId"));
+      window.location.href = "agent-report.html";
+      return;
+    }
 
-      setTimeout(() => {
-        window.location.href = "agent-report.html";
-      }, 100);
+    // 🔥 2FA FLOW
+    if (data.step === "firebase_2fa") {
+
+      currentEmail = email;
+
+      window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
+        "recaptcha-container",
+        { size: "invisible" }
+      );
+
+      const auth = firebase.auth();
+
+      confirmationResult = await auth.signInWithPhoneNumber(
+        data.phone,
+        window.recaptchaVerifier
+      );
+
+      document.getElementById("step1").classList.add("hidden");
+      document.getElementById("step2").classList.remove("hidden");
 
       return;
     }
@@ -296,10 +302,11 @@ async function login() {
   }
 }
 
-// rest unchanged...
-
+// ---------------- VERIFY ----------------
 async function verifyCode() {
+
   const code = document.getElementById("smsCode").value.trim();
+
   if (!code){
     showError("Enter code");
     return;
@@ -308,30 +315,36 @@ async function verifyCode() {
   try {
 
     const result = await confirmationResult.confirm(code);
-    const idToken = await result.user.getIdToken();
 
-    const res = await fetch(`${API}/agent-verify`, {
+    const res = await fetch(`${API}/agent-login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ idToken, email: currentEmail })
+      body: JSON.stringify({
+        email: currentEmail,
+        password: document.getElementById("password").value,
+        step: "verify"
+      })
     });
 
-    if (!res.ok){
+    const data = await res.json();
+
+    if (data.step !== "login_success"){
       showError("Verification failed");
       return;
     }
 
-    const data = await res.json();
+    sessionStorage.setItem("agentSessionToken", data.token || "dev");
+    sessionStorage.setItem("agentId", String(data.agent.id));
 
-    sessionStorage.setItem("agentSessionToken", data.token);
-    sessionStorage.setItem("agentId", data.agent.id);
     window.location.href = "agent-report.html";
 
-  } catch {
+  } catch (err) {
+    console.error(err);
     showError("Invalid code");
   }
 }
 
+// ---------------- RESET ----------------
 function openReset(){ document.getElementById("resetModal").classList.add("active"); }
 function closeReset(){ document.getElementById("resetModal").classList.remove("active"); }
 
