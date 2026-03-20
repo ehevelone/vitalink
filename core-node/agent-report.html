@@ -266,17 +266,19 @@ function confirmToggle(id,name,isActive){
   toggleClient(id);
 }
 
-// 🔥 FIXED TOGGLE
+// ✅ FIXED TOGGLE
 async function toggleClient(id){
 
   try{
     const res=await fetch(`${API}/agent-toggle-client`,{
       method:"POST",
       headers:{
-        "Content-Type":"application/json",
-        "Authorization": token
+        "Content-Type":"application/json"
       },
-      body:JSON.stringify({ clientId:id })
+      body:JSON.stringify({ 
+        clientId:id,
+        agentId:Number(agentId)
+      })
     });
 
     const data=await res.json();
