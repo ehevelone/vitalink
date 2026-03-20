@@ -218,7 +218,6 @@ async function loadClients(){
 
   let clients=[...allClients];
 
-  // SEARCH
   const search=document.getElementById("searchInput").value.toLowerCase();
 
   if(search){
@@ -229,7 +228,6 @@ async function loadClients(){
     });
   }
 
-  // SORT
   clients.sort((a,b)=>{
     if(a.active!==b.active){
       return a.active?-1:1;
@@ -256,7 +254,7 @@ async function loadClients(){
   `).join("");
 }
 
-// CONFIRM TOGGLE
+// CONFIRM
 function confirmToggle(id,name,isActive){
 
   const action=isActive==="true"||isActive===true?"DEACTIVATE":"ACTIVATE";
@@ -268,17 +266,33 @@ function confirmToggle(id,name,isActive){
   toggleClient(id);
 }
 
-// TOGGLE
+// 🔥 FIXED TOGGLE
 async function toggleClient(id){
 
-  await fetch(`${API}/agent-toggle-client`,{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({ clientId:id })
-  });
+  try{
+    const res=await fetch(`${API}/agent-toggle-client`,{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization": token
+      },
+      body:JSON.stringify({ clientId:id })
+    });
 
-  allClients=[];
-  loadClients();
+    const data=await res.json();
+
+    if(!data.success){
+      alert("Update failed");
+      return;
+    }
+
+    allClients=[];
+    await loadClients();
+
+  }catch(e){
+    console.error(e);
+    alert("Server error");
+  }
 }
 
 // CSV
