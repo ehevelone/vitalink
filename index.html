@@ -23,7 +23,7 @@
 body{
 margin:0;
 font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-background: radial-gradient(circle at top, #0a0a0a 0%, #000000 60%);
+background:var(--bg-black);
 color:var(--text-primary);
 line-height:1.6;
 }
@@ -34,7 +34,6 @@ margin:0 auto;
 padding:60px 24px;
 }
 
-/* 🔥 HERO */
 .hero{
 display:grid;
 grid-template-columns:1fr;
@@ -44,67 +43,57 @@ margin-bottom:80px;
 
 .hero-text{
 text-align:center;
-animation: fadeIn 1s ease;
-}
-
-@keyframes fadeIn {
-from { opacity:0; transform:translateY(10px);}
-to { opacity:1; transform:translateY(0);}
 }
 
 .logo{
-max-width:240px;
-margin:0 auto 10px auto;
+max-width:220px; /* 🔥 slightly larger */
+margin:0 auto 16px auto;
 display:block;
-filter: drop-shadow(0 0 12px rgba(124,198,232,0.4));
+filter: drop-shadow(0 0 8px rgba(124,198,232,0.25));
 }
 
-/* 🔥 HEARTBEAT */
-.heartbeat-wrap{
-position:relative;
-width:100%;
-max-width:650px;
-margin:10px auto 30px;
+/* 🔥 HEARTBEAT SVG */
+.heartbeat-svg{
+max-width:520px;
+margin:0 auto 24px auto;
 }
 
-.heartbeat-img{
-width:100%;
-opacity:0.75;
-animation: pulse 2.5s ease-in-out infinite;
+.ekg-line{
+stroke-dasharray:1200;
+stroke-dashoffset:1200;
+animation:ekgPulse 2.6s ease-in-out infinite;
+filter: drop-shadow(0 0 3px rgba(124,198,232,0.35));
 }
 
-.heartbeat-glow{
-position:absolute;
-top:0;
-left:-50%;
-width:50%;
-height:100%;
-background: linear-gradient(
-90deg,
-transparent,
-rgba(124,198,232,0.7),
-transparent
-);
-filter: blur(12px);
-animation: scan 2.5s linear infinite;
+@keyframes ekgPulse{
+0%{
+stroke-dashoffset:1200;
+opacity:0;
 }
 
-@keyframes scan{
-0%{ left:-50%; }
-100%{ left:100%; }
+15%{
+opacity:1;
 }
 
-@keyframes pulse{
-0%,100%{ transform:scale(1); }
-50%{ transform:scale(1.02); }
+60%{
+stroke-dashoffset:0;
+opacity:1;
 }
 
-/* TEXT */
+75%{
+opacity:.5;
+}
+
+100%{
+stroke-dashoffset:-200;
+opacity:0;
+}
+}
+
 .headline{
-font-size:3rem;
+font-size:2.6rem;
 font-weight:600;
 margin:0 0 16px 0;
-letter-spacing:1px;
 }
 
 .tagline{
@@ -282,6 +271,33 @@ background:var(--accent-blue);
 color:#000;
 }
 
+/* INPUT / INSERT BOXES */
+
+input,
+textarea,
+select{
+background:#000000;
+color:#eaeaea;
+border:1px solid #1e1e1e;
+border-radius:8px;
+padding:10px 12px;
+font-size:0.95rem;
+outline:none;
+width:100%;
+}
+
+input::placeholder,
+textarea::placeholder{
+color:#8f8f8f;
+}
+
+input:focus,
+textarea:focus,
+select:focus{
+border:1px solid #7cc6e8;
+box-shadow:0 0 0 1px #7cc6e8;
+}
+
 footer{
 margin-top:80px;
 text-align:center;
@@ -302,10 +318,19 @@ font-size:0.8rem;
 
 <img src="images/vitalink-logo-1.png" alt="VitaLink" class="logo"/>
 
-<!-- 🔥 HEARTBEAT INSERTED HERE -->
-<div class="heartbeat-wrap">
-  <img src="images/vl-heartbeat.png" class="heartbeat-img">
-  <div class="heartbeat-glow"></div>
+<!-- 🔥 HEARTBEAT INSERTED CLEANLY -->
+<div class="heartbeat-svg">
+<svg viewBox="0 0 600 120" xmlns="http://www.w3.org/2000/svg">
+<path
+d="M0 60 L80 60 L100 60 L115 20 L130 100 L145 60 L200 60 L220 60 L235 20 L250 100 L265 60 L600 60"
+fill="none"
+stroke="#7cc6e8"
+stroke-width="3"
+stroke-linecap="round"
+stroke-linejoin="round"
+class="ekg-line"
+/>
+</svg>
 </div>
 
 <h1 class="headline">Prepared. Protected. Connected.</h1>
