@@ -46,7 +46,7 @@ text-align:center;
 }
 
 .logo{
-max-width:300px; /* 🔥 slightly larger */
+max-width:300px;
 margin:0 auto 16px auto;
 display:block;
 filter: drop-shadow(0 0 8px rgba(124,198,232,0.25));
@@ -61,32 +61,31 @@ margin:0 auto 24px auto;
 .ekg-line{
 stroke-dasharray:1200;
 stroke-dashoffset:1200;
-animation:ekgPulse 2.6s ease-in-out infinite;
+animation:ekgFlow 3s ease-in-out infinite;
 filter: drop-shadow(0 0 3px rgba(124,198,232,0.35));
 }
 
-@keyframes ekgPulse{
+/* 🔥 CLEAN FLOW — NO FADE */
+@keyframes ekgFlow{
+
 0%{
 stroke-dashoffset:1200;
-opacity:0;
 }
 
-15%{
-opacity:1;
-}
-
-60%{
+30%{
 stroke-dashoffset:0;
-opacity:1;
 }
 
-75%{
-opacity:.5;
+55%{
+stroke-dashoffset:0;
+}
+
+85%{
+stroke-dashoffset:-1200;
 }
 
 100%{
-stroke-dashoffset:-200;
-opacity:0;
+stroke-dashoffset:-1200;
 }
 }
 
