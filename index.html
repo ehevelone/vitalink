@@ -23,7 +23,7 @@
 body{
 margin:0;
 font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-background:var(--bg-black);
+background: radial-gradient(circle at top, #0a0a0a 0%, #000000 60%);
 color:var(--text-primary);
 line-height:1.6;
 }
@@ -34,6 +34,7 @@ margin:0 auto;
 padding:60px 24px;
 }
 
+/* 🔥 HERO */
 .hero{
 display:grid;
 grid-template-columns:1fr;
@@ -41,18 +42,69 @@ gap:40px;
 margin-bottom:80px;
 }
 
-.hero-text{text-align:center;}
-
-.logo{
-max-width:180px;
-margin:0 auto 24px auto;
-display:block;
+.hero-text{
+text-align:center;
+animation: fadeIn 1s ease;
 }
 
+@keyframes fadeIn {
+from { opacity:0; transform:translateY(10px);}
+to { opacity:1; transform:translateY(0);}
+}
+
+.logo{
+max-width:240px;
+margin:0 auto 10px auto;
+display:block;
+filter: drop-shadow(0 0 12px rgba(124,198,232,0.4));
+}
+
+/* 🔥 HEARTBEAT */
+.heartbeat-wrap{
+position:relative;
+width:100%;
+max-width:650px;
+margin:10px auto 30px;
+}
+
+.heartbeat-img{
+width:100%;
+opacity:0.75;
+animation: pulse 2.5s ease-in-out infinite;
+}
+
+.heartbeat-glow{
+position:absolute;
+top:0;
+left:-50%;
+width:50%;
+height:100%;
+background: linear-gradient(
+90deg,
+transparent,
+rgba(124,198,232,0.7),
+transparent
+);
+filter: blur(12px);
+animation: scan 2.5s linear infinite;
+}
+
+@keyframes scan{
+0%{ left:-50%; }
+100%{ left:100%; }
+}
+
+@keyframes pulse{
+0%,100%{ transform:scale(1); }
+50%{ transform:scale(1.02); }
+}
+
+/* TEXT */
 .headline{
-font-size:2.6rem;
+font-size:3rem;
 font-weight:600;
 margin:0 0 16px 0;
+letter-spacing:1px;
 }
 
 .tagline{
@@ -230,40 +282,6 @@ background:var(--accent-blue);
 color:#000;
 }
 
-/* INPUT / INSERT BOXES */
-
-input,
-textarea,
-select{
-
-background:#000000;
-color:#eaeaea;
-
-border:1px solid #1e1e1e;
-border-radius:8px;
-
-padding:10px 12px;
-font-size:0.95rem;
-
-outline:none;
-width:100%;
-
-}
-
-input::placeholder,
-textarea::placeholder{
-color:#8f8f8f;
-}
-
-input:focus,
-textarea:focus,
-select:focus{
-
-border:1px solid #7cc6e8;
-box-shadow:0 0 0 1px #7cc6e8;
-
-}
-
 footer{
 margin-top:80px;
 text-align:center;
@@ -283,6 +301,12 @@ font-size:0.8rem;
 <div class="hero-text">
 
 <img src="images/vitalink-logo-1.png" alt="VitaLink" class="logo"/>
+
+<!-- 🔥 HEARTBEAT INSERTED HERE -->
+<div class="heartbeat-wrap">
+  <img src="images/vl-heartbeat.png" class="heartbeat-img">
+  <div class="heartbeat-glow"></div>
+</div>
 
 <h1 class="headline">Prepared. Protected. Connected.</h1>
 
