@@ -25,34 +25,26 @@ body.light{
 --alert-bg:#ffeaea;
 }
 
-/* 🔥 FIX: LIGHT MODE VISIBILITY */
-body.light .value{
-color:#111;
-}
-
-body.light .label{
-color:#555;
-}
-
+/* 🔥 LIGHT MODE FIX */
+body.light .value{ color:#111; }
+body.light .label{ color:#555; }
 body.light .alert{
 color:#111;
 background:#ffeaea;
 border-left:5px solid #e53935;
 }
-
-body.light a.phone{
-color:#0077cc;
-}
-
+body.light a.phone{ color:#0077cc; }
 body.light .card{
 box-shadow:0 10px 30px rgba(0,0,0,0.1);
 }
 
+/* 🔥 EMS MODE GLOBAL SCALE */
 body.ems{
 --text:#ffffff;
 --muted:#cccccc;
 }
 
+/* BASE */
 body{
 margin:0;
 background:var(--bg);
@@ -82,36 +74,57 @@ text-align:center;
 margin-bottom:18px;
 }
 
+/* 🔥 SECTION SPACING BOOST */
 .section{
-margin-bottom:18px;
+margin-bottom:22px;
 border-top:1px solid var(--divider);
-padding-top:14px;
+padding-top:16px;
 }
 
+/* 🔥 LABELS — BIGGER */
 .label{
-font-size:12px;
+font-size:15px;
+font-weight:600;
 color:var(--muted);
 text-transform:uppercase;
+letter-spacing:0.05em;
 }
 
+/* 🔥 VALUES — BIGGER */
 .value{
-font-size:17px;
-margin-top:4px;
-line-height:1.4;
+font-size:20px;
+margin-top:6px;
+line-height:1.5;
+font-weight:500;
+}
+
+/* 🔥 EMS MODE — EVERYTHING BIG */
+body.ems .label{
+font-size:20px;
+font-weight:700;
+letter-spacing:0.06em;
 }
 
 body.ems .value{
-font-size:20px;
-font-weight:600;
+font-size:26px;
+font-weight:700;
+line-height:1.6;
 }
 
+/* 🔥 ALLERGY / ALERT BLOCK */
 .alert{
 background:var(--alert-bg);
-border-left:5px solid var(--alert-border);
-padding:12px;
-border-radius:8px;
+border-left:6px solid var(--alert-border);
+padding:14px;
+border-radius:10px;
 }
 
+body.ems .alert .value{
+font-size:28px;
+font-weight:800;
+}
+
+/* LINKS */
 a.phone{
 color:#7cc6e8;
 text-decoration:none;
@@ -270,7 +283,7 @@ app.innerHTML = `
 ${
 Array.isArray(decoded.meds) && decoded.meds.length
 ? decoded.meds.map(m => `
-<div style="margin-bottom:10px;">
+<div style="margin-bottom:12px;">
 <strong>${safeText(m.name) || "Unknown"}</strong><br>
 ${safeText(m.dose)} ${m.frequency ? "• " + safeText(m.frequency) : ""}
 </div>
@@ -286,7 +299,7 @@ ${safeText(m.dose)} ${m.frequency ? "• " + safeText(m.frequency) : ""}
 ${
 Array.isArray(decoded.providers) && decoded.providers.length
 ? decoded.providers.map(d => `
-<div style="margin-bottom:10px;">
+<div style="margin-bottom:12px;">
 <strong>${safeText(d.name) || "Unknown"}</strong><br>
 ${d.phone ? phoneLink(d.phone) : "No phone"}
 </div>
