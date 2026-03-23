@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,7 +6,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 <style>
-
 :root{
 --bg:#000000;
 --card:#0c0c0c;
@@ -18,7 +16,6 @@
 --alert-border:#e53935;
 }
 
-/* LIGHT MODE */
 body.light{
 --bg:#f5f5f5;
 --card:#ffffff;
@@ -26,22 +23,18 @@ body.light{
 --muted:#555;
 --divider:#ddd;
 --alert-bg:#ffeaea;
---alert-border:#e53935;
 }
 
-/* EMS MODE */
 body.ems{
 --text:#ffffff;
 --muted:#cccccc;
---divider:#333;
 }
 
 body{
 margin:0;
 background:var(--bg);
 color:var(--text);
-font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
-min-height:100vh;
+font-family:system-ui,-apple-system,sans-serif;
 display:flex;
 justify-content:center;
 padding:20px;
@@ -57,18 +50,11 @@ box-shadow:0 20px 60px rgba(0,0,0,0.6);
 position:relative;
 }
 
-.logo{
-text-align:center;
-margin-bottom:20px;
-}
-
-.logo img{
-height:120px;
-}
+.logo{text-align:center;margin-bottom:20px;}
+.logo img{height:110px;}
 
 h1{
 color:#e53935;
-font-size:24px;
 text-align:center;
 margin-bottom:18px;
 }
@@ -79,60 +65,34 @@ border-top:1px solid var(--divider);
 padding-top:14px;
 }
 
-.section:first-of-type{
-border-top:none;
-padding-top:0;
-}
-
 .label{
-font-size:13px;
+font-size:12px;
 color:var(--muted);
 text-transform:uppercase;
-letter-spacing:0.04em;
 }
 
 .value{
 font-size:17px;
 margin-top:4px;
-line-height:1.35;
+line-height:1.4;
 }
 
-/* EMS text boost */
 body.ems .value{
 font-size:20px;
 font-weight:600;
 }
 
-body.ems .label{
-font-size:14px;
-}
-
-body.ems .section{
-padding-top:16px;
-margin-bottom:22px;
-}
-
 .alert{
 background:var(--alert-bg);
-border-left:4px solid var(--alert-border);
+border-left:5px solid var(--alert-border);
 padding:12px;
 border-radius:8px;
-margin-bottom:16px;
 }
 
-body.ems .alert{
-border-left:6px solid #ff3b30;
-background:#3a0000;
-}
-
-.expired{
-text-align:center;
-}
-
-.expired p{
-font-size:16px;
-line-height:1.45;
-margin:10px 0;
+a.phone{
+color:#7cc6e8;
+text-decoration:none;
+font-weight:600;
 }
 
 .hint{
@@ -141,8 +101,6 @@ font-size:14px;
 color:var(--muted);
 text-align:center;
 }
-
-/* TOGGLE BUTTONS */
 
 .toggle-wrap{
 position:absolute;
@@ -161,11 +119,6 @@ border-radius:999px;
 font-size:12px;
 cursor:pointer;
 }
-
-.theme-toggle:hover{
-border-color:#7cc6e8;
-}
-
 </style>
 </head>
 
@@ -174,122 +127,103 @@ border-color:#7cc6e8;
 <div class="card" id="app">
 
 <div class="toggle-wrap">
-<button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">Light</button>
-<button class="theme-toggle" onclick="toggleEMS()" id="emsBtn">EMS</button>
+<button class="theme-toggle" onclick="toggleTheme()">Light</button>
+<button class="theme-toggle" onclick="toggleEMS()">EMS</button>
 </div>
 
 <div class="logo">
-<img src="/images/vitalink-logo.png" alt="VitaLink" />
+<img src="/images/vitalink-logo.png" />
 </div>
 
 <h1>Emergency Session Expired</h1>
-
-<div class="expired">
-<p>This emergency information is no longer active.</p>
-<p>Please rescan the QR code on the patient’s device to view current details.</p>
-</div>
-
-<div class="hint">VitaLink Emergency Access</div>
+<div class="hint">Scan QR Code to access emergency data</div>
 
 </div>
 
 <script>
 
-/* THEME TOGGLE */
 function toggleTheme(){
 document.body.classList.toggle("light");
-
-const btn = document.getElementById("themeBtn");
-
-if(document.body.classList.contains("light")){
-localStorage.setItem("vl_theme","light");
-btn.innerText = "Dark";
-}else{
-localStorage.setItem("vl_theme","dark");
-btn.innerText = "Light";
-}
 }
 
-/* EMS TOGGLE */
 function toggleEMS(){
-
 document.body.classList.toggle("ems");
-
-const btn = document.getElementById("emsBtn");
-
-if(document.body.classList.contains("ems")){
-btn.innerText = "Normal";
-}else{
-btn.innerText = "EMS";
 }
 
-}
-
-/* LOAD SAVED THEME */
 (function(){
-const saved = localStorage.getItem("vl_theme");
-
-if(saved === "light"){
-document.body.classList.add("light");
-}
-})();
-
-/* LOAD DATA */
-(function () {
-try {
 
 const params = new URLSearchParams(window.location.search);
 const raw = params.get("data");
-if (!raw) return;
+if(!raw) return;
 
-const normalized = raw.replace(/-/g, '+').replace(/_/g, '/');
+const normalized = raw.replace(/-/g,'+').replace(/_/g,'/');
 
 let decoded;
-try {
+try{
 decoded = JSON.parse(atob(normalized));
-} catch {
+console.log("QR DATA:", decoded);
+}catch{
 return;
 }
 
-if (!decoded || typeof decoded !== "object") return;
+const safeText = (val) => {
+if (!val) return "";
+if (typeof val === "string") return val.trim();
+return String(val);
+};
+
+const phoneLink = (num) => num 
+? `<a class="phone" href="tel:${num}">${num}</a>` 
+: "N/A";
 
 const app = document.getElementById("app");
 
 app.innerHTML = `
+
 <div class="toggle-wrap">
-<button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">Light</button>
-<button class="theme-toggle" onclick="toggleEMS()" id="emsBtn">EMS</button>
+<button class="theme-toggle" onclick="toggleTheme()">Light</button>
+<button class="theme-toggle" onclick="toggleEMS()">EMS</button>
 </div>
 
 <div class="logo">
-<img src="/images/vitalink-logo.png" alt="VitaLink" />
+<img src="/images/vitalink-logo.png" />
 </div>
 
 <h1>Emergency Information</h1>
 
 <div class="section">
 <div class="label">Name</div>
-<div class="value">${decoded.name || "N/A"}</div>
+<div class="value">${safeText(decoded.name) || "N/A"}</div>
 </div>
 
 <div class="section">
-<div class="label">Date of Birth</div>
-<div class="value">${decoded.dob || "N/A"}</div>
+<div class="label">DOB</div>
+<div class="value">${safeText(decoded.dob) || "N/A"}</div>
 </div>
 
 <div class="section alert">
 <div class="label">Allergies</div>
-<div class="value">${decoded.allergies || "None reported"}</div>
+<div class="value">${safeText(decoded.allergies) || "None reported"}</div>
+</div>
+
+<div class="section alert">
+<div class="label">Conditions</div>
+<div class="value">${safeText(decoded.conditions) || "None reported"}</div>
 </div>
 
 <div class="section">
-<div class="label">Medical Conditions</div>
-<div class="value">${decoded.conditions || "None reported"}</div>
+<div class="label">Implants</div>
+<div class="value">${safeText(decoded.implants) || "None reported"}</div>
+</div>
+
+<div class="section">
+<div class="label">Procedures</div>
+<div class="value">${safeText(decoded.procedures) || "None reported"}</div>
 </div>
 
 <div class="section">
 <div class="label">Blood Type</div>
-<div class="value">${decoded.bloodType || "Unknown"}</div>
+<div class="value">${safeText(decoded.bloodType) || "Unknown"}</div>
 </div>
 
 <div class="section">
@@ -299,23 +233,53 @@ app.innerHTML = `
 
 <div class="section">
 <div class="label">Emergency Contact</div>
-<div class="value">${decoded.emergencyContactName || "N/A"}</div>
+<div class="value">${safeText(decoded.emergencyContactName) || "N/A"}</div>
 </div>
 
 <div class="section">
-<div class="label">Emergency Phone</div>
-<div class="value">${decoded.emergencyContactPhone || "N/A"}</div>
+<div class="label">Phone</div>
+<div class="value">${phoneLink(decoded.emergencyContactPhone)}</div>
+</div>
+
+<div class="section">
+<div class="label">Medications</div>
+<div class="value">
+${
+Array.isArray(decoded.meds) && decoded.meds.length
+? decoded.meds.map(m => `
+<div style="margin-bottom:10px;">
+<strong>${safeText(m.name) || "Unknown"}</strong><br>
+${safeText(m.dose)} ${m.frequency ? "• " + safeText(m.frequency) : ""}
+</div>
+`).join("")
+: "None reported"
+}
+</div>
+</div>
+
+<div class="section">
+<div class="label">Doctors</div>
+<div class="value">
+${
+Array.isArray(decoded.providers) && decoded.providers.length
+? decoded.providers.map(d => `
+<div style="margin-bottom:10px;">
+<strong>${safeText(d.name) || "Unknown"}</strong><br>
+${d.phone ? phoneLink(d.phone) : "No phone"}
+</div>
+`).join("")
+: "None listed"
+}
+</div>
 </div>
 
 <div class="hint">
-Scan session ends when this page is closed.
+Emergency data provided via VitaLink
 </div>
+
 `;
 
-} catch {}
-
 })();
-
 </script>
 
 </body>
