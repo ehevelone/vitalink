@@ -9,7 +9,6 @@
 :root{
 --bg-black:#000;
 --text:#eaeaea;
---muted:#b5b5b5;
 --accent:#7cc6e8;
 --card:#111;
 --border:#1e1e1e;
@@ -83,15 +82,11 @@ position:sticky;
 top:20px;
 }
 
-.cart h2{
-margin-top:0;
-}
-
 .cart-item{
 display:flex;
 justify-content:space-between;
 margin-bottom:10px;
-font-size:0.95rem;
+font-size:0.9rem;
 }
 
 .total{
@@ -109,6 +104,30 @@ border:none;
 border-radius:8px;
 font-weight:600;
 cursor:pointer;
+}
+
+/* MODAL */
+.modal{
+position:fixed;
+top:0;
+left:0;
+right:0;
+bottom:0;
+background:rgba(0,0,0,.7);
+display:none;
+align-items:center;
+justify-content:center;
+}
+
+.modal-content{
+background:#111;
+padding:20px;
+border-radius:12px;
+width:300px;
+}
+
+.profile{
+margin-bottom:8px;
 }
 </style>
 </head>
@@ -128,42 +147,42 @@ cursor:pointer;
 <img src="assets/full-kit.jpg" />
 <h3>Full Kit</h3>
 <p>$99.95</p>
-<button onclick="addToCart('Full Kit', 99.95)">Add</button>
+<button onclick="openSelector('Full Kit', 99.95)">Add</button>
 </div>
 
 <div class="card">
 <img src="assets/wristband.jpg" />
 <h3>Wristband</h3>
 <p>$14.95</p>
-<button onclick="addToCart('Wristband', 14.95)">Add</button>
+<button onclick="openSelector('Wristband', 14.95)">Add</button>
 </div>
 
 <div class="card">
 <img src="assets/dogtag.jpg" />
 <h3>Dog Tag</h3>
 <p>$19.95</p>
-<button onclick="addToCart('Dog Tag', 19.95)">Add</button>
+<button onclick="openSelector('Dog Tag', 19.95)">Add</button>
 </div>
 
 <div class="card">
 <img src="assets/keychain.jpg" />
 <h3>Keychain</h3>
 <p>$12.95</p>
-<button onclick="addToCart('Keychain', 12.95)">Add</button>
+<button onclick="openSelector('Keychain', 12.95)">Add</button>
 </div>
 
 <div class="card">
 <img src="assets/sticker.jpg" />
 <h3>Phone Sticker</h3>
 <p>$9.95</p>
-<button onclick="addToCart('Sticker', 9.95)">Add</button>
+<button onclick="openSelector('Sticker', 9.95)">Add</button>
 </div>
 
 <div class="card">
 <img src="assets/wallet-card.jpg" />
 <h3>Laminated Card</h3>
 <p>$9.95</p>
-<button onclick="addToCart('Card', 9.95)">Add</button>
+<button onclick="openSelector('Card', 9.95)">Add</button>
 </div>
 
 </div>
@@ -189,20 +208,32 @@ Continue
 
 </main>
 
+<!-- PROFILE MODAL -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <h3>Select Profiles</h3>
+    <div id="profile-list"></div>
+    <button onclick="confirmSelection()">Add to Cart</button>
+  </div>
+</div>
+
 <script>
 
 let cart = [];
+let selectedProduct = null;
 
-// 🔥 Product mapping (used for URL auto-add)
-const productMap = {
-  full: { name: "Full Kit", price: 99.95 },
-  starter: { name: "Starter Kit", price: 49.95 },
-  wristband: { name: "Wristband", price: 14.95 },
-  dogtag: { name: "Dog Tag", price: 19.95 },
-  keychain: { name: "Keychain", price: 12.95 },
-  sticker: { name: "Sticker", price: 9.95 },
-  card: { name: "Card", price: 9.95 }
-};
+// 🔥 TEMP (replace with backend next)
+let profiles = [
+  {name:"John"},
+  {name:"Sarah"},
+  {name:"Kid 1"}
+];
+
+// 🔥 REQUIRE LOGIN
+const user = JSON.parse(localStorage.getItem("vitalink_user"));
+if(!user){
+  window.location.href = "login.html";
+}
 
 // 🔥 LOAD CART
 function loadCart(){
@@ -217,38 +248,53 @@ function saveCart(){
   localStorage.setItem("vitalink_cart", JSON.stringify(cart));
 }
 
-// 🔥 INIT
-window.onload = function () {
-
+window.onload = function(){
   loadCart();
-
-  const params = new URLSearchParams(window.location.search);
-  const product = params.get("product");
-
-  // prevent duplicate add on refresh
-  if (product && productMap[product]) {
-    const exists = cart.find(i => i.name === productMap[product].name);
-    if(!exists){
-      cart.push(productMap[product]);
-      saveCart();
-    }
-  }
-
   renderCart();
 };
 
-function addToCart(name, price){
-  cart.push({ name, price });
-  saveCart();
-  renderCart();
+// OPEN PROFILE SELECTOR
+function openSelector(name, price){
+
+  selectedProduct = {name, price};
+
+  const list = document.getElementById("profile-list");
+  list.innerHTML = "";
+
+  profiles.forEach(p=>{
+    list.innerHTML += `
+      <div class="profile">
+        <label>
+          <input type="checkbox" value="${p.name}" />
+          ${p.name}
+        </label>
+      </div>
+    `;
+  });
+
+  document.getElementById("modal").style.display = "flex";
 }
 
-function removeItem(index){
-  cart.splice(index,1);
+// CONFIRM SELECTION
+function confirmSelection(){
+
+  const checks = document.querySelectorAll("#profile-list input:checked");
+
+  checks.forEach(c=>{
+    cart.push({
+      name: selectedProduct.name,
+      price: selectedProduct.price,
+      profile: c.value
+    });
+  });
+
   saveCart();
   renderCart();
+
+  document.getElementById("modal").style.display = "none";
 }
 
+// RENDER CART
 function renderCart(){
 
   const container = document.getElementById("cart-items");
@@ -256,17 +302,14 @@ function renderCart(){
 
   let total = 0;
 
-  cart.forEach((item, i) => {
+  cart.forEach((item,i)=>{
 
     total += item.price;
 
     container.innerHTML += `
     <div class="cart-item">
-      <span>${item.name}</span>
-      <span>
-        $${item.price.toFixed(2)}
-        <button onclick="removeItem(${i})">x</button>
-      </span>
+      <span>${item.name} - ${item.profile}</span>
+      <span>$${item.price.toFixed(2)}</span>
     </div>
     `;
   });
@@ -274,17 +317,51 @@ function renderCart(){
   document.getElementById("total").innerText = total.toFixed(2);
 }
 
-function submitOrder(){
+// 🔥 SUBMIT ORDER (CONNECTED)
+async function submitOrder(){
 
   if(cart.length === 0){
     alert("Add items first");
     return;
   }
 
-  console.log("ORDER:", cart);
+  const payload = {
+    user_id: user.id,
+    items: cart.map(i => ({
+      product: i.name,
+      price: i.price,
+      profile_name: i.profile
+    }))
+  };
 
-  alert("Next step: connect to backend");
+  try{
 
+    const res = await fetch(
+      "https://vitalink-app.netlify.app/.netlify/functions/create_order",
+      {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify(payload)
+      }
+    );
+
+    const data = await res.json();
+
+    if(data.success){
+
+      localStorage.removeItem("vitalink_cart");
+
+      alert("Order submitted! Confirm in your app.");
+
+      window.location.href = "shop.html";
+
+    } else {
+      alert("Order failed");
+    }
+
+  } catch(err){
+    alert("Network error");
+  }
 }
 
 </script>
