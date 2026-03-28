@@ -204,26 +204,48 @@ const productMap = {
   card: { name: "Card", price: 9.95 }
 };
 
-// 🔥 Auto-add from URL
+// 🔥 LOAD CART
+function loadCart(){
+  const saved = localStorage.getItem("vitalink_cart");
+  if(saved){
+    cart = JSON.parse(saved);
+  }
+}
+
+// 🔥 SAVE CART
+function saveCart(){
+  localStorage.setItem("vitalink_cart", JSON.stringify(cart));
+}
+
+// 🔥 INIT
 window.onload = function () {
+
+  loadCart();
+
   const params = new URLSearchParams(window.location.search);
   const product = params.get("product");
 
+  // prevent duplicate add on refresh
   if (product && productMap[product]) {
-    addToCart(
-      productMap[product].name,
-      productMap[product].price
-    );
+    const exists = cart.find(i => i.name === productMap[product].name);
+    if(!exists){
+      cart.push(productMap[product]);
+      saveCart();
+    }
   }
+
+  renderCart();
 };
 
 function addToCart(name, price){
   cart.push({ name, price });
+  saveCart();
   renderCart();
 }
 
 function removeItem(index){
   cart.splice(index,1);
+  saveCart();
   renderCart();
 }
 
