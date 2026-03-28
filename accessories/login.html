@@ -60,13 +60,6 @@ margin-bottom:6px;
 color:#fff;
 }
 
-.instructions span{
-display:block;
-font-size:0.9rem;
-color:var(--muted);
-margin-top:6px;
-}
-
 input{
 width:100%;
 padding:12px;
@@ -76,6 +69,25 @@ border:1px solid var(--border);
 background:#000;
 color:#fff;
 font-size:0.95rem;
+}
+
+/* password wrapper */
+.password-wrap{
+position:relative;
+}
+
+.password-wrap input{
+padding-right:50px;
+}
+
+.toggle{
+position:absolute;
+right:12px;
+top:50%;
+transform:translateY(-50%);
+cursor:pointer;
+font-size:0.85rem;
+color:var(--accent);
 }
 
 button{
@@ -146,7 +158,11 @@ Use the same email and password you created in the VitaLink app
 </div>
 
 <input type="email" id="email" placeholder="Email" />
-<input type="password" id="password" placeholder="Password" />
+
+<div class="password-wrap">
+  <input type="password" id="password" placeholder="Password" />
+  <span class="toggle" onclick="togglePassword()">Show</span>
+</div>
 
 <button id="loginBtn" onclick="login()">Login</button>
 
@@ -159,6 +175,19 @@ Accessories are linked to your profiles — login required
 </div>
 
 <script>
+
+function togglePassword(){
+  const input = document.getElementById("password");
+  const toggle = document.querySelector(".toggle");
+
+  if(input.type === "password"){
+    input.type = "text";
+    toggle.innerText = "Hide";
+  } else {
+    input.type = "password";
+    toggle.innerText = "Show";
+  }
+}
 
 async function login(){
 
@@ -202,6 +231,7 @@ async function login(){
         localStorage.setItem("vitalink_token", data.token);
       }
 
+      // 🔥 REDIRECT TO SHOP
       window.location.href = "shop.html";
 
     } else {
