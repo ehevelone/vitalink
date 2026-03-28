@@ -28,25 +28,43 @@ height:100vh;
 }
 
 .card{
-width:340px;
+width:360px;
 background:var(--card);
 border:1px solid var(--border);
-border-radius:14px;
-padding:28px;
+border-radius:16px;
+padding:30px;
 box-shadow:0 10px 40px rgba(0,0,0,.6);
+text-align:center;
+}
+
+.logo{
+width:160px;
+margin-bottom:20px;
 }
 
 h2{
-margin:0 0 10px 0;
-text-align:center;
+margin:0 0 16px 0;
 }
 
 .instructions{
-font-size:0.85rem;
-color:var(--muted);
-text-align:center;
+font-size:1rem;
+color:var(--text);
 margin-bottom:18px;
-line-height:1.4;
+line-height:1.5;
+}
+
+.instructions strong{
+display:block;
+font-size:1.1rem;
+margin-bottom:6px;
+color:#fff;
+}
+
+.instructions span{
+display:block;
+font-size:0.9rem;
+color:var(--muted);
+margin-top:6px;
 }
 
 input{
@@ -78,16 +96,14 @@ cursor:not-allowed;
 
 .error{
 margin-top:12px;
-font-size:0.85rem;
+font-size:0.9rem;
 color:var(--danger);
-text-align:center;
 }
 
 .note{
 margin-top:14px;
-font-size:0.8rem;
+font-size:0.85rem;
 color:var(--muted);
-text-align:center;
 }
 </style>
 </head>
@@ -96,11 +112,17 @@ text-align:center;
 
 <div class="card">
 
-<h2>Login to VitaLink</h2>
+<!-- 🔥 LOGO -->
+<img src="assets/logo.png" class="logo" />
+
+<h2>Access Your Account</h2>
 
 <div class="instructions">
-Use the same email and password you created in the VitaLink app.<br><br>
-If you have not set up your account yet, please complete registration in the app first.
+<strong>Complete setup in the VitaLink app first</strong>
+
+Your account, profiles, and emergency information must be fully set up in the app before ordering accessories.
+
+<span>Use the same email and password you created in the app to continue.</span>
 </div>
 
 <input type="email" id="email" placeholder="Email" />
@@ -111,7 +133,7 @@ If you have not set up your account yet, please complete registration in the app
 <div id="error" class="error"></div>
 
 <div class="note">
-Access your profiles to complete your order
+Accessories are linked to your profiles — login required
 </div>
 
 </div>
