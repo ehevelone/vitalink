@@ -8,7 +8,7 @@
 <style>
 :root{
 --bg:#000;
---card:#000000; /* 🔥 FIXED */
+--card:#000000;
 --text:#eaeaea;
 --muted:#b5b5b5;
 --accent:#7cc6e8;
@@ -37,7 +37,6 @@ box-shadow:0 10px 40px rgba(0,0,0,.6);
 text-align:center;
 }
 
-/* 🔥 LOGO BACK TO ORIGINAL */
 .logo{
 width:160px;
 margin-bottom:20px;
@@ -72,7 +71,7 @@ color:#fff;
 font-size:0.95rem;
 }
 
-/* 🔥 PASSWORD WRAP FIX (NO SIZE CHANGE) */
+/* 🔥 FIXED PASSWORD FIELD */
 .password-wrap{
 position:relative;
 margin-bottom:16px;
@@ -81,18 +80,19 @@ margin-bottom:16px;
 .password-wrap input{
 width:100%;
 padding:14px;
-padding-right:50px; /* room for toggle */
 margin:0;
 }
 
 .toggle{
 position:absolute;
-right:12px;
+right:14px;
 top:50%;
 transform:translateY(-50%);
 cursor:pointer;
 font-size:0.85rem;
 color:var(--accent);
+background:#000;
+padding-left:6px;
 }
 
 button{
