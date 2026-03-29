@@ -73,6 +73,27 @@ font-size:1rem;
 cursor:pointer;
 margin-top:20px;
 }
+
+/* MODAL */
+.modal{
+position:fixed;
+top:0;
+left:0;
+right:0;
+bottom:0;
+background:rgba(0,0,0,.7);
+display:none;
+align-items:center;
+justify-content:center;
+}
+
+.modal-content{
+background:#111;
+padding:20px;
+border-radius:12px;
+width:320px;
+text-align:center;
+}
 </style>
 </head>
 
@@ -91,12 +112,31 @@ margin-top:20px;
 </div>
 
 <div class="notice">
-You will confirm this order inside your VitaLink app before it is processed.
+Approval required in your VitaLink app to generate QR access
 </div>
 
-<button onclick="submitOrder()">Submit Order</button>
+<button class="checkout" onclick="submitOrder()">
+Submit Order
+</button>
 
 </main>
+
+<!-- 🔥 WAITING MODAL -->
+<div class="modal" id="waitingModal">
+  <div class="modal-content">
+    <h3>Waiting for Approval</h3>
+
+    <p style="font-size:0.95rem; color:#ccc; line-height:1.5;">
+      Check your VitaLink app to approve this request.
+      <br><br>
+      Once approved, your order will begin processing automatically.
+    </p>
+
+    <p style="font-size:0.9rem; color:#7cc6e8; font-weight:600;">
+      This screen will update after approval.
+    </p>
+  </div>
+</div>
 
 <script>
 
@@ -116,7 +156,7 @@ function loadCart(){
   }
 }
 
-// 🔥 RENDER
+// 🔥 RENDER CART
 function render(){
 
   const container = document.getElementById("items");
@@ -140,6 +180,7 @@ function render(){
 }
 
 window.onload = function(){
+
   loadCart();
 
   if(cart.length === 0){
@@ -151,8 +192,12 @@ window.onload = function(){
   render();
 };
 
-// 🔥 SUBMIT ORDER
+// 🔥 SUBMIT ORDER REQUEST
 async function submitOrder(){
+
+  const btn = document.querySelector(".checkout");
+  btn.disabled = true;
+  btn.innerText = "Submitting...";
 
   const payload = {
     user_id: user.id,
@@ -166,7 +211,7 @@ async function submitOrder(){
   try{
 
     const res = await fetch(
-      "https://vitalink-app.netlify.app/.netlify/functions/create_order",
+      "https://vitalink-app.netlify.app/.netlify/functions/create_order_request",
       {
         method:"POST",
         headers:{ "Content-Type":"application/json" },
@@ -178,18 +223,22 @@ async function submitOrder(){
 
     if(data.success){
 
-      localStorage.removeItem("vitalink_cart");
+      // 🔥 SHOW WAITING MODAL
+      document.getElementById("waitingModal").style.display = "flex";
 
-      alert("Order submitted! Please confirm in your app.");
-
-      window.location.href = "shop.html";
+      // store request id if needed later
+      localStorage.setItem("last_order_request", data.request_id);
 
     } else {
       alert("Order failed");
+      btn.disabled = false;
+      btn.innerText = "Submit Order";
     }
 
   } catch(err){
     alert("Network error");
+    btn.disabled = false;
+    btn.innerText = "Submit Order";
   }
 }
 

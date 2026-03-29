@@ -106,7 +106,7 @@ font-weight:600;
 cursor:pointer;
 }
 
-/* MODAL */
+/* MODALS */
 .modal{
 position:fixed;
 top:0;
@@ -123,7 +123,7 @@ justify-content:center;
 background:#111;
 padding:20px;
 border-radius:12px;
-width:300px;
+width:320px;
 }
 
 .profile{
@@ -198,7 +198,12 @@ margin-bottom:8px;
 Total: $<span id="total">0.00</span>
 </div>
 
-<button class="checkout" onclick="submitOrder()">
+<!-- 🔥 MICRO TRUST LINE -->
+<div style="font-size:0.8rem; color:#888; margin-top:10px;">
+QR access is only created after approval in your VitaLink app
+</div>
+
+<button class="checkout" onclick="goToCheckout()">
 Continue
 </button>
 
@@ -217,25 +222,44 @@ Continue
   </div>
 </div>
 
+<!-- 🔥 APPROVAL MODAL -->
+<div class="modal" id="approvalModal">
+  <div class="modal-content">
+    <h3>Approval Required</h3>
+
+    <p style="font-size:0.95rem; color:#ccc; line-height:1.5;">
+      To complete your order, you will receive a notification in your VitaLink app.
+      <br><br>
+      You will approve sending secure QR access for the selected profiles on this order.
+    </p>
+
+    <p style="font-size:0.9rem; color:#7cc6e8; font-weight:600;">
+      Your information stays protected — QR access is only created after you approve.
+    </p>
+
+    <button onclick="proceedToCheckout()">Continue</button>
+  </div>
+</div>
+
 <script>
 
 let cart = [];
 let selectedProduct = null;
 
-// 🔥 TEMP (replace with backend next)
+// TEMP (replace with backend later)
 let profiles = [
   {name:"John"},
   {name:"Sarah"},
   {name:"Kid 1"}
 ];
 
-// 🔥 REQUIRE LOGIN
+// REQUIRE LOGIN
 const user = JSON.parse(localStorage.getItem("vitalink_user"));
 if(!user){
   window.location.href = "login.html";
 }
 
-// 🔥 LOAD CART
+// LOAD CART
 function loadCart(){
   const saved = localStorage.getItem("vitalink_cart");
   if(saved){
@@ -243,7 +267,7 @@ function loadCart(){
   }
 }
 
-// 🔥 SAVE CART
+// SAVE CART
 function saveCart(){
   localStorage.setItem("vitalink_cart", JSON.stringify(cart));
 }
@@ -253,7 +277,7 @@ window.onload = function(){
   renderCart();
 };
 
-// OPEN PROFILE SELECTOR
+// OPEN SELECTOR
 function openSelector(name, price){
 
   selectedProduct = {name, price};
@@ -275,7 +299,7 @@ function openSelector(name, price){
   document.getElementById("modal").style.display = "flex";
 }
 
-// CONFIRM SELECTION
+// CONFIRM
 function confirmSelection(){
 
   const checks = document.querySelectorAll("#profile-list input:checked");
@@ -294,7 +318,7 @@ function confirmSelection(){
   document.getElementById("modal").style.display = "none";
 }
 
-// RENDER CART
+// RENDER
 function renderCart(){
 
   const container = document.getElementById("cart-items");
@@ -302,8 +326,7 @@ function renderCart(){
 
   let total = 0;
 
-  cart.forEach((item,i)=>{
-
+  cart.forEach(item=>{
     total += item.price;
 
     container.innerHTML += `
@@ -317,51 +340,22 @@ function renderCart(){
   document.getElementById("total").innerText = total.toFixed(2);
 }
 
-// 🔥 SUBMIT ORDER (CONNECTED)
-async function submitOrder(){
+// 🔥 SHOW APPROVAL STEP
+function goToCheckout(){
 
   if(cart.length === 0){
     alert("Add items first");
     return;
   }
 
-  const payload = {
-    user_id: user.id,
-    items: cart.map(i => ({
-      product: i.name,
-      price: i.price,
-      profile_name: i.profile
-    }))
-  };
+  document.getElementById("approvalModal").style.display = "flex";
+}
 
-  try{
+// 🔥 FINAL STEP
+function proceedToCheckout(){
 
-    const res = await fetch(
-      "https://vitalink-app.netlify.app/.netlify/functions/create_order",
-      {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify(payload)
-      }
-    );
-
-    const data = await res.json();
-
-    if(data.success){
-
-      localStorage.removeItem("vitalink_cart");
-
-      alert("Order submitted! Confirm in your app.");
-
-      window.location.href = "shop.html";
-
-    } else {
-      alert("Order failed");
-    }
-
-  } catch(err){
-    alert("Network error");
-  }
+  saveCart();
+  window.location.href = "checkout.html";
 }
 
 </script>
