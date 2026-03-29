@@ -198,7 +198,6 @@ margin-bottom:8px;
 Total: $<span id="total">0.00</span>
 </div>
 
-<!-- 🔥 MICRO TRUST LINE -->
 <div style="font-size:0.8rem; color:#888; margin-top:10px;">
 QR access is only created after approval in your VitaLink app
 </div>
@@ -222,7 +221,7 @@ Continue
   </div>
 </div>
 
-<!-- 🔥 APPROVAL MODAL -->
+<!-- APPROVAL MODAL -->
 <div class="modal" id="approvalModal">
   <div class="modal-content">
     <h3>Approval Required</h3>
@@ -234,7 +233,7 @@ Continue
     </p>
 
     <p style="font-size:0.9rem; color:#7cc6e8; font-weight:600;">
-      Your information stays protected — QR access is only created after you approve.
+      QR access is only created after you approve.
     </p>
 
     <button onclick="proceedToCheckout()">Continue</button>
@@ -245,18 +244,38 @@ Continue
 
 let cart = [];
 let selectedProduct = null;
-
-// TEMP (replace with backend later)
-let profiles = [
-  {name:"John"},
-  {name:"Sarah"},
-  {name:"Kid 1"}
-];
+let profiles = [];
 
 // REQUIRE LOGIN
 const user = JSON.parse(localStorage.getItem("vitalink_user"));
 if(!user){
   window.location.href = "login.html";
+}
+
+// 🔥 LOAD PROFILES FROM BACKEND
+async function loadProfiles(){
+
+  try{
+
+    const res = await fetch(
+      "https://vitalink-app.netlify.app/.netlify/functions/get-profiles",
+      {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ user_id: user.id })
+      }
+    );
+
+    const data = await res.json();
+
+    if(data.success){
+      profiles = data.profiles;
+    }
+
+  }catch(e){
+    console.error("Profile load failed", e);
+  }
+
 }
 
 // LOAD CART
@@ -272,8 +291,9 @@ function saveCart(){
   localStorage.setItem("vitalink_cart", JSON.stringify(cart));
 }
 
-window.onload = function(){
+window.onload = async function(){
   loadCart();
+  await loadProfiles();
   renderCart();
 };
 
@@ -340,7 +360,7 @@ function renderCart(){
   document.getElementById("total").innerText = total.toFixed(2);
 }
 
-// 🔥 SHOW APPROVAL STEP
+// APPROVAL
 function goToCheckout(){
 
   if(cart.length === 0){
@@ -351,9 +371,8 @@ function goToCheckout(){
   document.getElementById("approvalModal").style.display = "flex";
 }
 
-// 🔥 FINAL STEP
+// FINAL
 function proceedToCheckout(){
-
   saveCart();
   window.location.href = "checkout.html";
 }
