@@ -256,7 +256,7 @@ if(!user){
 async function loadProfiles(){
   try{
     const res = await fetch(
-      "https://vitalink-app.netlify.app/.netlify/functions/get-profiles",
+      "https://vitalink-app.netlify.app/.netlify/functions/get_profiles",
       {
         method:"POST",
         headers:{ "Content-Type":"application/json" },
