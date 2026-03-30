@@ -356,7 +356,7 @@ async function proceedToCheckout(){
   try{
 
     const res = await fetch(
-      "https://vitalink-app.netlify.app/.netlify/functions/create-order",
+      "https://vitalink-app.netlify.app/.netlify/functions/create-order-request",
       {
         method: "POST",
         headers: { "Content-Type":"application/json" },
