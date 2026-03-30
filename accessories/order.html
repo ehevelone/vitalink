@@ -245,14 +245,13 @@ Continue
 let cart = [];
 let selectedProduct = null;
 let profiles = [];
+let currentOrderId = null;
 
-// REQUIRE LOGIN
 const user = JSON.parse(localStorage.getItem("vitalink_user"));
 if(!user){
   window.location.href = "login.html";
 }
 
-// 🔥 LOAD PROFILES
 async function loadProfiles(){
   try{
     const res = await fetch(
@@ -279,7 +278,6 @@ async function loadProfiles(){
   }
 }
 
-// LOAD CART
 function loadCart(){
   const saved = localStorage.getItem("vitalink_cart");
   if(saved){
@@ -287,7 +285,6 @@ function loadCart(){
   }
 }
 
-// SAVE CART
 function saveCart(){
   localStorage.setItem("vitalink_cart", JSON.stringify(cart));
 }
@@ -298,7 +295,6 @@ window.onload = async function(){
   renderCart();
 };
 
-// OPEN SELECTOR
 function openSelector(name, price){
 
   selectedProduct = {name, price};
@@ -320,7 +316,6 @@ function openSelector(name, price){
   document.getElementById("modal").style.display = "flex";
 }
 
-// CONFIRM
 function confirmSelection(){
 
   const checks = document.querySelectorAll("#profile-list input:checked");
@@ -339,7 +334,6 @@ function confirmSelection(){
   document.getElementById("modal").style.display = "none";
 }
 
-// RENDER
 function renderCart(){
 
   const container = document.getElementById("cart-items");
@@ -361,7 +355,6 @@ function renderCart(){
   document.getElementById("total").innerText = total.toFixed(2);
 }
 
-// APPROVAL
 function goToCheckout(){
 
   if(cart.length === 0){
@@ -372,10 +365,83 @@ function goToCheckout(){
   document.getElementById("approvalModal").style.display = "flex";
 }
 
-// FINAL
-function proceedToCheckout(){
-  saveCart();
-  window.location.href = "checkout.html";
+async function proceedToCheckout(){
+
+  try{
+
+    const res = await fetch(
+      "https://vitalink-app.netlify.app/.netlify/functions/create-order",
+      {
+        method: "POST",
+        headers: { "Content-Type":"application/json" },
+        body: JSON.stringify({
+          user_id: user.id,
+          cart: cart
+        })
+      }
+    );
+
+    const data = await res.json();
+
+    if(!res.ok){
+      throw new Error(data.error || "Order failed");
+    }
+
+    currentOrderId = data.order_id;
+
+    document.querySelector("#approvalModal .modal-content").innerHTML = `
+      <h3>Waiting for Approval</h3>
+      <p style="color:#ccc;">
+        Open your VitaLink app and approve this request.
+      </p>
+      <p style="font-size:0.8rem;color:#888;">
+        This screen will continue automatically once approved.
+      </p>
+    `;
+
+    pollApproval();
+
+  }catch(e){
+    console.error("Order error:", e);
+    alert("Something went wrong creating your order.");
+  }
+
+}
+
+async function pollApproval(){
+
+  const interval = setInterval(async ()=>{
+
+    try{
+
+      const res = await fetch(
+        "https://vitalink-app.netlify.app/.netlify/functions/check-order-status",
+        {
+          method:"POST",
+          headers:{ "Content-Type":"application/json" },
+          body: JSON.stringify({
+            order_id: currentOrderId
+          })
+        }
+      );
+
+      const data = await res.json();
+
+      if(data.status === "approved"){
+
+        clearInterval(interval);
+
+        localStorage.removeItem("vitalink_cart");
+
+        window.location.href = "checkout.html?order_id=" + currentOrderId;
+      }
+
+    }catch(e){
+      console.error("Polling error", e);
+    }
+
+  }, 3000);
+
 }
 
 </script>
