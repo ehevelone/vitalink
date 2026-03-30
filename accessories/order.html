@@ -255,7 +255,9 @@ async function loadProfiles(){
       {
         method:"POST",
         headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({ user_id: user.id })
+        body: JSON.stringify({ user_id: user.id }),
+        mode:"cors",
+        credentials:"omit"
       }
     );
 
@@ -351,7 +353,6 @@ function goToCheckout(){
   document.getElementById("approvalModal").style.display = "flex";
 }
 
-/* 🔥 FIXED FUNCTION */
 async function proceedToCheckout(){
 
   try{
@@ -364,7 +365,9 @@ async function proceedToCheckout(){
         body: JSON.stringify({
           user_id: user.id,
           cart: cart
-        })
+        }),
+        mode:"cors",
+        credentials:"omit"
       }
     );
 
@@ -416,7 +419,9 @@ async function pollApproval(){
           headers:{ "Content-Type":"application/json" },
           body: JSON.stringify({
             order_id: currentOrderId
-          })
+          }),
+          mode:"cors",
+          credentials:"omit"
         }
       );
 
