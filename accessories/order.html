@@ -140,7 +140,6 @@ margin-bottom:8px;
 
 <div class="grid">
 
-<!-- PRODUCTS -->
 <div class="products">
 
 <div class="card">
@@ -187,7 +186,6 @@ margin-bottom:8px;
 
 </div>
 
-<!-- CART -->
 <div class="cart">
 
 <h2>Your Cart</h2>
@@ -212,7 +210,6 @@ Continue
 
 </main>
 
-<!-- PROFILE MODAL -->
 <div class="modal" id="modal">
   <div class="modal-content">
     <h3>Select Profiles</h3>
@@ -221,7 +218,6 @@ Continue
   </div>
 </div>
 
-<!-- APPROVAL MODAL -->
 <div class="modal" id="approvalModal">
   <div class="modal-content">
     <h3>Approval Required</h3>
@@ -263,13 +259,9 @@ async function loadProfiles(){
       }
     );
 
-    if(!res.ok){
-      throw new Error("API failed: " + res.status);
-    }
-
     const data = await res.json();
 
-    if(data.success){
+    if(res.ok && data.success){
       profiles = data.profiles;
     }
 
@@ -296,7 +288,6 @@ window.onload = async function(){
 };
 
 function openSelector(name, price){
-
   selectedProduct = {name, price};
 
   const list = document.getElementById("profile-list");
@@ -317,7 +308,6 @@ function openSelector(name, price){
 }
 
 function confirmSelection(){
-
   const checks = document.querySelectorAll("#profile-list input:checked");
 
   checks.forEach(c=>{
@@ -330,12 +320,10 @@ function confirmSelection(){
 
   saveCart();
   renderCart();
-
   document.getElementById("modal").style.display = "none";
 }
 
 function renderCart(){
-
   const container = document.getElementById("cart-items");
   container.innerHTML = "";
 
@@ -356,12 +344,10 @@ function renderCart(){
 }
 
 function goToCheckout(){
-
   if(cart.length === 0){
     alert("Add items first");
     return;
   }
-
   document.getElementById("approvalModal").style.display = "flex";
 }
 
@@ -383,7 +369,7 @@ async function proceedToCheckout(){
 
     const data = await res.json();
 
-    if(!res.ok){
+    if(!res.ok || !data.success){
       throw new Error(data.error || "Order failed");
     }
 
@@ -427,12 +413,9 @@ async function pollApproval(){
 
       const data = await res.json();
 
-      if(data.status === "approved"){
-
+      if(res.ok && data.status === "approved"){
         clearInterval(interval);
-
         localStorage.removeItem("vitalink_cart");
-
         window.location.href = "checkout.html?order_id=" + currentOrderId;
       }
 
