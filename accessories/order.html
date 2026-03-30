@@ -364,7 +364,7 @@ function renderCart(){
 function goToCheckout(){
 
   if(cart.length === 0){fetch(
-  "https://vitalink-app.netlify.app/.netlify/functions/get-profile",
+  "https://vitalink-app.netlify.app/.netlify/functions/get_profiles",
     alert("Add items first");
     return;
   }
