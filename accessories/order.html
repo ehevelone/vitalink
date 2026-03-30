@@ -252,11 +252,9 @@ if(!user){
   window.location.href = "login.html";
 }
 
-// 🔥 LOAD PROFILES FROM BACKEND
+// 🔥 LOAD PROFILES
 async function loadProfiles(){
-
   try{
-
     const res = await fetch(
       "https://vitalink-app.netlify.app/.netlify/functions/get-profiles",
       {
@@ -265,6 +263,10 @@ async function loadProfiles(){
         body: JSON.stringify({ user_id: user.id })
       }
     );
+
+    if(!res.ok){
+      throw new Error("API failed: " + res.status);
+    }
 
     const data = await res.json();
 
@@ -275,7 +277,6 @@ async function loadProfiles(){
   }catch(e){
     console.error("Profile load failed", e);
   }
-
 }
 
 // LOAD CART
@@ -309,8 +310,8 @@ function openSelector(name, price){
     list.innerHTML += `
       <div class="profile">
         <label>
-          <input type="checkbox" value="${p.name}" />
-          ${p.name}
+          <input type="checkbox" value="${encodeURIComponent(p.name)}" />
+          ${p.name.replace(/"/g, "&quot;")}
         </label>
       </div>
     `;
@@ -328,7 +329,7 @@ function confirmSelection(){
     cart.push({
       name: selectedProduct.name,
       price: selectedProduct.price,
-      profile: c.value
+      profile: decodeURIComponent(c.value)
     });
   });
 
@@ -363,8 +364,7 @@ function renderCart(){
 // APPROVAL
 function goToCheckout(){
 
-  if(cart.length === 0){fetch(
-  "https://vitalink-app.netlify.app/.netlify/functions/get_profiles",
+  if(cart.length === 0){
     alert("Add items first");
     return;
   }
