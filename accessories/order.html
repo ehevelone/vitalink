@@ -351,6 +351,7 @@ function goToCheckout(){
   document.getElementById("approvalModal").style.display = "flex";
 }
 
+/* 🔥 FIXED FUNCTION */
 async function proceedToCheckout(){
 
   try{
@@ -367,9 +368,20 @@ async function proceedToCheckout(){
       }
     );
 
-    const data = await res.json();
+    const text = await res.text();
 
-    if(!res.ok || !data.success){
+    let data;
+    try{
+      data = JSON.parse(text);
+    }catch{
+      throw new Error("Bad response: " + text);
+    }
+
+    if(!res.ok){
+      throw new Error("HTTP " + res.status);
+    }
+
+    if(!data.success){
       throw new Error(data.error || "Order failed");
     }
 
@@ -380,16 +392,13 @@ async function proceedToCheckout(){
       <p style="color:#ccc;">
         Open your VitaLink app and approve this request.
       </p>
-      <p style="font-size:0.8rem;color:#888;">
-        This screen will continue automatically once approved.
-      </p>
     `;
 
     pollApproval();
 
   }catch(e){
     console.error("Order error:", e);
-    alert("Something went wrong creating your order.");
+    alert(e.message);
   }
 
 }
