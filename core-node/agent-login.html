@@ -170,6 +170,9 @@ footer{
   <div class="field">
     <label>Password</label>
     <input type="password" id="password" />
+    <div style="margin-top:6px; font-size:0.8rem; color:#7cc6e8; cursor:pointer;" onclick="togglePassword()">
+      Show Password
+    </div>
   </div>
 
   <button id="loginBtn" type="button">Login</button>
@@ -233,6 +236,12 @@ window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("verifyBtn").addEventListener("click", verifyCode);
 });
 
+// 🔥 NEW FUNCTION (ONLY ADDITION)
+function togglePassword() {
+  const input = document.getElementById("password");
+  input.type = input.type === "password" ? "text" : "password";
+}
+
 function showError(msg){
   const el = document.getElementById("error");
   el.innerText = msg;
@@ -261,7 +270,6 @@ async function login() {
     const data = await res.json();
     console.log("LOGIN RESPONSE:", data);
 
-    // ✅ normal login
     if (data.step === "login_success") {
 
       sessionStorage.setItem("agentSessionToken", data.token || "dev");
@@ -271,7 +279,6 @@ async function login() {
       return;
     }
 
-    // 🔥 2FA FLOW
     if (data.step === "firebase_2fa") {
 
       currentEmail = email;
@@ -294,7 +301,7 @@ async function login() {
       return;
     }
 
-    showError("Unexpected response");
+    showError(data.error || "Unexpected response");
 
   } catch (err) {
     console.error(err);
