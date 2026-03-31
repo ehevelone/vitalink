@@ -149,6 +149,9 @@ footer {
   <div class="field">
     <label>Password</label>
     <input type="password" id="password" />
+    <div style="margin-top:6px; font-size:0.8rem; color:#7cc6e8; cursor:pointer;" onclick="togglePassword('password')">
+      Show Password
+    </div>
   </div>
 
   <button id="loginBtn">Login</button>
@@ -184,6 +187,9 @@ footer {
   <div class="field">
     <label>New Password</label>
     <input type="password" id="newPassword" />
+    <div style="margin-top:6px; font-size:0.8rem; color:#7cc6e8; cursor:pointer;" onclick="togglePassword('newPassword')">
+      Show Password
+    </div>
   </div>
 
   <button onclick="confirmReset()">Reset Password</button>
@@ -215,6 +221,12 @@ let currentEmail = null;
 
 document.getElementById("loginBtn").addEventListener("click", login);
 document.getElementById("verifyBtn").addEventListener("click", verifyCode);
+
+// 🔥 NEW (ONLY ADDITION)
+function togglePassword(id) {
+  const input = document.getElementById(id);
+  input.type = input.type === "password" ? "text" : "password";
+}
 
 function showError(msg){
   const el = document.getElementById("error");
