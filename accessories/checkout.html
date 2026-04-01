@@ -121,7 +121,6 @@ Submit Order
 
 </main>
 
-<!-- 🔥 WAITING MODAL -->
 <div class="modal" id="waitingModal">
   <div class="modal-content">
     <h3>Waiting for Approval</h3>
@@ -142,13 +141,11 @@ Submit Order
 
 let cart = [];
 
-// 🔒 REQUIRE LOGIN
 const user = JSON.parse(localStorage.getItem("vitalink_user"));
 if(!user){
   window.location.href = "login.html";
 }
 
-// 🔥 LOAD CART
 function loadCart(){
   const saved = localStorage.getItem("vitalink_cart");
   if(saved){
@@ -156,7 +153,6 @@ function loadCart(){
   }
 }
 
-// 🔥 RENDER CART
 function render(){
 
   const container = document.getElementById("items");
@@ -192,7 +188,6 @@ window.onload = function(){
   render();
 };
 
-// 🔥 SUBMIT ORDER REQUEST
 async function submitOrder(){
 
   const btn = document.querySelector(".checkout");
@@ -211,7 +206,7 @@ async function submitOrder(){
   try{
 
     const res = await fetch(
-      "https://vitalink-app.netlify.app/.netlify/functions/create_order_request",
+      "https://vitalink-app.netlify.app/.netlify/functions/create-order-request",
       {
         method:"POST",
         headers:{ "Content-Type":"application/json" },
@@ -223,11 +218,10 @@ async function submitOrder(){
 
     if(data.success){
 
-      // 🔥 SHOW WAITING MODAL
       document.getElementById("waitingModal").style.display = "flex";
 
-      // store request id if needed later
-      localStorage.setItem("last_order_request", data.request_id);
+      // 🔥 FIXED
+      localStorage.setItem("last_order_request", data.order_id);
 
     } else {
       alert("Order failed");
