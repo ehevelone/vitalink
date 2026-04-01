@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>VitaLink — Order Complete</title>
+
+<style>
+
+:root{
+  --bg-black:#000000;
+  --text-primary:#eaeaea;
+  --text-muted:#b5b5b5;
+  --accent-blue:#7cc6e8;
+  --divider:#1e1e1e;
+}
+
+*{box-sizing:border-box;}
+
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:var(--bg-black);
+  color:var(--text-primary);
+}
+
+/* LAYOUT */
+.container{
+  max-width:520px;
+  margin:0 auto;
+  padding:80px 20px;
+  text-align:center;
+}
+
+/* CARD */
+.card{
+  background:#111;
+  border:1px solid var(--divider);
+  border-radius:16px;
+  padding:32px 24px;
+  box-shadow:0 0 0 1px rgba(124,198,232,0.06), 0 20px 50px rgba(0,0,0,0.6);
+}
+
+/* TITLE */
+h1{
+  margin:0 0 12px 0;
+  font-size:2rem;
+  font-weight:600;
+}
+
+/* TEXT */
+p{
+  color:var(--text-muted);
+  margin-bottom:20px;
+}
+
+/* BUTTON */
+button{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:10px;
+  background:var(--accent-blue);
+  color:#000;
+  font-weight:600;
+  font-size:1rem;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+button:hover{
+  opacity:0.9;
+}
+
+/* STATUS */
+.status{
+  margin-top:16px;
+  font-size:0.9rem;
+  color:#8f8f8f;
+}
+
+.success{
+  color:#7cc6e8;
+}
+
+.error{
+  color:#ff5a5a;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="card">
+
+    <h1>Order Complete</h1>
+
+    <p>
+      Your order has been received.<br>
+      Finalize below to deliver your QR access.
+    </p>
+
+    <button onclick="submitOrder()">Finish & Send Order</button>
+
+    <div id="status" class="status"></div>
+
+  </div>
+
+</div>
+
+<script>
+
+const params = new URLSearchParams(window.location.search);
+
+const request_id = params.get("request_id");
+const isTest = params.get("test");
+
+async function submitOrder(){
+
+  const statusEl = document.getElementById("status");
+
+  try{
+
+    // 🔒 TEST MODE (NO BACKEND HIT)
+    if(isTest){
+      statusEl.innerHTML = "TEST MODE — no order sent";
+      statusEl.className = "status success";
+      return;
+    }
+
+    if(!request_id){
+      statusEl.innerHTML = "Missing order reference";
+      statusEl.className = "status error";
+      return;
+    }
+
+    statusEl.innerHTML = "Sending order...";
+    statusEl.className = "status";
+
+    const res = await fetch(
+      "https://vitalink-app.netlify.app/.netlify/functions/order-approval",
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body: JSON.stringify({
+          request_id: request_id,
+          approved: true
+        })
+      }
+    );
+
+    const data = await res.json();
+
+    if(data.success){
+      statusEl.innerHTML = "Order sent successfully ✔";
+      statusEl.className = "status success";
+    }else{
+      statusEl.innerHTML = "Order failed";
+      statusEl.className = "status error";
+    }
+
+  }catch(err){
+    console.error(err);
+    statusEl.innerHTML = "Error sending order";
+    statusEl.className = "status error";
+  }
+}
+
+</script>
+
+</body>
+</html>
