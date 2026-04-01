@@ -223,7 +223,6 @@ tr:nth-child(even){
 <h2>Create RSM</h2>
 
 <input id="rsmEmail" placeholder="RSM Email" />
-
 <input id="rsmPhone" placeholder="RSM Phone (+1...)" />
 
 <button class="primary" id="createBtn">Create RSM</button>
@@ -252,8 +251,6 @@ tr:nth-child(even){
 </table>
 
 </div>
-
-<!-- ✅ NEW CLIENT SECTION -->
 
 <div class="section">
 
@@ -294,7 +291,6 @@ window.location.href="admin.html";
 const toggle=document.getElementById("themeToggle");
 
 function applyTheme(theme){
-
 if(theme==="light"){
 document.body.classList.add("light");
 toggle.textContent="Dark Mode";
@@ -302,20 +298,15 @@ toggle.textContent="Dark Mode";
 document.body.classList.remove("light");
 toggle.textContent="Light Mode";
 }
-
 }
 
 const savedTheme=localStorage.getItem("theme")||"dark";
 applyTheme(savedTheme);
 
 toggle.onclick=()=>{
-
 const newTheme=document.body.classList.contains("light")?"dark":"light";
-
 localStorage.setItem("theme",newTheme);
-
 applyTheme(newTheme);
-
 };
 
 /* LOAD STATS */
@@ -323,7 +314,7 @@ applyTheme(newTheme);
 async function loadStats(){
 
 const res=await fetch(BACKEND+"/admin-stats",{
-headers:{ "x-admin-token":token }
+headers:{ "x-admin-session":token }  // ✅ FIXED
 });
 
 if(!res.ok){
@@ -344,14 +335,12 @@ const tbody=document.getElementById("rsmBreakdown");
 tbody.innerHTML="";
 
 data.breakdown.forEach(rsm=>{
-
 tbody.innerHTML+=`
 <tr>
 <td>${rsm.email}</td>
 <td>${rsm.active_agents}</td>
 </tr>
 `;
-
 });
 
 }
@@ -372,7 +361,7 @@ const res=await fetch(BACKEND+"/create-rsm",{
 method:"POST",
 headers:{
 "Content-Type":"application/json",
-"x-admin-token":token
+"x-admin-session":token   // ✅ FIXED
 },
 body:JSON.stringify({email,phone})
 });
@@ -438,7 +427,6 @@ return;
 }
 
 data.clients.forEach(c=>{
-
 tbody.innerHTML+=`
 <tr>
 <td>${c.first_name} ${c.last_name}</td>
@@ -446,7 +434,6 @@ tbody.innerHTML+=`
 <td>${c.phone||""}</td>
 </tr>
 `;
-
 });
 
 }catch(err){
