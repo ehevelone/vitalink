@@ -207,12 +207,12 @@ tr:nth-child(even){
 </div>
 
 <div class="card">
-<h2>Active Agents</h2>
+<h2>RSM Users</h2>
 <p id="activeAgents">0</p>
 </div>
 
 <div class="card">
-<h2>Inactive Agents</h2>
+<h2>Independent Users</h2>
 <p id="inactiveAgents">0</p>
 </div>
 
@@ -235,16 +235,15 @@ tr:nth-child(even){
 
 <div class="section">
 
-<h2>Breakdown by RSM</h2>
+<h2>Breakdown Summary</h2>
 
 <table>
 
 <thead>
 <tr>
-<th>RSM Email</th>
-<th>Total Agents</th>
-<th>Active Agents</th>
-<th>Inactive Agents</th>
+<th>Category</th>
+<th>Agents</th>
+<th colspan="2">Users</th>
 </tr>
 </thead>
 
@@ -308,25 +307,35 @@ return;
 
 const data=await res.json();
 
-document.getElementById("totalRSMs").innerText=data.total_rsms;
-document.getElementById("totalAgents").innerText=data.total_enrolled_agents;
+// 🔥 TOTALS
+document.getElementById("totalRSMs").innerText = data.total_rsms;
 
-document.getElementById("activeAgents").innerText=data.active_agents||0;
-document.getElementById("inactiveAgents").innerText=data.inactive_agents||0;
+document.getElementById("totalAgents").innerText =
+  (data.rsm_agents || 0) + (data.independent_agents || 0);
 
+document.getElementById("activeAgents").innerText = data.rsm_users || 0;
+document.getElementById("inactiveAgents").innerText = data.independent_users || 0;
+
+// 🔥 BREAKDOWN
 const tbody=document.getElementById("rsmBreakdown");
-tbody.innerHTML="";
-
-data.breakdown.forEach(rsm=>{
-tbody.innerHTML+=`
+tbody.innerHTML=`
 <tr>
-<td>${rsm.email}</td>
-<td>${rsm.total_agents}</td>
-<td>${rsm.active_agents}</td>
-<td>${rsm.inactive_agents}</td>
+<td><strong>RSM Structure</strong></td>
+<td>${data.rsm_agents}</td>
+<td colspan="2">${data.rsm_users} Users</td>
+</tr>
+
+<tr>
+<td><strong>Independent Agents</strong></td>
+<td>${data.independent_agents}</td>
+<td colspan="2">${data.independent_agent_users} Users</td>
+</tr>
+
+<tr>
+<td><strong>Independent Users</strong></td>
+<td colspan="3">${data.independent_users}</td>
 </tr>
 `;
-});
 
 }
 
