@@ -420,7 +420,7 @@ function startPolling(){
         {
           method:"POST",
           headers:{ "Content-Type":"application/json" },
-          body: JSON.stringify({ request_id: currentOrderId })
+          body: JSON.stringify({ order_id: currentOrderId })
         }
       );
 
@@ -448,7 +448,7 @@ function startPolling(){
             headers:{ "Content-Type":"application/json" },
             body: JSON.stringify({
               amount: amount,
-              request_id: currentOrderId,
+              order_id: currentOrderId,
               test: true
             })
           }
