@@ -87,6 +87,31 @@ button:hover{
   color:#ff5a5a;
 }
 
+/* QR DISPLAY */
+.qr-list{
+  margin:20px 0;
+  text-align:left;
+}
+
+.qr-item{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px 0;
+  border-bottom:1px solid var(--divider);
+}
+
+.qr-name{
+  font-size:1rem;
+}
+
+.qr-item img{
+  width:72px;
+  height:72px;
+  background:#fff;
+  border-radius:6px;
+}
+
 </style>
 </head>
 
@@ -100,8 +125,10 @@ button:hover{
 
     <p>
       Your order has been received.<br>
-      QR access is created after approval in your VitaLink app.
+      QR access is shown below.
     </p>
+
+    <div id="qrList" class="qr-list"></div>
 
     <button onclick="submitOrder()">Finish</button>
 
@@ -114,10 +141,57 @@ button:hover{
 <script>
 
 const params = new URLSearchParams(window.location.search);
-
-// 🔥 FIX: support BOTH param names
 const request_id = params.get("request_id") || params.get("order_id");
 
+/* 🔥 FIXED TO MATCH YOUR BACKEND */
+async function loadOrder(){
+
+  const qrList = document.getElementById("qrList");
+
+  if(!request_id){
+    qrList.innerHTML = "<div class='status error'>Missing order</div>";
+    return;
+  }
+
+  try{
+
+    const res = await fetch(
+      "https://vitalink-app.netlify.app/.netlify/functions/get_pending_orders",
+      {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ request_id })
+      }
+    );
+
+    const data = await res.json();
+
+    if(!data.orders || data.orders.length === 0){
+      qrList.innerHTML = "<div class='status error'>No order found</div>";
+      return;
+    }
+
+    const order = data.orders[0];
+
+    if(!order.qr || order.qr.length === 0){
+      qrList.innerHTML = "<div class='status error'>No QR data</div>";
+      return;
+    }
+
+    qrList.innerHTML = order.qr.map(q => `
+      <div class="qr-item">
+        <div class="qr-name">${q.profile}</div>
+        <img src="${q.qr_url}" />
+      </div>
+    `).join("");
+
+  }catch(e){
+    console.error(e);
+    qrList.innerHTML = "<div class='status error'>Failed to load QRs</div>";
+  }
+}
+
+/* EXISTING FUNCTION */
 function submitOrder(){
 
   const statusEl = document.getElementById("status");
@@ -132,7 +206,8 @@ function submitOrder(){
   statusEl.className = "status success";
 }
 
-// 🔥 AUTO RUN ON LOAD (no button needed, but button still works)
+/* RUN */
+loadOrder();
 submitOrder();
 
 </script>
