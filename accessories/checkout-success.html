@@ -114,7 +114,9 @@ button:hover{
 <script>
 
 const params = new URLSearchParams(window.location.search);
-const request_id = params.get("request_id");
+
+// 🔥 FIX: support BOTH param names
+const request_id = params.get("request_id") || params.get("order_id");
 
 function submitOrder(){
 
@@ -126,9 +128,12 @@ function submitOrder(){
     return;
   }
 
-  statusEl.innerHTML = "Order already approved ✔";
+  statusEl.innerHTML = "Order complete ✔";
   statusEl.className = "status success";
 }
+
+// 🔥 AUTO RUN ON LOAD (no button needed, but button still works)
+submitOrder();
 
 </script>
 
