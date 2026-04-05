@@ -25,7 +25,6 @@ body.light{
 --alert-bg:#ffeaea;
 }
 
-/* 🔥 LIGHT MODE FIX */
 body.light .value{ color:#111; }
 body.light .label{ color:#555; }
 body.light .alert{
@@ -38,13 +37,11 @@ body.light .card{
 box-shadow:0 10px 30px rgba(0,0,0,0.1);
 }
 
-/* 🔥 EMS MODE GLOBAL SCALE */
 body.ems{
 --text:#ffffff;
 --muted:#cccccc;
 }
 
-/* BASE */
 body{
 margin:0;
 background:var(--bg);
@@ -74,14 +71,12 @@ text-align:center;
 margin-bottom:18px;
 }
 
-/* 🔥 SECTION SPACING BOOST */
 .section{
 margin-bottom:22px;
 border-top:1px solid var(--divider);
 padding-top:16px;
 }
 
-/* 🔥 LABELS — BIGGER */
 .label{
 font-size:15px;
 font-weight:600;
@@ -90,7 +85,6 @@ text-transform:uppercase;
 letter-spacing:0.05em;
 }
 
-/* 🔥 VALUES — BIGGER */
 .value{
 font-size:20px;
 margin-top:6px;
@@ -98,7 +92,6 @@ line-height:1.5;
 font-weight:500;
 }
 
-/* 🔥 EMS MODE — EVERYTHING BIG */
 body.ems .label{
 font-size:20px;
 font-weight:700;
@@ -111,7 +104,6 @@ font-weight:700;
 line-height:1.6;
 }
 
-/* 🔥 ALLERGY / ALERT BLOCK */
 .alert{
 background:var(--alert-bg);
 border-left:6px solid var(--alert-border);
@@ -124,7 +116,6 @@ font-size:28px;
 font-weight:800;
 }
 
-/* LINKS */
 a.phone{
 color:#7cc6e8;
 text-decoration:none;
@@ -171,8 +162,7 @@ cursor:pointer;
 <img src="/images/vitalink-logo.png" />
 </div>
 
-<h1>Emergency Session Expired</h1>
-<div class="hint">Scan QR Code to access emergency data</div>
+<h1>Loading Emergency Info...</h1>
 
 </div>
 
@@ -186,21 +176,7 @@ function toggleEMS(){
 document.body.classList.toggle("ems");
 }
 
-(function(){
-
-const params = new URLSearchParams(window.location.search);
-const raw = params.get("data");
-if(!raw) return;
-
-const normalized = raw.replace(/-/g,'+').replace(/_/g,'/');
-
-let decoded;
-try{
-decoded = JSON.parse(atob(normalized));
-console.log("QR DATA:", decoded);
-}catch{
-return;
-}
+function render(decoded){
 
 const safeText = (val) => {
 if (!val) return "";
@@ -315,7 +291,53 @@ Emergency data provided via VitaLink
 
 `;
 
+}
+
+// 🔥 FIXED BACKEND CALL
+
+(function(){
+
+const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
+
+if (!id) {
+console.error("No profile ID");
+return;
+}
+
+fetch(`https://vitalink-app.netlify.app/.netlify/functions/emergency_view?id=${id}`)
+.then(res => res.json())
+.then(data => {
+
+console.log("EMERGENCY DATA:", data);
+
+if (!data.success) {
+throw new Error(data.error || "Load failed");
+}
+
+// 🔥 CRITICAL FIX: map backend → frontend format
+const e = data.emergency;
+
+render({
+name: e.name,
+dob: e.dob,
+allergies: e.allergies,
+conditions: e.conditions,
+bloodType: e.bloodType,
+organDonor: e.organDonor,
+emergencyContactName: e.emergencyContact,
+emergencyContactPhone: e.emergencyPhone,
+meds: e.medications,
+providers: e.providers
+});
+
+})
+.catch(err => {
+console.error("Emergency fetch failed", err);
+});
+
 })();
+
 </script>
 
 </body>
