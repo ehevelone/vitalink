@@ -298,7 +298,7 @@ function openSelector(name, price){
     list.innerHTML += `
       <div class="profile">
         <label>
-          <input type="checkbox" value="${encodeURIComponent(p.name)}" />
+          <input type="checkbox" value="${p.id}" data-name="${p.name.replace(/"/g, "&quot;")}" />
           ${p.name.replace(/"/g, "&quot;")}
         </label>
       </div>
@@ -315,7 +315,8 @@ function confirmSelection(){
     cart.push({
       name: selectedProduct.name,
       price: selectedProduct.price,
-      profile: decodeURIComponent(c.value)
+      profile: c.dataset.name,
+      profile_id: c.value
     });
   });
 
