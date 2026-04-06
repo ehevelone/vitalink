@@ -323,18 +323,41 @@ Emergency data provided via VitaLink
 
 }
 
-// 🔥 FIXED + BULLETPROOF ID HANDLING
-
-(function(){
-
+function extractProfileId() {
 const params = new URLSearchParams(window.location.search);
 
+// normal direct link support
 let id =
   params.get("id") ||
   params.get("profileId") ||
   "";
 
-id = id.trim();
+// current QR format support: ?data=BASE64_ENCODED_FULL_URL
+const encodedData = params.get("data");
+
+if (!id && encodedData) {
+  try {
+    const decodedUrl = atob(encodedData).trim();
+    console.log("DECODED URL:", decodedUrl);
+
+    const decoded = new URL(decodedUrl);
+    id =
+      decoded.searchParams.get("id") ||
+      decoded.searchParams.get("profileId") ||
+      "";
+  } catch (err) {
+    console.error("Failed to decode QR data param", err);
+  }
+}
+
+return id.trim();
+}
+
+// 🔥 FIXED + BULLETPROOF ID HANDLING
+
+(function(){
+
+const id = extractProfileId();
 
 console.log("RAW QUERY:", window.location.search);
 console.log("PARSED ID:", id);
