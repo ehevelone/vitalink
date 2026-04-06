@@ -176,17 +176,47 @@ function toggleEMS(){
 document.body.classList.toggle("ems");
 }
 
-function render(decoded){
-
-const safeText = (val) => {
+function safeText(val){
 if (!val) return "";
 if (typeof val === "string") return val.trim();
 return String(val);
-};
+}
 
-const phoneLink = (num) => num 
-? `<a class="phone" href="tel:${num}">${num}</a>` 
+function phoneLink(num){
+return num
+? `<a class="phone" href="tel:${num}">${num}</a>`
 : "N/A";
+}
+
+function showError(message){
+const app = document.getElementById("app");
+
+app.innerHTML = `
+
+<div class="toggle-wrap">
+<button class="theme-toggle" onclick="toggleTheme()">Light</button>
+<button class="theme-toggle" onclick="toggleEMS()">EMS</button>
+</div>
+
+<div class="logo">
+<img src="/images/vitalink-logo.png" />
+</div>
+
+<h1>Unable to Load Emergency Info</h1>
+
+<div class="section alert">
+<div class="label">Error</div>
+<div class="value">${safeText(message) || "Unknown error"}</div>
+</div>
+
+<div class="hint">
+Please check the QR link or try again.
+</div>
+
+`;
+}
+
+function render(decoded){
 
 const app = document.getElementById("app");
 
@@ -293,7 +323,7 @@ Emergency data provided via VitaLink
 
 }
 
-// 🔥 FIXED BACKEND CALL
+// 🔥 FIXED BACKEND CALL + TIMEOUT + VISIBLE ERROR
 
 (function(){
 
@@ -302,17 +332,44 @@ const id = params.get("id");
 
 if (!id) {
 console.error("No profile ID");
+showError("Missing profile ID in URL.");
 return;
 }
 
-fetch(`https://vitalink-app.netlify.app/.netlify/functions/emergency_view?id=${id}`)
-.then(res => res.json())
+const controller = new AbortController();
+const timeout = setTimeout(() => {
+controller.abort();
+}, 10000);
+
+fetch(`https://vitalink-app.netlify.app/.netlify/functions/emergency_view?id=${encodeURIComponent(id)}`, {
+signal: controller.signal
+})
+.then(async (res) => {
+clearTimeout(timeout);
+
+let data;
+try {
+data = await res.json();
+} catch (err) {
+throw new Error("Invalid server response");
+}
+
+if (!res.ok) {
+throw new Error(data?.error || `HTTP ${res.status}`);
+}
+
+return data;
+})
 .then(data => {
 
 console.log("EMERGENCY DATA:", data);
 
 if (!data.success) {
 throw new Error(data.error || "Load failed");
+}
+
+if (!data.emergency) {
+throw new Error("No emergency data returned");
 }
 
 // 🔥 CRITICAL FIX: map backend → frontend format
@@ -323,6 +380,8 @@ name: e.name,
 dob: e.dob,
 allergies: e.allergies,
 conditions: e.conditions,
+implants: e.implants,
+procedures: e.procedures,
 bloodType: e.bloodType,
 organDonor: e.organDonor,
 emergencyContactName: e.emergencyContact,
@@ -333,7 +392,15 @@ providers: e.providers
 
 })
 .catch(err => {
+clearTimeout(timeout);
 console.error("Emergency fetch failed", err);
+
+if (err.name === "AbortError") {
+showError("Request timed out while loading emergency data.");
+return;
+}
+
+showError(err.message || "Unable to load emergency data.");
 });
 
 })();
