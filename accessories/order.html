@@ -195,10 +195,6 @@ margin-bottom:8px;
 Total: $<span id="total">0.00</span>
 </div>
 
-<div style="font-size:0.8rem; color:#888; margin-top:10px;">
-QR access is only created after approval in your VitaLink app
-</div>
-
 <button class="checkout" onclick="goToCheckout()">
 Continue
 </button>
@@ -217,30 +213,10 @@ Continue
   </div>
 </div>
 
-<div class="modal" id="approvalModal">
-  <div class="modal-content" id="approvalModalContent">
-    <h3>Approval Required</h3>
-
-    <p style="font-size:0.95rem; color:#ccc; line-height:1.5;">
-      To complete your order, you will receive a notification in your VitaLink app.
-      <br><br>
-      You will approve sending secure QR access for the selected profiles on this order.
-    </p>
-
-    <p style="font-size:0.9rem; color:#7cc6e8; font-weight:600;">
-      QR access is only created after you approve.
-    </p>
-
-    <button onclick="proceedToCheckout()">Continue</button>
-  </div>
-</div>
-
 <script>
 let cart = [];
 let selectedProduct = null;
 let profiles = [];
-let currentOrderId = null;
-let pollInterval = null;
 
 const user = JSON.parse(localStorage.getItem("vitalink_user"));
 if(!user){
@@ -254,9 +230,7 @@ async function loadProfiles(){
       {
         method:"POST",
         headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({ user_id: user.id }),
-        mode:"cors",
-        credentials:"omit"
+        body: JSON.stringify({ user_id: user.id })
       }
     );
 
@@ -349,15 +323,11 @@ function renderCart(){
   totalEl.innerText = total.toFixed(2);
 }
 
-function goToCheckout(){
+async function goToCheckout(){
   if(cart.length === 0){
     alert("Add items first");
     return;
   }
-  document.getElementById("approvalModal").style.display = "flex";
-}
-
-async function proceedToCheckout(){
 
   try{
 
@@ -369,107 +339,46 @@ async function proceedToCheckout(){
         body: JSON.stringify({
           user_id: user.id,
           cart: cart
-        }),
-        mode:"cors",
-        credentials:"omit"
+        })
       }
     );
 
-    const text = await res.text();
+    const data = await res.json();
 
-    let data;
-    try{
-      data = JSON.parse(text);
-    }catch{
-      throw new Error("Bad response: " + text);
-    }
-
-    if(!res.ok){
-      throw new Error("HTTP " + res.status);
-    }
-
-    if(!data.success){
+    if(!res.ok || !data.success){
       throw new Error(data.error || "Order failed");
     }
 
-    currentOrderId = data.order_id;
+    let total = 0;
+    cart.forEach(i => total += i.price);
 
-    document.getElementById("approvalModalContent").innerHTML = `
-      <h3>Waiting for Approval</h3>
-      <p style="color:#ccc;">
-        Open your VitaLink app and approve this request.
-      </p>
-    `;
+    const amount = Math.round(total * 100);
 
-    startPolling();
+    const checkoutRes = await fetch(
+      "https://vitalink-app.netlify.app/.netlify/functions/create-checkout-session",
+      {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({
+          amount: amount,
+          order_id: data.order_id,
+          test: true
+        })
+      }
+    );
+
+    const checkoutData = await checkoutRes.json();
+
+    if(checkoutData.url){
+      window.location.href = checkoutData.url;
+    }else{
+      alert("Checkout failed");
+    }
 
   }catch(e){
     console.error("Order error:", e);
     alert(e.message);
   }
-
-}
-
-function startPolling(){
-
-  pollInterval = setInterval(async () => {
-
-    try{
-
-      const res = await fetch(
-        "https://vitalink-app.netlify.app/.netlify/functions/get_pending_orders",
-        {
-          method:"POST",
-          headers:{ "Content-Type":"application/json" },
-          body: JSON.stringify({ order_id: currentOrderId })
-        }
-      );
-
-      const data = await res.json();
-      const order = data.orders?.[0];
-
-      if(order && order.status === "approved"){
-
-        clearInterval(pollInterval);
-
-        document.getElementById("approvalModalContent").innerHTML = `
-          <h3>Approved ✅</h3>
-          <p>Redirecting to secure checkout...</p>
-        `;
-
-        let total = 0;
-        cart.forEach(i => total += i.price);
-
-        const amount = Math.round(total * 100);
-
-        const checkoutRes = await fetch(
-          "https://vitalink-app.netlify.app/.netlify/functions/create-checkout-session",
-          {
-            method:"POST",
-            headers:{ "Content-Type":"application/json" },
-            body: JSON.stringify({
-              amount: amount,
-              order_id: currentOrderId,
-              test: true
-            })
-          }
-        );
-
-        const checkoutData = await checkoutRes.json();
-
-        if(checkoutData.url){
-          window.location.href = checkoutData.url;
-        }else{
-          alert("Checkout failed");
-        }
-
-      }
-
-    }catch(e){
-      console.error("Polling error", e);
-    }
-
-  }, 3000);
 }
 </script>
 

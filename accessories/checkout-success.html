@@ -24,7 +24,6 @@ body{
   color:var(--text-primary);
 }
 
-/* LAYOUT */
 .container{
   max-width:520px;
   margin:0 auto;
@@ -32,7 +31,6 @@ body{
   text-align:center;
 }
 
-/* CARD */
 .card{
   background:#111;
   border:1px solid var(--divider);
@@ -41,20 +39,17 @@ body{
   box-shadow:0 0 0 1px rgba(124,198,232,0.06), 0 20px 50px rgba(0,0,0,0.6);
 }
 
-/* TITLE */
 h1{
   margin:0 0 12px 0;
   font-size:2rem;
   font-weight:600;
 }
 
-/* TEXT */
 p{
   color:var(--text-muted);
   margin-bottom:20px;
 }
 
-/* BUTTON */
 button{
   width:100%;
   padding:14px;
@@ -65,29 +60,17 @@ button{
   font-weight:600;
   font-size:1rem;
   cursor:pointer;
-  transition:0.2s;
 }
 
-button:hover{
-  opacity:0.9;
-}
-
-/* STATUS */
 .status{
   margin-top:16px;
   font-size:0.9rem;
   color:#8f8f8f;
 }
 
-.success{
-  color:#7cc6e8;
-}
+.success{ color:#7cc6e8; }
+.error{ color:#ff5a5a; }
 
-.error{
-  color:#ff5a5a;
-}
-
-/* QR DISPLAY */
 .qr-list{
   margin:20px 0;
   text-align:left;
@@ -118,7 +101,6 @@ button:hover{
 <body>
 
 <div class="container">
-
   <div class="card">
 
     <h1>Order Complete</h1>
@@ -135,53 +117,51 @@ button:hover{
     <div id="status" class="status"></div>
 
   </div>
-
 </div>
 
-<!-- 🔥 QR LIBRARY -->
 <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 
 <script>
 
 const params = new URLSearchParams(window.location.search);
-const request_id = params.get("request_id") || params.get("order_id");
+const order_id = params.get("order_id") || params.get("request_id");
 
 /* 🔥 LOAD ORDER + BUILD QR */
 async function loadOrder(){
 
   const qrList = document.getElementById("qrList");
 
-  if(!request_id){
+  if(!order_id){
     qrList.innerHTML = "<div class='status error'>Missing order</div>";
     return;
   }
 
   try{
 
+    // ✅ UPDATED ENDPOINT
     const res = await fetch(
-      "https://vitalink-app.netlify.app/.netlify/functions/get_pending_orders",
+      "https://vitalink-app.netlify.app/.netlify/functions/get_order",
       {
         method:"POST",
         headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({ request_id })
+        body: JSON.stringify({ order_id })
       }
     );
 
     const data = await res.json();
 
-    if(!data.orders || data.orders.length === 0){
-      qrList.innerHTML = "<div class='status error'>No order found</div>";
+    if(!data.success || !data.order){
+      qrList.innerHTML = "<div class='status error'>Order not found</div>";
       return;
     }
 
-    const order = data.orders[0];
+    const order = data.order;
 
     if(!order.qr || order.qr.length === 0){
       qrList.innerHTML = "<div class='status error'>No QR data</div>";
       return;
     }
 
-    // 🔥 BUILD UI
     qrList.innerHTML = order.qr.map((q, i) => `
       <div class="qr-item">
         <div class="qr-name">${q.profile || "Profile"}</div>
@@ -189,15 +169,9 @@ async function loadOrder(){
       </div>
     `).join("");
 
-    // 🔥 GENERATE QR FROM TOKEN URL
     order.qr.forEach((q, i) => {
-
       const canvas = document.getElementById(`qr_${i}`);
-
-      // THIS is now token-based
-      const url = q.qr_url;
-
-      QRCode.toCanvas(canvas, url, {
+      QRCode.toCanvas(canvas, q.qr_url, {
         width: 72,
         margin: 1
       });
@@ -209,24 +183,13 @@ async function loadOrder(){
   }
 }
 
-/* EXISTING FUNCTION */
 function submitOrder(){
-
   const statusEl = document.getElementById("status");
-
-  if(!request_id){
-    statusEl.innerHTML = "Missing order reference";
-    statusEl.className = "status error";
-    return;
-  }
-
   statusEl.innerHTML = "Order complete ✔";
   statusEl.className = "status success";
 }
 
-/* RUN */
 loadOrder();
-submitOrder();
 
 </script>
 
