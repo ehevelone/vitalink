@@ -404,7 +404,7 @@ if (!data.emergency) {
 throw new Error("No emergency data returned");
 }
 
-const e = data.emergency;
+const e = data.decrypted || data.emergency;
 
 render({
 name: e.name,
