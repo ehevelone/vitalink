@@ -105,7 +105,7 @@ button:hover{
   font-size:1rem;
 }
 
-.qr-item img{
+.qr-item canvas{
   width:72px;
   height:72px;
   background:#fff;
@@ -138,12 +138,15 @@ button:hover{
 
 </div>
 
+<!-- 🔥 QR LIBRARY -->
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+
 <script>
 
 const params = new URLSearchParams(window.location.search);
 const request_id = params.get("request_id") || params.get("order_id");
 
-/* 🔥 FIXED TO MATCH YOUR BACKEND */
+/* 🔥 LOAD ORDER + BUILD QR */
 async function loadOrder(){
 
   const qrList = document.getElementById("qrList");
@@ -178,12 +181,27 @@ async function loadOrder(){
       return;
     }
 
-    qrList.innerHTML = order.qr.map(q => `
+    // 🔥 BUILD UI
+    qrList.innerHTML = order.qr.map((q, i) => `
       <div class="qr-item">
-        <div class="qr-name">${q.profile}</div>
-        <img src="${q.qr_url}" />
+        <div class="qr-name">${q.profile || "Profile"}</div>
+        <canvas id="qr_${i}"></canvas>
       </div>
     `).join("");
+
+    // 🔥 GENERATE QR FROM TOKEN URL
+    order.qr.forEach((q, i) => {
+
+      const canvas = document.getElementById(`qr_${i}`);
+
+      // THIS is now token-based
+      const url = q.qr_url;
+
+      QRCode.toCanvas(canvas, url, {
+        width: 72,
+        margin: 1
+      });
+    });
 
   }catch(e){
     console.error(e);
