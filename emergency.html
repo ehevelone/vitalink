@@ -323,15 +323,24 @@ Emergency data provided via VitaLink
 
 }
 
-// 🔥 FIXED BACKEND CALL + TIMEOUT + VISIBLE ERROR
+// 🔥 FIXED + BULLETPROOF ID HANDLING
 
 (function(){
 
 const params = new URLSearchParams(window.location.search);
-const id = params.get("id");
 
-if (!id) {
-console.error("No profile ID");
+let id =
+  params.get("id") ||
+  params.get("profileId") ||
+  "";
+
+id = id.trim();
+
+console.log("RAW QUERY:", window.location.search);
+console.log("PARSED ID:", id);
+
+if (!id || id.length < 5) {
+console.error("Invalid or missing profile ID");
 showError("Missing profile ID in URL.");
 return;
 }
@@ -372,7 +381,6 @@ if (!data.emergency) {
 throw new Error("No emergency data returned");
 }
 
-// 🔥 CRITICAL FIX: map backend → frontend format
 const e = data.emergency;
 
 render({
