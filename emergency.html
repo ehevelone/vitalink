@@ -397,7 +397,7 @@ return data;
 console.log("EMERGENCY DATA:", data);
 
 if (!data.success) {
-throw new Error(data.error || "Load failed");
+throw new Error(data.error || "Load failed");F
 }
 
 if (!data.emergency) {
@@ -415,8 +415,8 @@ implants: e.implants,
 procedures: e.procedures,
 bloodType: e.bloodType,
 organDonor: e.organDonor,
-emergencyContactName: e.emergencyContact,
-emergencyContactPhone: e.emergencyPhone,
+emergencyContactName: e.emergencyContactName || e.contact || "",
+emergencyContactPhone: e.emergencyContactPhone || e.phone || "",
 meds: e.meds,
 providers: e.providers
 });
