@@ -199,7 +199,8 @@ async function submitOrder(){
     items: cart.map(i => ({
       product: i.name,
       price: i.price,
-      profile_name: i.profile
+      profile_id: i.profile_id,   // ✅ FIXED (CRITICAL)
+      profile: i.profile          // optional (display only)
     }))
   };
 
@@ -220,7 +221,6 @@ async function submitOrder(){
 
       document.getElementById("waitingModal").style.display = "flex";
 
-      // 🔥 FIXED
       localStorage.setItem("last_order_request", data.order_id);
 
     } else {
