@@ -112,7 +112,7 @@ button{
 
     <div id="qrList" class="qr-list"></div>
 
-    <button onclick="submitOrder()">Finish</button>
+    <button onclick="finish()">Finish</button>
 
     <div id="status" class="status"></div>
 
@@ -138,7 +138,6 @@ async function loadOrder(){
 
   try{
 
-    // ✅ UPDATED ENDPOINT
     const res = await fetch(
       "https://vitalink-app.netlify.app/.netlify/functions/get_order",
       {
@@ -171,6 +170,8 @@ async function loadOrder(){
 
     order.qr.forEach((q, i) => {
       const canvas = document.getElementById(`qr_${i}`);
+
+      // ✅ USE URL EXACTLY AS RETURNED (TOKEN ALREADY INCLUDED)
       QRCode.toCanvas(canvas, q.qr_url, {
         width: 72,
         margin: 1
@@ -183,7 +184,7 @@ async function loadOrder(){
   }
 }
 
-function submitOrder(){
+function finish(){
   const statusEl = document.getElementById("status");
   statusEl.innerHTML = "Order complete ✔";
   statusEl.className = "status success";
