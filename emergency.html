@@ -320,13 +320,12 @@ Emergency data provided via VitaLink
 </div>
 
 `;
-
 }
 
 (function(){
 
 const params = new URLSearchParams(window.location.search);
-const token = params.get("token"); // ✅ FIXED
+const token = params.get("token");
 
 console.log("RAW QUERY:", window.location.search);
 console.log("TOKEN:", token);
@@ -336,12 +335,16 @@ showError("Missing token in QR link.");
 return;
 }
 
+// 🔥 FIX: prevent infinite loading if fetch fails silently
+let loaded = false;
+
 const controller = new AbortController();
 const timeout = setTimeout(() => {
 controller.abort();
+if (!loaded) showError("Request timed out.");
 }, 10000);
 
-fetch(`https://vitalink-app.netlify.app/.netlify/functions/emergency_view?token=${encodeURIComponent(token)}`, { // ✅ FIXED
+fetch(`https://vitalink-app.netlify.app/.netlify/functions/emergency_view?token=${encodeURIComponent(token)}`, {
 signal: controller.signal
 })
 .then(async (res) => {
@@ -372,6 +375,8 @@ if (!data.emergency) {
 throw new Error("No emergency data returned");
 }
 
+loaded = true; // ✅ stops timeout fallback
+
 const e = data.emergency;
 
 render({
@@ -394,16 +399,10 @@ providers: e.providers
 clearTimeout(timeout);
 console.error("Emergency fetch failed", err);
 
-if (err.name === "AbortError") {
-showError("Request timed out while loading emergency data.");
-return;
-}
-
 showError(err.message || "Unable to load emergency data.");
 });
 
 })();
-
 </script>
 
 </body>
