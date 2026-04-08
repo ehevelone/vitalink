@@ -335,7 +335,6 @@ showError("Missing token in QR link.");
 return;
 }
 
-// 🔥 FIX: prevent infinite loading if fetch fails silently
 let loaded = false;
 
 const controller = new AbortController();
@@ -375,7 +374,7 @@ if (!data.emergency) {
 throw new Error("No emergency data returned");
 }
 
-loaded = true; // ✅ stops timeout fallback
+loaded = true;
 
 const e = data.emergency;
 
