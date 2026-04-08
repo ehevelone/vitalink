@@ -323,48 +323,16 @@ Emergency data provided via VitaLink
 
 }
 
-function extractProfileId() {
-const params = new URLSearchParams(window.location.search);
-
-// normal direct link support
-let id =
-  params.get("id") ||
-  params.get("profileId") ||
-  "";
-
-// current QR format support: ?data=BASE64_ENCODED_FULL_URL
-const encodedData = params.get("data");
-
-if (!id && encodedData) {
-  try {
-    const decodedUrl = atob(encodedData).trim();
-    console.log("DECODED URL:", decodedUrl);
-
-    const decoded = new URL(decodedUrl);
-    id =
-      decoded.searchParams.get("id") ||
-      decoded.searchParams.get("profileId") ||
-      "";
-  } catch (err) {
-    console.error("Failed to decode QR data param", err);
-  }
-}
-
-return id.trim();
-}
-
-// 🔥 FIXED + BULLETPROOF ID HANDLING
-
 (function(){
 
-const id = extractProfileId();
+const params = new URLSearchParams(window.location.search);
+const token = params.get("token"); // ✅ FIXED
 
 console.log("RAW QUERY:", window.location.search);
-console.log("PARSED ID:", id);
+console.log("TOKEN:", token);
 
-if (!id || id.length < 5) {
-console.error("Invalid or missing profile ID");
-showError("Missing profile ID in URL.");
+if (!token) {
+showError("Missing token in QR link.");
 return;
 }
 
@@ -373,7 +341,7 @@ const timeout = setTimeout(() => {
 controller.abort();
 }, 10000);
 
-fetch(`https://vitalink-app.netlify.app/.netlify/functions/emergency_view?id=${encodeURIComponent(id)}`, {
+fetch(`https://vitalink-app.netlify.app/.netlify/functions/emergency_view?token=${encodeURIComponent(token)}`, { // ✅ FIXED
 signal: controller.signal
 })
 .then(async (res) => {
@@ -397,14 +365,14 @@ return data;
 console.log("EMERGENCY DATA:", data);
 
 if (!data.success) {
-throw new Error(data.error || "Load failed");F
+throw new Error(data.error || "Load failed");
 }
 
 if (!data.emergency) {
 throw new Error("No emergency data returned");
 }
 
-const e = data.decrypted || data.emergency;
+const e = data.emergency;
 
 render({
 name: e.name,
