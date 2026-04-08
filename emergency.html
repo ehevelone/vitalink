@@ -344,7 +344,13 @@ if (!loaded) showError("Request timed out.");
 }, 10000);
 
 fetch(`https://vitalink-app.netlify.app/.netlify/functions/emergency_view?token=${encodeURIComponent(token)}`, {
-signal: controller.signal
+  method: "GET",
+  mode: "cors",
+  cache: "no-store",
+  headers: {
+    "Accept": "application/json"
+  },
+  signal: controller.signal
 })
 .then(async (res) => {
 clearTimeout(timeout);
