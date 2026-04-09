@@ -74,7 +74,6 @@ cursor:pointer;
 margin-top:20px;
 }
 
-/* 🔥 NEW QR SECTION */
 .qr-item{
 display:flex;
 justify-content:space-between;
@@ -111,7 +110,6 @@ Your QR codes will be generated immediately after checkout.
 Submit Order
 </button>
 
-<!-- 🔥 NEW QR DISPLAY -->
 <div class="section" id="qrSection" style="display:none;">
   <h2>Your QR Codes</h2>
   <div id="qrList"></div>
@@ -138,14 +136,12 @@ function loadCart(){
 }
 
 function render(){
-
   const container = document.getElementById("items");
   container.innerHTML = "";
 
   let total = 0;
 
   cart.forEach(item => {
-
     total += item.price;
 
     container.innerHTML += `
@@ -160,7 +156,6 @@ function render(){
 }
 
 window.onload = function(){
-
   loadCart();
 
   if(cart.length === 0){
@@ -180,31 +175,24 @@ async function submitOrder(){
 
   const profileIds = cart.map(i => i.profile_id);
 
-  const payload = {
-    profiles: profileIds,
-    items: cart
-  };
-
   try{
 
-    // 🔥 CREATE ORDER
     const res = await fetch(
-      "https://vitalink-app.netlify.app/.netlify/functions/create-order",
+      "https://vitalink-app.netlify.app/.netlify/functions/get_profiles",
       {
         method:"POST",
         headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({ profiles: profileIds })
       }
     );
 
     const data = await res.json();
 
     if(!data.success){
-      throw new Error(data.error || "Order failed");
+      throw new Error("Failed to load profiles");
     }
 
-    // 🔥 CALL GPO (THIS IS WHAT YOU WANTED)
-    loadQRs(data.order_id);
+    renderQRs(data.profiles);
 
   } catch(err){
     alert(err.message || "Network error");
@@ -213,51 +201,30 @@ async function submitOrder(){
   }
 }
 
-async function loadQRs(order_id){
+function renderQRs(profiles){
 
   const qrSection = document.getElementById("qrSection");
   const qrList = document.getElementById("qrList");
 
   qrSection.style.display = "block";
 
-  try{
+  qrList.innerHTML = profiles.map((p, i) => `
+    <div class="qr-item">
+      <span>${p.name}</span>
+      <canvas id="qr_${i}"></canvas>
+    </div>
+  `).join("");
 
-    const res = await fetch(
-      "https://vitalink-app.netlify.app/.netlify/functions/get_pending_orders",
-      {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({ order_id })
-      }
-    );
+  profiles.forEach((p, i) => {
+    const canvas = document.getElementById(`qr_${i}`);
 
-    const data = await res.json();
+    const url = `https://myvitalink.app/emergency.html?token=${p.qr_token}`;
 
-    if(!data.success){
-      throw new Error("Failed to load QR codes");
-    }
-
-    const order = data.order;
-
-    qrList.innerHTML = order.qr.map((q, i) => `
-      <div class="qr-item">
-        <span>${q.profile}</span>
-        <canvas id="qr_${i}"></canvas>
-      </div>
-    `).join("");
-
-    order.qr.forEach((q, i) => {
-      const canvas = document.getElementById(`qr_${i}`);
-
-      QRCode.toCanvas(canvas, q.qr_url, {
-        width: 80,
-        margin: 1
-      });
+    QRCode.toCanvas(canvas, url, {
+      width: 80,
+      margin: 1
     });
-
-  }catch(err){
-    qrList.innerHTML = `<div class="error">${err.message}</div>`;
-  }
+  });
 }
 
 </script>
