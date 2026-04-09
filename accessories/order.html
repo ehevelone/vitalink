@@ -230,7 +230,6 @@ async function loadProfiles(){
       {
         method:"POST",
         headers:{ "Content-Type":"application/json" },
-        // ✅ FIX: use user_id instead of UUID lookup
         body: JSON.stringify({ user_id: user.id })
       }
     );
@@ -291,7 +290,7 @@ function confirmSelection(){
       name: selectedProduct.name,
       price: selectedProduct.price,
       profile: c.dataset.name,
-      profile_id: c.value // ✅ THIS IS UUID NOW
+      profile_id: c.value
     });
   });
 
@@ -329,6 +328,13 @@ function goToCheckout(){
     alert("Add items first");
     return;
   }
+
+  // 🔥 THIS IS THE FIX — PASS UUIDs TO CHECKOUT
+  const profileIds = cart
+    .map(i => i.profile_id)
+    .filter(id => id && typeof id === "string");
+
+  localStorage.setItem("checkout_profiles", JSON.stringify(profileIds));
 
   localStorage.setItem("vitalink_cart", JSON.stringify(cart));
   window.location.href = "checkout.html";
