@@ -230,7 +230,7 @@ async function loadProfiles(){
       {
         method:"POST",
         headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({ user_id: user.id })
+        body: JSON.stringify({ id: user.id }) // ✅ FIXED
       }
     );
 
@@ -323,62 +323,15 @@ function renderCart(){
   totalEl.innerText = total.toFixed(2);
 }
 
-async function goToCheckout(){
+function goToCheckout(){
   if(cart.length === 0){
     alert("Add items first");
     return;
   }
 
-  try{
+  localStorage.setItem("vitalink_cart", JSON.stringify(cart));
 
-    const res = await fetch(
-      "https://vitalink-app.netlify.app/.netlify/functions/create-order-request",
-      {
-        method: "POST",
-        headers: { "Content-Type":"application/json" },
-        body: JSON.stringify({
-          user_id: user.id,
-          cart: cart
-        })
-      }
-    );
-
-    const data = await res.json();
-
-    if(!res.ok || !data.success){
-      throw new Error(data.error || "Order failed");
-    }
-
-    let total = 0;
-    cart.forEach(i => total += i.price);
-
-    const amount = Math.round(total * 100);
-
-    const checkoutRes = await fetch(
-      "https://vitalink-app.netlify.app/.netlify/functions/create-checkout-session",
-      {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({
-          amount: amount,
-          order_id: data.order_id,
-          test: true
-        })
-      }
-    );
-
-    const checkoutData = await checkoutRes.json();
-
-    if(checkoutData.url){
-      window.location.href = checkoutData.url;
-    }else{
-      alert("Checkout failed");
-    }
-
-  }catch(e){
-    console.error("Order error:", e);
-    alert(e.message);
-  }
+  window.location.href = "checkout.html";
 }
 </script>
 

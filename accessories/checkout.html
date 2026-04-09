@@ -73,27 +73,6 @@ font-size:1rem;
 cursor:pointer;
 margin-top:20px;
 }
-
-/* MODAL */
-.modal{
-position:fixed;
-top:0;
-left:0;
-right:0;
-bottom:0;
-background:rgba(0,0,0,.7);
-display:none;
-align-items:center;
-justify-content:center;
-}
-
-.modal-content{
-background:#111;
-padding:20px;
-border-radius:12px;
-width:320px;
-text-align:center;
-}
 </style>
 </head>
 
@@ -112,7 +91,7 @@ text-align:center;
 </div>
 
 <div class="notice">
-Approval required in your VitaLink app to generate QR access
+Your QR codes will be generated immediately after checkout.
 </div>
 
 <button class="checkout" onclick="submitOrder()">
@@ -120,22 +99,6 @@ Submit Order
 </button>
 
 </main>
-
-<div class="modal" id="waitingModal">
-  <div class="modal-content">
-    <h3>Waiting for Approval</h3>
-
-    <p style="font-size:0.95rem; color:#ccc; line-height:1.5;">
-      Check your VitaLink app to approve this request.
-      <br><br>
-      Once approved, your order will begin processing automatically.
-    </p>
-
-    <p style="font-size:0.9rem; color:#7cc6e8; font-weight:600;">
-      This screen will update after approval.
-    </p>
-  </div>
-</div>
 
 <script>
 
@@ -192,22 +155,20 @@ async function submitOrder(){
 
   const btn = document.querySelector(".checkout");
   btn.disabled = true;
-  btn.innerText = "Submitting...";
+  btn.innerText = "Processing...";
+
+  // 🔥 EXTRACT PROFILE UUIDs
+  const profileIds = cart.map(i => i.profile_id);
 
   const payload = {
-    user_id: user.id,
-    items: cart.map(i => ({
-      product: i.name,
-      price: i.price,
-      profile_id: i.profile_id,   // ✅ FIXED (CRITICAL)
-      profile: i.profile          // optional (display only)
-    }))
+    profiles: profileIds,
+    items: cart
   };
 
   try{
 
     const res = await fetch(
-      "https://vitalink-app.netlify.app/.netlify/functions/create-order-request",
+      "https://vitalink-app.netlify.app/.netlify/functions/create-order",
       {
         method:"POST",
         headers:{ "Content-Type":"application/json" },
@@ -219,12 +180,12 @@ async function submitOrder(){
 
     if(data.success){
 
-      document.getElementById("waitingModal").style.display = "flex";
-
-      localStorage.setItem("last_order_request", data.order_id);
+      // 🔥 REDIRECT TO SUCCESS PAGE
+      window.location.href =
+        `checkout-success.html?order_id=${data.order_id}`;
 
     } else {
-      alert("Order failed");
+      alert(data.error || "Order failed");
       btn.disabled = false;
       btn.innerText = "Submit Order";
     }
