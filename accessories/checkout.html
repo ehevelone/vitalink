@@ -85,6 +85,12 @@ margin-bottom:12px;
 background:#fff;
 border-radius:6px;
 }
+
+/* 🔥 DEBUG MESSAGE */
+.error{
+color:#ff5a5a;
+margin-top:10px;
+}
 </style>
 </head>
 
@@ -175,6 +181,8 @@ async function submitOrder(){
 
   const profileIds = cart.map(i => i.profile_id);
 
+  console.log("PROFILE IDS:", profileIds);
+
   try{
 
     const res = await fetch(
@@ -188,13 +196,16 @@ async function submitOrder(){
 
     const data = await res.json();
 
-    if(!data.success){
-      throw new Error("Failed to load profiles");
+    console.log("API RESPONSE:", data);
+
+    if(!data.success || !data.profiles){
+      throw new Error("Invalid response");
     }
 
     renderQRs(data.profiles);
 
   } catch(err){
+    console.error(err);
     alert(err.message || "Network error");
     btn.disabled = false;
     btn.innerText = "Submit Order";
@@ -208,22 +219,43 @@ function renderQRs(profiles){
 
   qrSection.style.display = "block";
 
+  // 🔥 SHOW MESSAGE IF EMPTY
+  if(!profiles.length){
+    qrList.innerHTML = `<div class="error">No profiles returned</div>`;
+    return;
+  }
+
+  // 🔥 PLACEHOLDERS ALWAYS RENDER
   qrList.innerHTML = profiles.map((p, i) => `
     <div class="qr-item">
-      <span>${p.name}</span>
+      <span>${p.name || "Profile"}</span>
       <canvas id="qr_${i}"></canvas>
     </div>
   `).join("");
 
   profiles.forEach((p, i) => {
+
     const canvas = document.getElementById(`qr_${i}`);
+
+    if(!canvas){
+      console.error("Missing canvas:", i);
+      return;
+    }
+
+    if(!p.qr_token){
+      console.error("Missing token:", p);
+      return;
+    }
 
     const url = `https://myvitalink.app/emergency.html?token=${p.qr_token}`;
 
     QRCode.toCanvas(canvas, url, {
       width: 80,
       margin: 1
+    }, err => {
+      if(err) console.error("QR error:", err);
     });
+
   });
 }
 
