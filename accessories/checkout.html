@@ -86,7 +86,6 @@ background:#fff;
 border-radius:6px;
 }
 
-/* 🔥 DEBUG MESSAGE */
 .error{
 color:#ff5a5a;
 margin-top:10px;
@@ -152,7 +151,7 @@ function render(){
 
     container.innerHTML += `
       <div class="item">
-        <span>${item.name} - ${item.profile}</span>
+        <span>${item.name}${item.profile ? " - " + item.profile : ""}</span>
         <span>$${item.price.toFixed(2)}</span>
       </div>
     `;
@@ -179,7 +178,10 @@ async function submitOrder(){
   btn.disabled = true;
   btn.innerText = "Processing...";
 
-  const profileIds = cart.map(i => i.profile_id);
+  // ✅ FILTER BAD IDS (THIS WAS YOUR MAIN BUG)
+  const profileIds = cart
+    .map(i => i.profile_id)
+    .filter(id => id && typeof id === "string" && id.includes("-"));
 
   console.log("PROFILE IDS:", profileIds);
 
@@ -219,13 +221,11 @@ function renderQRs(profiles){
 
   qrSection.style.display = "block";
 
-  // 🔥 SHOW MESSAGE IF EMPTY
   if(!profiles.length){
     qrList.innerHTML = `<div class="error">No profiles returned</div>`;
     return;
   }
 
-  // 🔥 PLACEHOLDERS ALWAYS RENDER
   qrList.innerHTML = profiles.map((p, i) => `
     <div class="qr-item">
       <span>${p.name || "Profile"}</span>
