@@ -73,6 +73,19 @@ font-size:1rem;
 cursor:pointer;
 margin-top:20px;
 }
+
+/* 🔥 NEW QR SECTION */
+.qr-item{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:12px;
+}
+
+.qr-item canvas{
+background:#fff;
+border-radius:6px;
+}
 </style>
 </head>
 
@@ -98,7 +111,15 @@ Your QR codes will be generated immediately after checkout.
 Submit Order
 </button>
 
+<!-- 🔥 NEW QR DISPLAY -->
+<div class="section" id="qrSection" style="display:none;">
+  <h2>Your QR Codes</h2>
+  <div id="qrList"></div>
+</div>
+
 </main>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 
 <script>
 
@@ -157,7 +178,6 @@ async function submitOrder(){
   btn.disabled = true;
   btn.innerText = "Processing...";
 
-  // 🔥 EXTRACT PROFILE UUIDs
   const profileIds = cart.map(i => i.profile_id);
 
   const payload = {
@@ -167,6 +187,7 @@ async function submitOrder(){
 
   try{
 
+    // 🔥 CREATE ORDER
     const res = await fetch(
       "https://vitalink-app.netlify.app/.netlify/functions/create-order",
       {
@@ -178,22 +199,64 @@ async function submitOrder(){
 
     const data = await res.json();
 
-    if(data.success){
-
-      // 🔥 REDIRECT TO SUCCESS PAGE
-      window.location.href =
-        `checkout-success.html?order_id=${data.order_id}`;
-
-    } else {
-      alert(data.error || "Order failed");
-      btn.disabled = false;
-      btn.innerText = "Submit Order";
+    if(!data.success){
+      throw new Error(data.error || "Order failed");
     }
 
+    // 🔥 CALL GPO (THIS IS WHAT YOU WANTED)
+    loadQRs(data.order_id);
+
   } catch(err){
-    alert("Network error");
+    alert(err.message || "Network error");
     btn.disabled = false;
     btn.innerText = "Submit Order";
+  }
+}
+
+async function loadQRs(order_id){
+
+  const qrSection = document.getElementById("qrSection");
+  const qrList = document.getElementById("qrList");
+
+  qrSection.style.display = "block";
+
+  try{
+
+    const res = await fetch(
+      "https://vitalink-app.netlify.app/.netlify/functions/get_pending_orders",
+      {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ order_id })
+      }
+    );
+
+    const data = await res.json();
+
+    if(!data.success){
+      throw new Error("Failed to load QR codes");
+    }
+
+    const order = data.order;
+
+    qrList.innerHTML = order.qr.map((q, i) => `
+      <div class="qr-item">
+        <span>${q.profile}</span>
+        <canvas id="qr_${i}"></canvas>
+      </div>
+    `).join("");
+
+    order.qr.forEach((q, i) => {
+      const canvas = document.getElementById(`qr_${i}`);
+
+      QRCode.toCanvas(canvas, q.qr_url, {
+        width: 80,
+        margin: 1
+      });
+    });
+
+  }catch(err){
+    qrList.innerHTML = `<div class="error">${err.message}</div>`;
   }
 }
 
