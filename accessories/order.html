@@ -489,53 +489,31 @@ function goToCheckout(){
     return;
   }
 
-  let allProfiles = [];
+  // 🔥 SINGLE CLEAN API CALL (FIXED)
+  fetch("https://vitalink-app.netlify.app/.netlify/functions/get_profiles", {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ profiles: profileIds })
+  })
+  .then(res => res.json())
+  .then(data => {
 
-  const requests = profileIds.map(id => {
-    return fetch("https://vitalink-app.netlify.app/.netlify/functions/get_profiles", {
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify({ profiles: [id] })
-    })
-    .then(res => res.json())
-    .then(data => {
+    if(!data.success || !data.profiles){
+      alert("Failed to load profiles");
+      return;
+    }
 
-      if(data.success && data.profiles){
+    console.log("CHECKOUT PROFILES →", data.profiles);
 
-        // 🔥 FORCE CORRECT PROFILE MATCH
-        const match = data.profiles.find(p => String(p.id) === String(id));
+    localStorage.setItem("checkout_profiles", JSON.stringify(data.profiles));
+    localStorage.setItem("vitalink_cart", JSON.stringify(cart));
 
-        if(match){
-          // prevent duplicates
-          if(!allProfiles.some(p => String(p.id) === String(match.id))){
-            allProfiles.push(match);
-          }
-        }
-
-      }
-
-    });
+    window.location.href = "checkout.html";
+  })
+  .catch(err=>{
+    console.error(err);
+    alert("Checkout failed");
   });
-
-  Promise.all(requests)
-    .then(() => {
-
-      console.log("CHECKOUT PROFILES →", allProfiles);
-
-      if(!allProfiles.length){
-        alert("Failed to load profiles");
-        return;
-      }
-
-      localStorage.setItem("checkout_profiles", JSON.stringify(allProfiles));
-      localStorage.setItem("vitalink_cart", JSON.stringify(cart));
-
-      window.location.href = "checkout.html";
-    })
-    .catch(err=>{
-      console.error(err);
-      alert("Checkout failed");
-    });
 }
 </script>
 
