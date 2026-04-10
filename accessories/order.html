@@ -85,8 +85,19 @@ top:20px;
 .cart-item{
 display:flex;
 justify-content:space-between;
+align-items:center;
 margin-bottom:10px;
 font-size:0.9rem;
+}
+
+.remove-btn{
+background:#333;
+color:#fff;
+border:none;
+padding:4px 8px;
+border-radius:4px;
+cursor:pointer;
+font-size:0.75rem;
 }
 
 .total{
@@ -103,6 +114,17 @@ background:var(--accent);
 border:none;
 border-radius:8px;
 font-weight:600;
+cursor:pointer;
+}
+
+.clear{
+margin-top:10px;
+width:100%;
+padding:10px;
+background:#333;
+border:none;
+border-radius:6px;
+color:#fff;
 cursor:pointer;
 }
 
@@ -199,6 +221,11 @@ Total: $<span id="total">0.00</span>
 Continue
 </button>
 
+<!-- ✅ CLEAR CART -->
+<button class="clear" onclick="clearCart()">
+Clear Cart
+</button>
+
 </div>
 
 </div>
@@ -225,15 +252,14 @@ if(!user || (!user.uuid && !user.id)){
   window.location.href = "login.html";
 }
 
-/* LOAD PROFILES */
 async function loadProfiles(){
   try{
 
     let payload;
 
-    if(user.uuid && typeof user.uuid === "string"){
+    if(user.uuid){
       payload = { user_uuid: user.uuid };
-    } else if(user.id){
+    } else {
       payload = { user_id: parseInt(user.id) };
     }
 
@@ -253,7 +279,7 @@ async function loadProfiles(){
     }
 
   }catch(e){
-    console.error("Profile load failed", e);
+    console.error(e);
   }
 }
 
@@ -274,13 +300,7 @@ window.onload = async function(){
   renderCart();
 };
 
-/* OPEN PROFILE SELECTOR */
 function openSelector(name, price){
-
-  if(!profiles.length){
-    alert("No profiles found — reload page");
-    return;
-  }
 
   selectedProduct = {name, price};
 
@@ -301,7 +321,6 @@ function openSelector(name, price){
   document.getElementById("modal").style.display = "flex";
 }
 
-/* ✅ FIXED — NO EMPTY PROFILE ITEMS EVER */
 function confirmSelection(){
 
   const checks = Array.from(
@@ -327,6 +346,20 @@ function confirmSelection(){
   document.getElementById("modal").style.display = "none";
 }
 
+/* ✅ REMOVE ITEM */
+function removeItem(index){
+  cart.splice(index, 1);
+  saveCart();
+  renderCart();
+}
+
+/* ✅ CLEAR CART */
+function clearCart(){
+  cart = [];
+  localStorage.removeItem("vitalink_cart");
+  renderCart();
+}
+
 function renderCart(){
   const container = document.getElementById("cart-items");
   const totalEl = document.getElementById("total");
@@ -335,13 +368,16 @@ function renderCart(){
 
   let total = 0;
 
-  cart.forEach(item=>{
+  cart.forEach((item, index)=>{
     total += item.price;
 
     container.innerHTML += `
       <div class="cart-item">
         <span>${item.name}${item.profile ? " - " + item.profile : ""}</span>
-        <span>$${item.price.toFixed(2)}</span>
+        <div>
+          <span>$${item.price.toFixed(2)}</span>
+          <button class="remove-btn" onclick="removeItem(${index})">X</button>
+        </div>
       </div>
     `;
   });
@@ -349,7 +385,6 @@ function renderCart(){
   totalEl.innerText = total.toFixed(2);
 }
 
-/* ✅ FIXED — DEDUPE + CLEAN UUIDS */
 function goToCheckout(){
 
   if(cart.length === 0){
@@ -376,7 +411,7 @@ function goToCheckout(){
   .then(res => res.json())
   .then(data => {
 
-    if(!data.success || !data.profiles){
+    if(!data.success){
       alert("Failed to load profiles");
       return;
     }
@@ -389,7 +424,6 @@ function goToCheckout(){
   })
   .catch(err=>{
     console.error(err);
-    alert("Error loading profiles");
   });
 }
 </script>
