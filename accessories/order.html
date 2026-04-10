@@ -495,7 +495,6 @@ function goToCheckout(){
     return;
   }
 
-  // 🔥 FIX: load ALL profiles (backend returns 1 per call)
   let allProfiles = [];
 
   const requests = profileIds.map(id => {
@@ -506,16 +505,28 @@ function goToCheckout(){
     })
     .then(res => res.json())
     .then(data => {
+
       if(data.success && data.profiles){
-        allProfiles.push(...data.profiles);
+
+        // 🔥 FORCE CORRECT PROFILE MATCH
+        const match = data.profiles.find(p => String(p.id) === String(id));
+
+        if(match){
+          // prevent duplicates
+          if(!allProfiles.some(p => String(p.id) === String(match.id))){
+            allProfiles.push(match);
+          }
+        }
+
       }
+
     });
   });
 
   Promise.all(requests)
     .then(() => {
 
-    console.log("CHECKOUT PROFILES →", allProfiles);
+      console.log("CHECKOUT PROFILES →", allProfiles);
 
       if(!allProfiles.length){
         alert("Failed to load profiles");
