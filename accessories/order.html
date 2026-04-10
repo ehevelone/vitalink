@@ -330,9 +330,14 @@ function goToCheckout(){
     return;
   }
 
-  const profileIds = cart
-    .map(i => i.profile_id)
-    .filter(id => id && typeof id === "string");
+const profileIds = cart
+  .map(i => i.profile_id)
+  .filter(id =>
+    id &&
+    typeof id === "string" &&
+    id.length === 36 &&
+    id.includes("-")
+  );
 
   fetch("https://vitalink-app.netlify.app/.netlify/functions/get_profiles", {
     method: "POST",
