@@ -218,7 +218,6 @@ let cart = [];
 let selectedProduct = null;
 let profiles = [];
 
-// 🔥 UUID USER ONLY
 const user = JSON.parse(localStorage.getItem("vitalink_user"));
 
 if(!user || (!user.uuid && !user.id)){
@@ -226,17 +225,26 @@ if(!user || (!user.uuid && !user.id)){
   window.location.href = "login.html";
 }
 
-/* 🔥 UUID-BASED PROFILE LOAD (MATCHES APP) */
+/* 🔥 FINAL FIXED PROFILE LOAD */
 async function loadProfiles(){
   try{
+
+    let payload;
+
+    if(user.uuid && typeof user.uuid === "string"){
+      payload = { user_uuid: user.uuid };
+    } else if(user.id){
+      payload = { user_id: parseInt(user.id) };
+    } else {
+      throw new Error("No valid user identifier");
+    }
+
     const res = await fetch(
       "https://vitalink-app.netlify.app/.netlify/functions/get_profiles",
       {
         method:"POST",
         headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({
-          user_uuid: user.uuid // ✅ ONLY UUID
-        })
+        body: JSON.stringify(payload)
       }
     );
 
@@ -304,7 +312,7 @@ function confirmSelection(){
       name: selectedProduct.name,
       price: selectedProduct.price,
       profile: c.dataset.name,
-      profile_id: c.value // UUID
+      profile_id: c.value
     });
   });
 
@@ -335,7 +343,6 @@ function renderCart(){
   totalEl.innerText = total.toFixed(2);
 }
 
-/* 🔥 UUID CLEAN HANDOFF */
 function goToCheckout(){
 
   if(cart.length === 0){
@@ -351,8 +358,6 @@ function goToCheckout(){
       id.length === 36 &&
       id.includes("-")
     );
-
-  console.log("VALID UUIDS:", profileIds);
 
   if(!profileIds.length){
     alert("Invalid profile selection");
