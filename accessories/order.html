@@ -484,7 +484,7 @@ function goToCheckout(){
     return;
   }
 
-  // 🔥 LOAD ALL PROFILES BY USER_ID
+  // 🔥 LOAD ALL PROFILES BY USER_ID (KEEP THIS)
   fetch("https://vitalink-app.netlify.app/.netlify/functions/get_profiles", {
     method:"POST",
     headers:{ "Content-Type":"application/json" },
@@ -498,7 +498,7 @@ function goToCheckout(){
       return;
     }
 
-    // 🔥 FILTER ONLY SELECTED PROFILES
+    // 🔥 FILTER SELECTED PROFILES (KEEP THIS)
     const matchedProfiles = data.profiles.filter(p =>
       selectedProfileIds.includes(String(p.id))
     );
@@ -511,14 +511,48 @@ function goToCheckout(){
       return;
     }
 
+    // 🔥 SAVE DATA
     localStorage.setItem("checkout_profiles", JSON.stringify(matchedProfiles));
     localStorage.setItem("vitalink_cart", JSON.stringify(cart));
 
-    window.location.href = "checkout.html";
+    // 🔥 CALCULATE TOTAL FOR STRIPE
+    const total = cart.reduce((sum, item) => sum + item.price, 0);
+    const amount = Math.round(total * 100);
+
+    const order_id = "ORD-" + Date.now();
+    localStorage.setItem("order_id", order_id);
+
+    // 🔥 SEND TO YOUR EXISTING STRIPE FUNCTION
+    fetch("https://vitalink-app.netlify.app/.netlify/functions/create-checkout-session", {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({
+        amount,
+        order_id,
+        test: true
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+
+      console.log("STRIPE RESPONSE:", data);
+
+      if(data.url){
+        window.location.href = data.url;
+      } else {
+        alert("Stripe failed");
+      }
+
+    })
+    .catch(err=>{
+      console.error(err);
+      alert("Checkout error");
+    });
+
   })
   .catch(err=>{
     console.error(err);
-    alert("Checkout failed");
+    alert("Profile load failed");
   });
 }
 </script>
