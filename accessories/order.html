@@ -225,7 +225,7 @@ if(!user || (!user.uuid && !user.id)){
   window.location.href = "login.html";
 }
 
-/* 🔥 FINAL FIXED PROFILE LOAD */
+/* LOAD PROFILES */
 async function loadProfiles(){
   try{
 
@@ -235,8 +235,6 @@ async function loadProfiles(){
       payload = { user_uuid: user.uuid };
     } else if(user.id){
       payload = { user_id: parseInt(user.id) };
-    } else {
-      throw new Error("No valid user identifier");
     }
 
     const res = await fetch(
@@ -249,8 +247,6 @@ async function loadProfiles(){
     );
 
     const data = await res.json();
-
-    console.log("PROFILES LOADED:", data);
 
     if(res.ok && data.success){
       profiles = data.profiles;
@@ -278,6 +274,7 @@ window.onload = async function(){
   renderCart();
 };
 
+/* OPEN PROFILE SELECTOR */
 function openSelector(name, price){
 
   if(!profiles.length){
@@ -304,8 +301,17 @@ function openSelector(name, price){
   document.getElementById("modal").style.display = "flex";
 }
 
+/* ✅ FIXED — NO EMPTY PROFILE ITEMS EVER */
 function confirmSelection(){
-  const checks = document.querySelectorAll("#profile-list input:checked");
+
+  const checks = Array.from(
+    document.querySelectorAll("#profile-list input:checked")
+  );
+
+  if(!checks.length){
+    alert("Select at least one profile");
+    return;
+  }
 
   checks.forEach(c=>{
     cart.push({
@@ -334,7 +340,7 @@ function renderCart(){
 
     container.innerHTML += `
       <div class="cart-item">
-        <span>${item.name} - ${item.profile}</span>
+        <span>${item.name}${item.profile ? " - " + item.profile : ""}</span>
         <span>$${item.price.toFixed(2)}</span>
       </div>
     `;
@@ -343,6 +349,7 @@ function renderCart(){
   totalEl.innerText = total.toFixed(2);
 }
 
+/* ✅ FIXED — DEDUPE + CLEAN UUIDS */
 function goToCheckout(){
 
   if(cart.length === 0){
@@ -350,14 +357,11 @@ function goToCheckout(){
     return;
   }
 
-  const profileIds = cart
-    .map(i => i.profile_id)
-    .filter(id =>
-      id &&
-      typeof id === "string" &&
-      id.length === 36 &&
-      id.includes("-")
-    );
+  const profileIds = [...new Set(
+    cart
+      .filter(i => i.profile_id)
+      .map(i => i.profile_id)
+  )];
 
   if(!profileIds.length){
     alert("Invalid profile selection");
