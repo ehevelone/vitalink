@@ -344,13 +344,8 @@ if(!user || (!user.uuid && !user.id)){
 
 async function loadProfiles(){
   try{
-    let payload;
 
-    if(user.uuid){
-      payload = { user_uuid: user.uuid };
-    } else {
-      payload = { user_id: parseInt(user.id) };
-    }
+    const payload = { user_id: Number(user.id) };
 
     const res = await fetch(
       "https://vitalink-app.netlify.app/.netlify/functions/get_profiles",
@@ -364,7 +359,7 @@ async function loadProfiles(){
     const data = await res.json();
 
     if(res.ok && data.success){
-      profiles = data.profiles;
+      profiles = data.profiles || [];
     }
 
   }catch(e){
@@ -478,22 +473,22 @@ function goToCheckout(){
     return;
   }
 
-  const profileIds = [...new Set(
+  const selectedProfileIds = [...new Set(
     cart
       .filter(i => i.profile_id)
-      .map(i => i.profile_id)
+      .map(i => String(i.profile_id))
   )];
 
-  if(!profileIds.length){
+  if(!selectedProfileIds.length){
     alert("Invalid profile selection");
     return;
   }
 
-  // 🔥 SINGLE CLEAN API CALL (FIXED)
+  // 🔥 LOAD ALL PROFILES BY USER_ID
   fetch("https://vitalink-app.netlify.app/.netlify/functions/get_profiles", {
     method:"POST",
     headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({ profiles: profileIds })
+    body: JSON.stringify({ user_id: Number(user.id) })
   })
   .then(res => res.json())
   .then(data => {
@@ -503,9 +498,20 @@ function goToCheckout(){
       return;
     }
 
-    console.log("CHECKOUT PROFILES →", data.profiles);
+    // 🔥 FILTER ONLY SELECTED PROFILES
+    const matchedProfiles = data.profiles.filter(p =>
+      selectedProfileIds.includes(String(p.id))
+    );
 
-    localStorage.setItem("checkout_profiles", JSON.stringify(data.profiles));
+    console.log("SELECTED PROFILE IDS →", selectedProfileIds);
+    console.log("MATCHED CHECKOUT PROFILES →", matchedProfiles);
+
+    if(!matchedProfiles.length){
+      alert("Failed to match selected profiles");
+      return;
+    }
+
+    localStorage.setItem("checkout_profiles", JSON.stringify(matchedProfiles));
     localStorage.setItem("vitalink_cart", JSON.stringify(cart));
 
     window.location.href = "checkout.html";
