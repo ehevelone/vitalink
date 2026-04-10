@@ -204,50 +204,24 @@ window.onload = function(){
 
   if(cart.length === 0){
     alert("Your cart is empty");
-    window.location.href = "shop.html";
+    window.location.href = "order.html"; // ✅ FIXED
     return;
   }
 
   render();
 
-  // ✅ FIXED — REMOVE ITEMS THAT DO NOT HAVE A PROFILE UUID
-  const profileIds = [...new Set(
-    cart
-      .filter(i => i.profile_id)
-      .map(i => i.profile_id)
-  )];
+  // 🔥 FIX: USE STORED PROFILES (DO NOT CALL API AGAIN)
+  const profiles = JSON.parse(localStorage.getItem("checkout_profiles")) || [];
 
-  console.log("PROFILE IDS:", profileIds);
+  console.log("CHECKOUT PROFILES (LOCAL):", profiles);
 
-  if(!profileIds.length){
-    console.log("NO PROFILE IDS");
+  if(!profiles.length){
+    console.log("NO PROFILES FOUND IN STORAGE");
     return;
   }
 
-  fetch("https://vitalink-app.netlify.app/.netlify/functions/get_profiles", {
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({ profiles: profileIds })
-  })
-  .then(res => res.json())
-  .then(data => {
-
-    console.log("PROFILES FROM API:", data);
-
-    if(!data.success || !data.profiles){
-      console.log("FAILED TO LOAD PROFILES");
-      return;
-    }
-
-    const profiles = data.profiles;
-
-    renderPlaceholders(profiles);
-    renderQRs(profiles);
-
-  })
-  .catch(err => {
-    console.error("LOAD ERROR:", err);
-  });
+  renderPlaceholders(profiles);
+  renderQRs(profiles);
 };
 
 async function submitOrder(){
