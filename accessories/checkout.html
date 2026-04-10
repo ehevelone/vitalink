@@ -164,7 +164,6 @@ function render(){
   document.getElementById("total").innerText = total.toFixed(2);
 }
 
-/* 🔥 PLACEHOLDERS */
 function renderPlaceholders(profiles){
 
   const qrSection = document.getElementById("qrSection");
@@ -180,7 +179,6 @@ function renderPlaceholders(profiles){
   `).join("");
 }
 
-/* 🔥 DRAW QR */
 function renderQRs(profiles){
 
   profiles.forEach((p, i) => {
@@ -200,7 +198,6 @@ function renderQRs(profiles){
   });
 }
 
-/* 🔥 FIXED LOAD */
 window.onload = function(){
 
   loadCart();
@@ -213,9 +210,11 @@ window.onload = function(){
 
   render();
 
-  // 🔥 GET UNIQUE PROFILE UUIDS FROM CART
+  // ✅ FIXED — REMOVE ITEMS THAT DO NOT HAVE A PROFILE UUID
   const profileIds = [...new Set(
-    cart.map(i => i.profile_id)
+    cart
+      .filter(i => i.profile_id)
+      .map(i => i.profile_id)
   )];
 
   console.log("PROFILE IDS:", profileIds);
@@ -225,7 +224,6 @@ window.onload = function(){
     return;
   }
 
-  // 🔥 CALL BACKEND FOR CORRECT DATA
   fetch("https://vitalink-app.netlify.app/.netlify/functions/get_profiles", {
     method:"POST",
     headers:{ "Content-Type":"application/json" },
