@@ -221,7 +221,7 @@ let profiles = [];
 // 🔥 UUID USER ONLY
 const user = JSON.parse(localStorage.getItem("vitalink_user"));
 
-if(!user || !user.uuid){
+if(!user || (!user.uuid && !user.id)){
   alert("Invalid session — please log in again");
   window.location.href = "login.html";
 }
