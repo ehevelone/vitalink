@@ -218,13 +218,15 @@ let cart = [];
 let selectedProduct = null;
 let profiles = [];
 
+// 🔥 UUID USER ONLY
 const user = JSON.parse(localStorage.getItem("vitalink_user"));
 
-if(!user){
+if(!user || !user.uuid){
+  alert("Invalid session — please log in again");
   window.location.href = "login.html";
 }
 
-/* 🔥 FIXED — LOAD PROFILES CORRECTLY */
+/* 🔥 UUID-BASED PROFILE LOAD (MATCHES APP) */
 async function loadProfiles(){
   try{
     const res = await fetch(
@@ -233,7 +235,7 @@ async function loadProfiles(){
         method:"POST",
         headers:{ "Content-Type":"application/json" },
         body: JSON.stringify({
-          user_id: parseInt(user.id) // ✅ CRITICAL FIX
+          user_uuid: user.uuid // ✅ ONLY UUID
         })
       }
     );
@@ -302,7 +304,7 @@ function confirmSelection(){
       name: selectedProduct.name,
       price: selectedProduct.price,
       profile: c.dataset.name,
-      profile_id: c.value
+      profile_id: c.value // UUID
     });
   });
 
@@ -333,7 +335,7 @@ function renderCart(){
   totalEl.innerText = total.toFixed(2);
 }
 
-/* 🔥 FINAL — CLEAN CHECKOUT HANDOFF */
+/* 🔥 UUID CLEAN HANDOFF */
 function goToCheckout(){
 
   if(cart.length === 0){
@@ -364,8 +366,6 @@ function goToCheckout(){
   })
   .then(res => res.json())
   .then(data => {
-
-    console.log("CHECKOUT PROFILES:", data);
 
     if(!data.success || !data.profiles){
       alert("Failed to load profiles");
