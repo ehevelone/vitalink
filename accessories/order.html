@@ -32,6 +32,60 @@ text-align:center;
 margin-bottom:30px;
 }
 
+/* ✅ ADDED KIT STYLES */
+.kit{
+border:1px solid var(--border);
+border-radius:16px;
+padding:28px;
+margin-bottom:40px;
+background:var(--card);
+text-align:center;
+}
+
+.kit img{
+width:100%;
+max-width:420px;
+border-radius:12px;
+margin-bottom:16px;
+}
+
+.kit ul{
+list-style:none;
+padding:0;
+margin:0 0 16px 0;
+text-align:left;
+max-width:400px;
+margin-left:auto;
+margin-right:auto;
+}
+
+.kit li{
+margin-bottom:8px;
+color:#d0d0d0;
+}
+
+.price{
+font-size:1.6rem;
+font-weight:700;
+margin-bottom:6px;
+}
+
+.note{
+font-size:0.9rem;
+color:#8f8f8f;
+margin-bottom:16px;
+}
+
+.kit button{
+background:var(--accent);
+border:none;
+padding:12px 24px;
+border-radius:8px;
+cursor:pointer;
+font-weight:600;
+}
+
+/* ORIGINAL ORDER STYLES */
 .grid{
 display:grid;
 grid-template-columns:1fr 350px;
@@ -159,6 +213,48 @@ margin-bottom:8px;
 
 <h1>Build Your VitaLink Order</h1>
 
+<!-- ✅ ADDED: KITS SECTION -->
+
+<div class="kit">
+<h2>VitaLink Complete Protection Kit</h2>
+
+<img src="assets/full-kit.jpg" />
+
+<ul>
+<li>✔ QR Wristband</li>
+<li>✔ Dog Tag Necklace</li>
+<li>✔ Keychain Tag</li>
+<li>✔ Phone QR Sticker</li>
+<li>✔ Wallet Emergency Card</li>
+<li>✔ Quick access instructions</li>
+</ul>
+
+<div class="price">$99.95</div>
+<div class="note">Best value. Everything you need.</div>
+
+<button onclick="openSelector('Full Kit', 99.95)">
+Add Full Kit
+</button>
+</div>
+
+<div class="kit">
+<h2>VitaLink Emergency Kit</h2>
+
+<ul>
+<li>✔ Wallet ID card</li>
+<li>✔ QR tag or sticker</li>
+<li>✔ Instructions</li>
+</ul>
+
+<div class="price">$49.95</div>
+<div class="note">Simple essential package.</div>
+
+<button onclick="openSelector('Starter Kit', 49.95)">
+Add Starter Kit
+</button>
+</div>
+
+<!-- ORIGINAL GRID -->
 <div class="grid">
 
 <div class="products">
@@ -221,7 +317,6 @@ Total: $<span id="total">0.00</span>
 Continue
 </button>
 
-<!-- ✅ CLEAR CART -->
 <button class="clear" onclick="clearCart()">
 Clear Cart
 </button>
@@ -232,6 +327,7 @@ Clear Cart
 
 </main>
 
+<!-- MODAL + SCRIPT (UNCHANGED) -->
 <div class="modal" id="modal">
   <div class="modal-content">
     <h3>Select Profiles</h3>
@@ -254,7 +350,6 @@ if(!user || (!user.uuid && !user.id)){
 
 async function loadProfiles(){
   try{
-
     let payload;
 
     if(user.uuid){
@@ -346,14 +441,12 @@ function confirmSelection(){
   document.getElementById("modal").style.display = "none";
 }
 
-/* ✅ REMOVE ITEM */
 function removeItem(index){
   cart.splice(index, 1);
   saveCart();
   renderCart();
 }
 
-/* ✅ CLEAR CART */
 function clearCart(){
   cart = [];
   localStorage.removeItem("vitalink_cart");
