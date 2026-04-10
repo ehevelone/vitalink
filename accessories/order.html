@@ -219,10 +219,12 @@ let selectedProduct = null;
 let profiles = [];
 
 const user = JSON.parse(localStorage.getItem("vitalink_user"));
+
 if(!user){
   window.location.href = "login.html";
 }
 
+/* 🔥 FIXED — LOAD PROFILES CORRECTLY */
 async function loadProfiles(){
   try{
     const res = await fetch(
@@ -230,11 +232,15 @@ async function loadProfiles(){
       {
         method:"POST",
         headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({ user_id: user.id })
+        body: JSON.stringify({
+          user_id: parseInt(user.id) // ✅ CRITICAL FIX
+        })
       }
     );
 
     const data = await res.json();
+
+    console.log("PROFILES LOADED:", data);
 
     if(res.ok && data.success){
       profiles = data.profiles;
@@ -263,6 +269,12 @@ window.onload = async function(){
 };
 
 function openSelector(name, price){
+
+  if(!profiles.length){
+    alert("No profiles found — reload page");
+    return;
+  }
+
   selectedProduct = {name, price};
 
   const list = document.getElementById("profile-list");
@@ -272,8 +284,8 @@ function openSelector(name, price){
     list.innerHTML += `
       <div class="profile">
         <label>
-          <input type="checkbox" value="${p.id}" data-name="${p.name.replace(/"/g, "&quot;")}" />
-          ${p.name.replace(/"/g, "&quot;")}
+          <input type="checkbox" value="${p.id}" data-name="${p.name}">
+          ${p.name}
         </label>
       </div>
     `;
@@ -303,8 +315,6 @@ function renderCart(){
   const container = document.getElementById("cart-items");
   const totalEl = document.getElementById("total");
 
-  if(!container || !totalEl) return;
-
   container.innerHTML = "";
 
   let total = 0;
@@ -313,39 +323,49 @@ function renderCart(){
     total += item.price;
 
     container.innerHTML += `
-    <div class="cart-item">
-      <span>${item.name} - ${item.profile || ""}</span>
-      <span>$${item.price.toFixed(2)}</span>
-    </div>
+      <div class="cart-item">
+        <span>${item.name} - ${item.profile}</span>
+        <span>$${item.price.toFixed(2)}</span>
+      </div>
     `;
   });
 
   totalEl.innerText = total.toFixed(2);
 }
 
-/* 🔥 FIXED — NOW PASSES FULL PROFILE DATA (WITH QR TOKEN) */
+/* 🔥 FINAL — CLEAN CHECKOUT HANDOFF */
 function goToCheckout(){
+
   if(cart.length === 0){
     alert("Add items first");
     return;
   }
 
-const profileIds = cart
-  .map(i => i.profile_id)
-  .filter(id =>
-    id &&
-    typeof id === "string" &&
-    id.length === 36 &&
-    id.includes("-")
-  );
+  const profileIds = cart
+    .map(i => i.profile_id)
+    .filter(id =>
+      id &&
+      typeof id === "string" &&
+      id.length === 36 &&
+      id.includes("-")
+    );
+
+  console.log("VALID UUIDS:", profileIds);
+
+  if(!profileIds.length){
+    alert("Invalid profile selection");
+    return;
+  }
 
   fetch("https://vitalink-app.netlify.app/.netlify/functions/get_profiles", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
     body: JSON.stringify({ profiles: profileIds })
   })
   .then(res => res.json())
   .then(data => {
+
+    console.log("CHECKOUT PROFILES:", data);
 
     if(!data.success || !data.profiles){
       alert("Failed to load profiles");
@@ -358,7 +378,7 @@ const profileIds = cart
     window.location.href = "checkout.html";
 
   })
-  .catch(err => {
+  .catch(err=>{
     console.error(err);
     alert("Error loading profiles");
   });
