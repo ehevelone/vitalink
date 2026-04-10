@@ -515,6 +515,8 @@ function goToCheckout(){
   Promise.all(requests)
     .then(() => {
 
+    console.log("CHECKOUT PROFILES →", allProfiles);
+
       if(!allProfiles.length){
         alert("Failed to load profiles");
         return;
