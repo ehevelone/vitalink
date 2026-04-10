@@ -323,21 +323,40 @@ function renderCart(){
   totalEl.innerText = total.toFixed(2);
 }
 
+/* 🔥 FIXED — NOW PASSES FULL PROFILE DATA (WITH QR TOKEN) */
 function goToCheckout(){
   if(cart.length === 0){
     alert("Add items first");
     return;
   }
 
-  // 🔥 THIS IS THE FIX — PASS UUIDs TO CHECKOUT
   const profileIds = cart
     .map(i => i.profile_id)
     .filter(id => id && typeof id === "string");
 
-  localStorage.setItem("checkout_profiles", JSON.stringify(profileIds));
+  fetch("https://vitalink-app.netlify.app/.netlify/functions/get_profiles", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ profiles: profileIds })
+  })
+  .then(res => res.json())
+  .then(data => {
 
-  localStorage.setItem("vitalink_cart", JSON.stringify(cart));
-  window.location.href = "checkout.html";
+    if(!data.success || !data.profiles){
+      alert("Failed to load profiles");
+      return;
+    }
+
+    localStorage.setItem("checkout_profiles", JSON.stringify(data.profiles));
+    localStorage.setItem("vitalink_cart", JSON.stringify(cart));
+
+    window.location.href = "checkout.html";
+
+  })
+  .catch(err => {
+    console.error(err);
+    alert("Error loading profiles");
+  });
 }
 </script>
 

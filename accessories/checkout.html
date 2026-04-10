@@ -81,7 +81,6 @@ align-items:center;
 margin-bottom:12px;
 }
 
-/* ✅ FIXED — SHOW QR PLACEHOLDERS */
 .qr-item canvas{
 width:80px;
 height:80px;
@@ -165,7 +164,45 @@ function render(){
   document.getElementById("total").innerText = total.toFixed(2);
 }
 
+/* 🔥 NEW — PLACEHOLDERS */
+function renderPlaceholders(profiles){
+
+  const qrSection = document.getElementById("qrSection");
+  const qrList = document.getElementById("qrList");
+
+  qrSection.style.display = "block";
+
+  qrList.innerHTML = profiles.map((p, i) => `
+    <div class="qr-item">
+      <span>${p.name || "Profile"}</span>
+      <canvas id="qr_${i}"></canvas>
+    </div>
+  `).join("");
+}
+
+/* 🔥 EXISTING */
+function renderQRs(profiles){
+
+  profiles.forEach((p, i) => {
+
+    const canvas = document.getElementById(`qr_${i}`);
+
+    if(!canvas) return;
+    if(!p.qr_token) return;
+
+    const url = `https://myvitalink.app/emergency.html?token=${p.qr_token}`;
+
+    QRCode.toCanvas(canvas, url, {
+      width: 80,
+      margin: 1
+    });
+
+  });
+}
+
+/* 🔥 THIS IS THE FIX */
 window.onload = function(){
+
   loadCart();
 
   if(cart.length === 0){
@@ -175,92 +212,35 @@ window.onload = function(){
   }
 
   render();
-};
 
-async function submitOrder(){
+  // 🔥 LOAD PROFILES PASSED FROM ORDER PAGE
+  const stored = localStorage.getItem("checkout_profiles");
 
-  const btn = document.querySelector(".checkout");
-  btn.disabled = true;
-  btn.innerText = "Processing...";
-
-  const profileIds = cart
-    .map(i => i.profile_id)
-    .filter(id => id && typeof id === "string" && id.includes("-"));
-
-  console.log("PROFILE IDS:", profileIds);
-
-  try{
-
-    const res = await fetch(
-      "https://vitalink-app.netlify.app/.netlify/functions/get_profiles",
-      {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({ profiles: profileIds })
-      }
-    );
-
-    const data = await res.json();
-
-    console.log("API RESPONSE:", data);
-
-    if(!data.success || !data.profiles){
-      throw new Error("Invalid response");
-    }
-
-    renderQRs(data.profiles);
-
-  } catch(err){
-    console.error(err);
-    alert(err.message || "Network error");
-    btn.disabled = false;
-    btn.innerText = "Submit Order";
-  }
-}
-
-function renderQRs(profiles){
-
-  const qrSection = document.getElementById("qrSection");
-  const qrList = document.getElementById("qrList");
-
-  qrSection.style.display = "block";
-
-  if(!profiles.length){
-    qrList.innerHTML = `<div class="error">No profiles returned</div>`;
+  if(!stored){
+    console.log("NO PROFILES FOUND");
     return;
   }
 
-  qrList.innerHTML = profiles.map((p, i) => `
-    <div class="qr-item">
-      <span>${p.name || "Profile"}</span>
-      <canvas id="qr_${i}"></canvas>
-    </div>
-  `).join("");
+  try{
+    const profiles = JSON.parse(stored);
 
-  profiles.forEach((p, i) => {
+    console.log("CHECKOUT PROFILES:", profiles);
 
-    const canvas = document.getElementById(`qr_${i}`);
+    if(!profiles.length) return;
 
-    if(!canvas){
-      console.error("Missing canvas:", i);
-      return;
-    }
+    // 🔥 SHOW PLACEHOLDERS IMMEDIATELY
+    renderPlaceholders(profiles);
 
-    if(!p.qr_token){
-      console.error("Missing token:", p);
-      return;
-    }
+    // 🔥 THEN DRAW QR
+    renderQRs(profiles);
 
-    const url = `https://myvitalink.app/emergency.html?token=${p.qr_token}`;
+  }catch(e){
+    console.error("PROFILE PARSE ERROR:", e);
+  }
+};
 
-    QRCode.toCanvas(canvas, url, {
-      width: 80,
-      margin: 1
-    }, err => {
-      if(err) console.error("QR error:", err);
-    });
-
-  });
+async function submitOrder(){
+  alert("Order submit coming next step (Stripe)");
 }
 
 </script>
