@@ -523,37 +523,64 @@ function goToCheckout(){
     localStorage.setItem("order_id", order_id);
 
     // 🔥 SEND TO YOUR EXISTING STRIPE FUNCTION
-    fetch("https://vitalink-app.netlify.app/.netlify/functions/create-checkout-session", {
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify({
-        amount,
-        order_id,
-        test: true
-      })
-    })
-    .then(res => res.json())
-    .then(data => {
-
-      console.log("STRIPE RESPONSE:", data);
-
-      if(data.url){
-        window.location.href = data.url;
-      } else {
-        alert("Stripe failed");
-      }
-
-    })
-    .catch(err=>{
-      console.error(err);
-      alert("Checkout error");
-    });
-
+// 🔥 STEP 1: CREATE ORDER FIRST
+fetch("https://vitalink-app.netlify.app/.netlify/functions/create-order", {
+  method:"POST",
+  headers:{ "Content-Type":"application/json" },
+  body: JSON.stringify({
+    profiles: matchedProfiles.map(p => p.id),
+    items: cart
   })
-  .catch(err=>{
-    console.error(err);
-    alert("Profile load failed");
+})
+.then(res => res.json())
+.then(data => {
+
+  console.log("🔥 CREATE-ORDER RESPONSE:", data);
+
+  if(!data.success){
+    alert("Failed to create order");
+    return;
+  }
+
+  const order_id = data.order_id;
+
+  // 🔥 STEP 2: STRIPE
+  const total = cart.reduce((sum, item) => sum + item.price, 0);
+  const amount = Math.round(total * 100);
+
+  return fetch("https://vitalink-app.netlify.app/.netlify/functions/create-checkout-session", {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({
+      amount,
+      order_id,
+      test: true
+    })
   });
+
+})
+.then(res => res.json())
+.then(data => {
+
+  console.log("STRIPE RESPONSE:", data);
+
+  if(data.url){
+    window.location.href = data.url;
+  } else {
+    alert("Stripe failed");
+  }
+
+})
+.catch(err=>{
+  console.error(err);
+  alert("Checkout error");
+});
+
+})
+.catch(err=>{
+  console.error(err);
+  alert("Profile load failed");
+});
 }
 </script>
 
