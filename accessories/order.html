@@ -537,15 +537,14 @@ function goToCheckout(){
 
       const order_id = data.order_id;
 
-      return fetch("https://vitalink-app.netlify.app/.netlify/functions/create-checkout-session", {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({
-          amount,
-          order_id,
-          test: true
-        })
-      });
+return fetch("https://vitalink-app.netlify.app/.netlify/functions/create-checkout-session", {
+  method:"POST",
+  headers:{ "Content-Type":"application/json" },
+  body: JSON.stringify({
+    amount,
+    order_id
+  })
+});
 
     })
     .then(res => res.json())
