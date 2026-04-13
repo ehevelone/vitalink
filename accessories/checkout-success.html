@@ -124,7 +124,16 @@ button{
 <script>
 
 const params = new URLSearchParams(window.location.search);
-const order_id = params.get("order_id") || params.get("request_id");
+
+// 🔥 FIX: fallback added
+const order_id =
+  params.get("order_id") ||
+  params.get("request_id") ||
+  localStorage.getItem("last_order_id");
+
+// 🔥 DEBUG (safe to leave in)
+console.log("FULL URL:", window.location.href);
+console.log("ORDER ID:", order_id);
 
 /* 🔥 LOAD ORDER + BUILD QR */
 async function loadOrder(){
@@ -138,6 +147,8 @@ async function loadOrder(){
 
   try{
 
+    console.log("LOADING ORDER:", order_id);
+
     const res = await fetch(
       "https://vitalink-app.netlify.app/.netlify/functions/get_order",
       {
@@ -147,7 +158,10 @@ async function loadOrder(){
       }
     );
 
+    console.log("FETCH STATUS:", res.status);
+
     const data = await res.json();
+    console.log("ORDER RESPONSE:", data);
 
     if(!data.success || !data.order){
       qrList.innerHTML = "<div class='status error'>Order not found</div>";
@@ -171,7 +185,6 @@ async function loadOrder(){
     order.qr.forEach((q, i) => {
       const canvas = document.getElementById(`qr_${i}`);
 
-      // ✅ USE URL EXACTLY AS RETURNED (TOKEN ALREADY INCLUDED)
       QRCode.toCanvas(canvas, q.qr_url, {
         width: 72,
         margin: 1
@@ -179,7 +192,7 @@ async function loadOrder(){
     });
 
   }catch(e){
-    console.error(e);
+    console.error("LOAD ERROR:", e);
     qrList.innerHTML = "<div class='status error'>Failed to load QRs</div>";
   }
 }
