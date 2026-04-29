@@ -161,6 +161,8 @@ button.primary{
 <tr>
 <th>Name</th>
 <th>Email</th>
+<th>Phone</th>
+<th>Address</th>
 <th>Status</th>
 <th>Action</th>
 </tr>
@@ -241,9 +243,15 @@ async function loadClients(){
 
   tbody.innerHTML=clients.map(c=>`
     <tr onclick="openClient('${c.id}')">
-      <td>${c.first_name||""} ${c.last_name||""}</td>
-      <td>${c.email||""}</td>
-      <td>${c.active?"Active":"Inactive"}</td>
+<td>${c.first_name||""} ${c.last_name||""}</td>
+<td>${c.email||""}</td>
+<td>${c.phone||""}</td>
+
+<td>
+  ${(c.address||"")} ${(c.city||"")}, ${(c.state||"")} ${(c.zip||"")}
+</td>
+
+<td>${c.active?"Active":"Inactive"}</td>
       <td>
         <button class="primary"
         onclick="event.stopPropagation();confirmToggle('${c.id}','${c.first_name}','${c.active}')">
@@ -300,10 +308,14 @@ async function toggleClient(id){
 // CSV
 function downloadCSV(){
 
-  let csv="Name,Email,Status\n";
+  let csv="Name,Email,Phone,Address,Status\n";
 
   allClients.forEach(c=>{
-    csv+=`"${c.first_name} ${c.last_name}","${c.email}","${c.active}"\n`;
+   csv+=`"${c.first_name} ${c.last_name}",
+"${c.email}",
+"${c.phone||""}",
+"${c.address||""} ${c.city||""} ${c.state||""} ${c.zip||""}",
+"${c.active}"\n`;
   });
 
   const blob=new Blob([csv],{type:"text/csv"});
