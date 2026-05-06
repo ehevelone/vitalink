@@ -154,6 +154,8 @@ button.primary{
   <button class="primary" onclick="loadClients()">Search</button>
   <button class="primary" onclick="downloadCSV()">CSV</button>
   <button class="primary" onclick="window.print()">Print</button>
+  <input id="inviteEmail" placeholder="Client email..." style="max-width:220px;" />
+  <button class="primary" onclick="sendInvite()">Send Invite</button>
 </div>
 
 <table>
@@ -344,6 +346,43 @@ function openClient(id){
 
 function closeModal(){
   document.getElementById("clientModal").classList.remove("active");
+}
+
+// 🔥 SEND INVITE (ADDED)
+async function sendInvite(){
+
+  const email = document.getElementById("inviteEmail").value.trim();
+
+  if(!email){
+    alert("Enter client email");
+    return;
+  }
+
+  try{
+    const res = await fetch(`${API}/send-agent-invite`,{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify({
+        email: email,
+        agent_id: Number(agentId),
+        agent_name: "Agent"
+      })
+    });
+
+    const data = await res.json();
+
+    if(!data.success){
+      alert("Failed to send invite");
+      return;
+    }
+
+    alert("Invite sent!");
+    document.getElementById("inviteEmail").value="";
+
+  }catch(e){
+    console.error(e);
+    alert("Server error");
+  }
 }
 
 loadClients();
