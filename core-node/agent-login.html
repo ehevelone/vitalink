@@ -273,6 +273,7 @@ async function login() {
     if (data.step === "login_success") {
 
       sessionStorage.setItem("agentSessionToken", data.token || "dev");
+      sessionStorage.setItem("agentName", data.agent.name);
       sessionStorage.setItem("agentId", String(data.agent.id));
 
       window.location.href = "agent-report.html";
@@ -342,6 +343,7 @@ async function verifyCode() {
 
     sessionStorage.setItem("agentSessionToken", data.token || "dev");
     sessionStorage.setItem("agentId", String(data.agent.id));
+    sessionStorage.setItem("agentName", data.agent.name);
 
     window.location.href = "agent-report.html";
 
