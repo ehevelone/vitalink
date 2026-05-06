@@ -359,15 +359,15 @@ async function sendInvite(){
   }
 
   try{
-    const res = await fetch(`${API}/send-agent-invite`,{
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body:JSON.stringify({
-        email: email,
-        agent_id: agentId,
-        agent_name: "Agent"
-      })
-    });
+const res = await fetch(`${API}/send-agent-invite`,{
+  method:"POST",
+  headers:{ "Content-Type":"application/json" },
+  body:JSON.stringify({
+    email: email,
+    agent_id: agentId,
+    agent_name: "Agent"
+  })
+});
 
     const data = await res.json();
 
