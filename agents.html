@@ -6,7 +6,6 @@
 <title>VitaLink™ For Agents</title>
 
 <style>
-/* 🔥 REUSE SAME STYLES FROM INDEX */
 :root{
 --bg-black:#000000;
 --text-primary:#eaeaea;
@@ -14,6 +13,8 @@
 --accent-blue:#7cc6e8;
 --divider:#1e1e1e;
 }
+
+*{box-sizing:border-box;}
 
 body{
 margin:0;
@@ -26,28 +27,134 @@ main{
 max-width:1100px;
 margin:0 auto;
 padding:60px 24px;
+}
+
+/* HERO */
+
+.hero-text{
 text-align:center;
+margin-bottom:80px;
+}
+
+.logo{
+max-width:460px;
+margin:0 auto 20px auto;
+display:block;
+filter:
+drop-shadow(0 0 12px rgba(124,198,232,0.35))
+drop-shadow(0 0 30px rgba(124,198,232,0.15));
+}
+
+.heartbeat-svg{
+max-width:520px;
+margin:0 auto 24px auto;
+}
+
+.ekg-line{
+stroke-dasharray:1200;
+stroke-dashoffset:1200;
+animation:ekgFlow 3s ease-in-out infinite;
+}
+
+@keyframes ekgFlow{
+0%{stroke-dashoffset:1200;}
+30%{stroke-dashoffset:0;}
+55%{stroke-dashoffset:0;}
+85%{stroke-dashoffset:-1200;}
+100%{stroke-dashoffset:-1200;}
+}
+
+.headline{
+font-size:2.4rem;
+text-align:center;
+margin-bottom:12px;
+}
+
+.tagline{
+font-size:1.2rem;
+color:#d0d0d0;
+text-align:center;
+max-width:720px;
+margin:0 auto 40px auto;
+}
+
+/* SECTIONS */
+
+.section{
+margin-bottom:80px;
+text-align:center;
+}
+
+.section p{
+color:#d0d0d0;
+max-width:700px;
+margin:20px auto;
+}
+
+/* GRID */
+
+.grid{
+display:grid;
+gap:28px;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+}
+
+.grid p{
+color:#d0d0d0;
+}
+
+/* CTA */
+
+button{
+padding:14px 28px;
+background:#7cc6e8;
+color:#000;
+border-radius:8px;
+border:none;
+font-weight:600;
+font-size:1rem;
+cursor:pointer;
 }
 </style>
 </head>
 
 <body>
+
 <main>
 
 <!-- 🔴 HERO -->
-<h1 style="font-size:2.6rem; margin-bottom:16px;">
-  Stop Losing Clients After Enrollment.
+<div class="hero-text">
+
+<img src="images/vitalink-logo.png" class="logo"/>
+
+<div class="heartbeat-svg">
+<svg viewBox="0 0 600 120">
+<path
+d="M0 60 L220 60 L240 60 L255 20 L270 100 L285 60 L305 60 L320 20 L335 100 L350 60 L600 60"
+fill="none"
+stroke="#7cc6e8"
+stroke-width="3"
+stroke-linecap="round"
+stroke-linejoin="round"
+class="ekg-line"
+/>
+</svg>
+</div>
+
+<h1 class="headline">
+Stop Losing Clients After Enrollment.
 </h1>
 
-<p style="font-size:1.2rem; color:#d0d0d0; max-width:700px; margin:0 auto 40px;">
+<p class="tagline">
 VitaLink keeps you connected to your clients year-round — not just during AEP.
 </p>
 
-<!-- 🔥 PROBLEM -->
-<section style="margin-bottom:70px;">
-<h2 style="font-size:1.8rem;">Be honest…</h2>
+</div>
 
-<p style="color:#d0d0d0; max-width:650px; margin:20px auto;">
+<!-- 🔥 PROBLEM -->
+<section class="section">
+<h2>Be honest…</h2>
+<p>
 Clients forget who wrote their policy.  
 You only hear from them when something goes wrong.  
 Referrals are inconsistent.  
@@ -56,82 +163,68 @@ And you’re constantly chasing compliance.
 </section>
 
 <!-- 🔥 SOLUTION -->
-<section style="margin-bottom:70px;">
+<section class="section">
 <h2>VitaLink changes that.</h2>
-
-<p style="color:#d0d0d0; max-width:650px; margin:20px auto;">
+<p>
 This isn’t just an app — it’s a client retention and referral system built for agents.
 </p>
 </section>
 
 <!-- 🔥 FEATURES -->
-<section style="margin-bottom:80px;">
+<section class="section">
+<h2>Agent Features</h2>
 
-<h2 style="margin-bottom:40px;">Agent Features</h2>
-
-<div style="display:grid; gap:28px; grid-template-columns:repeat(auto-fit,minmax(260px,1fr));">
+<div class="grid">
 
 <div>
 <h3>Smart Notifications</h3>
-<p style="color:#d0d0d0;">
-Stay informed when clients update information, access their profile, or need help.
+<p>
+Know when clients update info, access profiles, or trigger emergency activity.
 </p>
 </div>
 
 <div>
-<h3>Client Data — Organized</h3>
-<p style="color:#d0d0d0;">
-Receive client information in structured formats for CRM, compliance, and follow-up.
+<h3>Structured Data Output</h3>
+<p>
+Client data delivered in formats ready for CRM, compliance, and follow-up.
 </p>
 </div>
 
 <div>
 <h3>One QR Per Client</h3>
-<p style="color:#d0d0d0;">
-Each client has a single secure QR that connects everything — simple, powerful, scalable.
+<p>
+A single secure QR connects everything — simple, scalable, and powerful.
 </p>
 </div>
 
 <div>
-<h3>Referral Tool Built In</h3>
-<p style="color:#d0d0d0;">
-Clients share their VitaLink — your information travels with it.
+<h3>Built-In Referral Engine</h3>
+<p>
+Your information travels with every VitaLink — creating organic referrals.
 </p>
 </div>
 
 </div>
-
 </section>
 
-<!-- 🔥 HOW IT WORKS -->
-<section style="margin-bottom:80px;">
+<!-- 🔥 HOW -->
+<section class="section">
+<h2>How It Works</h2>
 
-<h2 style="margin-bottom:30px;">How Agents Use VitaLink</h2>
+<div class="grid">
 
-<div style="display:grid; gap:40px; grid-template-columns:repeat(auto-fit,minmax(260px,1fr));">
-
-<div>
-<p>1. Activate your client</p>
-</div>
-
-<div>
-<p>2. They store their health + insurance info</p>
-</div>
-
-<div>
-<p>3. You stay connected — automatically</p>
-</div>
+<div><p>Activate your client</p></div>
+<div><p>They store their information</p></div>
+<div><p>You stay connected automatically</p></div>
 
 </div>
-
 </section>
 
-<!-- 🔥 MONEY SECTION -->
-<section style="margin-bottom:80px;">
-
+<!-- 🔥 MONEY -->
+<section class="section">
 <h2>How This Makes You Money</h2>
 
-<p style="color:#d0d0d0; max-width:700px; margin:20px auto;">
+<p>
 Clients stay tied to YOU.  
 You now have a reason to reach out year-round.  
 Families see your value instantly.  
@@ -140,43 +233,53 @@ Referrals happen naturally — reinforced when emergency contacts receive a text
 
 </section>
 
-<!-- 🔥 EMOTIONAL CLOSE -->
-<section style="margin-bottom:80px;">
-
+<!-- 🔥 EMOTIONAL -->
+<section class="section">
 <h2>If something happens to your client…</h2>
 
-<p style="color:#d0d0d0; max-width:700px; margin:20px auto;">
+<p>
 Their VitaLink is scanned.  
 Their information is instantly available.  
 Their family is contacted.  
 
 And YOU are still part of that process.
 </p>
-
 </section>
 
 <!-- 🔥 CTA -->
-<section>
+<section class="section">
 
-<h2 style="font-size:2rem;">Start Using VitaLink With Your Clients</h2>
+<h2>Start Using VitaLink With Your Clients</h2>
 
-<p style="color:#d0d0d0; margin-bottom:30px;">
-Simple to use. Powerful for your business.
-</p>
+<p>Simple to use. Powerful for your business.</p>
 
-<a href="/core-node/agent-login.html" style="
-padding:14px 28px;
-background:#7cc6e8;
-color:#000;
-border-radius:8px;
-text-decoration:none;
-font-weight:600;
-">
-Get Agent Access
-</a>
+<button onclick="startAgentCheckout()">
+Start Agent Access
+</button>
 
 </section>
 
 </main>
+
+<script>
+async function startAgentCheckout() {
+  try {
+    const res = await fetch('https://vitalink-app.netlify.app/.netlify/functions/vl-agent-checkout', {
+      method: 'POST'
+    });
+
+    const data = await res.json();
+
+    if (data.url) {
+      window.location = data.url;
+    } else {
+      alert("Agent checkout failed.");
+    }
+  } catch (err) {
+    alert("Error connecting to payment system.");
+  }
+}
+</script>
+
 </body>
 </html>
