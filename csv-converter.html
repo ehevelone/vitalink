@@ -380,22 +380,48 @@ form.addEventListener("submit", async function(e){
     const url =
       window.URL.createObjectURL(blob);
 
-    const a = document.createElement("a");
+const downloadLink =
+  document.createElement("a");
 
-    a.href = url;
-    a.download = "vitalink-crm-import.csv";
+downloadLink.href = url;
 
-    document.body.appendChild(a);
+downloadLink.download =
+  "vitalink-crm-import.csv";
 
-    a.click();
+downloadLink.textContent =
+  "⬇ Download Converted CSV";
 
-    a.remove();
+downloadLink.style.display = "block";
+downloadLink.style.marginTop = "18px";
+downloadLink.style.padding = "14px";
+downloadLink.style.textAlign = "center";
+downloadLink.style.background = "#7cc6e8";
+downloadLink.style.color = "#000";
+downloadLink.style.borderRadius = "10px";
+downloadLink.style.fontWeight = "700";
+downloadLink.style.textDecoration = "none";
 
-    window.URL.revokeObjectURL(url);
+statusBox.innerHTML = "";
 
-    showSuccess(
-      "CSV converted successfully. Your download should begin automatically."
-    );
+statusBox.appendChild(downloadLink);
+
+statusBox.className = "status success";
+
+statusBox.style.display = "block";
+
+const autoDownload =
+  document.createElement("a");
+
+autoDownload.href = url;
+
+autoDownload.download =
+  "vitalink-crm-import.csv";
+
+document.body.appendChild(autoDownload);
+
+autoDownload.click();
+
+autoDownload.remove();
 
   }catch(err){
 
