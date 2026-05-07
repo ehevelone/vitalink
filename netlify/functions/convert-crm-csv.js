@@ -20,7 +20,7 @@ exports.handler = async (event) => {
         });
       }
 
-      const busboy = new Busboy({
+      const busboy = Busboy({
         headers:event.headers
       });
 
