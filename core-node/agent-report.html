@@ -359,13 +359,16 @@ async function sendInvite(){
   }
 
   try{
+
+    const agentName = sessionStorage.getItem("agentName");
+
 const res = await fetch(`${API}/send-agent-invite`,{
   method:"POST",
   headers:{ "Content-Type":"application/json" },
   body:JSON.stringify({
     email: email,
-    agent_id: agentId,
-    agent_name: "ZZZ_TEST_NAME"
+    agent_id: Number(agentId),
+    agent_name: agentName
   })
 });
 
