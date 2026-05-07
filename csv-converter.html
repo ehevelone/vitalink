@@ -173,7 +173,7 @@ color:#888;
 <h1>VitaLink™ CRM CSV Converter</h1>
 
 <p>
-Convert VitaLink client exports into CRM-ready import files using your CRM’s own CSV template.
+Convert VitaLink client exports into CRM-ready import files using built-in CRM mappings or custom CRM templates.
 </p>
 
 </section>
@@ -184,31 +184,33 @@ Convert VitaLink client exports into CRM-ready import files using your CRM’s o
 
 <div class="card">
 <h2>1. Upload VitaLink CSV Export</h2>
+
 <p>
-Upload the VitaLink client CSV using the standard VitaLink export format.
+Upload the VitaLink client CSV export you want to convert into another CRM format.
 </p>
 
 <label for="vitalinkCsv">VitaLink CSV File</label>
-<input type="file" id="vitalinkCsv" name="vitalinkCsv" accept=".csv" required />
+
+<input
+type="file"
+id="vitalinkCsv"
+name="vitalinkCsv"
+accept=".csv"
+required
+/>
+
 </div>
 
 <div class="card">
-<h2>2. Upload CRM Import Template</h2>
-<p>
-Upload the blank or sample CSV import template from the CRM you want to use.
-</p>
 
-<label for="crmTemplateCsv">CRM Template CSV File</label>
-<input type="file" id="crmTemplateCsv" name="crmTemplateCsv" accept=".csv" required />
-</div>
+<h2>2. Select CRM Type</h2>
 
-<div class="card">
-<h2>3. Select CRM Type</h2>
 <p>
-Choose the CRM this file is being prepared for. More templates can be added later.
+Choose the CRM this file should be converted for.
 </p>
 
 <label for="crmType">CRM</label>
+
 <select id="crmType" name="crmType" required>
 <option value="">Select CRM</option>
 <option value="integrity_connect">Integrity Connect / MedicareCENTER</option>
@@ -217,12 +219,49 @@ Choose the CRM this file is being prepared for. More templates can be added late
 <option value="agency_bloc">AgencyBloc</option>
 <option value="custom">Custom CRM Template</option>
 </select>
+
+</div>
+
+<div
+class="card"
+id="customTemplateCard"
+style="display:none;"
+>
+
+<h2>3. Custom CRM Template</h2>
+
+<p>
+Upload a sample or blank CRM import template so VitaLink can build a compatible conversion format.
+</p>
+
+<label for="customCrmName">CRM Name</label>
+
+<input
+type="text"
+id="customCrmName"
+name="customCrmName"
+placeholder="Example: Sunfire CRM"
+/>
+
+<br><br>
+
+<label for="crmTemplateCsv">CRM Template CSV File</label>
+
+<input
+type="file"
+id="crmTemplateCsv"
+name="crmTemplateCsv"
+accept=".csv"
+/>
+
 </div>
 
 <div class="card">
+
 <h2>4. Convert File</h2>
+
 <p>
-VitaLink will match your export data to the CRM template and generate a CRM-ready CSV download.
+VitaLink will convert your export into a CRM-ready CSV file for download.
 </p>
 
 <button type="submit" id="convertBtn">
@@ -230,6 +269,7 @@ Convert CSV
 </button>
 
 <div id="statusBox" class="status"></div>
+
 </div>
 
 </form>
@@ -245,77 +285,149 @@ CSV files may contain sensitive client information. Only upload files you are au
 </main>
 
 <script>
+
 const form = document.getElementById("converterForm");
 const statusBox = document.getElementById("statusBox");
 const convertBtn = document.getElementById("convertBtn");
 
+const crmType = document.getElementById("crmType");
+const customTemplateCard = document.getElementById("customTemplateCard");
+
+crmType.addEventListener("change", () => {
+
+  if(crmType.value === "custom"){
+    customTemplateCard.style.display = "block";
+  }else{
+    customTemplateCard.style.display = "none";
+  }
+
+});
+
 form.addEventListener("submit", async function(e){
+
   e.preventDefault();
 
   statusBox.className = "status";
   statusBox.style.display = "none";
   statusBox.textContent = "";
 
-  const vitalinkCsv = document.getElementById("vitalinkCsv").files[0];
-  const crmTemplateCsv = document.getElementById("crmTemplateCsv").files[0];
-  const crmType = document.getElementById("crmType").value;
+  const vitalinkCsv =
+    document.getElementById("vitalinkCsv").files[0];
 
-  if(!vitalinkCsv || !crmTemplateCsv || !crmType){
-    showError("Please upload both CSV files and select a CRM.");
+  const crmTemplateCsv =
+    document.getElementById("crmTemplateCsv").files[0];
+
+  const crmTypeValue =
+    document.getElementById("crmType").value;
+
+  const customCrmName =
+    document.getElementById("customCrmName").value;
+
+  if(!vitalinkCsv || !crmTypeValue){
+    showError("Please upload a VitaLink CSV and select a CRM.");
     return;
   }
 
+  if(crmTypeValue === "custom"){
+
+    if(!customCrmName || !crmTemplateCsv){
+      showError(
+        "Please enter a CRM name and upload a CRM template."
+      );
+      return;
+    }
+
+  }
+
   const formData = new FormData();
+
   formData.append("vitalinkCsv", vitalinkCsv);
-  formData.append("crmTemplateCsv", crmTemplateCsv);
-  formData.append("crmType", crmType);
+  formData.append("crmType", crmTypeValue);
+
+  if(crmTemplateCsv){
+    formData.append("crmTemplateCsv", crmTemplateCsv);
+  }
+
+  if(customCrmName){
+    formData.append("customCrmName", customCrmName);
+  }
 
   try{
+
     convertBtn.disabled = true;
     convertBtn.textContent = "Converting...";
 
-    const res = await fetch("/.netlify/functions/convert-crm-csv", {
-      method: "POST",
-      body: formData
-    });
+    const res = await fetch(
+      "/.netlify/functions/convert-crm-csv",
+      {
+        method:"POST",
+        body:formData
+      }
+    );
 
     if(!res.ok){
+
       const text = await res.text();
-      throw new Error(text || "CSV conversion failed.");
+
+      throw new Error(
+        text || "CSV conversion failed."
+      );
+
     }
 
     const blob = await res.blob();
-    const url = window.URL.createObjectURL(blob);
+
+    const url =
+      window.URL.createObjectURL(blob);
 
     const a = document.createElement("a");
+
     a.href = url;
     a.download = "vitalink-crm-import.csv";
+
     document.body.appendChild(a);
+
     a.click();
+
     a.remove();
 
     window.URL.revokeObjectURL(url);
 
-    showSuccess("CSV converted successfully. Your download should begin automatically.");
+    showSuccess(
+      "CSV converted successfully. Your download should begin automatically."
+    );
 
   }catch(err){
+
     console.error(err);
-    showError("Conversion failed. Please check the files and try again.");
+
+    showError(
+      "Conversion failed. Please check the files and try again."
+    );
+
   }finally{
+
     convertBtn.disabled = false;
     convertBtn.textContent = "Convert CSV";
+
   }
+
 });
 
 function showSuccess(msg){
+
   statusBox.className = "status success";
   statusBox.textContent = msg;
+
 }
 
 function showError(msg){
+
   statusBox.className = "status error";
   statusBox.textContent = msg;
+
 }
+
 </script>
 
 </body>
