@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>VitaLink™ CRM CSV Converter</title>
+
+<style>
+:root{
+--bg:#000;
+--card:#101010;
+--text:#eaeaea;
+--muted:#b5b5b5;
+--accent:#7cc6e8;
+--divider:#1e1e1e;
+}
+
+*{box-sizing:border-box;}
+
+body{
+margin:0;
+background:var(--bg);
+color:var(--text);
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+line-height:1.6;
+}
+
+main{
+max-width:900px;
+margin:0 auto;
+padding:60px 24px;
+}
+
+.logo{
+max-width:380px;
+width:100%;
+margin:0 auto 24px auto;
+display:block;
+filter:
+drop-shadow(0 0 12px rgba(124,198,232,0.35))
+drop-shadow(0 0 30px rgba(124,198,232,0.15));
+}
+
+.hero{
+text-align:center;
+margin-bottom:60px;
+}
+
+.hero h1{
+font-size:2.4rem;
+margin-bottom:14px;
+}
+
+.hero p{
+max-width:720px;
+margin:0 auto;
+color:#d0d0d0;
+font-size:1.12rem;
+}
+
+.divider{
+border-top:1px solid var(--divider);
+margin:55px 0;
+}
+
+.card{
+background:linear-gradient(180deg,#111,#0b0b0b);
+border:1px solid #1e1e1e;
+border-radius:16px;
+padding:26px;
+box-shadow:0 10px 28px rgba(0,0,0,0.6);
+margin-bottom:24px;
+}
+
+.card h2{
+margin-top:0;
+font-size:1.45rem;
+}
+
+.card p{
+color:#cfcfcf;
+margin-bottom:18px;
+}
+
+label{
+display:block;
+font-weight:600;
+margin-bottom:8px;
+color:#ffffff;
+}
+
+input,
+select{
+width:100%;
+padding:13px;
+border-radius:10px;
+border:1px solid #252525;
+background:#050505;
+color:#eaeaea;
+font-size:1rem;
+}
+
+input[type="file"]{
+padding:12px;
+}
+
+button{
+width:100%;
+padding:15px 24px;
+border:none;
+border-radius:10px;
+background:var(--accent);
+color:#000;
+font-size:1.05rem;
+font-weight:700;
+cursor:pointer;
+margin-top:12px;
+}
+
+button:hover{
+opacity:.9;
+}
+
+.note{
+font-size:.92rem;
+color:#888;
+text-align:center;
+margin-top:20px;
+}
+
+.status{
+margin-top:18px;
+padding:14px;
+border-radius:10px;
+display:none;
+font-size:.95rem;
+}
+
+.status.success{
+display:block;
+background:#082b18;
+color:#b8ffd0;
+border:1px solid #155d34;
+}
+
+.status.error{
+display:block;
+background:#2b0808;
+color:#ffc2c2;
+border:1px solid #5d1515;
+}
+
+footer{
+margin-top:70px;
+padding-top:28px;
+border-top:1px solid #1e1e1e;
+text-align:center;
+font-size:.9rem;
+color:#888;
+}
+</style>
+</head>
+
+<body>
+
+<main>
+
+<section class="hero">
+
+<img src="images/vitalink-logo.png" class="logo" alt="VitaLink Logo" />
+
+<h1>VitaLink™ CRM CSV Converter</h1>
+
+<p>
+Convert VitaLink client exports into CRM-ready import files using your CRM’s own CSV template.
+</p>
+
+</section>
+
+<div class="divider"></div>
+
+<form id="converterForm">
+
+<div class="card">
+<h2>1. Upload VitaLink CSV Export</h2>
+<p>
+Upload the VitaLink client CSV using the standard VitaLink export format.
+</p>
+
+<label for="vitalinkCsv">VitaLink CSV File</label>
+<input type="file" id="vitalinkCsv" name="vitalinkCsv" accept=".csv" required />
+</div>
+
+<div class="card">
+<h2>2. Upload CRM Import Template</h2>
+<p>
+Upload the blank or sample CSV import template from the CRM you want to use.
+</p>
+
+<label for="crmTemplateCsv">CRM Template CSV File</label>
+<input type="file" id="crmTemplateCsv" name="crmTemplateCsv" accept=".csv" required />
+</div>
+
+<div class="card">
+<h2>3. Select CRM Type</h2>
+<p>
+Choose the CRM this file is being prepared for. More templates can be added later.
+</p>
+
+<label for="crmType">CRM</label>
+<select id="crmType" name="crmType" required>
+<option value="">Select CRM</option>
+<option value="integrity_connect">Integrity Connect / MedicareCENTER</option>
+<option value="max">MAX CRM</option>
+<option value="lead_advantage">Lead Advantage Pro</option>
+<option value="agency_bloc">AgencyBloc</option>
+<option value="custom">Custom CRM Template</option>
+</select>
+</div>
+
+<div class="card">
+<h2>4. Convert File</h2>
+<p>
+VitaLink will match your export data to the CRM template and generate a CRM-ready CSV download.
+</p>
+
+<button type="submit" id="convertBtn">
+Convert CSV
+</button>
+
+<div id="statusBox" class="status"></div>
+</div>
+
+</form>
+
+<p class="note">
+CSV files may contain sensitive client information. Only upload files you are authorized to process.
+</p>
+
+<footer>
+© 2026 VitaLink™ — CRM CSV Converter
+</footer>
+
+</main>
+
+<script>
+const form = document.getElementById("converterForm");
+const statusBox = document.getElementById("statusBox");
+const convertBtn = document.getElementById("convertBtn");
+
+form.addEventListener("submit", async function(e){
+  e.preventDefault();
+
+  statusBox.className = "status";
+  statusBox.style.display = "none";
+  statusBox.textContent = "";
+
+  const vitalinkCsv = document.getElementById("vitalinkCsv").files[0];
+  const crmTemplateCsv = document.getElementById("crmTemplateCsv").files[0];
+  const crmType = document.getElementById("crmType").value;
+
+  if(!vitalinkCsv || !crmTemplateCsv || !crmType){
+    showError("Please upload both CSV files and select a CRM.");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("vitalinkCsv", vitalinkCsv);
+  formData.append("crmTemplateCsv", crmTemplateCsv);
+  formData.append("crmType", crmType);
+
+  try{
+    convertBtn.disabled = true;
+    convertBtn.textContent = "Converting...";
+
+    const res = await fetch("/.netlify/functions/convert-crm-csv", {
+      method: "POST",
+      body: formData
+    });
+
+    if(!res.ok){
+      const text = await res.text();
+      throw new Error(text || "CSV conversion failed.");
+    }
+
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "vitalink-crm-import.csv";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    window.URL.revokeObjectURL(url);
+
+    showSuccess("CSV converted successfully. Your download should begin automatically.");
+
+  }catch(err){
+    console.error(err);
+    showError("Conversion failed. Please check the files and try again.");
+  }finally{
+    convertBtn.disabled = false;
+    convertBtn.textContent = "Convert CSV";
+  }
+});
+
+function showSuccess(msg){
+  statusBox.className = "status success";
+  statusBox.textContent = msg;
+}
+
+function showError(msg){
+  statusBox.className = "status error";
+  statusBox.textContent = msg;
+}
+</script>
+
+</body>
+</html>
