@@ -362,6 +362,8 @@ async function sendInvite(){
 
     const agentName = sessionStorage.getItem("agentName");
 
+    alert("SENDING: " + agentName);
+
 const res = await fetch(`${API}/send-agent-invite`,{
   method:"POST",
   headers:{ "Content-Type":"application/json" },
