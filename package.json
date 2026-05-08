@@ -2,6 +2,7 @@
   "dependencies": {
     "busboy": "^1.6.0",
     "csv-parser": "^3.2.1",
-    "csv-writer": "^1.6.0"
+    "csv-writer": "^1.6.0",
+    "pg": "^8.20.0"
   }
 }
