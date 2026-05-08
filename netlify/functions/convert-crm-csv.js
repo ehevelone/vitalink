@@ -16,19 +16,21 @@ exports.handler = async (event) => {
 
     try{
 
-const headers = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "Content-Type",
-  "Access-Control-Allow-Methods":
-    "POST, OPTIONS",
-};
+      const headers = {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Methods":
+          "POST, OPTIONS",
+      };
 
       if(event.httpMethod === "OPTIONS"){
+
         return resolve({
           statusCode:200,
           headers,
           body:""
         });
+
       }
 
       const busboy = Busboy({
@@ -38,7 +40,7 @@ const headers = {
       const files = {};
       const fields = {};
 
-      busboy.on("file", (fieldname, file, info) => {
+      busboy.on("file", (fieldname, file) => {
 
         const chunks = [];
 
@@ -47,14 +49,18 @@ const headers = {
         });
 
         file.on("end", () => {
+
           files[fieldname] =
             Buffer.concat(chunks);
+
         });
 
       });
 
       busboy.on("field", (fieldname, value) => {
+
         fields[fieldname] = value;
+
       });
 
       busboy.on("finish", async () => {
@@ -62,56 +68,6 @@ const headers = {
         try{
 
           const crmType = fields.crmType;
-
-          const customCrmName =
-  fields.customCrmName || "";
-  let existingTemplate = null;
-  if(
-  crmType === "custom" &&
-  customCrmName
-){
-
-  try{
-
-    const client =
-      await pool.connect();
-
-    const result =
-      await client.query(
-        `
-        select *
-        from crm_templates
-        where lower(crm_name) =
-          lower($1)
-        limit 1
-        `,
-        [customCrmName]
-      );
-
-    client.release();
-
-    if(result.rows.length){
-
-      existingTemplate =
-        result.rows[0];
-
-      console.log(
-        "Existing CRM template found:",
-        customCrmName
-      );
-
-    }
-
-  }catch(dbErr){
-
-    console.error(
-      "CRM lookup failed:",
-      dbErr
-    );
-
-  }
-
-}
 
           if(!files.vitalinkCsv){
 
@@ -139,7 +95,9 @@ const headers = {
           readable
             .pipe(csv())
             .on("data", (row) => {
+
               rows.push(row);
+
             })
             .on("end", async () => {
 
@@ -147,242 +105,74 @@ const headers = {
 
                 let output = [];
 
-                // =========================
-                // MAX CRM
-                // =========================
+                const client =
+                  await pool.connect();
 
-               if(crmType === "max"){
+                let template;
 
-  output = rows.map((r) => ({
+                try{
 
-    "First Name":
-      r["First Name"] || "",
+                  const result =
+                    await client.query(
+                      `
+                      select *
+                      from crm_templates
+                      where crm_name = $1
+                      limit 1
+                      `,
+                      [crmType]
+                    );
 
-    "Last Name":
-      r["Last Name"] || "",
+                  if(!result.rows.length){
 
-    "DOB":
-      r["DOB"] || "",
+                    return resolve({
+                      statusCode:400,
+                      headers,
+                      body:"CRM template not found."
+                    });
 
-    "Address":
-      r["Address"] || "",
+                  }
 
-    "City":
-      r["City"] || "",
+                  template =
+                    result.rows[0];
 
-    "State":
-      r["State"] || "",
+                }finally{
 
-    "Zip":
-      r["Zip"] || "",
-
-    "Phone":
-      r["Phone"] || "",
-
-    "Email":
-      r["Email"] || "",
-
-    "Notes":
-`
-Medications:
-${r["Medications"] || ""}
-
-Doctors:
-${r["Doctors"] || ""}
-
-Emergency Contacts:
-${r["Emergency Contacts"] || ""}
-`.trim()
-
-  }));
-
-}
-
-                // =========================
-                // Integrity Connect
-                // =========================
-
-               else if(
-  crmType === "integrity_connect"
-){
-
-  output = rows.map((r) => ({
-
-    "First Name":
-      r["First Name"] || "",
-
-    "Last Name":
-      r["Last Name"] || "",
-
-    "Date of Birth":
-      r["DOB"] || "",
-
-    "Address":
-      r["Address"] || "",
-
-    "City":
-      r["City"] || "",
-
-    "State":
-      r["State"] || "",
-
-    "Zip":
-      r["Zip"] || "",
-
-    "Phone":
-      r["Phone"] || "",
-
-    "Email":
-      r["Email"] || "",
-
-    "Notes":
-`
-Medications:
-${r["Medications"] || ""}
-
-Doctors:
-${r["Doctors"] || ""}
-
-Emergency Contacts:
-${r["Emergency Contacts"] || ""}
-`.trim()
-
-  }));
-
-}
-
-                // =========================
-                // Lead Advantage
-                // =========================
-
-else if(
-  crmType === "lead_advantage"
-){
-
-  output = rows.map((r) => ({
-
-    "First Name":
-      r["First Name"] || "",
-
-    "Last Name":
-      r["Last Name"] || "",
-
-    "DOB":
-      r["DOB"] || "",
-
-    "Address":
-      r["Address"] || "",
-
-    "City":
-      r["City"] || "",
-
-    "State":
-      r["State"] || "",
-
-    "Zip":
-      r["Zip"] || "",
-
-    "Phone":
-      r["Phone"] || "",
-
-    "Email":
-      r["Email"] || "",
-
-    "Notes":
-`
-Medications:
-${r["Medications"] || ""}
-
-Doctors:
-${r["Doctors"] || ""}
-
-Emergency Contacts:
-${r["Emergency Contacts"] || ""}
-`.trim()
-
-  }));
-
-}
-
-                // =========================
-                // CUSTOM CRM
-                // =========================
-
-else if(
-  crmType === "custom"
-){
-
-  output = rows;
-
-  if(
-  files.crmTemplateCsv &&
-  !existingTemplate
-){
-
-    try{
-
-      const templateText =
-        files.crmTemplateCsv.toString("utf8");
-
-      const firstLine =
-        templateText.split("\n")[0];
-
-      const templateHeaders =
-        firstLine
-          .split(",")
-          .map((h) =>
-            h.replace(/"/g, "").trim()
-          );
-
-const client =
-  await pool.connect();
-
-try{
-
-  await client.query(
-    `
-    insert into crm_templates
-    (
-      crm_name,
-      headers_json
-    )
-    values
-    ($1, $2)
-    `,
-    [
-      customCrmName,
-      JSON.stringify(templateHeaders)
-    ]
-  );
-
-}finally{
-
-  client.release();
-
-}
-
-    }catch(saveErr){
-
-      console.error(
-        "CRM template save failed:",
-        saveErr
-      );
-
-    }
-
-  }
-
-}
-
-                else{
-
-                  return resolve({
-                    statusCode:400,
-                    headers,
-                    body:"Unsupported CRM type."
-                  });
+                  client.release();
 
                 }
+
+                const crmHeaders =
+                  template.headers_json || [];
+
+                const mappings =
+                  template.mapping_json || {};
+
+                output = rows.map((r) => {
+
+                  const newRow = {};
+
+                  crmHeaders.forEach((header) => {
+
+                    const vitalinkField =
+                      mappings[header];
+
+                    if(vitalinkField){
+
+                      newRow[header] =
+                        r[vitalinkField] || "";
+
+                    }else{
+
+                      newRow[header] = "";
+
+                    }
+
+                  });
+
+                  return newRow;
+
+                });
 
                 if(!output.length){
 

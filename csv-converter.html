@@ -213,11 +213,6 @@ Choose the CRM this file should be converted for.
 
 <select id="crmType" name="crmType" required>
 <option value="">Select CRM</option>
-<option value="integrity_connect">Integrity Connect / MedicareCENTER</option>
-<option value="max">Market Access Direct (MAX)</option>
-<option value="lead_advantage">Lead Advantage Pro</option>
-<option value="agency_bloc">AgencyBloc</option>
-<option value="custom">Custom CRM Template</option>
 </select>
 
 </div>
@@ -293,6 +288,44 @@ const convertBtn = document.getElementById("convertBtn");
 const crmType = document.getElementById("crmType");
 const customTemplateCard = document.getElementById("customTemplateCard");
 
+async function loadCustomCrms(){
+
+  try{
+
+    const res = await fetch(
+      "/.netlify/functions/get-crm-templates"
+    );
+
+    const crms = await res.json();
+
+    crms.forEach((crm) => {
+
+      const option =
+        document.createElement("option");
+
+      option.value =
+        crm.crm_name;
+
+      option.textContent =
+        crm.crm_name;
+
+      crmType.appendChild(option);
+
+    });
+
+  }catch(err){
+
+    console.error(
+      "Failed to load CRM templates:",
+      err
+    );
+
+  }
+
+}
+
+loadCustomCrms();
+
 crmType.addEventListener("change", () => {
 
   if(crmType.value === "custom"){
@@ -328,11 +361,11 @@ form.addEventListener("submit", async function(e){
     return;
   }
 
-  if(crmTypeValue === "custom"){
+     if(crmTypeValue === "custom"){
 
-    if(!customCrmName || !crmTemplateCsv){
+  if(!customCrmName){
       showError(
-        "Please enter a CRM name and upload a CRM template."
+        "Please enter a CRM name."
       );
       return;
     }
