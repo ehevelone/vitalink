@@ -1,0 +1,10 @@
+User-agent: *
+
+Allow: /
+
+Disallow: /core-node/
+Disallow: /netlify/
+Disallow: /.netlify/
+Disallow: /node_modules/
+
+Sitemap: https://myvitalink.app/sitemap.xml
