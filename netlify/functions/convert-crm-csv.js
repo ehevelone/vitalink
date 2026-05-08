@@ -1,16 +1,27 @@
 const Busboy = require("busboy");
 const csv = require("csv-parser");
 
+const { Pool } = require("pg");
+
+const pool = new Pool({
+  connectionString: process.env.SUPABASE_URL,
+  ssl:{
+    rejectUnauthorized:false
+  }
+});
+
 exports.handler = async (event) => {
 
   return new Promise((resolve) => {
 
     try{
 
-      const headers = {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Content-Type",
-      };
+const headers = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Methods":
+    "POST, OPTIONS",
+};
 
       if(event.httpMethod === "OPTIONS"){
         return resolve({
@@ -52,6 +63,56 @@ exports.handler = async (event) => {
 
           const crmType = fields.crmType;
 
+          const customCrmName =
+  fields.customCrmName || "";
+  let existingTemplate = null;
+  if(
+  crmType === "custom" &&
+  customCrmName
+){
+
+  try{
+
+    const client =
+      await pool.connect();
+
+    const result =
+      await client.query(
+        `
+        select *
+        from crm_templates
+        where lower(crm_name) =
+          lower($1)
+        limit 1
+        `,
+        [customCrmName]
+      );
+
+    client.release();
+
+    if(result.rows.length){
+
+      existingTemplate =
+        result.rows[0];
+
+      console.log(
+        "Existing CRM template found:",
+        customCrmName
+      );
+
+    }
+
+  }catch(dbErr){
+
+    console.error(
+      "CRM lookup failed:",
+      dbErr
+    );
+
+  }
+
+}
+
           if(!files.vitalinkCsv){
 
             return resolve({
@@ -90,119 +151,228 @@ exports.handler = async (event) => {
                 // MAX CRM
                 // =========================
 
-                if(crmType === "max"){
+               if(crmType === "max"){
 
-                  output = rows.map((r) => ({
-                    FNAME:
-                      r["First Name"] || "",
+  output = rows.map((r) => ({
 
-                    LNAME:
-                      r["Last Name"] || "",
+    "First Name":
+      r["First Name"] || "",
 
-                    DOB:
-                      r["DOB"] || "",
+    "Last Name":
+      r["Last Name"] || "",
 
-                    PHONE:
-                      r["Phone"] || "",
+    "DOB":
+      r["DOB"] || "",
 
-                    EMAIL:
-                      r["Email"] || "",
+    "Address":
+      r["Address"] || "",
 
-                    NOTES:
-                      `
+    "City":
+      r["City"] || "",
+
+    "State":
+      r["State"] || "",
+
+    "Zip":
+      r["Zip"] || "",
+
+    "Phone":
+      r["Phone"] || "",
+
+    "Email":
+      r["Email"] || "",
+
+    "Notes":
+`
 Medications:
 ${r["Medications"] || ""}
 
 Doctors:
 ${r["Doctors"] || ""}
-                      `.trim()
-                  }));
 
-                }
+Emergency Contacts:
+${r["Emergency Contacts"] || ""}
+`.trim()
+
+  }));
+
+}
 
                 // =========================
                 // Integrity Connect
                 // =========================
 
-                else if(
-                  crmType === "integrity_connect"
-                ){
+               else if(
+  crmType === "integrity_connect"
+){
 
-                  output = rows.map((r) => ({
-                    FirstName:
-                      r["First Name"] || "",
+  output = rows.map((r) => ({
 
-                    LastName:
-                      r["Last Name"] || "",
+    "First Name":
+      r["First Name"] || "",
 
-                    DateOfBirth:
-                      r["DOB"] || "",
+    "Last Name":
+      r["Last Name"] || "",
 
-                    PhoneNumber:
-                      r["Phone"] || "",
+    "Date of Birth":
+      r["DOB"] || "",
 
-                    EmailAddress:
-                      r["Email"] || "",
+    "Address":
+      r["Address"] || "",
 
-                    Notes:
-                      `
+    "City":
+      r["City"] || "",
+
+    "State":
+      r["State"] || "",
+
+    "Zip":
+      r["Zip"] || "",
+
+    "Phone":
+      r["Phone"] || "",
+
+    "Email":
+      r["Email"] || "",
+
+    "Notes":
+`
 Medications:
 ${r["Medications"] || ""}
 
 Doctors:
 ${r["Doctors"] || ""}
-                      `.trim()
-                  }));
 
-                }
+Emergency Contacts:
+${r["Emergency Contacts"] || ""}
+`.trim()
+
+  }));
+
+}
 
                 // =========================
                 // Lead Advantage
                 // =========================
 
-                else if(
-                  crmType === "lead_advantage"
-                ){
+else if(
+  crmType === "lead_advantage"
+){
 
-                  output = rows.map((r) => ({
-                    first_name:
-                      r["First Name"] || "",
+  output = rows.map((r) => ({
 
-                    last_name:
-                      r["Last Name"] || "",
+    "First Name":
+      r["First Name"] || "",
 
-                    dob:
-                      r["DOB"] || "",
+    "Last Name":
+      r["Last Name"] || "",
 
-                    phone:
-                      r["Phone"] || "",
+    "DOB":
+      r["DOB"] || "",
 
-                    email:
-                      r["Email"] || "",
+    "Address":
+      r["Address"] || "",
 
-                    notes:
-                      `
+    "City":
+      r["City"] || "",
+
+    "State":
+      r["State"] || "",
+
+    "Zip":
+      r["Zip"] || "",
+
+    "Phone":
+      r["Phone"] || "",
+
+    "Email":
+      r["Email"] || "",
+
+    "Notes":
+`
 Medications:
 ${r["Medications"] || ""}
 
 Doctors:
 ${r["Doctors"] || ""}
-                      `.trim()
-                  }));
 
-                }
+Emergency Contacts:
+${r["Emergency Contacts"] || ""}
+`.trim()
+
+  }));
+
+}
 
                 // =========================
                 // CUSTOM CRM
                 // =========================
 
-                else if(
-                  crmType === "custom"
-                ){
+else if(
+  crmType === "custom"
+){
 
-                  output = rows;
+  output = rows;
 
-                }
+  if(
+  files.crmTemplateCsv &&
+  !existingTemplate
+){
+
+    try{
+
+      const templateText =
+        files.crmTemplateCsv.toString("utf8");
+
+      const firstLine =
+        templateText.split("\n")[0];
+
+      const templateHeaders =
+        firstLine
+          .split(",")
+          .map((h) =>
+            h.replace(/"/g, "").trim()
+          );
+
+const client =
+  await pool.connect();
+
+try{
+
+  await client.query(
+    `
+    insert into crm_templates
+    (
+      crm_name,
+      headers_json
+    )
+    values
+    ($1, $2)
+    `,
+    [
+      customCrmName,
+      JSON.stringify(templateHeaders)
+    ]
+  );
+
+}finally{
+
+  client.release();
+
+}
+
+    }catch(saveErr){
+
+      console.error(
+        "CRM template save failed:",
+        saveErr
+      );
+
+    }
+
+  }
+
+}
 
                 else{
 
