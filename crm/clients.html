@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>VitaLink CRM - Clients</title>
+
+<style>
+
+:root{
+  --bg:#f4f5f7;
+  --card:#ffffff;
+  --border:#e5e7eb;
+  --text:#111827;
+  --muted:#6b7280;
+  --accent:#7cc6e8;
+  --accent-dark:#58b6df;
+  --shadow:0 4px 18px rgba(0,0,0,0.08);
+}
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+/* =========================================
+   SIDEBAR
+========================================= */
+
+.sidebar{
+  position:fixed;
+  top:0;
+  left:0;
+  width:250px;
+  height:100vh;
+  background:#0f172a;
+  color:#fff;
+  padding:24px 18px;
+  overflow-y:auto;
+}
+
+.logo{
+  width:100%;
+  max-width:180px;
+  display:block;
+  margin:0 auto 35px auto;
+}
+
+.nav-section{
+  margin-bottom:30px;
+}
+
+.nav-title{
+  font-size:.78rem;
+  color:#94a3b8;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  margin-bottom:12px;
+}
+
+.nav-item{
+  padding:12px 14px;
+  border-radius:10px;
+  margin-bottom:8px;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.nav-item:hover{
+  background:rgba(124,198,232,0.12);
+}
+
+.nav-item.active{
+  background:rgba(124,198,232,0.18);
+  color:var(--accent);
+  font-weight:600;
+}
+
+/* =========================================
+   MAIN
+========================================= */
+
+.main{
+  margin-left:250px;
+  padding:28px;
+}
+
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:24px;
+}
+
+.topbar h1{
+  margin:0;
+  font-size:2rem;
+}
+
+.top-actions{
+  display:flex;
+  gap:12px;
+}
+
+button{
+  border:none;
+  background:var(--accent);
+  color:#000;
+  padding:11px 18px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:600;
+  transition:.2s;
+}
+
+button:hover{
+  opacity:.9;
+}
+
+.secondary-btn{
+  background:#fff;
+  border:1px solid var(--border);
+  color:#111827;
+}
+
+/* =========================================
+   SEARCH BAR
+========================================= */
+
+.search-card{
+  background:#fff;
+  border-radius:18px;
+  border:1px solid var(--border);
+  padding:18px;
+  margin-bottom:24px;
+  box-shadow:var(--shadow);
+}
+
+.search-row{
+  display:flex;
+  gap:14px;
+  flex-wrap:wrap;
+}
+
+input, select{
+  padding:12px 14px;
+  border-radius:10px;
+  border:1px solid #d1d5db;
+  font-size:.95rem;
+  flex:1;
+  min-width:180px;
+}
+
+/* =========================================
+   CLIENT TABLE
+========================================= */
+
+.table-card{
+  background:#fff;
+  border-radius:18px;
+  border:1px solid var(--border);
+  overflow:hidden;
+  box-shadow:var(--shadow);
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+thead{
+  background:#f8fafc;
+}
+
+th{
+  text-align:left;
+  padding:16px;
+  font-size:.9rem;
+  color:#475569;
+}
+
+td{
+  padding:16px;
+  border-top:1px solid #eef2f7;
+  vertical-align:middle;
+}
+
+.client-name{
+  font-weight:600;
+  margin-bottom:4px;
+}
+
+.client-meta{
+  font-size:.86rem;
+  color:var(--muted);
+}
+
+.status{
+  display:inline-block;
+  padding:6px 12px;
+  border-radius:999px;
+  font-size:.82rem;
+  font-weight:600;
+}
+
+.active{
+  background:#dcfce7;
+  color:#166534;
+}
+
+.followup{
+  background:#fef3c7;
+  color:#92400e;
+}
+
+.inactive{
+  background:#fee2e2;
+  color:#991b1b;
+}
+
+.tag{
+  display:inline-block;
+  background:#e0f2fe;
+  color:#0369a1;
+  padding:5px 10px;
+  border-radius:999px;
+  font-size:.78rem;
+  margin-right:6px;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media(max-width:900px){
+
+  .sidebar{
+    width:100%;
+    height:auto;
+    position:relative;
+  }
+
+  .main{
+    margin-left:0;
+  }
+
+  .topbar{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:16px;
+  }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- =========================================
+     SIDEBAR
+========================================= -->
+
+<div class="sidebar">
+
+  <img src="../images/vitalink-logo.png" class="logo">
+
+  <div class="nav-section">
+
+    <div class="nav-title">Dashboard</div>
+
+    <div class="nav-item">📊 CRM Overview</div>
+    <div class="nav-item active">👥 Clients</div>
+    <div class="nav-item">📝 Notes</div>
+    <div class="nav-item">⏰ Tasks</div>
+    <div class="nav-item">📅 Renewals</div>
+
+  </div>
+
+  <div class="nav-section">
+
+    <div class="nav-title">VitaLink</div>
+
+    <div class="nav-item">📱 Linked Profiles</div>
+    <div class="nav-item">🔔 Notifications</div>
+    <div class="nav-item">📤 Exports</div>
+
+  </div>
+
+</div>
+
+<!-- =========================================
+     MAIN
+========================================= -->
+
+<div class="main">
+
+  <!-- TOPBAR -->
+
+  <div class="topbar">
+
+    <div>
+      <h1>Clients</h1>
+      <div style="color:#6b7280;">
+        Manage and organize your VitaLink clients.
+      </div>
+    </div>
+
+    <div class="top-actions">
+      <button class="secondary-btn">Export CSV</button>
+      <button>Add Client</button>
+    </div>
+
+  </div>
+
+  <!-- SEARCH -->
+
+  <div class="search-card">
+
+    <div class="search-row">
+
+      <input type="text" placeholder="Search clients...">
+
+      <select>
+        <option>All Statuses</option>
+        <option>Active</option>
+        <option>Follow-Up</option>
+        <option>Inactive</option>
+      </select>
+
+      <select>
+        <option>All Renewal Months</option>
+        <option>January</option>
+        <option>February</option>
+        <option>March</option>
+      </select>
+
+    </div>
+
+  </div>
+
+  <!-- TABLE -->
+
+  <div class="table-card">
+
+    <table>
+
+      <thead>
+        <tr>
+          <th>Client</th>
+          <th>Phone</th>
+          <th>Email</th>
+          <th>Status</th>
+          <th>Renewal</th>
+          <th>Tags</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr>
+
+          <td>
+            <div class="client-name">John Smith</div>
+            <div class="client-meta">
+              Omaha, NE
+            </div>
+          </td>
+
+          <td>(402) 555-1212</td>
+
+          <td>john@example.com</td>
+
+          <td>
+            <span class="status active">Active</span>
+          </td>
+
+          <td>October</td>
+
+          <td>
+            <span class="tag">MAPD</span>
+            <span class="tag">Household</span>
+          </td>
+
+          <td>
+            <button>View</button>
+          </td>
+
+        </tr>
+
+        <tr>
+
+          <td>
+            <div class="client-name">Mary Johnson</div>
+            <div class="client-meta">
+              Council Bluffs, IA
+            </div>
+          </td>
+
+          <td>(402) 555-8831</td>
+
+          <td>mary@example.com</td>
+
+          <td>
+            <span class="status followup">Follow-Up</span>
+          </td>
+
+          <td>January</td>
+
+          <td>
+            <span class="tag">Supplement</span>
+          </td>
+
+          <td>
+            <button>View</button>
+          </td>
+
+        </tr>
+
+        <tr>
+
+          <td>
+            <div class="client-name">Robert Wilson</div>
+            <div class="client-meta">
+              Bellevue, NE
+            </div>
+          </td>
+
+          <td>(402) 555-6612</td>
+
+          <td>robert@example.com</td>
+
+          <td>
+            <span class="status inactive">Inactive</span>
+          </td>
+
+          <td>March</td>
+
+          <td>
+            <span class="tag">T65</span>
+          </td>
+
+          <td>
+            <button>View</button>
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>
+
+</body>
+</html>
