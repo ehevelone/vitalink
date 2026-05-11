@@ -267,20 +267,33 @@ td{
 <!-- =========================================
      SIDEBAR
 ========================================= -->
-
 <div class="sidebar">
 
-  <img src="../images/vitalink-logo.png" class="logo">
+  <a href="index.html">
+    <img src="../images/vitalink-logo.png" class="logo">
+  </a>
 
   <div class="nav-section">
 
     <div class="nav-title">Dashboard</div>
 
-    <div class="nav-item">📊 CRM Overview</div>
+    <a href="index.html">
+      <div class="nav-item">📊 CRM Overview</div>
+    </a>
+
     <div class="nav-item active">👥 Clients</div>
-    <div class="nav-item">📝 Notes</div>
-    <div class="nav-item">⏰ Tasks</div>
-    <div class="nav-item">📅 Renewals</div>
+
+    <a href="notes.html">
+      <div class="nav-item">📝 Notes</div>
+    </a>
+
+    <a href="tasks.html">
+      <div class="nav-item">⏰ Tasks</div>
+    </a>
+
+    <a href="renewals.html">
+      <div class="nav-item">📅 Renewals</div>
+    </a>
 
   </div>
 
@@ -288,9 +301,17 @@ td{
 
     <div class="nav-title">VitaLink</div>
 
-    <div class="nav-item">📱 Linked Profiles</div>
-    <div class="nav-item">🔔 Notifications</div>
-    <div class="nav-item">📤 Exports</div>
+    <a href="linked-profiles.html">
+      <div class="nav-item">📱 Linked Profiles</div>
+    </a>
+
+    <a href="notifications.html">
+      <div class="nav-item">🔔 Notifications</div>
+    </a>
+
+    <a href="exports.html">
+      <div class="nav-item">📤 Exports</div>
+    </a>
 
   </div>
 
@@ -391,7 +412,9 @@ td{
           </td>
 
           <td>
-            <button>View</button>
+            <button onclick="window.location='client-view.html'">
+               View
+            </button>
           </td>
 
         </tr>
@@ -420,8 +443,11 @@ td{
           </td>
 
           <td>
-            <button>View</button>
+            <button onclick="window.location='client-view.html'">
+               View
+            </button>
           </td>
+
 
         </tr>
 
@@ -449,8 +475,11 @@ td{
           </td>
 
           <td>
-            <button>View</button>
+            <button onclick="window.location='client-view.html'">
+               View
+            </button>
           </td>
+
 
         </tr>
 
