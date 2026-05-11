@@ -264,6 +264,49 @@ td{
 
 }
 
+/* =========================================
+   MODAL
+========================================= */
+
+.modal-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.45);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:999;
+}
+
+.modal{
+  background:#fff;
+  width:90%;
+  max-width:700px;
+  border-radius:18px;
+  padding:24px;
+  box-shadow:var(--shadow);
+}
+
+.modal-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+}
+
+.modal-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+}
+
+.close-btn{
+  background:none;
+  border:none;
+  font-size:1.2rem;
+  cursor:pointer;
+}
+
 </style>
 </head>
 
@@ -335,10 +378,13 @@ td{
       </div>
     </div>
 
-    <div class="top-actions">
-      <button class="secondary-btn">Export CSV</button>
-      <button>Add Client</button>
-    </div>
+<div class="top-actions">
+  <button class="secondary-btn">Export CSV</button>
+
+  <button onclick="openClientModal()">
+    Add Client
+  </button>
+</div>
 
   </div>
 
@@ -491,6 +537,130 @@ td{
   </div>
 
 </div>
+
+<!-- ADD CLIENT MODAL -->
+
+<div id="clientModal" class="modal-overlay">
+
+  <div class="modal">
+
+    <div class="modal-header">
+
+      <h2>Add Client</h2>
+
+      <button class="close-btn" onclick="closeClientModal()">
+        ✕
+      </button>
+
+    </div>
+
+<div class="modal-grid">
+
+  <input id="firstName" type="text" placeholder="First Name">
+  <input id="lastName" type="text" placeholder="Last Name">
+
+  <input id="dob" type="date">
+  <input id="mobilePhone" type="text" placeholder="Mobile Phone">
+
+  <input id="landlinePhone" type="text" placeholder="Landline Phone">
+  <input id="email" type="email" placeholder="Email">
+
+  <input id="address" type="text" placeholder="Address" style="grid-column:1/3;">
+
+  <input id="city" type="text" placeholder="City">
+  <input id="state" type="text" placeholder="State">
+
+  <input id="zip" type="text" placeholder="ZIP">
+
+</div>
+
+<button onclick="saveClient()" style="margin-top:20px; width:100%;">
+  Save Client
+</button>
+
+  </div>
+
+</div>
+
+<script>
+
+function openClientModal(){
+  document.getElementById("clientModal").style.display="flex";
+}
+
+function closeClientModal(){
+  document.getElementById("clientModal").style.display="none";
+}
+
+async function saveClient(){
+
+  const client = {
+
+    first_name: document.getElementById("firstName").value,
+    last_name: document.getElementById("lastName").value,
+
+    dob: document.getElementById("dob").value,
+
+    mobile_phone: document.getElementById("mobilePhone").value,
+    landline_phone: document.getElementById("landlinePhone").value,
+
+    email: document.getElementById("email").value,
+
+    address: document.getElementById("address").value,
+    city: document.getElementById("city").value,
+    state: document.getElementById("state").value,
+    zip: document.getElementById("zip").value
+
+  };
+
+  console.log(client);
+
+  client.agent_id = sessionStorage.getItem("crm_uuid");
+
+const res = await fetch("/.netlify/functions/create-crm-client",{
+  method:"POST",
+  headers:{
+    "Content-Type":"application/json"
+  },
+  body:JSON.stringify(client)
+});
+
+const data = await res.json();
+
+if(!data.success){
+  alert("Failed to save client");
+  return;
+}
+
+alert("Client saved successfully.");
+
+  document.getElementById("firstName").value = "";
+  document.getElementById("lastName").value = "";
+  document.getElementById("dob").value = "";
+  document.getElementById("mobilePhone").value = "";
+  document.getElementById("landlinePhone").value = "";
+  document.getElementById("email").value = "";
+  document.getElementById("address").value = "";
+  document.getElementById("city").value = "";
+  document.getElementById("state").value = "";
+  document.getElementById("zip").value = "";
+
+  closeClientModal();
+
+}
+
+window.onclick = function(event){
+
+  const modal = document.getElementById("clientModal");
+
+  if(event.target === modal){
+    closeClientModal();
+  }
+
+}
+
+
+</script>
 
 </body>
 </html>
