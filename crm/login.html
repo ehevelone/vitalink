@@ -16,7 +16,7 @@
   --muted:#6b7280;
   --accent:#7cc6e8;
   --accent-dark:#58b6df;
-  --nav:#0f172a;
+  --nav:#000000;
   --shadow:0 4px 18px rgba(0,0,0,0.08);
 }
 
@@ -317,7 +317,9 @@ async function login(){
   sessionStorage.setItem("crm_uuid", data.agent.crm_uuid);
   sessionStorage.setItem("agentName", data.agent.name);
 
-  window.location = "index.html";
+  alert(data.agent.crm_uuid);
+
+window.location = "index.html";
 
 }
 
