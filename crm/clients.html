@@ -565,7 +565,7 @@ async function loadClients(){
 
   const data = await res.json();
 
-  console.log(data);
+  console.log(data.clients);
 
   if(!data.success){
     alert("Failed to load clients");
