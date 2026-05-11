@@ -248,6 +248,17 @@ button:hover{
   font-weight:600;
 }
 
+.tag{
+  display:inline-block;
+  background:#e0f2fe;
+  color:#0369a1;
+  padding:5px 10px;
+  border-radius:999px;
+  font-size:.78rem;
+  margin-right:6px;
+  margin-bottom:8px;
+}
+
 /* =========================================
    RESPONSIVE
 ========================================= */
@@ -362,15 +373,14 @@ button:hover{
       </div>
 
       <div>
-        <div class="client-name">
-          John Smith
+        <div class="client-name" id="clientName">
+           Loading...
         </div>
 
-        <div class="client-sub">
-          MAPD Client • Omaha, NE
-        </div>
+      <div class="client-sub" id="clientSub">
+        Loading...
       </div>
-
+      
     </div>
 
     <div class="top-actions">
@@ -399,52 +409,297 @@ button:hover{
 
   <div class="info-row">
     <div class="label">First Name</div>
-    <div class="value">John</div>
+    <div class="value" id="firstName"></div>
   </div>
 
   <div class="info-row">
     <div class="label">Last Name</div>
-    <div class="value">Smith</div>
+    <div class="value" id="lastName"></div>
   </div>
 
   <div class="info-row">
     <div class="label">Date of Birth</div>
-    <div class="value">03/14/1952</div>
+    <div class="value" id="dob"></div>
   </div>
 
   <div class="info-row">
     <div class="label">Mobile Phone</div>
-    <div class="value">(402) 555-1212</div>
+    <div class="value" id="mobilePhone"></div>
   </div>
 
   <div class="info-row">
     <div class="label">Landline Phone</div>
-    <div class="value">(402) 555-9911</div>
+    <div class="value" id="landlinePhone"></div>
   </div>
 
   <div class="info-row">
     <div class="label">Email</div>
-    <div class="value">johnsmith@email.com</div>
+    <div class="value" id="email"></div>
   </div>
 
   <div class="info-row">
     <div class="label">Address</div>
-    <div class="value">123 Main Street</div>
+    <div class="value" id="address"></div>
   </div>
 
   <div class="info-row">
     <div class="label">City</div>
-    <div class="value">Omaha</div>
+    <div class="value" id="city"></div>
   </div>
 
   <div class="info-row">
     <div class="label">State</div>
-    <div class="value">NE</div>
+    <div class="value" id="state"></div>
   </div>
 
   <div class="info-row">
     <div class="label">ZIP Code</div>
-    <div class="value">68104</div>
+    <div class="value" id="zip"></div>
+  </div>
+
+</div>
+
+<!-- HOUSEHOLD -->
+
+<div class="card">
+
+  <h3>Household</h3>
+
+  <div class="info-row">
+    <div class="label">Marital Status</div>
+    <div class="value">Married</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Spouse Name</div>
+    <div class="value">
+      Mary Smith
+    </div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Spouse DOB</div>
+    <div class="value">
+      07/22/1954
+    </div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Linked Spouse Profile</div>
+    <div class="value">
+      <a href="client-view.html">
+        View Profile
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<!-- FAMILY / RELATIONSHIPS -->
+
+<div class="card">
+
+  <h3>Family & Relationships</h3>
+
+  <div class="note">
+    Daughter: Sarah Smith<br>
+    Helps manage appointments and medications.
+  </div>
+
+  <div class="note">
+    Son: Michael Smith<br>
+    Lives in Lincoln, NE.
+  </div>
+
+  <div class="note">
+    Grandchildren:<br>
+    Emma (12), Jackson (9)
+  </div>
+
+  <button style="margin-top:10px;">
+    Add Family Note
+  </button>
+
+</div>
+
+<!-- LEAD INFORMATION -->
+
+<div class="card">
+
+  <h3>Lead Information</h3>
+
+  <div class="info-row">
+    <div class="label">Lead Source</div>
+    <div class="value">Referral</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Referral Source</div>
+    <div class="value">Mary Johnson</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Seminar/Event</div>
+    <div class="value">Turning 65 Workshop</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Lead Cost</div>
+    <div class="value">$32.00</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Date Added</div>
+    <div class="value">01/12/2026</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Assigned Agent</div>
+    <div class="value">Eric Hevelone</div>
+  </div>
+
+</div>
+
+<!-- POLICY INFORMATION -->
+
+<div class="card">
+
+  <h3>Policy Information</h3>
+
+  <div class="info-row">
+    <div class="label">Carrier</div>
+    <div class="value">UnitedHealthcare</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Plan Name</div>
+    <div class="value">AARP Medicare Advantage Choice</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Plan Type</div>
+    <div class="value">MAPD</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Effective Date</div>
+    <div class="value">01/01/2026</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Renewal Month</div>
+    <div class="value">October</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Monthly Premium</div>
+    <div class="value">$0.00</div>
+  </div>
+
+</div>
+
+<!-- CLIENT TAGS -->
+
+<div class="card">
+
+  <h3>Client Tags</h3>
+
+  <span class="tag">MAPD</span>
+  <span class="tag">Med Supp</span>
+  <span class="tag">PDP</span>
+  <span class="tag">Dental</span>
+
+  <span class="tag">T65</span>
+  <span class="tag">DSNP</span>
+  <span class="tag">Veteran</span>
+  <span class="tag">LIS</span>
+  <span class="tag">Medicaid</span>
+
+  <span class="tag">Referral</span>
+  <span class="tag">High Priority</span>
+
+</div>
+
+<!-- COMMUNICATION PREFERENCES -->
+
+<div class="card">
+
+  <h3>Communication Preferences</h3>
+
+  <div class="info-row">
+    <div class="label">Preferred Contact Method</div>
+    <div class="value">Mobile Phone</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Best Time To Call</div>
+    <div class="value">Afternoons</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Text Messaging</div>
+    <div class="value">Allowed</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Email Communication</div>
+    <div class="value">Allowed</div>
+  </div>
+
+</div>
+
+<!-- COMPLIANCE -->
+
+<div class="card">
+
+  <h3>Compliance</h3>
+
+  <div class="info-row">
+    <div class="label">SOA Signed</div>
+    <div class="value">Yes</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">HIPAA Signed</div>
+    <div class="value">Yes</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Last Policy Review</div>
+    <div class="value">10/15/2025</div>
+  </div>
+
+</div>
+
+<!-- VITALINK STATUS -->
+
+<div class="card">
+
+  <h3>VitaLink Status</h3>
+
+  <div class="info-row">
+    <div class="label">Profile Linked</div>
+    <div class="value">Connected</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Emergency Profile</div>
+    <div class="value">Active</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Insurance Cards Uploaded</div>
+    <div class="value">3 Cards</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Medication List</div>
+    <div class="value">Updated</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Last Sync</div>
+    <div class="value">05/08/2026</div>
   </div>
 
 </div>
@@ -536,6 +791,61 @@ button:hover{
   </div>
 
 </div>
+
+
+<script>
+
+const params = new URLSearchParams(window.location.search);
+
+const clientId = params.get("id");
+
+async function loadClient(){
+
+  const res = await fetch(
+    `/.netlify/functions/get-client?id=${clientId}`
+  );
+
+  const data = await res.json();
+
+  console.log(data);
+
+  const client = data.client;
+
+  document.getElementById("firstName").innerText =
+    client.first_name || "";
+
+  document.getElementById("lastName").innerText =
+    client.last_name || "";
+
+  document.getElementById("dob").innerText =
+    client.dob || "";
+
+  document.getElementById("mobilePhone").innerText =
+    client.mobile_phone || "";
+
+  document.getElementById("landlinePhone").innerText =
+    client.landline_phone || "";
+
+  document.getElementById("email").innerText =
+    client.email || "";
+
+  document.getElementById("address").innerText =
+    client.address || "";
+
+  document.getElementById("city").innerText =
+    client.city || "";
+
+  document.getElementById("state").innerText =
+    client.state || "";
+
+  document.getElementById("zip").innerText =
+    client.zip || "";
+
+}
+
+loadClient();
+
+</script>
 
 </body>
 </html>
