@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Client View - VitaLink CRM</title>
+
+<style>
+
+:root{
+  --bg:#f4f5f7;
+  --card:#ffffff;
+  --border:#e5e7eb;
+  --text:#111827;
+  --muted:#6b7280;
+  --accent:#7cc6e8;
+  --accent-dark:#58b6df;
+  --shadow:0 4px 18px rgba(0,0,0,0.08);
+}
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+a{
+  text-decoration:none;
+  color:inherit;
+}
+
+/* =========================================
+   SIDEBAR
+========================================= */
+
+.sidebar{
+  position:fixed;
+  top:0;
+  left:0;
+  width:250px;
+  height:100vh;
+  background:#0f172a;
+  color:#fff;
+  padding:24px 18px;
+  overflow-y:auto;
+}
+
+.logo{
+  width:100%;
+  max-width:180px;
+  display:block;
+  margin:0 auto 35px auto;
+}
+
+.nav-section{
+  margin-bottom:30px;
+}
+
+.nav-title{
+  font-size:.78rem;
+  color:#94a3b8;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  margin-bottom:12px;
+}
+
+.nav-item{
+  padding:12px 14px;
+  border-radius:10px;
+  margin-bottom:8px;
+  cursor:pointer;
+  transition:.2s;
+  font-size:.96rem;
+}
+
+.nav-item:hover{
+  background:rgba(124,198,232,0.12);
+}
+
+.nav-item.active{
+  background:rgba(124,198,232,0.18);
+  color:var(--accent);
+  font-weight:600;
+}
+
+/* =========================================
+   MAIN
+========================================= */
+
+.main{
+  margin-left:250px;
+  padding:28px;
+}
+
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:28px;
+}
+
+.client-header{
+  display:flex;
+  align-items:center;
+  gap:18px;
+}
+
+.avatar{
+  width:72px;
+  height:72px;
+  border-radius:50%;
+  background:var(--accent);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.8rem;
+  font-weight:700;
+  color:#000;
+}
+
+.client-name{
+  font-size:2rem;
+  font-weight:700;
+}
+
+.client-sub{
+  color:var(--muted);
+  margin-top:6px;
+}
+
+.top-actions{
+  display:flex;
+  gap:12px;
+}
+
+button{
+  border:none;
+  background:var(--accent);
+  color:#000;
+  padding:11px 18px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:600;
+  transition:.2s;
+}
+
+button:hover{
+  opacity:.9;
+}
+
+.secondary{
+  background:#fff;
+  border:1px solid var(--border);
+  color:#111827;
+}
+
+/* =========================================
+   GRID
+========================================= */
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+  gap:22px;
+}
+
+.card{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:22px;
+  box-shadow:var(--shadow);
+}
+
+.card h3{
+  margin-top:0;
+  margin-bottom:18px;
+}
+
+/* =========================================
+   INFO ROWS
+========================================= */
+
+.info-row{
+  margin-bottom:14px;
+}
+
+.label{
+  font-size:.82rem;
+  color:var(--muted);
+  margin-bottom:4px;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+}
+
+.value{
+  font-size:1rem;
+  font-weight:500;
+}
+
+/* =========================================
+   NOTES
+========================================= */
+
+.note{
+  padding:14px;
+  background:#f8fafc;
+  border-radius:12px;
+  margin-bottom:12px;
+  border:1px solid #e2e8f0;
+}
+
+.note-date{
+  font-size:.8rem;
+  color:var(--muted);
+  margin-top:8px;
+}
+
+/* =========================================
+   TASKS
+========================================= */
+
+.task{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:12px 0;
+  border-bottom:1px solid #eef2f7;
+}
+
+.task:last-child{
+  border-bottom:none;
+}
+
+.badge{
+  display:inline-block;
+  padding:6px 12px;
+  border-radius:999px;
+  background:#fef3c7;
+  color:#92400e;
+  font-size:.8rem;
+  font-weight:600;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media(max-width:900px){
+
+  .sidebar{
+    width:100%;
+    height:auto;
+    position:relative;
+  }
+
+  .main{
+    margin-left:0;
+  }
+
+  .topbar{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:18px;
+  }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- =========================================
+     SIDEBAR
+========================================= -->
+
+<div class="sidebar">
+
+  <a href="index.html">
+    <img src="../images/vitalink-logo.png" class="logo">
+  </a>
+
+  <div class="nav-section">
+
+    <div class="nav-title">Dashboard</div>
+
+    <a href="index.html">
+      <div class="nav-item">📊 CRM Overview</div>
+    </a>
+
+    <a href="clients.html">
+      <div class="nav-item">👥 Clients</div>
+    </a>
+
+    <div class="nav-item active">📄 Client View</div>
+
+    <a href="notes.html">
+      <div class="nav-item">📝 Notes</div>
+    </a>
+
+    <a href="renewals.html">
+      <div class="nav-item">📅 Renewals</div>
+    </a>
+
+    <a href="tasks.html">
+      <div class="nav-item">⏰ Tasks</div>
+    </a>
+
+  </div>
+
+</div>
+
+<!-- =========================================
+     MAIN
+========================================= -->
+
+<div class="main">
+
+  <!-- TOPBAR -->
+
+  <div class="topbar">
+
+    <div class="client-header">
+
+      <div class="avatar">
+        JS
+      </div>
+
+      <div>
+        <div class="client-name">
+          John Smith
+        </div>
+
+        <div class="client-sub">
+          MAPD Client • Omaha, NE
+        </div>
+      </div>
+
+    </div>
+
+    <div class="top-actions">
+      <button class="secondary">
+        Send Notification
+      </button>
+
+      <button>
+        Edit Client
+      </button>
+    </div>
+
+  </div>
+
+  <!-- GRID -->
+
+  <div class="grid">
+
+    <!-- CLIENT INFO -->
+
+    <div class="card">
+
+      <h3>Client Information</h3>
+
+      <div class="info-row">
+        <div class="label">Phone</div>
+        <div class="value">(402) 555-1212</div>
+      </div>
+
+      <div class="info-row">
+        <div class="label">Email</div>
+        <div class="value">johnsmith@email.com</div>
+      </div>
+
+      <div class="info-row">
+        <div class="label">Renewal Month</div>
+        <div class="value">October</div>
+      </div>
+
+      <div class="info-row">
+        <div class="label">Last Contact</div>
+        <div class="value">April 28, 2026</div>
+      </div>
+
+      <div class="info-row">
+        <div class="label">Linked VitaLink Profile</div>
+        <div class="value">Connected</div>
+      </div>
+
+    </div>
+
+    <!-- NOTES -->
+
+    <div class="card">
+
+      <h3>Recent Notes</h3>
+
+      <div class="note">
+        Client requested review of prescription coverage before AEP.
+        <div class="note-date">
+          Added May 4, 2026
+        </div>
+      </div>
+
+      <div class="note">
+        Daughter helps manage medications and appointments.
+        <div class="note-date">
+          Added March 12, 2026
+        </div>
+      </div>
+
+      <button style="margin-top:10px;">
+        Add Note
+      </button>
+
+    </div>
+
+    <!-- TASKS -->
+
+    <div class="card">
+
+      <h3>Upcoming Tasks</h3>
+
+      <div class="task">
+        <div>
+          Review Drug Plan
+        </div>
+
+        <span class="badge">
+          Due Soon
+        </span>
+      </div>
+
+      <div class="task">
+        <div>
+          Follow-Up Call
+        </div>
+
+        <span class="badge">
+          May 15
+        </span>
+      </div>
+
+      <div class="task">
+        <div>
+          Renewal Review
+        </div>
+
+        <span class="badge">
+          September
+        </span>
+      </div>
+
+    </div>
+
+    <!-- QUICK ACTIONS -->
+
+    <div class="card">
+
+      <h3>Quick Actions</h3>
+
+      <button style="width:100%; margin-bottom:12px;">
+        View VitaLink Profile
+      </button>
+
+      <button class="secondary" style="width:100%; margin-bottom:12px;">
+        Export Client Data
+      </button>
+
+      <button class="secondary" style="width:100%;">
+        Send Email
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+</html>

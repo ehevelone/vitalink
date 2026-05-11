@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<title>Tasks - VitaLink CRM</title>
+<title>Renewals - VitaLink CRM</title>
 
 <style>
 
@@ -124,12 +124,6 @@ button:hover{
   opacity:.9;
 }
 
-.secondary-btn{
-  background:#fff;
-  border:1px solid var(--border);
-  color:#111827;
-}
-
 /* =========================================
    FILTERS
 ========================================= */
@@ -159,15 +153,16 @@ input, select{
 }
 
 /* =========================================
-   TASKS
+   RENEWAL CARDS
 ========================================= */
 
-.task-grid{
+.renewal-grid{
   display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(340px,1fr));
   gap:20px;
 }
 
-.task-card{
+.renewal-card{
   background:#fff;
   border:1px solid var(--border);
   border-radius:18px;
@@ -175,23 +170,22 @@ input, select{
   box-shadow:var(--shadow);
 }
 
-.task-top{
+.card-top{
   display:flex;
   justify-content:space-between;
   align-items:flex-start;
   margin-bottom:18px;
-  gap:14px;
-  flex-wrap:wrap;
 }
 
-.task-title{
+.client-name{
   font-size:1.2rem;
   font-weight:700;
 }
 
-.task-client{
+.client-sub{
   color:var(--muted);
   margin-top:4px;
+  font-size:.92rem;
 }
 
 .badge{
@@ -202,29 +196,18 @@ input, select{
   font-weight:600;
 }
 
-.high{
-  background:#fee2e2;
-  color:#991b1b;
-}
-
-.medium{
+.upcoming{
   background:#fef3c7;
   color:#92400e;
 }
 
-.complete{
+.ready{
   background:#dcfce7;
   color:#166534;
 }
 
-.task-body{
-  line-height:1.7;
-  color:#374151;
-  margin-bottom:18px;
-}
-
 .info-row{
-  margin-bottom:12px;
+  margin-bottom:14px;
 }
 
 .label{
@@ -239,11 +222,16 @@ input, select{
   font-weight:500;
 }
 
-.task-actions{
+.card-actions{
   display:flex;
   gap:12px;
-  margin-top:22px;
-  flex-wrap:wrap;
+  margin-top:20px;
+}
+
+.secondary-btn{
+  background:#fff;
+  border:1px solid var(--border);
+  color:#111827;
 }
 
 /* =========================================
@@ -301,11 +289,11 @@ input, select{
       <div class="nav-item">📝 Notes</div>
     </a>
 
-    <a href="renewals.html">
-      <div class="nav-item">📅 Renewals</div>
-    </a>
+    <div class="nav-item active">📅 Renewals</div>
 
-    <div class="nav-item active">⏰ Tasks</div>
+    <a href="tasks.html">
+      <div class="nav-item">⏰ Tasks</div>
+    </a>
 
   </div>
 
@@ -322,14 +310,14 @@ input, select{
   <div class="topbar">
 
     <div>
-      <h1>Tasks</h1>
+      <h1>Renewals</h1>
       <div style="color:#6b7280;">
-        Track follow-ups, reminders, and client action items.
+        Track upcoming client renewals and follow-ups.
       </div>
     </div>
 
     <button>
-      + Add Task
+      Export Renewals
     </button>
 
   </div>
@@ -340,173 +328,177 @@ input, select{
 
     <div class="filter-row">
 
-      <input type="text" placeholder="Search tasks or clients...">
+      <input type="text" placeholder="Search clients...">
 
       <select>
-        <option>All Priorities</option>
-        <option>High</option>
-        <option>Medium</option>
-        <option>Completed</option>
+        <option>All Months</option>
+        <option>January</option>
+        <option>February</option>
+        <option>March</option>
+        <option>October</option>
       </select>
 
       <select>
-        <option>All Clients</option>
-        <option>John Smith</option>
-        <option>Mary Johnson</option>
+        <option>All Statuses</option>
+        <option>Upcoming</option>
+        <option>Ready for Review</option>
       </select>
 
     </div>
 
   </div>
 
-  <!-- TASKS -->
+  <!-- RENEWALS -->
 
-  <div class="task-grid">
+  <div class="renewal-grid">
 
-    <!-- TASK -->
+    <!-- CARD -->
 
-    <div class="task-card">
+    <div class="renewal-card">
 
-      <div class="task-top">
+      <div class="card-top">
 
         <div>
-          <div class="task-title">
-            Review Drug Coverage
-          </div>
-
-          <div class="task-client">
+          <div class="client-name">
             John Smith
           </div>
-        </div>
 
-        <span class="badge high">
-          High Priority
-        </span>
-
-      </div>
-
-      <div class="task-body">
-        Review updated insulin pricing and preferred pharmacy changes before upcoming AEP discussion.
-      </div>
-
-      <div class="info-row">
-        <div class="label">Due Date</div>
-        <div class="value">May 15, 2026</div>
-      </div>
-
-      <div class="info-row">
-        <div class="label">Assigned By</div>
-        <div class="value">Eric Hevelone</div>
-      </div>
-
-      <div class="task-actions">
-
-        <button onclick="window.location='client-view.html'">
-          View Client
-        </button>
-
-        <button class="secondary-btn">
-          Mark Complete
-        </button>
-
-      </div>
-
-    </div>
-
-    <!-- TASK -->
-
-    <div class="task-card">
-
-      <div class="task-top">
-
-        <div>
-          <div class="task-title">
-            Renewal Follow-Up
-          </div>
-
-          <div class="task-client">
-            Mary Johnson
+          <div class="client-sub">
+            MAPD Client • Omaha, NE
           </div>
         </div>
 
-        <span class="badge medium">
+        <span class="badge upcoming">
           Upcoming
         </span>
 
       </div>
 
-      <div class="task-body">
-        Contact client regarding upcoming supplement renewal review and possible plan comparison options.
+      <div class="info-row">
+        <div class="label">Renewal Month</div>
+        <div class="value">October</div>
       </div>
 
       <div class="info-row">
-        <div class="label">Due Date</div>
-        <div class="value">June 1, 2026</div>
+        <div class="label">Last Contact</div>
+        <div class="value">April 28, 2026</div>
       </div>
 
       <div class="info-row">
-        <div class="label">Assigned By</div>
-        <div class="value">Eric Hevelone</div>
+        <div class="label">Current Plan</div>
+        <div class="value">UHC Dual Complete</div>
       </div>
 
-      <div class="task-actions">
+      <div class="card-actions">
 
         <button onclick="window.location='client-view.html'">
           View Client
         </button>
 
         <button class="secondary-btn">
-          Mark Complete
+          Add Reminder
         </button>
 
       </div>
 
     </div>
 
-    <!-- TASK -->
+    <!-- CARD -->
 
-    <div class="task-card">
+    <div class="renewal-card">
 
-      <div class="task-top">
+      <div class="card-top">
 
         <div>
-          <div class="task-title">
-            Initial Medicare Consultation
+          <div class="client-name">
+            Mary Johnson
           </div>
 
-          <div class="task-client">
-            Robert Wilson
+          <div class="client-sub">
+            Supplement Client • Council Bluffs, IA
           </div>
         </div>
 
-        <span class="badge complete">
-          Completed
+        <span class="badge ready">
+          Ready
         </span>
 
       </div>
 
-      <div class="task-body">
-        Completed initial T65 consultation and discussed supplement vs MAPD pathways.
+      <div class="info-row">
+        <div class="label">Renewal Month</div>
+        <div class="value">January</div>
       </div>
 
       <div class="info-row">
-        <div class="label">Completed Date</div>
-        <div class="value">April 12, 2026</div>
+        <div class="label">Last Contact</div>
+        <div class="value">May 1, 2026</div>
       </div>
 
       <div class="info-row">
-        <div class="label">Assigned By</div>
-        <div class="value">Eric Hevelone</div>
+        <div class="label">Current Plan</div>
+        <div class="value">Mutual of Omaha Supplement G</div>
       </div>
 
-      <div class="task-actions">
+      <div class="card-actions">
 
         <button onclick="window.location='client-view.html'">
           View Client
         </button>
 
         <button class="secondary-btn">
-          Reopen Task
+          Send Reminder
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- CARD -->
+
+    <div class="renewal-card">
+
+      <div class="card-top">
+
+        <div>
+          <div class="client-name">
+            Robert Wilson
+          </div>
+
+          <div class="client-sub">
+            T65 Prospect • Bellevue, NE
+          </div>
+        </div>
+
+        <span class="badge upcoming">
+          T65
+        </span>
+
+      </div>
+
+      <div class="info-row">
+        <div class="label">Medicare Effective</div>
+        <div class="value">July 2026</div>
+      </div>
+
+      <div class="info-row">
+        <div class="label">Last Contact</div>
+        <div class="value">March 14, 2026</div>
+      </div>
+
+      <div class="info-row">
+        <div class="label">Current Status</div>
+        <div class="value">Needs Initial Plan Review</div>
+      </div>
+
+      <div class="card-actions">
+
+        <button onclick="window.location='client-view.html'">
+          View Client
+        </button>
+
+        <button class="secondary-btn">
+          Schedule Call
         </button>
 
       </div>
