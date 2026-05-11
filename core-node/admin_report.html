@@ -394,6 +394,29 @@ loadStats();
 
 };
 
+async function sendUpdateNotification(){
+
+const res = await fetch(BACKEND + "/send_notification",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+agentEmail:"ehevelone@gmail.com",
+campaign:"UPDATE"
+})
+});
+
+const data = await res.json();
+
+if(data.success){
+alert("Update notification sent!");
+}else{
+alert("Failed to send notification");
+}
+
+}
+
 /* INIT */
 
 loadStats();
