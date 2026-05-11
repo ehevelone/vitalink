@@ -256,15 +256,15 @@ button:hover{
 
       <div class="input-group">
         <div class="label">Email</div>
-        <input type="email" placeholder="Enter your email">
+        <input id="email" type="email" placeholder="Enter your email">
       </div>
 
       <div class="input-group">
         <div class="label">Password</div>
-        <input type="password" placeholder="Enter your password">
+        <input id="password" type="password" placeholder="Enter your password">
       </div>
 
-      <button>
+      <button onclick="login()">
         Sign In
       </button>
 
@@ -282,6 +282,46 @@ button:hover{
   </div>
 
 </div>
+
+<script>
+
+async function login(){
+
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  const res = await fetch(
+    "https://vitalink-app.netlify.app/.netlify/functions/agent-login",
+    {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        email,
+        password,
+        step:"verify"
+      })
+    }
+  );
+
+  const data = await res.json();
+
+  console.log(data);
+
+  if(data.step !== "login_success"){
+    alert("Login failed");
+    return;
+  }
+
+  sessionStorage.setItem("crm_uuid", data.agent.crm_uuid);
+  sessionStorage.setItem("agentName", data.agent.name);
+
+  window.location = "index.html";
+
+}
+
+</script>
 
 </body>
 </html>
