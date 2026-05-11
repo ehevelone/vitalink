@@ -432,105 +432,8 @@ td{
         </tr>
       </thead>
 
-      <tbody>
-
-        <tr>
-
-          <td>
-            <div class="client-name">John Smith</div>
-            <div class="client-meta">
-              Omaha, NE
-            </div>
-          </td>
-
-          <td>(402) 555-1212</td>
-
-          <td>john@example.com</td>
-
-          <td>
-            <span class="status active">Active</span>
-          </td>
-
-          <td>October</td>
-
-          <td>
-            <span class="tag">MAPD</span>
-            <span class="tag">Household</span>
-          </td>
-
-          <td>
-            <button onclick="window.location='client-view.html'">
-               View
-            </button>
-          </td>
-
-        </tr>
-
-        <tr>
-
-          <td>
-            <div class="client-name">Mary Johnson</div>
-            <div class="client-meta">
-              Council Bluffs, IA
-            </div>
-          </td>
-
-          <td>(402) 555-8831</td>
-
-          <td>mary@example.com</td>
-
-          <td>
-            <span class="status followup">Follow-Up</span>
-          </td>
-
-          <td>January</td>
-
-          <td>
-            <span class="tag">Supplement</span>
-          </td>
-
-          <td>
-            <button onclick="window.location='client-view.html'">
-               View
-            </button>
-          </td>
-
-
-        </tr>
-
-        <tr>
-
-          <td>
-            <div class="client-name">Robert Wilson</div>
-            <div class="client-meta">
-              Bellevue, NE
-            </div>
-          </td>
-
-          <td>(402) 555-6612</td>
-
-          <td>robert@example.com</td>
-
-          <td>
-            <span class="status inactive">Inactive</span>
-          </td>
-
-          <td>March</td>
-
-          <td>
-            <span class="tag">T65</span>
-          </td>
-
-          <td>
-            <button onclick="window.location='client-view.html'">
-               View
-            </button>
-          </td>
-
-
-        </tr>
-
-      </tbody>
+<tbody id="clientsTable">
+</tbody>
 
     </table>
 
@@ -649,6 +552,83 @@ alert("Client saved successfully.");
 
 }
 
+async function loadClients(){
+
+  const agent_id = sessionStorage.getItem("crm_uuid");
+
+  const res = await fetch(
+
+    `/.netlify/functions/get-crm-clients?agent_id=${agent_id}`
+
+  );
+
+  const data = await res.json();
+
+  console.log(data);
+
+  if(!data.success){
+    alert("Failed to load clients");
+    return;
+  }
+
+  const table = document.getElementById("clientsTable");
+
+  table.innerHTML = "";
+
+  data.clients.forEach(client => {
+
+    table.innerHTML += `
+
+      <tr>
+
+        <td>
+          <div class="client-name">
+            ${client.first_name} ${client.last_name}
+          </div>
+
+          <div class="client-meta">
+            ${client.city || ""}, ${client.state || ""}
+          </div>
+        </td>
+
+        <td>
+          ${client.mobile_phone || ""}
+        </td>
+
+        <td>
+          ${client.email || ""}
+        </td>
+
+        <td>
+          <span class="status active">
+            Active
+          </span>
+        </td>
+
+        <td>
+          --
+        </td>
+
+        <td>
+          <span class="tag">
+            Client
+          </span>
+        </td>
+
+        <td>
+          <button onclick="window.location='client-view.html'">
+            View
+          </button>
+        </td>
+
+      </tr>
+
+    `;
+
+  });
+
+}
+
 window.onclick = function(event){
 
   const modal = document.getElementById("clientModal");
@@ -659,6 +639,7 @@ window.onclick = function(event){
 
 }
 
+loadClients();
 
 </script>
 
