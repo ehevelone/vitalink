@@ -618,7 +618,7 @@ async function loadClients(){
 
 <td>
 
-<button onclick="window.location.href=&quot;client-view.html?id=${client.id}&quot;">
+<button onclick="viewClient('${client.id}')">
   View
 </button>
 
@@ -647,7 +647,11 @@ async function loadClients(){
 
 }
 
-window.onclick = function(event){
+function viewClient(id){
+
+  window.location.href = `client-view.html?id=${id}`;
+
+}
 
   const modal = document.getElementById("clientModal");
 
