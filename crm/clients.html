@@ -549,6 +549,7 @@ alert("Client saved successfully.");
   document.getElementById("zip").value = "";
 
   closeClientModal();
+  loadClients();
 
 }
 
@@ -615,11 +616,28 @@ async function loadClients(){
           </span>
         </td>
 
-        <td>
-          <button onclick="window.location='client-view.html'">
-            View
-          </button>
-        </td>
+<td>
+
+  <button onclick="window.location='client-view.html?id=${client.id}'">
+    View
+  </button>
+
+  <button
+    onclick="editClient('${client.id}')"
+    style="margin-left:8px;"
+  >
+    Edit
+  </button>
+
+  <button
+    class="danger-btn"
+    onclick="deleteClient('${client.id}')"
+    style="margin-left:8px; background:#ef4444; color:#fff;"
+  >
+    Remove
+  </button>
+
+</td>
 
       </tr>
 
