@@ -344,7 +344,7 @@ if(!sessionStorage.getItem("crm_uuid")){
     </div>
 
     <div class="agent-box">
-      Eric Hevelone
+      <span id="agentName"></span>
     </div>
 
   </div>
@@ -355,7 +355,7 @@ if(!sessionStorage.getItem("crm_uuid")){
 
     <div class="card">
       <h3>Total Clients</h3>
-      <div class="metric">248</div>
+      <div class="metric" id="totalClients">0</div>
       <div class="muted">Connected VitaLink profiles</div>
     </div>
 
@@ -399,51 +399,94 @@ if(!sessionStorage.getItem("crm_uuid")){
         </tr>
       </thead>
 
-      <tbody>
-
-        <tr>
-          <td>John Smith</td>
-          <td>(402) 555-1212</td>
-          <td><span class="status active">Active</span></td>
-          <td>October</td>
-          <td>
-            <button onclick="window.location='client-view.html'">
-              View
-            </button>
-          </td>
-        </tr>
-
-        <tr>
-          <td>Mary Johnson</td>
-          <td>(402) 555-8841</td>
-          <td><span class="status followup">Follow-Up</span></td>
-          <td>January</td>
-          <td>
-            <button onclick="window.location='client-view.html'">
-              View
-            </button>
-          </td>
-        </tr>
-
-        <tr>
-          <td>Robert Wilson</td>
-          <td>(402) 555-6622</td>
-          <td><span class="status active">Active</span></td>
-          <td>March</td>
-          <td>
-            <button onclick="window.location='client-view.html'">
-              View
-            </button>
-          </td>
-        </tr>
-
-      </tbody>
+<tbody id="recentClientsTable">
+</tbody>
 
     </table>
 
   </div>
 
 </div>
+
+<script>
+
+if(!sessionStorage.getItem("crm_uuid")){
+
+  window.location = "login.html";
+
+}
+
+async function loadRecentClients(){
+
+  const agent_id = sessionStorage.getItem("crm_uuid");
+
+  const res = await fetch(
+    `/.netlify/functions/get-crm-clients?agent_id=${agent_id}`
+  );
+
+  const data = await res.json();
+
+  if(!data.success){
+    return;
+  }
+
+
+  document.getElementById("totalClients").innerText =
+  data.clients.length;
+  const table = document.getElementById("recentClientsTable");
+
+  table.innerHTML = "";
+
+  data.clients.forEach(client => {
+
+    table.innerHTML += `
+
+      <tr>
+
+        <td>
+          ${client.first_name || ""} ${client.last_name || ""}
+        </td>
+
+        <td>
+          ${client.mobile_phone || ""}
+        </td>
+
+        <td>
+          <span class="status active">
+            Active
+          </span>
+        </td>
+
+        <td>
+          --
+        </td>
+
+        <td>
+          <button onclick="viewClient('${client.id}')">
+            View
+          </button>
+        </td>
+
+      </tr>
+
+    `;
+
+  });
+
+}
+
+function viewClient(id){
+
+  window.location.href = `client-view.html?id=${id}`;
+
+}
+
+loadRecentClients();
+
+document.getElementById("agentName").innerText =
+  sessionStorage.getItem("agentName") || "";
+
+</script>
 
 </body>
 </html>

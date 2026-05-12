@@ -368,22 +368,26 @@ button:hover{
 
     <div class="client-header">
 
-      <div class="avatar">
-        JS
+      <div class="avatar" id="clientAvatar">
+        --
       </div>
 
       <div>
+
         <div class="client-name" id="clientName">
-           Loading...
+          Loading...
         </div>
 
-      <div class="client-sub" id="clientSub">
-        Loading...
+        <div class="client-sub" id="clientSub">
+          Loading...
+        </div>
+
       </div>
-      
+
     </div>
 
     <div class="top-actions">
+
       <button class="secondary">
         Send Notification
       </button>
@@ -391,6 +395,7 @@ button:hover{
       <button>
         Edit Client
       </button>
+
     </div>
 
   </div>
@@ -810,6 +815,15 @@ async function loadClient(){
   console.log(data);
 
   const client = data.client;
+
+  document.getElementById("clientName").innerText =
+  `${client.first_name || ""} ${client.last_name || ""}`;
+
+document.getElementById("clientSub").innerText =
+  `${client.city || ""}, ${client.state || ""}`;
+
+document.getElementById("clientAvatar").innerText =
+  `${client.first_name?.[0] || ""}${client.last_name?.[0] || ""}`.toUpperCase();
 
   document.getElementById("firstName").innerText =
     client.first_name || "";
