@@ -249,6 +249,16 @@ button:hover{
 
 <body>
 
+  <script>
+
+if(!sessionStorage.getItem("crm_uuid")){
+
+  window.location = "login.html";
+
+}
+
+</script>
+
 <!-- =========================================
      SIDEBAR
 ========================================= -->
@@ -434,16 +444,6 @@ button:hover{
   </div>
 
 </div>
-
-<script>
-
-if(!sessionStorage.getItem("crm_uuid")){
-
-  window.location = "login.html";
-
-}
-
-</script>
 
 </body>
 </html>
