@@ -300,7 +300,7 @@ async function login(){
       body:JSON.stringify({
         email,
         password,
-        step:"verify"
+        step:"login"
       })
     }
   );
@@ -309,14 +309,16 @@ async function login(){
 
   console.log(data);
 
-  if(data.step !== "login_success"){
-    alert("Login failed");
-    return;
-  }
+if(
+  data.step !== "login_success" &&
+  data.step !== "firebase_2fa"
+){
+  alert("Login failed");
+  return;
+}
 
-  sessionStorage.setItem("crm_uuid", data.agent.crm_uuid);
-  sessionStorage.setItem("agentName", data.agent.name);
-
+sessionStorage.setItem("crm_uuid", data.agent.crm_uuid);
+sessionStorage.setItem("agentName", data.agent.name);
 
 window.location = "index.html";
 
