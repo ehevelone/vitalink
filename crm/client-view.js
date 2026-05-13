@@ -292,8 +292,7 @@ function toggleLeadEdit(){
     "referralSource",
     "seminarEvent",
     "leadCost",
-    "dateAdded",
-    "assignedAgent"
+    "dateAdded",    
 
   ];
 
