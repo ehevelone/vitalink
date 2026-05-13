@@ -3,292 +3,11 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="stylesheet" href="crm.css">
 
 <title>Client View - VitaLink CRM</title>
 
-<style>
 
-:root{
-  --bg:#f4f5f7;
-  --card:#ffffff;
-  --border:#e5e7eb;
-  --text:#111827;
-  --muted:#6b7280;
-  --accent:#7cc6e8;
-  --accent-dark:#58b6df;
-  --shadow:0 4px 18px rgba(0,0,0,0.08);
-}
-
-*{
-  box-sizing:border-box;
-}
-
-body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  background:var(--bg);
-  color:var(--text);
-}
-
-a{
-  text-decoration:none;
-  color:inherit;
-}
-
-/* =========================================
-   SIDEBAR
-========================================= */
-
-.sidebar{
-  position:fixed;
-  top:0;
-  left:0;
-  width:250px;
-  height:100vh;
-  background:#0f172a;
-  color:#fff;
-  padding:24px 18px;
-  padding-bottom:100px;
-  overflow-y:auto;
-}
-
-.logo{
-  width:100%;
-  max-width:180px;
-  display:block;
-  margin:0 auto 35px auto;
-}
-
-.nav-section{
-  margin-bottom:30px;
-}
-
-.nav-title{
-  font-size:.78rem;
-  color:#94a3b8;
-  text-transform:uppercase;
-  letter-spacing:1px;
-  margin-bottom:12px;
-}
-
-.nav-item{
-  padding:12px 14px;
-  border-radius:10px;
-  margin-bottom:8px;
-  cursor:pointer;
-  transition:.2s;
-  font-size:.96rem;
-}
-
-.nav-item:hover{
-  background:rgba(124,198,232,0.12);
-}
-
-.nav-item.active{
-  background:rgba(124,198,232,0.18);
-  color:var(--accent);
-  font-weight:600;
-}
-
-/* =========================================
-   MAIN
-========================================= */
-
-.main{
-  margin-left:250px;
-  padding:28px;
-}
-
-.topbar{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:28px;
-}
-
-.client-header{
-  display:flex;
-  align-items:center;
-  gap:18px;
-}
-
-.avatar{
-  width:72px;
-  height:72px;
-  border-radius:50%;
-  background:var(--accent);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:1.8rem;
-  font-weight:700;
-  color:#000;
-}
-
-.client-name{
-  font-size:2rem;
-  font-weight:700;
-}
-
-.client-sub{
-  color:var(--muted);
-  margin-top:6px;
-}
-
-.top-actions{
-  display:flex;
-  gap:12px;
-}
-
-button{
-  border:none;
-  background:var(--accent);
-  color:#000;
-  padding:11px 18px;
-  border-radius:10px;
-  cursor:pointer;
-  font-weight:600;
-  transition:.2s;
-}
-
-button:hover{
-  opacity:.9;
-}
-
-.sidebar button{
-  width:100%;
-}
-
-.secondary{
-  background:#fff;
-  border:1px solid var(--border);
-  color:#111827;
-}
-
-/* =========================================
-   GRID
-========================================= */
-
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-  gap:22px;
-}
-
-.card{
-  background:#fff;
-  border:1px solid var(--border);
-  border-radius:18px;
-  padding:22px;
-  box-shadow:var(--shadow);
-}
-
-.card h3{
-  margin-top:0;
-  margin-bottom:18px;
-}
-
-/* =========================================
-   INFO ROWS
-========================================= */
-
-.info-row{
-  margin-bottom:14px;
-}
-
-.label{
-  font-size:.82rem;
-  color:var(--muted);
-  margin-bottom:4px;
-  text-transform:uppercase;
-  letter-spacing:.5px;
-}
-
-.value{
-  font-size:1rem;
-  font-weight:500;
-}
-
-/* =========================================
-   NOTES
-========================================= */
-
-.note{
-  padding:14px;
-  background:#f8fafc;
-  border-radius:12px;
-  margin-bottom:12px;
-  border:1px solid #e2e8f0;
-}
-
-.note-date{
-  font-size:.8rem;
-  color:var(--muted);
-  margin-top:8px;
-}
-
-/* =========================================
-   TASKS
-========================================= */
-
-.task{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:12px 0;
-  border-bottom:1px solid #eef2f7;
-}
-
-.task:last-child{
-  border-bottom:none;
-}
-
-.badge{
-  display:inline-block;
-  padding:6px 12px;
-  border-radius:999px;
-  background:#fef3c7;
-  color:#92400e;
-  font-size:.8rem;
-  font-weight:600;
-}
-
-.tag{
-  display:inline-block;
-  background:#e0f2fe;
-  color:#0369a1;
-  padding:5px 10px;
-  border-radius:999px;
-  font-size:.78rem;
-  margin-right:6px;
-  margin-bottom:8px;
-}
-
-/* =========================================
-   RESPONSIVE
-========================================= */
-
-@media(max-width:900px){
-
-  .sidebar{
-    width:100%;
-    height:auto;
-    position:relative;
-  }
-
-  .main{
-    margin-left:0;
-  }
-
-  .topbar{
-    flex-direction:column;
-    align-items:flex-start;
-    gap:18px;
-  }
-
-}
-
-</style>
 </head>
 
 <body>
@@ -361,27 +80,11 @@ button:hover{
 
   <!-- LOGOUT -->
 
-  <div
-    style="
-      position:absolute;
-      bottom:24px;
-      left:18px;
-      right:18px;
-    "
-  >
+  <div class="sidebar-footer">
 
     <button
+      class="logout-btn"
       onclick="logout()"
-      style="
-        width:100%;
-        background:#ef4444;
-        color:#fff;
-        border:none;
-        padding:12px;
-        border-radius:10px;
-        font-weight:700;
-        cursor:pointer;
-      "
     >
       Logout
     </button>
@@ -422,11 +125,11 @@ button:hover{
 
     <div class="top-actions">
 
-      <button class="secondary">
+      <button class="top-action-btn secondary">
         Send Notification
       </button>
 
-      <button>
+      <button class="top-action-btn">
         Edit Client
       </button>
 
@@ -500,76 +203,87 @@ button:hover{
 
 <div class="card">
 
-  <h3>Household</h3>
+  <div class="card-header">
+
+    <h3 class="card-title">
+      Household
+    </h3>
+
+    <button
+      class="edit-btn secondary"
+      onclick="toggleHouseholdEdit()"
+    >
+      Edit
+    </button>
+
+  </div>
 
   <div class="info-row">
-    <div class="label">Marital Status</div>
 
-    <div
-      class="value editable"
+    <div class="label">
+      Marital Status
+    </div>
+
+    <input
+      class="edit-input"
       id="maritalStatus"
-      contenteditable="true"
-    ></div>
+      type="text"
+      disabled
+    >
+
   </div>
 
   <div class="info-row">
-    <div class="label">Spouse Name</div>
 
-    <div
-      class="value editable"
+    <div class="label">
+      Spouse Name
+    </div>
+
+    <input
+      class="edit-input"
       id="spouseName"
-      contenteditable="true"
-    ></div>
+      type="text"
+      disabled
+    >
+
   </div>
 
   <div class="info-row">
-    <div class="label">Spouse DOB</div>
 
-    <div
-      class="value editable"
+    <div class="label">
+      Spouse DOB
+    </div>
+
+    <input
+      class="edit-input"
       id="spouseDob"
-      contenteditable="true"
-    ></div>
+      type="date"
+      disabled
+    >
+
   </div>
 
   <div class="info-row">
-    <div class="label">Linked Spouse Profile</div>
 
-    <div
-      class="value editable"
+    <div class="label">
+      Linked Spouse Profile
+    </div>
+
+    <input
+      class="edit-input"
       id="linkedSpouseProfile"
-      contenteditable="true"
-    ></div>
+      type="text"
+      disabled
+    >
+
   </div>
 
-</div>
-
-<!-- FAMILY / RELATIONSHIPS -->
-
-<div class="card">
-
-  <h3>Family & Relationships</h3>
-
-  <div
-    class="note editable"
-    id="familyNote1"
-    contenteditable="true"
-  ></div>
-
-  <div
-    class="note editable"
-    id="familyNote2"
-    contenteditable="true"
-  ></div>
-
-  <div
-    class="note editable"
-    id="familyNote3"
-    contenteditable="true"
-  ></div>
-
-  <button style="margin-top:10px;">
-    Add Family Note
+  <button
+    class="save-btn"
+    id="saveHouseholdBtn"
+    onclick="saveHousehold()"
+  >
+    Save Household
   </button>
 
 </div>
@@ -578,67 +292,106 @@ button:hover{
 
 <div class="card">
 
-  <h3>Lead Information</h3>
+  <div class="card-header">
+
+    <h3 class="card-title">
+      Lead Information
+    </h3>
+
+    <button
+      class="edit-btn secondary"
+      onclick="toggleLeadEdit()"
+    >
+      Edit
+    </button>
+
+  </div>
 
   <div class="info-row">
+
     <div class="label">Lead Source</div>
 
-    <div
-      class="value editable"
+    <input
+      class="edit-input"
       id="leadSource"
-      contenteditable="true"
-    ></div>
+      type="text"
+      disabled
+    >
+
   </div>
 
   <div class="info-row">
+
     <div class="label">Referral Source</div>
 
-    <div
-      class="value editable"
+    <input
+      class="edit-input"
       id="referralSource"
-      contenteditable="true"
-    ></div>
+      type="text"
+      disabled
+    >
+
   </div>
 
   <div class="info-row">
+
     <div class="label">Seminar/Event</div>
 
-    <div
-      class="value editable"
+    <input
+      class="edit-input"
       id="seminarEvent"
-      contenteditable="true"
-    ></div>
+      type="text"
+      disabled
+    >
+
   </div>
 
   <div class="info-row">
+
     <div class="label">Lead Cost</div>
 
-    <div
-      class="value editable"
+    <input
+      class="edit-input"
       id="leadCost"
-      contenteditable="true"
-    ></div>
+      type="text"
+      disabled
+    >
+
   </div>
 
   <div class="info-row">
+
     <div class="label">Date Added</div>
 
-    <div
-      class="value editable"
+    <input
+      class="edit-input"
       id="dateAdded"
-      contenteditable="true"
-    ></div>
+      type="date"
+      disabled
+    >
+
   </div>
 
   <div class="info-row">
+
     <div class="label">Assigned Agent</div>
 
-    <div
-      class="value editable"
+    <input
+      class="edit-input"
       id="assignedAgent"
-      contenteditable="true"
-    ></div>
+      type="text"
+      disabled
+    >
+
   </div>
+
+  <button
+    class="save-btn"
+    id="saveLeadBtn"
+    onclick="saveLead()"
+  >
+    Save Lead Information
+  </button>
 
 </div>
 
@@ -646,67 +399,106 @@ button:hover{
 
 <div class="card">
 
-  <h3>Policy Information</h3>
+  <div class="card-header">
+
+    <h3 class="card-title">
+      Policy Information
+    </h3>
+
+    <button
+      class="edit-btn secondary"
+      onclick="togglePolicyEdit()"
+    >
+      Edit
+    </button>
+
+  </div>
 
   <div class="info-row">
+
     <div class="label">Carrier</div>
 
-    <div
-      class="value editable"
+    <input
+      class="edit-input"
       id="policyCarrier"
-      contenteditable="true"
-    ></div>
+      type="text"
+      disabled
+    >
+
   </div>
 
   <div class="info-row">
+
     <div class="label">Plan Name</div>
 
-    <div
-      class="value editable"
+    <input
+      class="edit-input"
       id="planName"
-      contenteditable="true"
-    ></div>
+      type="text"
+      disabled
+    >
+
   </div>
 
   <div class="info-row">
+
     <div class="label">Plan Type</div>
 
-    <div
-      class="value editable"
+    <input
+      class="edit-input"
       id="planType"
-      contenteditable="true"
-    ></div>
+      type="text"
+      disabled
+    >
+
   </div>
 
   <div class="info-row">
+
     <div class="label">Effective Date</div>
 
-    <div
-      class="value editable"
+    <input
+      class="edit-input"
       id="effectiveDate"
-      contenteditable="true"
-    ></div>
+      type="date"
+      disabled
+    >
+
   </div>
 
   <div class="info-row">
+
     <div class="label">Renewal Month</div>
 
-    <div
-      class="value editable"
+    <input
+      class="edit-input"
       id="renewalMonth"
-      contenteditable="true"
-    ></div>
+      type="text"
+      disabled
+    >
+
   </div>
 
   <div class="info-row">
+
     <div class="label">Monthly Premium</div>
 
-    <div
-      class="value editable"
+    <input
+      class="edit-input"
       id="monthlyPremium"
-      contenteditable="true"
-    ></div>
+      type="text"
+      disabled
+    >
+
   </div>
+
+  <button
+    class="save-btn"
+    id="savePolicyBtn"
+    onclick="savePolicy()"
+  >
+    Save Policy Information
+  </button>
 
 </div>
 
@@ -714,47 +506,80 @@ button:hover{
 
 <div class="card">
 
-  <h3>Communication Preferences</h3>
+  <div class="card-header">
+
+    <h3 class="card-title">
+      Communication Preferences
+    </h3>
+
+    <button
+      class="edit-btn secondary"
+      onclick="toggleCommunicationEdit()"
+    >
+      Edit
+    </button>
+
+  </div>
 
   <div class="info-row">
+
     <div class="label">Preferred Contact Method</div>
 
-    <div
-      class="value editable"
+    <input
+      class="edit-input"
       id="preferredContactMethod"
-      contenteditable="true"
-    ></div>
+      type="text"
+      disabled
+    >
+
   </div>
 
   <div class="info-row">
+
     <div class="label">Best Time To Call</div>
 
-    <div
-      class="value editable"
+    <input
+      class="edit-input"
       id="bestTimeToCall"
-      contenteditable="true"
-    ></div>
+      type="text"
+      disabled
+    >
+
   </div>
 
   <div class="info-row">
+
     <div class="label">Text Messaging</div>
 
-    <div
-      class="value editable"
+    <input
+      class="edit-input"
       id="textMessaging"
-      contenteditable="true"
-    ></div>
+      type="text"
+      disabled
+    >
+
   </div>
 
   <div class="info-row">
+
     <div class="label">Email Communication</div>
 
-    <div
-      class="value editable"
+    <input
+      class="edit-input"
       id="emailCommunication"
-      contenteditable="true"
-    ></div>
+      type="text"
+      disabled
+    >
+
   </div>
+
+  <button
+    class="save-btn"
+    id="saveCommunicationBtn"
+    onclick="saveCommunication()"
+  >
+    Save Communication Preferences
+  </button>
 
 </div>
 
@@ -762,37 +587,67 @@ button:hover{
 
 <div class="card">
 
-  <h3>Compliance</h3>
+  <div class="card-header">
+
+    <h3 class="card-title">
+      Compliance
+    </h3>
+
+    <button
+      class="edit-btn secondary"
+      onclick="toggleComplianceEdit()"
+    >
+      Edit
+    </button>
+
+  </div>
 
   <div class="info-row">
+
     <div class="label">SOA Signed</div>
 
-    <div
-      class="value editable"
+    <input
+      class="edit-input"
       id="soaSigned"
-      contenteditable="true"
-    ></div>
+      type="text"
+      disabled
+    >
+
   </div>
 
   <div class="info-row">
+
     <div class="label">HIPAA Signed</div>
 
-    <div
-      class="value editable"
+    <input
+      class="edit-input"
       id="hipaaSigned"
-      contenteditable="true"
-    ></div>
+      type="text"
+      disabled
+    >
+
   </div>
 
   <div class="info-row">
+
     <div class="label">Last Policy Review</div>
 
-    <div
-      class="value editable"
+    <input
+      class="edit-input"
       id="lastPolicyReview"
-      contenteditable="true"
-    ></div>
+      type="date"
+      disabled
+    >
+
   </div>
+
+  <button
+    class="save-btn"
+    id="saveComplianceBtn"
+    onclick="saveCompliance()"
+  >
+    Save Compliance
+  </button>
 
 </div>
 
@@ -800,194 +655,93 @@ button:hover{
 
 <div class="card">
 
-  <h3>VitaLink Status</h3>
+  <div class="card-header">
+
+    <h3 class="card-title">
+      VitaLink Status
+    </h3>
+
+    <button
+      class="edit-btn secondary"
+      onclick="toggleVitaLinkEdit()"
+    >
+      Edit
+    </button>
+
+  </div>
 
   <div class="info-row">
+
     <div class="label">Profile Linked</div>
 
-    <div
-      class="value editable"
+    <input
+      class="edit-input"
       id="profileLinked"
-      contenteditable="true"
-    ></div>
+      type="text"
+      disabled
+    >
+
   </div>
 
   <div class="info-row">
+
     <div class="label">Emergency Profile</div>
 
-    <div
-      class="value editable"
+    <input
+      class="edit-input"
       id="emergencyProfile"
-      contenteditable="true"
-    ></div>
+      type="text"
+      disabled
+    >
+
   </div>
 
   <div class="info-row">
+
     <div class="label">Insurance Cards Uploaded</div>
 
-    <div
-      class="value editable"
+    <input
+      class="edit-input"
       id="insuranceCardsUploaded"
-      contenteditable="true"
-    ></div>
+      type="text"
+      disabled
+    >
+
   </div>
 
   <div class="info-row">
+
     <div class="label">Medication List</div>
 
-    <div
-      class="value editable"
+    <input
+      class="edit-input"
       id="medicationList"
-      contenteditable="true"
-    ></div>
+      type="text"
+      disabled
+    >
+
   </div>
 
   <div class="info-row">
+
     <div class="label">Last Sync</div>
 
-    <div
-      class="value editable"
+    <input
+      class="edit-input"
       id="lastSync"
-      contenteditable="true"
-    ></div>
-  </div>
-
-</div>
-
-  <!-- NOTES -->
-
-<div class="card">
-
-  <h3>Recent Notes</h3>
-
-  <div
-    class="note editable"
-    id="recentNote1"
-    contenteditable="true"
-  ></div>
-
-  <div
-    class="note editable"
-    id="recentNote2"
-    contenteditable="true"
-  ></div>
-
-  <button style="margin-top:10px;">
-    Add Note
-  </button>
-
-</div>
-
-<!-- TASKS -->
-
-<div class="card">
-
-  <h3>Upcoming Tasks</h3>
-
-  <div id="clientTasks">
-
-    <div class="task">
-
-      <div
-        class="editable"
-        id="task1"
-        contenteditable="true"
-      ></div>
-
-      <span
-        class="badge editable"
-        id="taskBadge1"
-        contenteditable="true"
-      ></span>
-
-    </div>
-
-    <div class="task">
-
-      <div
-        class="editable"
-        id="task2"
-        contenteditable="true"
-      ></div>
-
-      <span
-        class="badge editable"
-        id="taskBadge2"
-        contenteditable="true"
-      ></span>
-
-    </div>
-
-    <div class="task">
-
-      <div
-        class="editable"
-        id="task3"
-        contenteditable="true"
-      ></div>
-
-      <span
-        class="badge editable"
-        id="taskBadge3"
-        contenteditable="true"
-      ></span>
-
-    </div>
+      type="date"
+      disabled
+    >
 
   </div>
 
   <button
-    style="margin-top:12px;"
-    onclick="window.location='tasks.html'"
+    class="save-btn"
+    id="saveVitaLinkBtn"
+    onclick="saveVitaLink()"
   >
-    Open Tasks
+    Save VitaLink Status
   </button>
-
-</div>
-
-<!-- QUICK ACTIONS -->
-
-<div class="card">
-
-  <h3>Quick Actions</h3>
-
-  <button
-    style="width:100%; margin-bottom:12px;"
-  >
-    View VitaLink Profile
-  </button>
-
-  <button
-    class="secondary"
-    style="width:100%; margin-bottom:12px;"
-  >
-    Export Client Data
-  </button>
-
-  <button
-    class="secondary"
-    style="width:100%; margin-bottom:12px;"
-  >
-    Send Email
-  </button>
-
-  <button
-    class="secondary"
-    style="width:100%; margin-bottom:12px;"
-  >
-    Create Task
-  </button>
-
-  <button
-    class="secondary"
-    style="width:100%;"
-  >
-    Schedule Appointment
-  </button>
-
-</div>
-
-</div>
 
 </div>
 
@@ -1010,13 +764,20 @@ async function loadClient(){
 
   const client = data.client;
 
+  if(!client){
+
+    alert("Client not found");
+    return;
+
+  }
+
   document.getElementById("clientName").innerText =
   `${client.first_name || ""} ${client.last_name || ""}`;
 
-document.getElementById("clientSub").innerText =
+  document.getElementById("clientSub").innerText =
   `${client.city || ""}, ${client.state || ""}`;
 
-document.getElementById("clientAvatar").innerText =
+  document.getElementById("clientAvatar").innerText =
   `${client.first_name?.[0] || ""}${client.last_name?.[0] || ""}`.toUpperCase();
 
   document.getElementById("firstName").innerText =
@@ -1026,13 +787,13 @@ document.getElementById("clientAvatar").innerText =
     client.last_name || "";
 
   document.getElementById("dob").innerText =
-    client.dob || "";
+    formatDate(client.dob);
 
   document.getElementById("mobilePhone").innerText =
-    client.mobile_phone || "";
+    formatPhone(client.mobile_phone);
 
   document.getElementById("landlinePhone").innerText =
-    client.landline_phone || "";
+    formatPhone(client.landline_phone);
 
   document.getElementById("email").innerText =
     client.email || "";
@@ -1049,13 +810,159 @@ document.getElementById("clientAvatar").innerText =
   document.getElementById("zip").innerText =
     client.zip || "";
 
+  /* =========================================
+     HOUSEHOLD
+  ========================================= */
+
+  if(document.getElementById("maritalStatus")){
+
+    document.getElementById("maritalStatus").value =
+      client.marital_status || "";
+
+  }
+
+  if(document.getElementById("spouseName")){
+
+    document.getElementById("spouseName").value =
+      client.spouse_name || "";
+
+  }
+
+  if(document.getElementById("spouseDob")){
+
+    document.getElementById("spouseDob").value =
+      client.spouse_dob || "";
+
+  }
+
+  if(document.getElementById("linkedSpouseProfile")){
+
+    document.getElementById("linkedSpouseProfile").value =
+      client.linked_spouse_profile || "";
+
+  }
+
+  /* =========================================
+     FAMILY
+  ========================================= */
+
+  if(document.getElementById("familyNote1")){
+
+    document.getElementById("familyNote1").value =
+      client.family_note_1 || "";
+
+  }
+
+  if(document.getElementById("familyNote2")){
+
+    document.getElementById("familyNote2").value =
+      client.family_note_2 || "";
+
+  }
+
+  if(document.getElementById("familyNote3")){
+
+    document.getElementById("familyNote3").value =
+      client.family_note_3 || "";
+
+  }
+
 }
 
-function logout(){
+/* =========================================
+   HOUSEHOLD EDIT
+========================================= */
 
-  sessionStorage.clear();
+let householdEdit = false;
 
-  window.location.href = "login.html";
+function toggleHouseholdEdit(){
+
+  householdEdit = !householdEdit;
+
+  const fields = [
+
+    "maritalStatus",
+    "spouseName",
+    "spouseDob",
+    "linkedSpouseProfile"
+
+  ];
+
+  fields.forEach(id => {
+
+    if(document.getElementById(id)){
+
+      document.getElementById(id).disabled =
+        !householdEdit;
+
+    }
+
+  });
+
+  if(document.getElementById("saveHouseholdBtn")){
+
+    document.getElementById(
+      "saveHouseholdBtn"
+    ).style.display =
+      householdEdit ? "block" : "none";
+
+  }
+
+}
+
+async function saveHousehold(){
+
+  alert("Household updated.");
+
+  toggleHouseholdEdit();
+
+}
+
+/* =========================================
+   FAMILY EDIT
+========================================= */
+
+let familyEdit = false;
+
+function toggleFamilyEdit(){
+
+  familyEdit = !familyEdit;
+
+  const fields = [
+
+    "familyNote1",
+    "familyNote2",
+    "familyNote3"
+
+  ];
+
+  fields.forEach(id => {
+
+    if(document.getElementById(id)){
+
+      document.getElementById(id).disabled =
+        !familyEdit;
+
+    }
+
+  });
+
+  if(document.getElementById("saveFamilyBtn")){
+
+    document.getElementById(
+      "saveFamilyBtn"
+    ).style.display =
+      familyEdit ? "block" : "none";
+
+  }
+
+}
+
+async function saveFamily(){
+
+  alert("Family notes updated.");
+
+  toggleFamilyEdit();
 
 }
 
