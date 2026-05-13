@@ -516,6 +516,14 @@ loadRecentClients();
 document.getElementById("agentName").innerText =
   sessionStorage.getItem("agentName") || "";
 
+  function logout(){
+
+  sessionStorage.clear();
+
+  window.location.href = "login.html";
+
+}
+
 </script>
 
 </body>
