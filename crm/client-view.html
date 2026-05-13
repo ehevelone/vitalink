@@ -875,6 +875,14 @@ document.getElementById("clientAvatar").innerText =
 
 }
 
+function logout(){
+
+  sessionStorage.clear();
+
+  window.location.href = "login.html";
+
+}
+
 loadClient();
 
 </script>
