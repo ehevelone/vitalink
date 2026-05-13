@@ -389,19 +389,19 @@ if(!sessionStorage.getItem("crm_uuid")){
 
     <div class="card">
       <h3>Upcoming Renewals</h3>
-      <div class="metric">34</div>
+      <div class="metric" id="upcomingRenewals">0</div>
       <div class="muted">Next 60 days</div>
     </div>
 
     <div class="card">
       <h3>Pending Follow-Ups</h3>
-      <div class="metric">12</div>
+      <div class="metric" id="pendingFollowUps">0</div>
       <div class="muted">Tasks needing attention</div>
     </div>
 
     <div class="card">
       <h3>Recent Activity</h3>
-      <div class="metric">19</div>
+      <div class="metric" id="recentActivity">0</div>
       <div class="muted">Client updates this week</div>
     </div>
 
@@ -461,6 +461,9 @@ async function loadRecentClients(){
 
   document.getElementById("totalClients").innerText =
   data.clients.length;
+  document.getElementById("upcomingRenewals").innerText = "0";
+document.getElementById("pendingFollowUps").innerText = "0";
+document.getElementById("recentActivity").innerText = "0";
   const table = document.getElementById("recentClientsTable");
 
   table.innerHTML = "";
