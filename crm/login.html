@@ -166,6 +166,55 @@ button:hover{
   line-height:1.5;
 }
 
+.hidden{
+  display:none;
+}
+
+.result{
+  padding:12px;
+  border-radius:10px;
+  margin-bottom:18px;
+  font-size:.92rem;
+}
+
+.error{
+  background:#fee2e2;
+  color:#991b1b;
+  border:1px solid #fecaca;
+}
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.45);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:999;
+}
+
+.modal.active{
+  display:flex;
+}
+
+.modal-card{
+  background:#fff;
+  width:100%;
+  max-width:420px;
+  padding:28px;
+  border-radius:20px;
+  box-shadow:var(--shadow);
+}
+
+.modal-card h3{
+  margin-top:0;
+  margin-bottom:20px;
+}
+
+.modal-card input{
+  margin-bottom:14px;
+}
+
 /* =========================================
    MOBILE
 ========================================= */
