@@ -126,7 +126,7 @@ function toggleHouseholdEdit(){
 
     "maritalStatus",
     "spouseName",
-    "spouseDob",
+    "spouseDob"
     
 
   ];
