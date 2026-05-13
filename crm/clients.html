@@ -315,6 +315,7 @@ td{
 <!-- =========================================
      SIDEBAR
 ========================================= -->
+
 <div class="sidebar">
 
   <a href="index.html">
@@ -326,17 +327,19 @@ td{
     <div class="nav-title">Dashboard</div>
 
     <a href="index.html">
-      <div class="nav-item">📊 CRM Overview</div>
+      <div class="nav-item">📊 Dashboard</div>
     </a>
 
-    <div class="nav-item active">👥 Clients</div>
-
-    <a href="tasks.html">
-      <div class="nav-item">⏰ Tasks</div>
+    <a href="clients.html">
+      <div class="nav-item active">👥 Clients</div>
     </a>
 
     <a href="renewals.html">
       <div class="nav-item">📅 Renewals</div>
+    </a>
+
+    <a href="tasks.html">
+      <div class="nav-item">⏰ Tasks</div>
     </a>
 
   </div>
@@ -356,6 +359,49 @@ td{
     <a href="exports.html">
       <div class="nav-item">📤 Exports</div>
     </a>
+
+  </div>
+
+  <div class="nav-section">
+
+    <div class="nav-title">Account</div>
+
+    <a href="settings.html">
+      <div class="nav-item">⚙ Settings</div>
+    </a>
+
+    <a href="billing.html">
+      <div class="nav-item">💳 Billing</div>
+    </a>
+
+  </div>
+
+  <!-- LOGOUT -->
+
+  <div
+    style="
+      position:absolute;
+      bottom:24px;
+      left:18px;
+      right:18px;
+    "
+  >
+
+    <button
+      onclick="logout()"
+      style="
+        width:100%;
+        background:#ef4444;
+        color:#fff;
+        border:none;
+        padding:12px;
+        border-radius:10px;
+        font-weight:700;
+        cursor:pointer;
+      "
+    >
+      Logout
+    </button>
 
   </div>
 
