@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Client View - VitaLink CRM</title>
+
+<style>
+
+:root{
+  --bg:#f4f5f7;
+  --card:#ffffff;
+  --border:#e5e7eb;
+  --text:#111827;
+  --muted:#6b7280;
+  --accent:#7cc6e8;
+  --accent-dark:#58b6df;
+  --shadow:0 4px 18px rgba(0,0,0,0.08);
+}
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+a{
+  text-decoration:none;
+  color:inherit;
+}
+
+/* =========================================
+   SIDEBAR
+========================================= */
+
+.sidebar{
+  position:fixed;
+  top:0;
+  left:0;
+  width:250px;
+  height:100vh;
+  background:#0f172a;
+  color:#fff;
+  padding:24px 18px;
+  padding-bottom:100px;
+  overflow-y:auto;
+}
+
+.logo{
+  width:100%;
+  max-width:180px;
+  display:block;
+  margin:0 auto 35px auto;
+}
+
+.nav-section{
+  margin-bottom:30px;
+}
+
+.nav-title{
+  font-size:.78rem;
+  color:#94a3b8;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  margin-bottom:12px;
+}
+
+.nav-item{
+  padding:12px 14px;
+  border-radius:10px;
+  margin-bottom:8px;
+  cursor:pointer;
+  transition:.2s;
+  font-size:.96rem;
+}
+
+.nav-item:hover{
+  background:rgba(124,198,232,0.12);
+}
+
+.nav-item.active{
+  background:rgba(124,198,232,0.18);
+  color:var(--accent);
+  font-weight:600;
+}
+
+/* =========================================
+   MAIN
+========================================= */
+
+.main{
+  margin-left:250px;
+  padding:28px;
+}
+
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:28px;
+}
+
+.client-header{
+  display:flex;
+  align-items:center;
+  gap:18px;
+}
+
+.avatar{
+  width:72px;
+  height:72px;
+  border-radius:50%;
+  background:var(--accent);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.8rem;
+  font-weight:700;
+  color:#000;
+}
+
+.client-name{
+  font-size:2rem;
+  font-weight:700;
+}
+
+.client-sub{
+  color:var(--muted);
+  margin-top:6px;
+}
+
+.top-actions{
+  display:flex;
+  gap:12px;
+}
+
+button{
+  border:none;
+  background:var(--accent);
+  color:#000;
+  padding:11px 18px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:600;
+  transition:.2s;
+}
+
+button:hover{
+  opacity:.9;
+}
+
+.sidebar button{
+  width:100%;
+}
+
+.secondary{
+  background:#fff;
+  border:1px solid var(--border);
+  color:#111827;
+}
+
+/* =========================================
+   GRID
+========================================= */
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+  gap:22px;
+}
+
+.card{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:22px;
+  box-shadow:var(--shadow);
+}
+
+.card h3{
+  margin-top:0;
+  margin-bottom:18px;
+}
+
+/* =========================================
+   INFO ROWS
+========================================= */
+
+.info-row{
+  margin-bottom:14px;
+}
+
+.label{
+  font-size:.82rem;
+  color:var(--muted);
+  margin-bottom:4px;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+}
+
+.value{
+  font-size:1rem;
+  font-weight:500;
+}
+
+/* =========================================
+   NOTES
+========================================= */
+
+.note{
+  padding:14px;
+  background:#f8fafc;
+  border-radius:12px;
+  margin-bottom:12px;
+  border:1px solid #e2e8f0;
+}
+
+.note-date{
+  font-size:.8rem;
+  color:var(--muted);
+  margin-top:8px;
+}
+
+/* =========================================
+   TASKS
+========================================= */
+
+.task{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:12px 0;
+  border-bottom:1px solid #eef2f7;
+}
+
+.task:last-child{
+  border-bottom:none;
+}
+
+.badge{
+  display:inline-block;
+  padding:6px 12px;
+  border-radius:999px;
+  background:#fef3c7;
+  color:#92400e;
+  font-size:.8rem;
+  font-weight:600;
+}
+
+.tag{
+  display:inline-block;
+  background:#e0f2fe;
+  color:#0369a1;
+  padding:5px 10px;
+  border-radius:999px;
+  font-size:.78rem;
+  margin-right:6px;
+  margin-bottom:8px;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media(max-width:900px){
+
+  .sidebar{
+    width:100%;
+    height:auto;
+    position:relative;
+  }
+
+  .main{
+    margin-left:0;
+  }
+
+  .topbar{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:18px;
+  }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- =========================================
+     SIDEBAR
+========================================= -->
+
+<div class="sidebar">
+
+  <a href="index.html">
+    <img src="../images/vitalink-logo.png" class="logo">
+  </a>
+
+  <div class="nav-section">
+
+    <div class="nav-title">Dashboard</div>
+
+    <a href="index.html">
+      <div class="nav-item">📊 CRM Overview</div>
+    </a>
+
+    <a href="clients.html">
+      <div class="nav-item">👥 Clients</div>
+    </a>
+
+    <div class="nav-item active">📄 Client View</div>
+
+    <a href="renewals.html">
+      <div class="nav-item">📅 Renewals</div>
+    </a>
+
+    <a href="tasks.html">
+      <div class="nav-item">⏰ Tasks</div>
+    </a>
+
+  </div>
+
+  <div class="nav-section">
+
+    <div class="nav-title">VitaLink</div>
+
+    <a href="linked-profiles.html">
+      <div class="nav-item">📱 Linked Profiles</div>
+    </a>
+
+    <a href="notifications.html">
+      <div class="nav-item">🔔 Notifications</div>
+    </a>
+
+    <a href="exports.html">
+      <div class="nav-item">📤 Exports</div>
+    </a>
+
+  </div>
+
+  <div class="nav-section">
+
+    <div class="nav-title">Account</div>
+
+    <a href="settings.html">
+      <div class="nav-item">⚙ Settings</div>
+    </a>
+
+    <a href="billing.html">
+      <div class="nav-item">💳 Billing</div>
+    </a>
+
+  </div>
+
+  <!-- LOGOUT -->
+
+  <div
+    style="
+      position:absolute;
+      bottom:24px;
+      left:18px;
+      right:18px;
+    "
+  >
+
+    <button
+      onclick="logout()"
+      style="
+        width:100%;
+        background:#ef4444;
+        color:#fff;
+        border:none;
+        padding:12px;
+        border-radius:10px;
+        font-weight:700;
+        cursor:pointer;
+      "
+    >
+      Logout
+    </button>
+
+  </div>
+
+</div>
+
+<!-- =========================================
+     MAIN
+========================================= -->
+
+<div class="main">
+
+  <!-- TOPBAR -->
+
+  <div class="topbar">
+
+    <div class="client-header">
+
+      <div class="avatar" id="clientAvatar">
+        --
+      </div>
+
+      <div>
+
+        <div class="client-name" id="clientName">
+          Loading...
+        </div>
+
+        <div class="client-sub" id="clientSub">
+          Loading...
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="top-actions">
+
+      <button class="secondary">
+        Send Notification
+      </button>
+
+      <button>
+        Edit Client
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- GRID -->
+
+  <div class="grid">
+
+  <!-- CLIENT INFO -->
+
+<div class="card">
+
+  <h3>Client Information</h3>
+
+  <div class="info-row">
+    <div class="label">First Name</div>
+    <div class="value" id="firstName"></div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Last Name</div>
+    <div class="value" id="lastName"></div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Date of Birth</div>
+    <div class="value" id="dob"></div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Mobile Phone</div>
+    <div class="value" id="mobilePhone"></div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Landline Phone</div>
+    <div class="value" id="landlinePhone"></div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Email</div>
+    <div class="value" id="email"></div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Address</div>
+    <div class="value" id="address"></div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">City</div>
+    <div class="value" id="city"></div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">State</div>
+    <div class="value" id="state"></div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">ZIP Code</div>
+    <div class="value" id="zip"></div>
+  </div>
+
+</div>
+
+<!-- HOUSEHOLD -->
+
+<div class="card">
+
+  <h3>Household</h3>
+
+  <div class="info-row">
+    <div class="label">Marital Status</div>
+    <div class="value">Married</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Spouse Name</div>
+    <div class="value">
+      Mary Smith
+    </div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Spouse DOB</div>
+    <div class="value">
+      07/22/1954
+    </div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Linked Spouse Profile</div>
+    <div class="value">
+      <a href="client-view.html">
+        View Profile
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<!-- FAMILY / RELATIONSHIPS -->
+
+<div class="card">
+
+  <h3>Family & Relationships</h3>
+
+  <div class="note">
+    Daughter: Sarah Smith<br>
+    Helps manage appointments and medications.
+  </div>
+
+  <div class="note">
+    Son: Michael Smith<br>
+    Lives in Lincoln, NE.
+  </div>
+
+  <div class="note">
+    Grandchildren:<br>
+    Emma (12), Jackson (9)
+  </div>
+
+  <button style="margin-top:10px;">
+    Add Family Note
+  </button>
+
+</div>
+
+<!-- LEAD INFORMATION -->
+
+<div class="card">
+
+  <h3>Lead Information</h3>
+
+  <div class="info-row">
+    <div class="label">Lead Source</div>
+    <div class="value">Referral</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Referral Source</div>
+    <div class="value">Mary Johnson</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Seminar/Event</div>
+    <div class="value">Turning 65 Workshop</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Lead Cost</div>
+    <div class="value">$32.00</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Date Added</div>
+    <div class="value">01/12/2026</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Assigned Agent</div>
+    <div class="value">Eric Hevelone</div>
+  </div>
+
+</div>
+
+<!-- POLICY INFORMATION -->
+
+<div class="card">
+
+  <h3>Policy Information</h3>
+
+  <div class="info-row">
+    <div class="label">Carrier</div>
+    <div class="value">UnitedHealthcare</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Plan Name</div>
+    <div class="value">AARP Medicare Advantage Choice</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Plan Type</div>
+    <div class="value">MAPD</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Effective Date</div>
+    <div class="value">01/01/2026</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Renewal Month</div>
+    <div class="value">October</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Monthly Premium</div>
+    <div class="value">$0.00</div>
+  </div>
+
+</div>
+
+<!-- CLIENT TAGS -->
+
+<div class="card">
+
+  <h3>Client Tags</h3>
+
+  <span class="tag">MAPD</span>
+  <span class="tag">Med Supp</span>
+  <span class="tag">PDP</span>
+  <span class="tag">Dental</span>
+
+  <span class="tag">T65</span>
+  <span class="tag">DSNP</span>
+  <span class="tag">Veteran</span>
+  <span class="tag">LIS</span>
+  <span class="tag">Medicaid</span>
+
+  <span class="tag">Referral</span>
+  <span class="tag">High Priority</span>
+
+</div>
+
+<!-- COMMUNICATION PREFERENCES -->
+
+<div class="card">
+
+  <h3>Communication Preferences</h3>
+
+  <div class="info-row">
+    <div class="label">Preferred Contact Method</div>
+    <div class="value">Mobile Phone</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Best Time To Call</div>
+    <div class="value">Afternoons</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Text Messaging</div>
+    <div class="value">Allowed</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Email Communication</div>
+    <div class="value">Allowed</div>
+  </div>
+
+</div>
+
+<!-- COMPLIANCE -->
+
+<div class="card">
+
+  <h3>Compliance</h3>
+
+  <div class="info-row">
+    <div class="label">SOA Signed</div>
+    <div class="value">Yes</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">HIPAA Signed</div>
+    <div class="value">Yes</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Last Policy Review</div>
+    <div class="value">10/15/2025</div>
+  </div>
+
+</div>
+
+<!-- VITALINK STATUS -->
+
+<div class="card">
+
+  <h3>VitaLink Status</h3>
+
+  <div class="info-row">
+    <div class="label">Profile Linked</div>
+    <div class="value">Connected</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Emergency Profile</div>
+    <div class="value">Active</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Insurance Cards Uploaded</div>
+    <div class="value">3 Cards</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Medication List</div>
+    <div class="value">Updated</div>
+  </div>
+
+  <div class="info-row">
+    <div class="label">Last Sync</div>
+    <div class="value">05/08/2026</div>
+  </div>
+
+</div>
+
+    <!-- NOTES -->
+
+    <div class="card">
+
+      <h3>Recent Notes</h3>
+
+      <div class="note">
+        Client requested review of prescription coverage before AEP.
+        <div class="note-date">
+          Added May 4, 2026
+        </div>
+      </div>
+
+      <div class="note">
+        Daughter helps manage medications and appointments.
+        <div class="note-date">
+          Added March 12, 2026
+        </div>
+      </div>
+
+      <button style="margin-top:10px;">
+        Add Note
+      </button>
+
+    </div>
+
+    <!-- TASKS -->
+
+    <div class="card">
+
+      <h3>Upcoming Tasks</h3>
+
+      <div class="task">
+        <div>
+          Review Drug Plan
+        </div>
+
+        <span class="badge">
+          Due Soon
+        </span>
+      </div>
+
+      <div class="task">
+        <div>
+          Follow-Up Call
+        </div>
+
+        <span class="badge">
+          May 15
+        </span>
+      </div>
+
+      <div class="task">
+        <div>
+          Renewal Review
+        </div>
+
+        <span class="badge">
+          September
+        </span>
+      </div>
+
+    </div>
+
+    <!-- QUICK ACTIONS -->
+
+    <div class="card">
+
+      <h3>Quick Actions</h3>
+
+      <button style="width:100%; margin-bottom:12px;">
+        View VitaLink Profile
+      </button>
+
+      <button class="secondary" style="width:100%; margin-bottom:12px;">
+        Export Client Data
+      </button>
+
+      <button class="secondary" style="width:100%;">
+        Send Email
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+const params = new URLSearchParams(window.location.search);
+
+const clientId = params.get("id");
+
+async function loadClient(){
+
+  const res = await fetch(
+    `/.netlify/functions/get-client?id=${clientId}`
+  );
+
+  const data = await res.json();
+
+  console.log(data);
+
+  const client = data.client;
+
+  document.getElementById("clientName").innerText =
+  `${client.first_name || ""} ${client.last_name || ""}`;
+
+document.getElementById("clientSub").innerText =
+  `${client.city || ""}, ${client.state || ""}`;
+
+document.getElementById("clientAvatar").innerText =
+  `${client.first_name?.[0] || ""}${client.last_name?.[0] || ""}`.toUpperCase();
+
+  document.getElementById("firstName").innerText =
+    client.first_name || "";
+
+  document.getElementById("lastName").innerText =
+    client.last_name || "";
+
+  document.getElementById("dob").innerText =
+    client.dob || "";
+
+  document.getElementById("mobilePhone").innerText =
+    client.mobile_phone || "";
+
+  document.getElementById("landlinePhone").innerText =
+    client.landline_phone || "";
+
+  document.getElementById("email").innerText =
+    client.email || "";
+
+  document.getElementById("address").innerText =
+    client.address || "";
+
+  document.getElementById("city").innerText =
+    client.city || "";
+
+  document.getElementById("state").innerText =
+    client.state || "";
+
+  document.getElementById("zip").innerText =
+    client.zip || "";
+
+}
+
+function logout(){
+
+  sessionStorage.clear();
+
+  window.location.href = "login.html";
+
+}
+
+loadClient();
+
+</script>
+
+</body>
+</html>
