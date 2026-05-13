@@ -254,23 +254,66 @@ button:hover{
         Access your VitaLink CRM dashboard.
       </div>
 
-      <div class="input-group">
-        <div class="label">Email</div>
-        <input id="email" type="email" placeholder="Enter your email">
+      <div id="error" class="result error hidden"></div>
+
+      <!-- STEP 1 -->
+
+      <div id="step1">
+
+        <div class="input-group">
+          <div class="label">Email</div>
+          <input id="email" type="email" placeholder="Enter your email">
+        </div>
+
+        <div class="input-group">
+          <div class="label">Password</div>
+
+          <input
+            id="password"
+            type="password"
+            placeholder="Enter your password"
+          >
+
+          <div
+            style="margin-top:8px; font-size:.82rem; color:#7cc6e8; cursor:pointer;"
+            onclick="togglePassword()"
+          >
+            Show Password
+          </div>
+
+        </div>
+
+        <button id="loginBtn" type="button">
+          Sign In
+        </button>
+
+        <div class="forgot" onclick="openReset()">
+          Forgot Password?
+        </div>
+
       </div>
 
-      <div class="input-group">
-        <div class="label">Password</div>
-        <input id="password" type="password" placeholder="Enter your password">
+      <!-- STEP 2 -->
+
+      <div id="step2" class="hidden">
+
+        <div class="input-group">
+          <div class="label">Verification Code</div>
+
+          <input
+            type="text"
+            id="smsCode"
+            placeholder="Enter verification code"
+          >
+        </div>
+
+        <button id="verifyBtn" type="button">
+          Verify Code
+        </button>
+
       </div>
 
-      <button onclick="login()">
-        Sign In
-      </button>
-
-      <div class="forgot">
-        Forgot Password?
-      </div>
+      <div id="recaptcha-container"></div>
 
       <div class="security">
         HIPAA-aware secure platform<br>
@@ -283,16 +326,121 @@ button:hover{
 
 </div>
 
+<!-- RESET MODAL -->
+
+<div id="resetModal" class="modal">
+
+  <div class="modal-card">
+
+    <h3>Reset Password</h3>
+
+    <input id="resetEmail" placeholder="Email">
+
+    <input id="resetCode" placeholder="Code">
+
+    <input
+      id="resetPassword"
+      type="password"
+      placeholder="New Password"
+    >
+
+    <button onclick="requestReset()">
+      Send Code
+    </button>
+
+    <button onclick="submitReset()">
+      Reset Password
+    </button>
+
+    <button
+      onclick="closeReset()"
+      style="background:#444;"
+    >
+      Cancel
+    </button>
+
+  </div>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
 <script>
+
+const API =
+  "https://vitalink-app.netlify.app/.netlify/functions";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCTZiiluPy5ydX62RfM-E7f8EIWHNG12S8",
+  authDomain: "vitalink-7e832.firebaseapp.com",
+  projectId: "vitalink-7e832",
+  storageBucket: "vitalink-7e832.firebasestorage.app",
+  messagingSenderId: "776534002769",
+  appId: "1:776534002769:web:f2460535613304e12efc70"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+let confirmationResult = null;
+let currentEmail = null;
+
+window.addEventListener("DOMContentLoaded", () => {
+
+  document
+    .getElementById("loginBtn")
+    .addEventListener("click", login);
+
+  document
+    .getElementById("verifyBtn")
+    .addEventListener("click", verifyCode);
+
+});
+
+function togglePassword(){
+
+  const input =
+    document.getElementById("password");
+
+  input.type =
+    input.type === "password"
+      ? "text"
+      : "password";
+
+}
+
+function showError(msg){
+
+  const el = document.getElementById("error");
+
+  el.innerText = msg;
+
+  el.classList.remove("hidden");
+
+}
+
+// ---------------- LOGIN ----------------
 
 async function login(){
 
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  const email =
+    document.getElementById("email").value.trim();
 
-  const res = await fetch(
-    "https://vitalink-app.netlify.app/.netlify/functions/agent-login",
-    {
+  const password =
+    document.getElementById("password").value;
+
+  if(!email || !password){
+
+    showError("Enter email and password");
+
+    return;
+
+  }
+
+  try{
+
+    const res = await fetch(`${API}/agent-login`,{
       method:"POST",
       headers:{
         "Content-Type":"application/json"
@@ -302,25 +450,243 @@ async function login(){
         password,
         step:"login"
       })
+    });
+
+    const data = await res.json();
+
+    console.log("LOGIN RESPONSE:", data);
+
+    // ✅ DIRECT LOGIN
+    if(data.step === "login_success"){
+
+      sessionStorage.setItem(
+        "agentSessionToken",
+        data.token || "dev"
+      );
+
+      sessionStorage.setItem(
+        "agentName",
+        data.agent.name
+      );
+
+      sessionStorage.setItem(
+        "agentId",
+        String(data.agent.id)
+      );
+
+      sessionStorage.setItem(
+        "crm_uuid",
+        data.agent.crm_uuid
+      );
+
+      window.location.href = "index.html";
+
+      return;
+
     }
-  );
+
+    // ✅ FIREBASE 2FA
+    if(data.step === "firebase_2fa"){
+
+      currentEmail = email;
+
+      window.recaptchaVerifier =
+        new firebase.auth.RecaptchaVerifier(
+          "recaptcha-container",
+          { size:"invisible" }
+        );
+
+      const auth = firebase.auth();
+
+      confirmationResult =
+        await auth.signInWithPhoneNumber(
+          data.phone,
+          window.recaptchaVerifier
+        );
+
+      document
+        .getElementById("step1")
+        .classList.add("hidden");
+
+      document
+        .getElementById("step2")
+        .classList.remove("hidden");
+
+      return;
+
+    }
+
+    showError(data.error || "Unexpected response");
+
+  }catch(err){
+
+    console.error(err);
+
+    showError("Something went wrong");
+
+  }
+
+}
+
+// ---------------- VERIFY ----------------
+
+async function verifyCode(){
+
+  const code =
+    document.getElementById("smsCode").value.trim();
+
+  if(!code){
+
+    showError("Enter code");
+
+    return;
+
+  }
+
+  try{
+
+    await confirmationResult.confirm(code);
+
+    const res = await fetch(`${API}/agent-login`,{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        email: currentEmail,
+        password:
+          document.getElementById("password").value,
+        step:"verify"
+      })
+    });
+
+    const data = await res.json();
+
+    if(data.step !== "login_success"){
+
+      showError("Verification failed");
+
+      return;
+
+    }
+
+    sessionStorage.setItem(
+      "agentSessionToken",
+      data.token || "dev"
+    );
+
+    sessionStorage.setItem(
+      "agentId",
+      String(data.agent.id)
+    );
+
+    sessionStorage.setItem(
+      "agentName",
+      data.agent.name
+    );
+
+    sessionStorage.setItem(
+      "crm_uuid",
+      data.agent.crm_uuid
+    );
+
+    window.location.href = "index.html";
+
+  }catch(err){
+
+    console.error(err);
+
+    showError("Invalid code");
+
+  }
+
+}
+
+// ---------------- RESET ----------------
+
+function openReset(){
+
+  document
+    .getElementById("resetModal")
+    .classList.add("active");
+
+}
+
+function closeReset(){
+
+  document
+    .getElementById("resetModal")
+    .classList.remove("active");
+
+}
+
+async function requestReset(){
+
+  const email =
+    document.getElementById("resetEmail").value;
+
+  const res = await fetch(`${API}/request_reset`,{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify({
+      emailOrPhone: email,
+      role:"agents"
+    })
+  });
 
   const data = await res.json();
 
-  console.log(data);
+  if(data.success){
 
-if(
-  data.step !== "login_success" &&
-  data.step !== "firebase_2fa"
-){
-  alert("Login failed");
-  return;
+    alert("Reset code sent");
+
+  }else{
+
+    showError(data.error || "Failed");
+
+  }
+
 }
 
-sessionStorage.setItem("crm_uuid", data.agent.crm_uuid);
-sessionStorage.setItem("agentName", data.agent.name);
+async function submitReset(){
 
-window.location = "index.html";
+  const email =
+    document.getElementById("resetEmail").value;
+
+  const code =
+    document.getElementById("resetCode").value;
+
+  const password =
+    document.getElementById("resetPassword").value;
+
+  const res = await fetch(`${API}/reset_password`,{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify({
+      emailOrPhone: email,
+      code,
+      newPassword: password,
+      role:"agents"
+    })
+  });
+
+  const data = await res.json();
+
+  if(data.success){
+
+    alert("Password reset successful");
+
+    closeReset();
+
+  }else{
+
+    showError(data.error || "Reset failed");
+
+  }
 
 }
 
