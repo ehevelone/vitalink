@@ -275,6 +275,16 @@ input, select{
 
 <body>
 
+<script>
+
+if(!sessionStorage.getItem("crm_uuid")){
+
+  window.location = "login.html";
+
+}
+
+</script>
+
 <!-- =========================================
      SIDEBAR
 ========================================= -->
@@ -297,8 +307,8 @@ input, select{
       <div class="nav-item">👥 Clients</div>
     </a>
 
-    <a href="renewals.html">
-      <div class="nav-item">📅 Renewals</div>
+    <a href="schedule.html">
+      <div class="nav-item">📅 Schedule</div>
     </a>
 
     <a href="tasks.html">
@@ -381,10 +391,13 @@ input, select{
   <div class="topbar">
 
     <div>
+
       <h1>Tasks</h1>
+
       <div style="color:#6b7280;">
-        Track follow-ups, reminders, and client action items.
+        Track follow-ups, reminders, paperwork, and client action items.
       </div>
+
     </div>
 
     <button>
@@ -399,7 +412,10 @@ input, select{
 
     <div class="filter-row">
 
-      <input type="text" placeholder="Search tasks or clients...">
+      <input
+        type="text"
+        placeholder="Search tasks or clients..."
+      >
 
       <select>
         <option>All Priorities</option>
@@ -429,6 +445,7 @@ input, select{
       <div class="task-top">
 
         <div>
+
           <div class="task-title">
             Review Drug Coverage
           </div>
@@ -436,6 +453,7 @@ input, select{
           <div class="task-client">
             John Smith
           </div>
+
         </div>
 
         <span class="badge high">
@@ -479,13 +497,15 @@ input, select{
       <div class="task-top">
 
         <div>
+
           <div class="task-title">
-            Renewal Follow-Up
+            Follow-Up Call
           </div>
 
           <div class="task-client">
             Mary Johnson
           </div>
+
         </div>
 
         <span class="badge medium">
@@ -495,7 +515,7 @@ input, select{
       </div>
 
       <div class="task-body">
-        Contact client regarding upcoming supplement renewal review and possible plan comparison options.
+        Contact client regarding recent billing questions and discuss possible plan updates.
       </div>
 
       <div class="info-row">
@@ -529,6 +549,7 @@ input, select{
       <div class="task-top">
 
         <div>
+
           <div class="task-title">
             Initial Medicare Consultation
           </div>
@@ -536,6 +557,7 @@ input, select{
           <div class="task-client">
             Robert Wilson
           </div>
+
         </div>
 
         <span class="badge complete">
@@ -575,6 +597,18 @@ input, select{
   </div>
 
 </div>
+
+<script>
+
+function logout(){
+
+  sessionStorage.clear();
+
+  window.location.href = "login.html";
+
+}
+
+</script>
 
 </body>
 </html>

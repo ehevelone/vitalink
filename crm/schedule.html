@@ -285,8 +285,8 @@ input, select{
       <div class="nav-item">👥 Clients</div>
     </a>
 
-    <a href="renewals.html">
-      <div class="nav-item active">📅 Renewals</div>
+    <a href="schedule.html">
+      <div class="nav-item active">📅 Schedule</div>
     </a>
 
     <a href="tasks.html">
@@ -369,15 +369,58 @@ input, select{
   <div class="topbar">
 
     <div>
-      <h1>Renewals</h1>
+      <h1>Schedule & Calendar</h1>
+
       <div style="color:#6b7280;">
-        Track upcoming client renewals and follow-ups.
+        Manage appointments, follow-ups, annual reviews, and client reminders.
       </div>
     </div>
 
     <button>
-      Export Renewals
+      + New Appointment
     </button>
+
+  </div>
+
+  <!-- METRICS -->
+
+  <div class="renewal-grid">
+
+    <div class="renewal-card">
+
+      <div class="metric">
+        4
+      </div>
+
+      <div class="client-sub">
+        Appointments Today
+      </div>
+
+    </div>
+
+    <div class="renewal-card">
+
+      <div class="metric">
+        11
+      </div>
+
+      <div class="client-sub">
+        Upcoming Follow-Ups
+      </div>
+
+    </div>
+
+    <div class="renewal-card">
+
+      <div class="metric">
+        3
+      </div>
+
+      <div class="client-sub">
+        Annual Reviews This Week
+      </div>
+
+    </div>
 
   </div>
 
@@ -387,27 +430,30 @@ input, select{
 
     <div class="filter-row">
 
-      <input type="text" placeholder="Search clients...">
+      <input
+        type="text"
+        placeholder="Search appointments..."
+      >
 
       <select>
-        <option>All Months</option>
-        <option>January</option>
-        <option>February</option>
-        <option>March</option>
-        <option>October</option>
+        <option>All Types</option>
+        <option>Annual Review</option>
+        <option>Follow-Up</option>
+        <option>Enrollment Meeting</option>
+        <option>T65 Consultation</option>
       </select>
 
       <select>
-        <option>All Statuses</option>
-        <option>Upcoming</option>
-        <option>Ready for Review</option>
+        <option>This Week</option>
+        <option>Today</option>
+        <option>This Month</option>
       </select>
 
     </div>
 
   </div>
 
-  <!-- RENEWALS -->
+  <!-- SCHEDULE -->
 
   <div class="renewal-grid">
 
@@ -423,29 +469,29 @@ input, select{
           </div>
 
           <div class="client-sub">
-            MAPD Client • Omaha, NE
+            Annual Review • Omaha, NE
           </div>
         </div>
 
-        <span class="badge upcoming">
-          Upcoming
+        <span class="badge ready">
+          Today
         </span>
 
       </div>
 
       <div class="info-row">
-        <div class="label">Renewal Month</div>
-        <div class="value">October</div>
+        <div class="label">Time</div>
+        <div class="value">10:00 AM</div>
       </div>
 
       <div class="info-row">
-        <div class="label">Last Contact</div>
-        <div class="value">April 28, 2026</div>
+        <div class="label">Meeting Type</div>
+        <div class="value">Policy Review</div>
       </div>
 
       <div class="info-row">
-        <div class="label">Current Plan</div>
-        <div class="value">UHC Dual Complete</div>
+        <div class="label">Notes</div>
+        <div class="value">Review PDP changes and drug costs</div>
       </div>
 
       <div class="card-actions">
@@ -455,7 +501,7 @@ input, select{
         </button>
 
         <button class="secondary-btn">
-          Add Reminder
+          Complete
         </button>
 
       </div>
@@ -474,29 +520,29 @@ input, select{
           </div>
 
           <div class="client-sub">
-            Supplement Client • Council Bluffs, IA
+            Follow-Up Call • Council Bluffs, IA
           </div>
         </div>
 
-        <span class="badge ready">
-          Ready
+        <span class="badge upcoming">
+          Tomorrow
         </span>
 
       </div>
 
       <div class="info-row">
-        <div class="label">Renewal Month</div>
-        <div class="value">January</div>
+        <div class="label">Time</div>
+        <div class="value">1:30 PM</div>
       </div>
 
       <div class="info-row">
-        <div class="label">Last Contact</div>
-        <div class="value">May 1, 2026</div>
+        <div class="label">Meeting Type</div>
+        <div class="value">Billing Question</div>
       </div>
 
       <div class="info-row">
-        <div class="label">Current Plan</div>
-        <div class="value">Mutual of Omaha Supplement G</div>
+        <div class="label">Notes</div>
+        <div class="value">Review premium reimbursement issue</div>
       </div>
 
       <div class="card-actions">
@@ -506,7 +552,7 @@ input, select{
         </button>
 
         <button class="secondary-btn">
-          Send Reminder
+          Reschedule
         </button>
 
       </div>
@@ -525,29 +571,29 @@ input, select{
           </div>
 
           <div class="client-sub">
-            T65 Prospect • Bellevue, NE
+            T65 Consultation • Bellevue, NE
           </div>
         </div>
 
         <span class="badge upcoming">
-          T65
+          Friday
         </span>
 
       </div>
 
       <div class="info-row">
-        <div class="label">Medicare Effective</div>
-        <div class="value">July 2026</div>
+        <div class="label">Time</div>
+        <div class="value">3:00 PM</div>
       </div>
 
       <div class="info-row">
-        <div class="label">Last Contact</div>
-        <div class="value">March 14, 2026</div>
+        <div class="label">Meeting Type</div>
+        <div class="value">Initial Medicare Review</div>
       </div>
 
       <div class="info-row">
-        <div class="label">Current Status</div>
-        <div class="value">Needs Initial Plan Review</div>
+        <div class="label">Notes</div>
+        <div class="value">Needs hospital/doctor preference discussion</div>
       </div>
 
       <div class="card-actions">
@@ -557,7 +603,7 @@ input, select{
         </button>
 
         <button class="secondary-btn">
-          Schedule Call
+          Send Reminder
         </button>
 
       </div>
@@ -567,6 +613,18 @@ input, select{
   </div>
 
 </div>
+
+<script>
+
+function logout(){
+
+  sessionStorage.clear();
+
+  window.location.href = "login.html";
+
+}
+
+</script>
 
 </body>
 </html>
