@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<title>Renewals - VitaLink CRM</title>
+<title>Schedule - VitaLink CRM</title>
 
 <link rel="stylesheet" href="crm.css">
 
@@ -76,8 +76,6 @@
 
   </div>
 
-  <!-- LOGOUT -->
-
   <div class="sidebar-footer">
 
     <button
@@ -111,21 +109,181 @@
 
     </div>
 
-    <button>
-      + New Appointment
-    </button>
+    <div class="top-actions">
+
+      <input
+        type="text"
+        placeholder="Search..."
+        style="max-width:220px;"
+      >
+
+      <select style="max-width:180px;">
+        <option>All Types</option>
+        <option>Annual Review</option>
+        <option>Follow-Up</option>
+        <option>Enrollment Meeting</option>
+        <option>T65 Consultation</option>
+      </select>
+
+      <button>
+        + New Appointment
+      </button>
+
+    </div>
 
   </div>
 
-<!-- =========================================
-     CALENDAR + METRICS
-========================================= -->
+  <!-- =========================================
+       TOP LAYOUT
+  ========================================= -->
 
-<div class="grid">
+  <div class="grid">
 
-  <!-- MINI CALENDAR -->
+    <!-- DAILY SCHEDULE -->
 
-  <div class="card">
+    <div class="card">
+
+      <div class="card-header">
+
+        <h3 class="card-title">
+          Daily Schedule
+        </h3>
+
+        <div class="client-sub">
+          Friday, May 9
+        </div>
+
+      </div>
+
+      <div class="schedule-timeline">
+
+        <div class="timeline-row">
+
+          <div class="timeline-time">
+            9:00 AM
+          </div>
+
+          <div class="timeline-slot">
+          </div>
+
+        </div>
+
+        <div class="timeline-row">
+
+          <div class="timeline-time">
+            10:00 AM
+          </div>
+
+          <div class="timeline-slot active-slot">
+
+            <div class="slot-title">
+              Annual Review
+            </div>
+
+            <div class="slot-sub">
+              John Smith
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="timeline-row">
+
+          <div class="timeline-time">
+            11:00 AM
+          </div>
+
+          <div class="timeline-slot">
+          </div>
+
+        </div>
+
+        <div class="timeline-row">
+
+          <div class="timeline-time">
+            1:00 PM
+          </div>
+
+          <div class="timeline-slot active-slot">
+
+            <div class="slot-title">
+              Follow-Up Call
+            </div>
+
+            <div class="slot-sub">
+              Mary Johnson
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- WEEKLY OVERVIEW -->
+
+    <div class="card">
+
+      <div class="card-header">
+
+        <h3 class="card-title">
+          Weekly Overview
+        </h3>
+
+      </div>
+
+      <div class="renewal-grid">
+
+        <div class="renewal-card">
+
+          <div class="metric" id="appointmentsToday">
+            0
+          </div>
+
+          <div class="client-sub">
+            Appointments Today
+          </div>
+
+        </div>
+
+        <div class="renewal-card">
+
+          <div class="metric" id="upcomingAppointments">
+            0
+          </div>
+
+          <div class="client-sub">
+            Upcoming Follow-Ups
+          </div>
+
+        </div>
+
+        <div class="renewal-card">
+
+          <div class="metric" id="weeklyReviews">
+            0
+          </div>
+
+          <div class="client-sub">
+            Annual Reviews This Week
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- =========================================
+       MONTHLY CALENDAR
+  ========================================= -->
+
+  <div class="card" style="margin-top:24px;">
 
     <div class="card-header">
 
@@ -212,167 +370,6 @@
     </table>
 
   </div>
-
-  <!-- METRICS -->
-
-  <div class="grid">
-
-    <div class="renewal-card">
-
-      <div class="metric" id="appointmentsToday">
-        0
-      </div>
-
-      <div class="client-sub">
-        Appointments Today
-      </div>
-
-    </div>
-
-    <div class="renewal-card">
-
-      <div class="metric" id="upcomingAppointments">
-        0
-      </div>
-
-      <div class="client-sub">
-        Upcoming Follow-Ups
-      </div>
-
-    </div>
-
-    <div class="renewal-card">
-
-      <div class="metric" id="weeklyReviews">
-        0
-      </div>
-
-      <div class="client-sub">
-        Annual Reviews This Week
-      </div>
-
-    </div>
-
-  </div>
-
-</div>
-
-<!-- =========================================
-     DAILY SCHEDULER
-========================================= -->
-
-<div class="card">
-
-  <div class="card-header">
-
-    <h3 class="card-title">
-      Daily Schedule
-    </h3>
-
-    <div class="client-sub">
-      Friday, May 9
-    </div>
-
-  </div>
-
-  <div class="schedule-timeline">
-
-    <div class="timeline-row">
-
-      <div class="timeline-time">
-        9:00 AM
-      </div>
-
-      <div class="timeline-slot">
-      </div>
-
-    </div>
-
-    <div class="timeline-row">
-
-      <div class="timeline-time">
-        10:00 AM
-      </div>
-
-      <div class="timeline-slot active-slot">
-
-        <div class="slot-title">
-          Annual Review
-        </div>
-
-        <div class="slot-sub">
-          John Smith
-        </div>
-
-      </div>
-
-    </div>
-
-    <div class="timeline-row">
-
-      <div class="timeline-time">
-        11:00 AM
-      </div>
-
-      <div class="timeline-slot">
-      </div>
-
-    </div>
-
-    <div class="timeline-row">
-
-      <div class="timeline-time">
-        1:00 PM
-      </div>
-
-      <div class="timeline-slot active-slot">
-
-        <div class="slot-title">
-          Follow-Up Call
-        </div>
-
-        <div class="slot-sub">
-          Mary Johnson
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-
-</div>
-
-  <!-- FILTERS -->
-
-  <div class="filter-card">
-
-    <div class="filter-row">
-
-      <input
-        type="text"
-        placeholder="Search appointments..."
-      >
-
-      <select>
-        <option>All Types</option>
-        <option>Annual Review</option>
-        <option>Follow-Up</option>
-        <option>Enrollment Meeting</option>
-        <option>T65 Consultation</option>
-      </select>
-
-      <select>
-        <option>This Week</option>
-        <option>Today</option>
-        <option>This Month</option>
-      </select>
-
-    </div>
-
-  </div>
-
-
 
 </div>
 
