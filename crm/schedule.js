@@ -698,46 +698,6 @@ const res = await fetch(
 
   }
 
-  if(data.google_sync_error){
-
-    alert(
-      "Appointment saved, but Google Calendar did not sync: " +
-      data.google_sync_error
-    );
-
-  }else if(data.google_sync_status){
-
-    if(data.google_event_link){
-
-      const openEvent = confirm(
-        "Appointment saved. Google Calendar event was created. Open it?"
-      );
-
-      if(openEvent){
-        window.open(data.google_event_link, "_blank");
-      }
-
-    }else{
-
-      alert(
-        "Appointment saved. Google Calendar sync status: " +
-        data.google_sync_status +
-        "\nCalendar: " +
-        (data.google_calendar_id || "unknown") +
-        "\nEvent ID: " +
-        (data.google_event_id || "none")
-      );
-
-    }
-
-  }else{
-
-    alert(
-      "Appointment saved, but no Google Calendar sync response was returned."
-    );
-
-  }
-
   closeAppointmentModal();
 
   window.editingAppointmentId = null;

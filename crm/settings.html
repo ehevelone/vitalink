@@ -133,6 +133,22 @@
         </div>
       </div>
 
+      <div
+        class="info-row"
+        id="googleCalendarPickerRow"
+        style="display:none;"
+      >
+        <div class="label">
+          Sync Calendar
+        </div>
+
+        <select
+          id="googleCalendarSelect"
+          onchange="saveGoogleCalendarSelection()"
+        >
+        </select>
+      </div>
+
       <div class="top-actions">
 
         <button onclick="connectGoogleCalendar()">

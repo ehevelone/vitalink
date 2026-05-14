@@ -239,6 +239,27 @@ async function getConnection(pool, agentId){
 
 }
 
+async function getGoogleAccessToken(pool, agentId){
+
+  await ensureGoogleCalendarTables(pool);
+
+  const connection =
+    await getConnection(pool, agentId);
+
+  if(!connection){
+    return null;
+  }
+
+  const accessToken =
+    await refreshAccessToken(pool, connection);
+
+  return {
+    connection,
+    accessToken
+  };
+
+}
+
 async function getAppointment(pool, appointmentId){
 
   const result = await pool.query(
@@ -387,6 +408,7 @@ async function deleteGoogleAppointment(pool, appointmentId){
 module.exports = {
   ensureGoogleCalendarTables,
   getRedirectUri,
+  getGoogleAccessToken,
   syncGoogleAppointment,
   deleteGoogleAppointment
 };
