@@ -130,6 +130,13 @@
 
     <div class="top-actions">
 
+      <button
+        class="top-action-btn secondary"
+        onclick="sendClientNotification()"
+>
+        Send Notification
+      </button>
+
       <button class="secondary-btn">
         Export CSV
       </button>
@@ -142,11 +149,15 @@
 
   </div>
 
-  <!-- SEARCH -->
+<!-- SEARCH + WEEK VIEW -->
 
-  <div class="search-card">
+<div class="search-card">
 
-    <div class="search-row">
+  <div class="clients-top-layout">
+
+    <!-- LEFT FILTERS -->
+
+    <div class="clients-filters">
 
       <input
         type="text"
@@ -169,7 +180,66 @@
 
     </div>
 
+    <!-- RIGHT WEEK VIEW -->
+
+    <div class="clients-week-view">
+
+      <div class="mini-week-header">
+
+        <div>Sun</div>
+        <div>Mon</div>
+        <div>Tue</div>
+        <div>Wed</div>
+        <div>Thu</div>
+        <div>Fri</div>
+        <div>Sat</div>
+
+      </div>
+
+      <div class="mini-week-days">
+
+        <div class="mini-day">
+          <div class="mini-date">11</div>
+          <div class="mini-count">2 appts</div>
+        </div>
+
+        <div class="mini-day">
+          <div class="mini-date">12</div>
+          <div class="mini-count">1 appt</div>
+        </div>
+
+        <div class="mini-day active">
+          <div class="mini-date">13</div>
+          <div class="mini-count">4 appts</div>
+        </div>
+
+        <div class="mini-day">
+          <div class="mini-date">14</div>
+          <div class="mini-count">3 appts</div>
+        </div>
+
+        <div class="mini-day">
+          <div class="mini-date">15</div>
+          <div class="mini-count">0</div>
+        </div>
+
+        <div class="mini-day">
+          <div class="mini-date">16</div>
+          <div class="mini-count">1 appt</div>
+        </div>
+
+        <div class="mini-day">
+          <div class="mini-date">17</div>
+          <div class="mini-count">2 appts</div>
+        </div>
+
+      </div>
+
+    </div>
+
   </div>
+
+</div>
 
   <!-- TABLE -->
 

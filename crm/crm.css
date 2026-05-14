@@ -466,6 +466,85 @@ td{
   box-shadow:var(--shadow);
 }
 
+.clients-top-layout{
+  display:flex;
+  gap:24px;
+  align-items:stretch;
+}
+
+.clients-filters{
+  width:25%;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.clients-week-view{
+  width:75%;
+  background:#fff;
+  border:1px solid #e5e7eb;
+  border-radius:14px;
+  padding:16px;
+}
+
+.mini-week-header{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  margin-bottom:12px;
+  font-size:12px;
+  font-weight:700;
+  color:#6b7280;
+  text-align:center;
+}
+
+.mini-week-days{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:10px;
+}
+
+.mini-day{
+  background:#f9fafb;
+  border:1px solid #e5e7eb;
+  border-radius:12px;
+  padding:12px;
+  text-align:center;
+  min-height:85px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.mini-day.active{
+  border:2px solid #7cc6e8;
+  background:#eef8fc;
+}
+
+.mini-date{
+  font-size:20px;
+  font-weight:700;
+  color:#111827;
+}
+
+.mini-count{
+  margin-top:8px;
+  font-size:12px;
+  color:#6b7280;
+}
+
+@media(max-width:1100px){
+
+  .clients-top-layout{
+    flex-direction:column;
+  }
+
+  .clients-filters,
+  .clients-week-view{
+    width:100%;
+  }
+
+}
+
 .filter-card{
   background:#fff;
   border-radius:18px;
@@ -706,6 +785,19 @@ input, select{
 .today-day{
   outline:2px solid #7cc6e8;
   outline-offset:-2px;
+}
+
+.calendar-events{
+  margin-top:4px;
+}
+
+.calendar-event-dot{
+  font-size:10px;
+  line-height:1.2;
+  color:#7cc6e8;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
 .active-slot{
