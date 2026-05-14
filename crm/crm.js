@@ -35,3 +35,34 @@ function formatPhone(phone){
   return `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`;
 
 }
+
+function toggleMobileMenu(){
+
+  const sidebar =
+    document.querySelector(".sidebar");
+
+  if(sidebar){
+    sidebar.classList.toggle("open");
+  }
+
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  if(document.querySelector(".sidebar")){
+
+    document.body.insertAdjacentHTML(
+      "afterbegin",
+      `
+      <button
+        class="mobile-menu-btn"
+        onclick="toggleMobileMenu()"
+      >
+        Menu
+      </button>
+      `
+    );
+
+  }
+
+});

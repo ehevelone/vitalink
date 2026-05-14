@@ -149,6 +149,10 @@ button:hover{
   width:100%;
 }
 
+.mobile-menu-btn{
+  display:none;
+}
+
 .secondary{
   background:#fff;
   border:1px solid var(--border);
@@ -341,19 +345,35 @@ button:hover{
 @media(max-width:900px){
 
   .sidebar{
-    width:100%;
-    height:auto;
-    position:relative;
+    transform:translateX(-100%);
+    transition:.2s;
+    z-index:1000;
+  }
+
+  .sidebar.open{
+    transform:translateX(0);
   }
 
   .main{
     margin-left:0;
+    padding-top:80px;
   }
 
   .topbar{
     flex-direction:column;
     align-items:flex-start;
     gap:18px;
+  }
+
+  .mobile-menu-btn{
+    display:block;
+    position:fixed;
+    top:18px;
+    left:18px;
+    z-index:1001;
+    width:auto;
+    background:#0f172a;
+    color:#fff;
   }
 
 }
