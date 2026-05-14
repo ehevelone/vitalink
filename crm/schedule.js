@@ -10,6 +10,29 @@ let currentDate = new Date();
 
 let selectedDate = new Date();
 
+function formatTime(time){
+
+  if(!time) return "";
+
+  const parts = time.split(":");
+
+  let hour = Number(parts[0]);
+
+  const minutes = parts[1];
+
+  const suffix =
+    hour >= 12 ? "PM" : "AM";
+
+  hour = hour % 12;
+
+  if(hour === 0){
+    hour = 12;
+  }
+
+  return `${hour}:${minutes} ${suffix}`;
+
+}
+
 function toDateKey(value){
 
   if(!value) return "";
@@ -241,7 +264,7 @@ const filtered =
       <div class="timeline-row">
 
         <div class="timeline-time">
-          ${appt.appointment_time || ""}
+          ${formatTime(appt.appointment_time)}
         </div>
 
         <div class="timeline-slot active-slot">
