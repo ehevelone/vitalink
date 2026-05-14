@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Settings - VitaLink CRM</title>
+
+<link rel="stylesheet" href="crm.css">
+
+</head>
+
+<body>
+
+<!-- =========================================
+     SIDEBAR
+========================================= -->
+
+<div class="sidebar">
+
+  <a href="index.html">
+    <img src="../images/vitalink-logo.png" class="logo">
+  </a>
+
+  <div class="nav-section">
+
+    <div class="nav-title">Dashboard</div>
+
+    <a href="index.html">
+      <div class="nav-item">📊 Dashboard</div>
+    </a>
+
+    <a href="clients.html">
+      <div class="nav-item">👥 Clients</div>
+    </a>
+
+    <a href="schedule.html">
+      <div class="nav-item">📅 Schedule</div>
+    </a>
+
+    <a href="tasks.html">
+      <div class="nav-item">⏰ Tasks</div>
+    </a>
+
+  </div>
+
+  <div class="nav-section">
+
+    <div class="nav-title">VitaLink</div>
+
+    <a href="linked-profiles.html">
+      <div class="nav-item">📱 Linked Profiles</div>
+    </a>
+
+    <a href="notifications.html">
+      <div class="nav-item">🔔 Notifications</div>
+    </a>
+
+    <a href="exports.html">
+      <div class="nav-item">📤 Exports</div>
+    </a>
+
+  </div>
+
+  <div class="nav-section">
+
+    <div class="nav-title">Account</div>
+
+    <a href="settings.html">
+      <div class="nav-item active">⚙ Settings</div>
+    </a>
+
+    <a href="billing.html">
+      <div class="nav-item">💳 Billing</div>
+    </a>
+
+  </div>
+
+  <div class="sidebar-footer">
+
+    <button
+      class="logout-btn"
+      onclick="logout()"
+    >
+      Logout
+    </button>
+
+  </div>
+
+</div>
+
+<!-- =========================================
+     MAIN
+========================================= -->
+
+<div class="main">
+
+  <div class="topbar">
+
+    <div>
+      <h1>Settings</h1>
+      <div class="muted">
+        Manage CRM account connections.
+      </div>
+    </div>
+
+  </div>
+
+  <div class="grid">
+
+    <div class="card">
+
+      <div class="card-header">
+
+        <div>
+          <h3 class="card-title">
+            Google Calendar
+          </h3>
+
+          <div class="client-sub" id="googleCalendarStatus">
+            Checking connection...
+          </div>
+        </div>
+
+      </div>
+
+      <div class="info-row">
+        <div class="label">
+          Sync Direction
+        </div>
+        <div class="value">
+          VitaLink CRM appointments to Google Calendar
+        </div>
+      </div>
+
+      <div class="top-actions">
+
+        <button onclick="connectGoogleCalendar()">
+          Connect Google Calendar
+        </button>
+
+        <button
+          class="secondary"
+          onclick="disconnectGoogleCalendar()"
+        >
+          Disconnect
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="crm.js"></script>
+<script src="settings.js"></script>
+
+</body>
+</html>

@@ -1,4 +1,5 @@
 const { Pool } = require("pg");
+const { deleteGoogleAppointment } = require("./google-calendar-sync");
 
 const pool = new Pool({
   connectionString: process.env.SUPABASE_URL,
@@ -27,6 +28,22 @@ exports.handler = async (event) => {
 
     const { id } = body;
 
+    let googleSyncError = null;
+
+    try{
+
+      await deleteGoogleAppointment(
+        pool,
+        id
+      );
+
+    }catch(syncErr){
+
+      console.error("Google Calendar delete error:", syncErr);
+      googleSyncError = syncErr.message;
+
+    }
+
     await pool.query(
 
       `
@@ -41,7 +58,8 @@ exports.handler = async (event) => {
     return{
       statusCode:200,
       body:JSON.stringify({
-        success:true
+        success:true,
+        google_sync_error:googleSyncError
       })
     };
 

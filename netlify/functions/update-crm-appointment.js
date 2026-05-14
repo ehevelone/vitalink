@@ -1,4 +1,5 @@
 const { Pool } = require("pg");
+const { syncGoogleAppointment } = require("./google-calendar-sync");
 
 const pool = new Pool({
   connectionString: process.env.SUPABASE_URL,
@@ -66,11 +67,32 @@ exports.handler = async (event) => {
 
     );
 
+    let googleSyncError = null;
+
+    if(result.rows[0]){
+
+      try{
+
+        await syncGoogleAppointment(
+          pool,
+          result.rows[0].id
+        );
+
+      }catch(syncErr){
+
+        console.error("Google Calendar sync error:", syncErr);
+        googleSyncError = syncErr.message;
+
+      }
+
+    }
+
     return{
       statusCode:200,
       body:JSON.stringify({
         success:true,
-        appointment:result.rows[0]
+        appointment:result.rows[0],
+        google_sync_error:googleSyncError
       })
     };
 
