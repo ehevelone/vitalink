@@ -365,11 +365,6 @@ button:hover{
   margin-bottom:18px;
 }
 
-.edit-btn{
-  padding:8px 14px;
-  font-size:.85rem;
-}
-
 .sidebar-footer{
   position:absolute;
   bottom:24px;
@@ -463,6 +458,15 @@ td{
 }
 
 .search-card{
+  background:#fff;
+  border-radius:18px;
+  border:1px solid var(--border);
+  padding:18px;
+  margin-bottom:24px;
+  box-shadow:var(--shadow);
+}
+
+.filter-card{
   background:#fff;
   border-radius:18px;
   border:1px solid var(--border);
@@ -583,7 +587,7 @@ input, select{
 }
 
 
-tbody tr{
+.tasks-table tbody tr{
   box-shadow:var(--shadow);
   border-radius:12px;
 }
@@ -603,13 +607,99 @@ tbody tr{
   color:#166534;
 }
 
-.filter-card{
+/* =========================================
+   CALENDAR
+========================================= */
+
+.calendar-table{
+  width:100%;
+  text-align:center;
+}
+
+.calendar-table th{
+  padding:10px;
+  font-size:.8rem;
+  color:var(--muted);
+}
+
+.calendar-day{
+  padding:12px;
+  cursor:pointer;
+  border-radius:10px;
+  transition:.2s;
+}
+
+.calendar-day:hover{
+  background:#f1f5f9;
+}
+
+.selected-day{
+  background:var(--accent);
+  color:#000;
+  font-weight:700;
+}
+
+.has-event{
+  position:relative;
+  font-weight:600;
+}
+
+.has-event::after{
+  content:"";
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:#22c55e;
+  position:absolute;
+  bottom:6px;
+  left:50%;
+  transform:translateX(-50%);
+}
+
+/* =========================================
+   TIMELINE
+========================================= */
+
+.schedule-timeline{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.timeline-row{
+  display:grid;
+  grid-template-columns:100px 1fr;
+  gap:16px;
+  align-items:center;
+}
+
+.timeline-time{
+  font-size:.9rem;
+  color:var(--muted);
+  font-weight:600;
+}
+
+.timeline-slot{
+  min-height:60px;
+  border:1px dashed #d1d5db;
+  border-radius:14px;
+  padding:14px;
   background:#fff;
-  border-radius:18px;
-  border:1px solid var(--border);
-  padding:18px;
-  margin-bottom:24px;
-  box-shadow:var(--shadow);
+}
+
+.active-slot{
+  background:#e0f2fe;
+  border:1px solid #7cc6e8;
+}
+
+.slot-title{
+  font-weight:700;
+  margin-bottom:4px;
+}
+
+.slot-sub{
+  font-size:.9rem;
+  color:#475569;
 }
 
 
