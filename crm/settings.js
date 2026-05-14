@@ -154,6 +154,30 @@ async function loadGoogleCalendars(){
   row.style.display =
     data.calendars.length ? "block" : "none";
 
+  updateGoogleCalendarSelectedLabel();
+
+}
+
+function updateGoogleCalendarSelectedLabel(){
+
+  const select =
+    document.getElementById(
+      "googleCalendarSelect"
+    );
+
+  const label =
+    document.getElementById(
+      "googleCalendarSelectedLabel"
+    );
+
+  if(!select.value){
+    label.innerText = "";
+    return;
+  }
+
+  label.innerText =
+    `Appointments will sync to: ${select.options[select.selectedIndex].text}`;
+
 }
 
 async function saveGoogleCalendarSelection(){
@@ -179,8 +203,11 @@ async function saveGoogleCalendarSelection(){
   if(!data.success){
 
     alert(data.error || "Unable to save calendar selection.");
+    return;
 
   }
+
+  updateGoogleCalendarSelectedLabel();
 
 }
 

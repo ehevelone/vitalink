@@ -41,12 +41,13 @@ exports.handler = async (event) => {
 
     await ensureGoogleCalendarTables(pool);
 
-    await pool.query(
+    const result = await pool.query(
       `
       UPDATE crm_google_calendar_connections
       SET calendar_id = $1,
           updated_at = NOW()
       WHERE agent_id = $2
+      RETURNING calendar_id
       `,
       [
         body.calendar_id,
@@ -54,10 +55,23 @@ exports.handler = async (event) => {
       ]
     );
 
+    if(!result.rows.length){
+
+      return {
+        statusCode:404,
+        body:JSON.stringify({
+          success:false,
+          error:"Google Calendar is not connected for this agent."
+        })
+      };
+
+    }
+
     return {
       statusCode:200,
       body:JSON.stringify({
-        success:true
+        success:true,
+        selected_calendar_id:result.rows[0].calendar_id
       })
     };
 
