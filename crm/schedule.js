@@ -33,17 +33,56 @@ function formatTime(time){
 
 }
 
+function getAppointmentClass(type){
+
+  switch(type){
+
+    case "Annual Review":
+      return "appointment-annual";
+
+    case "Follow-Up":
+      return "appointment-followup";
+
+    case "Enrollment Meeting":
+      return "appointment-enrollment";
+
+    case "T65 Consultation":
+      return "appointment-t65";
+
+    default:
+      return "";
+
+  }
+
+}
+
+function truncateText(text, maxLength){
+
+  if(!text) return "";
+
+  if(text.length <= maxLength){
+    return text;
+  }
+
+  return text.substring(0, maxLength) + "...";
+
+}
+
 function toDateKey(value){
 
   if(!value) return "";
 
-  const date = new Date(value);
+  if(value instanceof Date){
 
-  return date.getFullYear() +
-    "-" +
-    String(date.getMonth() + 1).padStart(2,"0") +
-    "-" +
-    String(date.getDate()).padStart(2,"0");
+    return value.getFullYear() +
+      "-" +
+      String(value.getMonth() + 1).padStart(2,"0") +
+      "-" +
+      String(value.getDate()).padStart(2,"0");
+
+  }
+
+  return String(value).split("T")[0];
 
 }
 
@@ -87,6 +126,8 @@ async function loadAppointments(){
 
   updateMetrics();
 
+  renderUpcomingAppointments();
+
 }
 
 /* =========================================
@@ -128,7 +169,7 @@ function renderCalendar(){
 
   let date = 1;
 
-  for(let i = 0; i < 6; i++){
+  for(let i = 0; i < 6 && date <= daysInMonth; i++){
 
     let row = "<tr>";
 
@@ -147,28 +188,62 @@ function renderCalendar(){
         const dateString =
           `${year}-${String(month + 1).padStart(2,"0")}-${String(date).padStart(2,"0")}`;
 
-const hasEvent =
-  appointments.some(a =>
-    toDateKey(a.appointment_date) === dateString
-  );
+        const dayAppointments =
+          appointments.filter(a =>
+            toDateKey(a.appointment_date) === dateString
+          );
 
-const isSelected =
-  selectedDateKey() === dateString;
+        const hasEvent =
+          dayAppointments.length > 0;
+
+        const isSelected =
+          selectedDateKey() === dateString;
+
+        const isToday =
+          toDateKey(new Date()) === dateString;
 
         row += `
 
-          <td
-            class="
-              calendar-day
-              ${hasEvent ? "has-event" : ""}
-              ${isSelected ? "selected-day" : ""}
-            "
-            onclick="selectDate('${dateString}')"
-          >
-            ${date}
-          </td>
+<td
+  class="
+    calendar-day
+    ${hasEvent ? "has-event" : ""}
+    ${isSelected ? "selected-day" : ""}
+    ${isToday ? "today-day" : ""}
+  "
+  onclick="selectDate('${dateString}')"
+>
 
-        `;
+  <div>
+    ${date}
+  </div>
+
+  ${
+    hasEvent
+      ? `
+        <div class="calendar-events">
+
+          ${dayAppointments
+            .slice(0,3)
+            .map(appt => `
+
+              <div class="calendar-event-dot">
+
+                • ${formatTime(appt.appointment_time)}
+
+              </div>
+
+            `)
+            .join("")}
+
+        </div>
+      `
+      : ""
+  }
+
+</td>
+
+`;
 
         date++;
 
@@ -190,12 +265,80 @@ const isSelected =
 
 function selectDate(dateString){
 
+    
+
   const parts = dateString.split("-");
 
   selectedDate = new Date(
     Number(parts[0]),
     Number(parts[1]) - 1,
     Number(parts[2])
+  );
+
+  renderCalendar();
+
+  renderDailySchedule();
+
+}
+
+/* =========================================
+   MONTH NAVIGATION
+========================================= */
+
+function previousMonth(){
+
+  currentDate = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth() - 1,
+    1
+  );
+
+  selectedDate = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth(),
+    1
+  );
+
+  renderCalendar();
+
+  renderDailySchedule();
+
+}
+
+function nextMonth(){
+
+  currentDate = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth() + 1,
+    1
+  );
+
+  selectedDate = new Date(
+  currentDate.getFullYear(),
+  currentDate.getMonth(),
+  1
+);
+
+  renderCalendar();
+  renderDailySchedule();
+
+
+}
+
+function goToToday(){
+
+  const now = new Date();
+
+  currentDate = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    1
+  );
+
+  selectedDate = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate()
   );
 
   renderCalendar();
@@ -232,9 +375,16 @@ const selected =
   );
 
 const filtered =
-  appointments.filter(a =>
-    toDateKey(a.appointment_date) === selected
-  );
+  appointments
+    .filter(a =>
+      toDateKey(a.appointment_date) === selected
+    )
+    .sort((a,b) =>
+      (a.appointment_time || "")
+        .localeCompare(
+          b.appointment_time || ""
+        )
+    );
 
   container.innerHTML = "";
 
@@ -267,7 +417,15 @@ const filtered =
           ${formatTime(appt.appointment_time)}
         </div>
 
-        <div class="timeline-slot active-slot">
+        <div
+  class="
+  timeline-slot
+  active-slot
+  ${getAppointmentClass(appt.appointment_type)}
+"
+  onclick="editAppointment('${appt.id}')"
+  style="cursor:pointer;"
+>
 
           <div class="slot-title">
             ${appt.appointment_type || ""}
@@ -277,11 +435,15 @@ const filtered =
             ${clientName}
           </div>
 
+          <div class="slot-sub">
+           📍 ${appt.location || "No location"}
+          </div>
+
           <div
             class="slot-sub"
             style="margin-top:6px;"
           >
-            ${appt.notes || ""}
+            ${truncateText(appt.notes, 120)}
           </div>
 
           <div
@@ -293,14 +455,20 @@ const filtered =
 >
 
   <button
-    onclick="editAppointment('${appt.id}')"
+    onclick="
+  event.stopPropagation();
+  editAppointment('${appt.id}');
+"
   >
     Edit
   </button>
 
   <button
     class="danger-btn"
-    onclick="deleteAppointment('${appt.id}')"
+    onclick="
+  event.stopPropagation();
+  deleteAppointment('${appt.id}');
+"
   >
     Delete
   </button>
@@ -372,11 +540,31 @@ function openAppointmentModal(){
 
     document.getElementById(
       "appointmentDate"
-    ).value = "";
+    ).value =
+      selectedDateKey();
+
+    const now = new Date();
+
+    const roundedMinutes =
+      Math.round(now.getMinutes() / 15) * 15;
+
+    if(roundedMinutes === 60){
+
+      now.setHours(now.getHours() + 1);
+      now.setMinutes(0);
+
+    }else{
+
+      now.setMinutes(roundedMinutes);
+
+    }
 
     document.getElementById(
       "appointmentTime"
-    ).value = "";
+    ).value =
+      String(now.getHours()).padStart(2,"0") +
+      ":" +
+      String(now.getMinutes()).padStart(2,"0");
 
     document.getElementById(
       "appointmentLocation"
@@ -445,6 +633,31 @@ async function saveAppointment(){
 
   };
 
+  const conflictingAppointment =
+  appointments.find(a =>
+
+    toDateKey(a.appointment_date) ===
+      appointment.appointment_date &&
+
+    a.appointment_time ===
+      appointment.appointment_time &&
+
+    a.id !== window.editingAppointmentId
+
+  );
+
+if(conflictingAppointment){
+
+  const confirmed = confirm(
+    "Another appointment already exists at this time. Continue anyway?"
+  );
+
+  if(!confirmed){
+    return;
+  }
+
+}
+
 const endpoint =
   window.editingAppointmentId
     ? "/.netlify/functions/update-crm-appointment"
@@ -486,9 +699,9 @@ const res = await fetch(
 
   window.editingAppointmentId = null;
 
-  loadAppointments();
+loadAppointments();
 
-  }
+}
 
   /* =========================================
    LOAD CLIENTS
@@ -629,6 +842,98 @@ function editAppointment(id){
     id;
 
   openAppointmentModal();
+
+}
+
+/* =========================================
+   UPCOMING APPOINTMENTS
+========================================= */
+
+function renderUpcomingAppointments(){
+
+  const container =
+    document.getElementById(
+      "upcomingAppointmentsList"
+    );
+
+  if(!container){
+    return;
+  }
+
+  const upcoming =
+    [...appointments]
+
+      .sort((a,b) => {
+
+        const aDate =
+          new Date(
+            `${toDateKey(a.appointment_date)}T${a.appointment_time || "00:00"}`
+          );
+
+        const bDate =
+          new Date(
+            `${toDateKey(b.appointment_date)}T${b.appointment_time || "00:00"}`
+          );
+
+        return aDate - bDate;
+
+      })
+
+      .slice(0,10);
+
+  container.innerHTML = "";
+
+  if(upcoming.length === 0){
+
+    container.innerHTML = `
+      <div class="client-sub">
+        No upcoming appointments.
+      </div>
+    `;
+
+    return;
+
+  }
+
+  upcoming.forEach(appt => {
+
+    container.innerHTML += `
+
+      <div class="timeline-row">
+
+        <div class="timeline-time">
+          ${formatTime(appt.appointment_time)}
+        </div>
+
+        <div
+          class="
+            timeline-slot
+            ${getAppointmentClass(appt.appointment_type)}
+          "
+        >
+
+          <div class="slot-title">
+            ${appt.appointment_type || ""}
+          </div>
+
+          <div class="slot-sub">
+            ${appt.first_name || ""}
+            ${appt.last_name || ""}
+          </div>
+
+          <div class="slot-sub">
+
+            ${toDateKey(appt.appointment_date)}
+
+          </div>
+
+        </div>
+
+      </div>
+
+    `;
+
+  });
 
 }
 

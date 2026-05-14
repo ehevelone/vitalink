@@ -687,6 +687,27 @@ input, select{
   background:#fff;
 }
 
+.appointment-annual{
+  border-left:4px solid #3b82f6;
+}
+
+.appointment-followup{
+  border-left:4px solid #f59e0b;
+}
+
+.appointment-enrollment{
+  border-left:4px solid #10b981;
+}
+
+.appointment-t65{
+  border-left:4px solid #8b5cf6;
+}
+
+.today-day{
+  outline:2px solid #7cc6e8;
+  outline-offset:-2px;
+}
+
 .active-slot{
   background:#e0f2fe;
   border:1px solid #7cc6e8;

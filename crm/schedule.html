@@ -143,98 +143,142 @@
 
 <div class="grid">
 
-  <!-- DAILY SCHEDULE -->
+   <!-- =========================================
+     DAILY SCHEDULE 
+========================================= -->
 
-  <div class="card">
+ <div class="card">
 
-    <div class="card-header">
+  <div class="card-header">
 
-      <div>
+    <div>
 
-        <h3 class="card-title">
-          Daily Schedule
-        </h3>
+      <h3 class="card-title">
+        Daily Schedule
+      </h3>
 
-        <div
-          class="client-sub"
-          id="selectedDateLabel"
-        >
-          Selected Date
-        </div>
-
+      <div
+        class="client-sub"
+        id="selectedDateLabel"
+      >
+        Selected Date
       </div>
 
     </div>
 
-    <div
-      class="schedule-timeline"
-      id="dailySchedule"
-    >
+    <div class="card-actions">
+
+      <button
+        class="secondary"
+        onclick="previousMonth()"
+      >
+        ←
+      </button>
+
+      <button
+        class="secondary"
+        onclick="goToToday()"
+      >
+        Today
+      </button>
+
+      <button
+        class="secondary"
+        onclick="nextMonth()"
+      >
+        →
+      </button>
+
     </div>
 
   </div>
 
-  <!-- WEEKLY OVERVIEW -->
+  <div
+    class="schedule-timeline"
+    id="dailySchedule"
+  >
+  </div>
 
-  <div class="card">
+</div>
 
-    <div class="card-header">
+<!-- WEEKLY OVERVIEW -->
 
-      <h3 class="card-title">
-        Weekly Overview
-      </h3>
+<div class="card">
 
-    </div>
+  <div class="card-header">
 
-    <div class="renewal-grid">
+    <h3 class="card-title">
+      Weekly Overview
+    </h3>
 
-      <div class="renewal-card">
+  </div>
 
-        <div
-          class="metric"
-          id="appointmentsToday"
-        >
-          0
-        </div>
+  <div class="renewal-grid">
 
-        <div class="client-sub">
-          Appointments Today
-        </div>
+    <div class="renewal-card">
 
+      <div
+        class="metric"
+        id="appointmentsToday"
+      >
+        0
       </div>
 
-      <div class="renewal-card">
-
-        <div
-          class="metric"
-          id="upcomingAppointments"
-        >
-          0
-        </div>
-
-        <div class="client-sub">
-          Upcoming Follow-Ups
-        </div>
-
-      </div>
-
-      <div class="renewal-card">
-
-        <div
-          class="metric"
-          id="weeklyReviews"
-        >
-          0
-        </div>
-
-        <div class="client-sub">
-          Annual Reviews This Week
-        </div>
-
+      <div class="client-sub">
+        Appointments Today
       </div>
 
     </div>
 
+    <div class="renewal-card">
+
+      <div
+        class="metric"
+        id="upcomingAppointments"
+      >
+        0
+      </div>
+
+      <div class="client-sub">
+        Upcoming Appointments
+      </div>
+
+    </div>
+
+    <div class="renewal-card">
+
+      <div
+        class="metric"
+        id="weeklyReviews"
+      >
+        0
+      </div>
+
+      <div class="client-sub">
+        Annual Reviews This Week
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+</div>
+
+<!-- UPCOMING APPOINTMENTS -->
+
+<div class="card">
+
+  <div class="card-header">
+
+    <h3 class="card-title">
+      Upcoming Appointments
+    </h3>
+
+  </div>
+
+  <div id="upcomingAppointmentsList">
   </div>
 
 </div>
