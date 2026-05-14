@@ -707,10 +707,24 @@ const res = await fetch(
 
   }else if(data.google_sync_status){
 
-    alert(
-      "Appointment saved. Google Calendar sync status: " +
-      data.google_sync_status
-    );
+    if(data.google_event_link){
+
+      const openEvent = confirm(
+        "Appointment saved. Google Calendar event was created. Open it?"
+      );
+
+      if(openEvent){
+        window.open(data.google_event_link, "_blank");
+      }
+
+    }else{
+
+      alert(
+        "Appointment saved. Google Calendar sync status: " +
+        data.google_sync_status
+      );
+
+    }
 
   }else{
 

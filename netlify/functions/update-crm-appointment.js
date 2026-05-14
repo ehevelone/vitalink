@@ -69,15 +69,22 @@ exports.handler = async (event) => {
 
     let googleSyncError = null;
     let googleSyncStatus = "not_attempted";
+    let googleEventLink = null;
 
     if(result.rows[0]){
 
       try{
 
-        googleSyncStatus = await syncGoogleAppointment(
+        const googleSyncResult = await syncGoogleAppointment(
           pool,
           result.rows[0].id
         );
+
+        googleSyncStatus =
+          googleSyncResult?.status || googleSyncResult;
+
+        googleEventLink =
+          googleSyncResult?.event_link || null;
 
       }catch(syncErr){
 
@@ -94,6 +101,7 @@ exports.handler = async (event) => {
         success:true,
         appointment:result.rows[0],
         google_sync_status:googleSyncStatus,
+        google_event_link:googleEventLink,
         google_sync_error:googleSyncError
       })
     };

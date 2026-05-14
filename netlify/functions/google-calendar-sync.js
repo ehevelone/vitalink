@@ -268,14 +268,18 @@ async function syncGoogleAppointment(pool, appointmentId){
     await getAppointment(pool, appointmentId);
 
   if(!appointment){
-    return "appointment_not_found";
+    return {
+      status:"appointment_not_found"
+    };
   }
 
   const connection =
     await getConnection(pool, appointment.agent_id);
 
   if(!connection){
-    return "not_connected";
+    return {
+      status:"not_connected"
+    };
   }
 
   const accessToken =
@@ -328,7 +332,11 @@ async function syncGoogleAppointment(pool, appointmentId){
 
   }
 
-  return hasGoogleEvent ? "updated" : "created";
+  return {
+    status:hasGoogleEvent ? "updated" : "created",
+    event_id:data.id || appointment.google_event_id || null,
+    event_link:data.htmlLink || null
+  };
 
 }
 
