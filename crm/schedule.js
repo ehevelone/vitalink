@@ -37,6 +37,9 @@ function getAppointmentClass(type){
 
   switch(type){
 
+    case "New Appointment":
+      return "appointment-new";
+
     case "Annual Review":
       return "appointment-annual";
 

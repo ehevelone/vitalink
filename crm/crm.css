@@ -778,6 +778,10 @@ input, select{
   border-left:4px solid #3b82f6;
 }
 
+.appointment-new{
+  border-left:4px solid #7cc6e8;
+}
+
 .appointment-followup{
   border-left:4px solid #f59e0b;
 }
