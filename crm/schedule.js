@@ -360,6 +360,34 @@ const today =
 
 function openAppointmentModal(){
 
+  if(!window.editingAppointmentId){
+
+    document.getElementById(
+      "appointmentClientId"
+    ).value = "";
+
+    document.getElementById(
+      "appointmentType"
+    ).value = "";
+
+    document.getElementById(
+      "appointmentDate"
+    ).value = "";
+
+    document.getElementById(
+      "appointmentTime"
+    ).value = "";
+
+    document.getElementById(
+      "appointmentLocation"
+    ).value = "";
+
+    document.getElementById(
+      "appointmentNotes"
+    ).value = "";
+
+  }
+
   document.getElementById(
     "appointmentModal"
   ).style.display = "flex";
@@ -417,9 +445,21 @@ async function saveAppointment(){
 
   };
 
-  const res = await fetch(
+const endpoint =
+  window.editingAppointmentId
+    ? "/.netlify/functions/update-crm-appointment"
+    : "/.netlify/functions/create-crm-appointment";
 
-    "/.netlify/functions/create-crm-appointment",
+if(window.editingAppointmentId){
+
+  appointment.id =
+    window.editingAppointmentId;
+
+}
+
+const res = await fetch(
+
+  endpoint,
 
     {
       method:"POST",
@@ -443,6 +483,8 @@ async function saveAppointment(){
   }
 
   closeAppointmentModal();
+
+  window.editingAppointmentId = null;
 
   loadAppointments();
 
@@ -546,9 +588,47 @@ async function deleteAppointment(id){
 
 function editAppointment(id){
 
-  alert(
-    "Edit appointment coming next."
-  );
+  const appt =
+    appointments.find(a => a.id === id);
+
+  if(!appt){
+    return;
+  }
+
+  document.getElementById(
+    "appointmentClientId"
+  ).value =
+    appt.client_id || "";
+
+  document.getElementById(
+    "appointmentType"
+  ).value =
+    appt.appointment_type || "";
+
+  document.getElementById(
+    "appointmentDate"
+  ).value =
+    toDateKey(appt.appointment_date);
+
+  document.getElementById(
+    "appointmentTime"
+  ).value =
+    appt.appointment_time || "";
+
+  document.getElementById(
+    "appointmentLocation"
+  ).value =
+    appt.location || "";
+
+  document.getElementById(
+    "appointmentNotes"
+  ).value =
+    appt.notes || "";
+
+  window.editingAppointmentId =
+    id;
+
+  openAppointmentModal();
 
 }
 
