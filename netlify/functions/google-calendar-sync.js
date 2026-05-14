@@ -333,6 +333,51 @@ async function syncGoogleAppointment(pool, appointmentId){
 
   const data = await res.json();
 
+  if(hasGoogleEvent && res.status === 404){
+
+    const createRes = await fetch(
+      `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events`,
+      {
+        method:"POST",
+        headers:{
+          "Authorization":`Bearer ${accessToken}`,
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify(event)
+      }
+    );
+
+    const createData = await createRes.json();
+
+    if(!createRes.ok){
+      throw new Error(createData.error?.message || "Google Calendar sync failed");
+    }
+
+    if(createData.id){
+
+      await pool.query(
+        `
+        UPDATE crm_appointments
+        SET google_event_id = $1
+        WHERE id = $2
+        `,
+        [
+          createData.id,
+          appointment.id
+        ]
+      );
+
+    }
+
+    return {
+      status:"created",
+      event_id:createData.id || null,
+      calendar_id:connection.calendar_id || "primary",
+      event_link:createData.htmlLink || null
+    };
+
+  }
+
   if(!res.ok){
     throw new Error(data.error?.message || "Google Calendar sync failed");
   }

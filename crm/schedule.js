@@ -913,6 +913,8 @@ function renderUpcomingAppointments(){
             timeline-slot
             ${getAppointmentClass(appt.appointment_type)}
           "
+          onclick="editAppointment('${appt.id}')"
+          style="cursor:pointer;"
         >
 
           <div class="slot-title">
@@ -927,6 +929,35 @@ function renderUpcomingAppointments(){
           <div class="slot-sub">
 
             ${toDateKey(appt.appointment_date)}
+
+          </div>
+
+          <div
+            style="
+              margin-top:10px;
+              display:flex;
+              gap:8px;
+            "
+          >
+
+            <button
+              onclick="
+                event.stopPropagation();
+                editAppointment('${appt.id}');
+              "
+            >
+              Edit
+            </button>
+
+            <button
+              class="danger-btn"
+              onclick="
+                event.stopPropagation();
+                deleteAppointment('${appt.id}');
+              "
+            >
+              Delete
+            </button>
 
           </div>
 
