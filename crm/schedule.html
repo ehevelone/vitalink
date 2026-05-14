@@ -6,259 +6,8 @@
 
 <title>Renewals - VitaLink CRM</title>
 
-<style>
+<link rel="stylesheet" href="crm.css">
 
-:root{
-  --bg:#f4f5f7;
-  --card:#ffffff;
-  --border:#e5e7eb;
-  --text:#111827;
-  --muted:#6b7280;
-  --accent:#7cc6e8;
-  --accent-dark:#58b6df;
-  --shadow:0 4px 18px rgba(0,0,0,0.08);
-}
-
-*{
-  box-sizing:border-box;
-}
-
-body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  background:var(--bg);
-  color:var(--text);
-}
-
-a{
-  text-decoration:none;
-  color:inherit;
-}
-
-/* =========================================
-   SIDEBAR
-========================================= */
-
-.sidebar{
-  position:fixed;
-  top:0;
-  left:0;
-  width:250px;
-  height:100vh;
-  background:#0f172a;
-  color:#fff;
-  padding:24px 18px;
-  overflow-y:auto;
-}
-
-.logo{
-  width:100%;
-  max-width:180px;
-  display:block;
-  margin:0 auto 35px auto;
-}
-
-.nav-section{
-  margin-bottom:30px;
-}
-
-.nav-title{
-  font-size:.78rem;
-  color:#94a3b8;
-  text-transform:uppercase;
-  letter-spacing:1px;
-  margin-bottom:12px;
-}
-
-.nav-item{
-  padding:12px 14px;
-  border-radius:10px;
-  margin-bottom:8px;
-  cursor:pointer;
-  transition:.2s;
-}
-
-.nav-item:hover{
-  background:rgba(124,198,232,0.12);
-}
-
-.nav-item.active{
-  background:rgba(124,198,232,0.18);
-  color:var(--accent);
-  font-weight:600;
-}
-
-/* =========================================
-   MAIN
-========================================= */
-
-.main{
-  margin-left:250px;
-  padding:28px;
-}
-
-.topbar{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:28px;
-}
-
-.topbar h1{
-  margin:0;
-  font-size:2rem;
-}
-
-button{
-  border:none;
-  background:var(--accent);
-  color:#000;
-  padding:11px 18px;
-  border-radius:10px;
-  cursor:pointer;
-  font-weight:600;
-  transition:.2s;
-}
-
-button:hover{
-  opacity:.9;
-}
-
-/* =========================================
-   FILTERS
-========================================= */
-
-.filter-card{
-  background:#fff;
-  border-radius:18px;
-  border:1px solid var(--border);
-  padding:18px;
-  margin-bottom:24px;
-  box-shadow:var(--shadow);
-}
-
-.filter-row{
-  display:flex;
-  gap:14px;
-  flex-wrap:wrap;
-}
-
-input, select{
-  padding:12px 14px;
-  border-radius:10px;
-  border:1px solid #d1d5db;
-  font-size:.95rem;
-  flex:1;
-  min-width:180px;
-}
-
-/* =========================================
-   RENEWAL CARDS
-========================================= */
-
-.renewal-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(340px,1fr));
-  gap:20px;
-}
-
-.renewal-card{
-  background:#fff;
-  border:1px solid var(--border);
-  border-radius:18px;
-  padding:22px;
-  box-shadow:var(--shadow);
-}
-
-.card-top{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  margin-bottom:18px;
-}
-
-.client-name{
-  font-size:1.2rem;
-  font-weight:700;
-}
-
-.client-sub{
-  color:var(--muted);
-  margin-top:4px;
-  font-size:.92rem;
-}
-
-.badge{
-  display:inline-block;
-  padding:6px 12px;
-  border-radius:999px;
-  font-size:.8rem;
-  font-weight:600;
-}
-
-.upcoming{
-  background:#fef3c7;
-  color:#92400e;
-}
-
-.ready{
-  background:#dcfce7;
-  color:#166534;
-}
-
-.info-row{
-  margin-bottom:14px;
-}
-
-.label{
-  font-size:.8rem;
-  color:var(--muted);
-  text-transform:uppercase;
-  letter-spacing:.5px;
-  margin-bottom:4px;
-}
-
-.value{
-  font-weight:500;
-}
-
-.card-actions{
-  display:flex;
-  gap:12px;
-  margin-top:20px;
-}
-
-.secondary-btn{
-  background:#fff;
-  border:1px solid var(--border);
-  color:#111827;
-}
-
-/* =========================================
-   RESPONSIVE
-========================================= */
-
-@media(max-width:900px){
-
-  .sidebar{
-    width:100%;
-    height:auto;
-    position:relative;
-  }
-
-  .main{
-    margin-left:0;
-  }
-
-  .topbar{
-    flex-direction:column;
-    align-items:flex-start;
-    gap:16px;
-  }
-
-}
-
-</style>
 </head>
 
 <body>
@@ -329,27 +78,11 @@ input, select{
 
   <!-- LOGOUT -->
 
-  <div
-    style="
-      position:absolute;
-      bottom:24px;
-      left:18px;
-      right:18px;
-    "
-  >
+  <div class="sidebar-footer">
 
     <button
+      class="logout-btn"
       onclick="logout()"
-      style="
-        width:100%;
-        background:#ef4444;
-        color:#fff;
-        border:none;
-        padding:12px;
-        border-radius:10px;
-        font-weight:700;
-        cursor:pointer;
-      "
     >
       Logout
     </button>
@@ -369,11 +102,13 @@ input, select{
   <div class="topbar">
 
     <div>
+
       <h1>Schedule & Calendar</h1>
 
       <div style="color:#6b7280;">
         Manage appointments, follow-ups, annual reviews, and client reminders.
       </div>
+
     </div>
 
     <button>
@@ -388,8 +123,8 @@ input, select{
 
     <div class="renewal-card">
 
-      <div class="metric">
-        4
+      <div class="metric" id="appointmentsToday">
+        0
       </div>
 
       <div class="client-sub">
@@ -400,8 +135,8 @@ input, select{
 
     <div class="renewal-card">
 
-      <div class="metric">
-        11
+      <div class="metric" id="upcomingAppointments">
+        0
       </div>
 
       <div class="client-sub">
@@ -412,8 +147,8 @@ input, select{
 
     <div class="renewal-card">
 
-      <div class="metric">
-        3
+      <div class="metric" id="weeklyReviews">
+        0
       </div>
 
       <div class="client-sub">
@@ -455,176 +190,16 @@ input, select{
 
   <!-- SCHEDULE -->
 
-  <div class="renewal-grid">
-
-    <!-- CARD -->
-
-    <div class="renewal-card">
-
-      <div class="card-top">
-
-        <div>
-          <div class="client-name">
-            John Smith
-          </div>
-
-          <div class="client-sub">
-            Annual Review • Omaha, NE
-          </div>
-        </div>
-
-        <span class="badge ready">
-          Today
-        </span>
-
-      </div>
-
-      <div class="info-row">
-        <div class="label">Time</div>
-        <div class="value">10:00 AM</div>
-      </div>
-
-      <div class="info-row">
-        <div class="label">Meeting Type</div>
-        <div class="value">Policy Review</div>
-      </div>
-
-      <div class="info-row">
-        <div class="label">Notes</div>
-        <div class="value">Review PDP changes and drug costs</div>
-      </div>
-
-      <div class="card-actions">
-
-        <button onclick="window.location='client-view.html'">
-          View Client
-        </button>
-
-        <button class="secondary-btn">
-          Complete
-        </button>
-
-      </div>
-
-    </div>
-
-    <!-- CARD -->
-
-    <div class="renewal-card">
-
-      <div class="card-top">
-
-        <div>
-          <div class="client-name">
-            Mary Johnson
-          </div>
-
-          <div class="client-sub">
-            Follow-Up Call • Council Bluffs, IA
-          </div>
-        </div>
-
-        <span class="badge upcoming">
-          Tomorrow
-        </span>
-
-      </div>
-
-      <div class="info-row">
-        <div class="label">Time</div>
-        <div class="value">1:30 PM</div>
-      </div>
-
-      <div class="info-row">
-        <div class="label">Meeting Type</div>
-        <div class="value">Billing Question</div>
-      </div>
-
-      <div class="info-row">
-        <div class="label">Notes</div>
-        <div class="value">Review premium reimbursement issue</div>
-      </div>
-
-      <div class="card-actions">
-
-        <button onclick="window.location='client-view.html'">
-          View Client
-        </button>
-
-        <button class="secondary-btn">
-          Reschedule
-        </button>
-
-      </div>
-
-    </div>
-
-    <!-- CARD -->
-
-    <div class="renewal-card">
-
-      <div class="card-top">
-
-        <div>
-          <div class="client-name">
-            Robert Wilson
-          </div>
-
-          <div class="client-sub">
-            T65 Consultation • Bellevue, NE
-          </div>
-        </div>
-
-        <span class="badge upcoming">
-          Friday
-        </span>
-
-      </div>
-
-      <div class="info-row">
-        <div class="label">Time</div>
-        <div class="value">3:00 PM</div>
-      </div>
-
-      <div class="info-row">
-        <div class="label">Meeting Type</div>
-        <div class="value">Initial Medicare Review</div>
-      </div>
-
-      <div class="info-row">
-        <div class="label">Notes</div>
-        <div class="value">Needs hospital/doctor preference discussion</div>
-      </div>
-
-      <div class="card-actions">
-
-        <button onclick="window.location='client-view.html'">
-          View Client
-        </button>
-
-        <button class="secondary-btn">
-          Send Reminder
-        </button>
-
-      </div>
-
-    </div>
-
+  <div
+    class="renewal-grid"
+    id="appointmentsGrid"
+  >
   </div>
 
 </div>
 
-<script>
-
-function logout(){
-
-  sessionStorage.clear();
-
-  window.location.href = "login.html";
-
-}
-
-</script>
+<script src="crm.js"></script>
+<script src="schedule.js"></script>
 
 </body>
 </html>
