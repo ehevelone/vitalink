@@ -284,6 +284,29 @@ const filtered =
             ${appt.notes || ""}
           </div>
 
+          <div
+  style="
+    margin-top:10px;
+    display:flex;
+    gap:8px;
+  "
+>
+
+  <button
+    onclick="editAppointment('${appt.id}')"
+  >
+    Edit
+  </button>
+
+  <button
+    class="danger-btn"
+    onclick="deleteAppointment('${appt.id}')"
+  >
+    Delete
+  </button>
+
+</div>
+
         </div>
 
       </div>
@@ -471,6 +494,61 @@ async function loadClientDropdown(){
     `;
 
   });
+
+}
+
+/* =========================================
+   DELETE APPOINTMENT
+========================================= */
+
+async function deleteAppointment(id){
+
+  const confirmed = confirm(
+    "Delete this appointment?"
+  );
+
+  if(!confirmed){
+    return;
+  }
+
+  const res = await fetch(
+
+    "/.netlify/functions/delete-crm-appointment",
+
+    {
+      method:"POST",
+
+      headers:{
+        "Content-Type":"application/json"
+      },
+
+      body:JSON.stringify({ id })
+    }
+
+  );
+
+  const data = await res.json();
+
+  if(!data.success){
+
+    alert("Failed to delete appointment");
+    return;
+
+  }
+
+  loadAppointments();
+
+}
+
+/* =========================================
+   EDIT APPOINTMENT
+========================================= */
+
+function editAppointment(id){
+
+  alert(
+    "Edit appointment coming next."
+  );
 
 }
 
