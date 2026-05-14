@@ -4,6 +4,21 @@ if(!sessionStorage.getItem("crm_uuid")){
 
 }
 
+function formatPhone(phone){
+
+  if(!phone) return "";
+
+  const digits =
+    phone.replace(/\D/g,"");
+
+  if(digits.length !== 10){
+    return phone;
+  }
+
+  return `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`;
+
+}
+
 function openClientModal(){
 
   document.getElementById(
@@ -144,7 +159,7 @@ async function loadClients(){
         </td>
 
         <td>
-          ${client.mobile_phone || ""}
+          ${formatPhone(client.mobile_phone)}
         </td>
 
         <td>
