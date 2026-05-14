@@ -80,6 +80,22 @@ function addOneHour(time){
 
 }
 
+function normalizeTime(time){
+
+  if(!time){
+    return "";
+  }
+
+  const parts =
+    time.split(":");
+
+  return String(parts[0] || "00").padStart(2,"0") +
+    ":" +
+    String(parts[1] || "00").padStart(2,"0") +
+    ":00";
+
+}
+
 function addOneDay(date){
 
   const parts =
@@ -123,12 +139,12 @@ function buildGoogleEvent(appointment){
   if(appointment.appointment_time){
 
     event.start = {
-      dateTime: `${date}T${appointment.appointment_time}`,
+      dateTime: `${date}T${normalizeTime(appointment.appointment_time)}`,
       timeZone: getTimeZone()
     };
 
     event.end = {
-      dateTime: `${date}T${addOneHour(appointment.appointment_time)}`,
+      dateTime: `${date}T${normalizeTime(addOneHour(appointment.appointment_time))}`,
       timeZone: getTimeZone()
     };
 

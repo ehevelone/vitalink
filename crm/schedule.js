@@ -698,6 +698,15 @@ const res = await fetch(
 
   }
 
+  if(data.google_sync_error){
+
+    alert(
+      "Appointment saved, but Google Calendar did not sync: " +
+      data.google_sync_error
+    );
+
+  }
+
   closeAppointmentModal();
 
   window.editingAppointmentId = null;
