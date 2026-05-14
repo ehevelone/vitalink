@@ -162,8 +162,13 @@ const hasEvent =
 
 function selectDate(dateString){
 
-  selectedDate =
-    new Date(dateString);
+  const parts = dateString.split("-");
+
+  selectedDate = new Date(
+    Number(parts[0]),
+    Number(parts[1]) - 1,
+    Number(parts[2])
+  );
 
   renderCalendar();
 
