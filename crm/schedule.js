@@ -129,9 +129,8 @@ const hasEvent =
     toDateKey(a.appointment_date) === dateString
   );
 
-        const isSelected =
-          selectedDate.toDateString() ===
-          new Date(dateString).toDateString();
+const isSelected =
+  selectedDateKey() === dateString;
 
         row += `
 
