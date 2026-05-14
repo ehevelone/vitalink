@@ -9,61 +9,46 @@ const pool = new Pool({
 
 exports.handler = async (event) => {
 
-  if(event.httpMethod !== "POST"){
-
-    return{
-      statusCode:405,
-      body:JSON.stringify({
-        success:false,
-        error:"Method not allowed"
-      })
-    };
-
-  }
-
   try{
 
-    const body = JSON.parse(event.body);
+    const agent_id =
+      event.queryStringParameters.agent_id;
 
-    const {
-      agent_id,
-      client_id,
-      appointment_type,
-      appointment_date,
-      appointment_time,
-      location,
-      notes
-    } = body;
+    if(!agent_id){
+
+      return{
+        statusCode:400,
+        body:JSON.stringify({
+          success:false,
+          error:"Missing agent_id"
+        })
+      };
+
+    }
 
     const result = await pool.query(
 
       `
-      INSERT INTO crm_appointments (
+      SELECT
+        a.*,
+        c.first_name,
+        c.last_name,
+        c.city,
+        c.state
 
-        agent_id,
-        client_id,
-        appointment_type,
-        appointment_date,
-        appointment_time,
-        location,
-        notes
+      FROM crm_appointments a
 
-      )
+      LEFT JOIN crm_clients c
+        ON c.id = a.client_id
 
-      VALUES ($1,$2,$3,$4,$5,$6,$7)
+      WHERE a.agent_id = $1
 
-      RETURNING *
+      ORDER BY
+        a.appointment_date ASC,
+        a.appointment_time ASC
       `,
 
-      [
-        agent_id,
-        client_id,
-        appointment_type,
-        appointment_date,
-        appointment_time,
-        location,
-        notes
-      ]
+      [agent_id]
 
     );
 
@@ -71,7 +56,7 @@ exports.handler = async (event) => {
       statusCode:200,
       body:JSON.stringify({
         success:true,
-        appointment:result.rows[0]
+        appointments:result.rows
       })
     };
 
