@@ -10,6 +10,24 @@ let currentDate = new Date();
 
 let selectedDate = new Date();
 
+function toDateKey(value){
+
+  if(!value) return "";
+
+  return String(value).split("T")[0];
+
+}
+
+function selectedDateKey(){
+
+  return selectedDate.getFullYear() +
+    "-" +
+    String(selectedDate.getMonth() + 1).padStart(2,"0") +
+    "-" +
+    String(selectedDate.getDate()).padStart(2,"0");
+
+}
+
 /* =========================================
    LOAD APPOINTMENTS
 ========================================= */
@@ -100,10 +118,10 @@ function renderCalendar(){
         const dateString =
           `${year}-${String(month + 1).padStart(2,"0")}-${String(date).padStart(2,"0")}`;
 
-        const hasEvent =
-          appointments.some(a =>
-            a.appointment_date === dateString
-          );
+const hasEvent =
+  appointments.some(a =>
+    toDateKey(a.appointment_date) === dateString
+  );
 
         const isSelected =
           selectedDate.toDateString() ===
@@ -164,13 +182,26 @@ function renderDailySchedule(){
       "dailySchedule"
     );
 
-  const selected =
-    selectedDate.toISOString().split("T")[0];
+const selected =
+  selectedDateKey();
 
-  const filtered =
-    appointments.filter(a =>
-      a.appointment_date === selected
-    );
+  document.getElementById(
+  "selectedDateLabel"
+).innerText =
+  selectedDate.toLocaleDateString(
+    "en-US",
+    {
+      weekday:"long",
+      month:"long",
+      day:"numeric",
+      year:"numeric"
+    }
+  );
+
+const filtered =
+  appointments.filter(a =>
+    toDateKey(a.appointment_date) === selected
+  );
 
   container.innerHTML = "";
 
@@ -236,12 +267,12 @@ function renderDailySchedule(){
 
 function updateMetrics(){
 
-  const today =
-    new Date().toISOString().split("T")[0];
+const today =
+  toDateKey(new Date());
 
   const todayCount =
     appointments.filter(a =>
-      a.appointment_date === today
+      toDateKey(a.appointment_date) === today
     ).length;
 
   document.getElementById(
