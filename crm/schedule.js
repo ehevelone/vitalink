@@ -705,14 +705,10 @@ const res = await fetch(
       data.google_sync_error
     );
 
-  }else if(
-    data.google_sync_status &&
-    data.google_sync_status !== "created" &&
-    data.google_sync_status !== "updated"
-  ){
+  }else if(data.google_sync_status){
 
     alert(
-      "Appointment saved, but Google Calendar sync status is: " +
+      "Appointment saved. Google Calendar sync status: " +
       data.google_sync_status
     );
 
