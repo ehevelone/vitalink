@@ -753,6 +753,58 @@ async function loadClientDropdown(){
 
   });
 
+  const params =
+    new URLSearchParams(window.location.search);
+
+  const selectedClientId =
+    params.get("client_id");
+
+  if(selectedClientId){
+
+    select.value =
+      selectedClientId;
+
+  }
+
+}
+
+function openAppointmentFromUrl(){
+
+  const params =
+    new URLSearchParams(window.location.search);
+
+  if(params.get("new_appointment") === "1"){
+
+    window.editingAppointmentId = null;
+
+    openAppointmentModal();
+
+    const selectedClientId =
+      params.get("client_id");
+
+    if(selectedClientId){
+
+      document.getElementById(
+        "appointmentClientId"
+      ).value =
+        selectedClientId;
+
+    }
+
+    const selectedType =
+      params.get("type");
+
+    if(selectedType){
+
+      document.getElementById(
+        "appointmentType"
+      ).value =
+        selectedType;
+
+    }
+
+  }
+
 }
 
 /* =========================================
@@ -971,6 +1023,8 @@ function renderUpcomingAppointments(){
 
 }
 
-loadClientDropdown();
+loadClientDropdown().then(() => {
+  openAppointmentFromUrl();
+});
 
 loadAppointments();

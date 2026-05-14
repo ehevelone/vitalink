@@ -39,7 +39,7 @@ async function loadRecentClients(){
   document.getElementById("totalClients").innerText =
   data.clients.length;
   document.getElementById("upcomingRenewals").innerText = "0";
-document.getElementById("pendingFollowUps").innerText = "0";
+  loadDashboardTasks();
 document.getElementById("recentActivity").innerText = "0";
   const table = document.getElementById("recentClientsTable");
 
@@ -80,6 +80,31 @@ document.getElementById("recentActivity").innerText = "0";
     `;
 
   });
+
+}
+
+async function loadDashboardTasks(){
+
+  const agent_id =
+    sessionStorage.getItem("crm_uuid");
+
+  const res = await fetch(
+    `/.netlify/functions/get-crm-tasks?agent_id=${agent_id}`
+  );
+
+  const data = await res.json();
+
+  if(!data.success){
+    return;
+  }
+
+  const pendingTasks =
+    (data.tasks || []).filter(task =>
+      task.status !== "Complete"
+    );
+
+  document.getElementById("pendingFollowUps").innerText =
+    pendingTasks.length;
 
 }
 

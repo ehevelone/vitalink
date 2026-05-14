@@ -709,6 +709,16 @@ input, select{
   color:#92400e;
 }
 
+.low{
+  background:#e0f2fe;
+  color:#0369a1;
+}
+
+.open{
+  background:#e0f2fe;
+  color:#0369a1;
+}
+
 .complete{
   background:#dcfce7;
   color:#166534;
@@ -845,6 +855,42 @@ input, select{
 .slot-sub{
   font-size:.9rem;
   color:#475569;
+}
+
+.row-options{
+  position:relative;
+  display:inline-block;
+}
+
+.options-btn{
+  min-width:44px;
+  padding:8px 12px;
+  font-size:1.1rem;
+}
+
+.options-menu{
+  display:none;
+  position:absolute;
+  right:0;
+  top:42px;
+  min-width:170px;
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:12px;
+  box-shadow:var(--shadow);
+  padding:8px;
+  z-index:20;
+}
+
+.options-menu.open{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.options-menu button{
+  width:100%;
+  text-align:left;
 }
 
 
