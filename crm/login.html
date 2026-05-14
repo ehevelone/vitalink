@@ -469,6 +469,18 @@ function showError(msg){
 
 }
 
+function getAgentName(agent){
+
+  if(!agent){
+    return "";
+  }
+
+  return agent.name ||
+    agent.full_name ||
+    `${agent.first_name || ""} ${agent.last_name || ""}`.trim();
+
+}
+
 // ---------------- LOGIN ----------------
 
 async function login(){
@@ -515,7 +527,7 @@ async function login(){
 
       sessionStorage.setItem(
         "agentName",
-        data.agent.name
+        getAgentName(data.agent)
       );
 
       sessionStorage.setItem(
@@ -631,7 +643,7 @@ async function verifyCode(){
 
     sessionStorage.setItem(
       "agentName",
-      data.agent.name
+      getAgentName(data.agent)
     );
 
     sessionStorage.setItem(

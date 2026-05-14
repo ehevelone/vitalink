@@ -30,34 +30,34 @@ async function loadClient(){
   document.getElementById("clientAvatar").innerText =
   `${client.first_name?.[0] || ""}${client.last_name?.[0] || ""}`.toUpperCase();
 
-  document.getElementById("firstName").innerText =
+  document.getElementById("firstName").value =
     client.first_name || "";
 
-  document.getElementById("lastName").innerText =
+  document.getElementById("lastName").value =
     client.last_name || "";
 
-  document.getElementById("dob").innerText =
+  document.getElementById("dob").value =
     formatDate(client.dob);
 
-  document.getElementById("mobilePhone").innerText =
+  document.getElementById("mobilePhone").value =
     formatPhone(client.mobile_phone);
 
-  document.getElementById("landlinePhone").innerText =
+  document.getElementById("landlinePhone").value =
     formatPhone(client.landline_phone);
 
-  document.getElementById("email").innerText =
+  document.getElementById("email").value =
     client.email || "";
 
-  document.getElementById("address").innerText =
+  document.getElementById("address").value =
     client.address || "";
 
-  document.getElementById("city").innerText =
+  document.getElementById("city").value =
     client.city || "";
 
-  document.getElementById("state").innerText =
+  document.getElementById("state").value =
     client.state || "";
 
-  document.getElementById("zip").innerText =
+  document.getElementById("zip").value =
     client.zip || "";
 
   /* =========================================
@@ -109,6 +109,111 @@ async function loadClient(){
       client.family_note_3 || "";
 
   }
+
+}
+
+/* =========================================
+   CLIENT EDIT
+========================================= */
+
+let clientEdit = false;
+
+function toggleClientEdit(){
+
+  clientEdit = !clientEdit;
+
+  const fields = [
+
+    "firstName",
+    "lastName",
+    "dob",
+    "mobilePhone",
+    "landlinePhone",
+    "email",
+    "address",
+    "city",
+    "state",
+    "zip"
+
+  ];
+
+  fields.forEach(id => {
+
+    document.getElementById(id).disabled =
+      !clientEdit;
+
+  });
+
+  document.getElementById(
+    "saveClientBtn"
+  ).style.display =
+    clientEdit ? "block" : "none";
+
+}
+
+async function saveClientInfo(){
+
+  const client = {
+
+    id: clientId,
+
+    first_name:
+      document.getElementById("firstName").value,
+
+    last_name:
+      document.getElementById("lastName").value,
+
+    dob:
+      document.getElementById("dob").value,
+
+    mobile_phone:
+      document.getElementById("mobilePhone").value,
+
+    landline_phone:
+      document.getElementById("landlinePhone").value,
+
+    email:
+      document.getElementById("email").value,
+
+    address:
+      document.getElementById("address").value,
+
+    city:
+      document.getElementById("city").value,
+
+    state:
+      document.getElementById("state").value,
+
+    zip:
+      document.getElementById("zip").value
+
+  };
+
+  const res = await fetch(
+    "/.netlify/functions/update-crm-client",
+    {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify(client)
+    }
+  );
+
+  const data = await res.json();
+
+  if(!data.success){
+
+    alert("Failed to update client.");
+    return;
+
+  }
+
+  alert("Client updated.");
+
+  toggleClientEdit();
+
+  loadClient();
 
 }
 

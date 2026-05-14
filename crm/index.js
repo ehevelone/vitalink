@@ -89,10 +89,24 @@ function viewClient(id){
 
 }
 
-document.getElementById("agentName").innerText =
-  sessionStorage.getItem("agentName") || "";
+document.addEventListener("DOMContentLoaded", () => {
 
-loadRecentClients();
+  const agentName =
+    sessionStorage.getItem("agentName") || "";
+
+  if(agentName){
+
+    document.getElementById("agentName").innerText =
+      agentName;
+
+    document.getElementById("agentBox").style.display =
+      "block";
+
+  }
+
+  loadRecentClients();
+
+});
 
 
 

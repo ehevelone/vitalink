@@ -216,6 +216,46 @@ async function loadClients(){
 
 }
 
+function sendClientNotification(){
+
+  alert("Client notifications are not connected yet.");
+
+}
+
+async function deleteClient(id){
+
+  const confirmed = confirm(
+    "Remove this client?"
+  );
+
+  if(!confirmed){
+    return;
+  }
+
+  const res = await fetch(
+    "/.netlify/functions/delete-crm-client",
+    {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({ id })
+    }
+  );
+
+  const data = await res.json();
+
+  if(!data.success){
+
+    alert("Failed to remove client.");
+    return;
+
+  }
+
+  loadClients();
+
+}
+
 /* =========================================
    MINI WEEK CALENDAR
 ========================================= */
