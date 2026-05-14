@@ -68,12 +68,13 @@ exports.handler = async (event) => {
     );
 
     let googleSyncError = null;
+    let googleSyncStatus = "not_attempted";
 
     if(result.rows[0]){
 
       try{
 
-        await syncGoogleAppointment(
+        googleSyncStatus = await syncGoogleAppointment(
           pool,
           result.rows[0].id
         );
@@ -92,6 +93,7 @@ exports.handler = async (event) => {
       body:JSON.stringify({
         success:true,
         appointment:result.rows[0],
+        google_sync_status:googleSyncStatus,
         google_sync_error:googleSyncError
       })
     };

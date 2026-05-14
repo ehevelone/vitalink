@@ -705,6 +705,17 @@ const res = await fetch(
       data.google_sync_error
     );
 
+  }else if(
+    data.google_sync_status &&
+    data.google_sync_status !== "created" &&
+    data.google_sync_status !== "updated"
+  ){
+
+    alert(
+      "Appointment saved, but Google Calendar sync status is: " +
+      data.google_sync_status
+    );
+
   }
 
   closeAppointmentModal();

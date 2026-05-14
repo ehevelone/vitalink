@@ -74,10 +74,11 @@ async function handler(event){
     );
 
     let googleSyncError = null;
+    let googleSyncStatus = "not_attempted";
 
     try{
 
-      await syncGoogleAppointment(
+      googleSyncStatus = await syncGoogleAppointment(
         pool,
         result.rows[0].id
       );
@@ -94,6 +95,7 @@ async function handler(event){
       body:JSON.stringify({
         success:true,
         appointment:result.rows[0],
+        google_sync_status:googleSyncStatus,
         google_sync_error:googleSyncError
       })
     };
