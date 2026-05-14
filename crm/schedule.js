@@ -358,7 +358,9 @@ async function saveAppointment(){
   closeAppointmentModal();
 
   loadAppointments();
-
+  
 }
+
+loadClientDropdown();
 
 loadAppointments();
