@@ -358,7 +358,56 @@ async function saveAppointment(){
   closeAppointmentModal();
 
   loadAppointments();
-  
+
+  }
+
+  /* =========================================
+   LOAD CLIENTS
+========================================= */
+
+async function loadClientDropdown(){
+
+  const agent_id =
+    sessionStorage.getItem("crm_uuid");
+
+  const res = await fetch(
+    `/.netlify/functions/get-crm-clients?agent_id=${agent_id}`
+  );
+
+  const data = await res.json();
+
+  if(!data.success){
+
+    return;
+
+  }
+
+  const select =
+    document.getElementById(
+      "appointmentClientId"
+    );
+
+  select.innerHTML = `
+    <option value="">
+      Select Client
+    </option>
+  `;
+
+  data.clients.forEach(client => {
+
+    select.innerHTML += `
+
+      <option value="${client.id}">
+
+        ${client.first_name || ""}
+        ${client.last_name || ""}
+
+      </option>
+
+    `;
+
+  });
+
 }
 
 loadClientDropdown();
