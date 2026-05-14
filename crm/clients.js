@@ -216,6 +216,111 @@ async function loadClients(){
 
 }
 
+/* =========================================
+   MINI WEEK CALENDAR
+========================================= */
+
+async function loadMiniWeek(){
+
+  const container =
+    document.getElementById(
+      "miniWeekDays"
+    );
+
+  if(!container){
+    return;
+  }
+
+  const agent_id =
+    sessionStorage.getItem("crm_uuid");
+
+  const res = await fetch(
+    `/.netlify/functions/get-crm-appointments?agent_id=${agent_id}`
+  );
+
+  const data = await res.json();
+
+  if(!data.success){
+    return;
+  }
+
+  const appointments =
+    data.appointments || [];
+
+  const today = new Date();
+
+  const start =
+    new Date(today);
+
+  start.setDate(
+    today.getDate() - today.getDay()
+  );
+
+  const dayNames = [
+    "Sun","Mon","Tue",
+    "Wed","Thu","Fri","Sat"
+  ];
+
+  container.innerHTML = "";
+
+  for(let i = 0; i < 7; i++){
+
+    const current =
+      new Date(start);
+
+    current.setDate(
+      start.getDate() + i
+    );
+
+    const dateKey =
+      current.getFullYear() +
+      "-" +
+      String(current.getMonth() + 1)
+        .padStart(2,"0") +
+      "-" +
+      String(current.getDate())
+        .padStart(2,"0");
+
+    const dayAppointments =
+      appointments.filter(a =>
+        String(a.appointment_date)
+          .split("T")[0] === dateKey
+      );
+
+    const isToday =
+      current.toDateString() ===
+      today.toDateString();
+
+    container.innerHTML += `
+
+      <div class="
+        mini-day
+        ${isToday ? "active" : ""}
+      ">
+
+        <div class="mini-day-name">
+          ${dayNames[i]}
+        </div>
+
+        <div class="mini-date">
+          ${current.getDate()}
+        </div>
+
+        <div class="mini-count">
+
+          ${dayAppointments.length}
+          appt${dayAppointments.length !== 1 ? "s" : ""}
+
+        </div>
+
+      </div>
+
+    `;
+
+  }
+
+}
+
 function viewClient(id){
 
   window.location.href =
@@ -238,3 +343,4 @@ window.onclick = function(event){
 
 loadClients();
 
+loadMiniWeek();
