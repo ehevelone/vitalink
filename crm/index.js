@@ -1,6 +1,23 @@
 if(!sessionStorage.getItem("crm_uuid")){
 
+    
+
   window.location = "login.html";
+
+}
+
+function formatPhone(phone){
+
+  if(!phone) return "";
+
+  const digits =
+    phone.replace(/\D/g,"");
+
+  if(digits.length !== 10){
+    return phone;
+  }
+
+  return `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`;
 
 }
 
@@ -39,7 +56,7 @@ document.getElementById("recentActivity").innerText = "0";
         </td>
 
         <td>
-          ${client.mobile_phone || ""}
+          ${formatPhone(client.mobile_phone)}
         </td>
 
         <td>
@@ -72,16 +89,10 @@ function viewClient(id){
 
 }
 
-loadRecentClients();
-
 document.getElementById("agentName").innerText =
   sessionStorage.getItem("agentName") || "";
 
-  function logout(){
+loadRecentClients();
 
-  sessionStorage.clear();
 
-  window.location.href = "login.html";
-
-}
 
