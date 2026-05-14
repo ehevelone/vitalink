@@ -712,6 +712,12 @@ const res = await fetch(
       data.google_sync_status
     );
 
+  }else{
+
+    alert(
+      "Appointment saved, but no Google Calendar sync response was returned."
+    );
+
   }
 
   closeAppointmentModal();
