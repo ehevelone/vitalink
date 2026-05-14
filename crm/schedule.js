@@ -721,7 +721,11 @@ const res = await fetch(
 
       alert(
         "Appointment saved. Google Calendar sync status: " +
-        data.google_sync_status
+        data.google_sync_status +
+        "\nCalendar: " +
+        (data.google_calendar_id || "unknown") +
+        "\nEvent ID: " +
+        (data.google_event_id || "none")
       );
 
     }

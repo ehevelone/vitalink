@@ -76,6 +76,8 @@ async function handler(event){
     let googleSyncError = null;
     let googleSyncStatus = "not_attempted";
     let googleEventLink = null;
+    let googleEventId = null;
+    let googleCalendarId = null;
 
     try{
 
@@ -89,6 +91,12 @@ async function handler(event){
 
       googleEventLink =
         googleSyncResult?.event_link || null;
+
+      googleEventId =
+        googleSyncResult?.event_id || null;
+
+      googleCalendarId =
+        googleSyncResult?.calendar_id || null;
 
     }catch(syncErr){
 
@@ -104,6 +112,8 @@ async function handler(event){
         appointment:result.rows[0],
         google_sync_status:googleSyncStatus,
         google_event_link:googleEventLink,
+        google_event_id:googleEventId,
+        google_calendar_id:googleCalendarId,
         google_sync_error:googleSyncError
       })
     };

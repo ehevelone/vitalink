@@ -335,6 +335,7 @@ async function syncGoogleAppointment(pool, appointmentId){
   return {
     status:hasGoogleEvent ? "updated" : "created",
     event_id:data.id || appointment.google_event_id || null,
+    calendar_id:connection.calendar_id || "primary",
     event_link:data.htmlLink || null
   };
 
