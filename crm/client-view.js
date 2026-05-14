@@ -415,50 +415,6 @@ async function saveCommunication(){
 }
 
 /* =========================================
-   COMPLIANCE EDIT
-========================================= */
-
-let complianceEdit = false;
-
-function toggleComplianceEdit(){
-
-  complianceEdit = !complianceEdit;
-
-  const fields = [
-
-    "soaSigned",
-    "hipaaSigned",
-    "lastPolicyReview"
-
-  ];
-
-  fields.forEach(id => {
-
-    if(document.getElementById(id)){
-
-      document.getElementById(id).disabled =
-        !complianceEdit;
-
-    }
-
-  });
-
-  document.getElementById(
-    "saveComplianceBtn"
-  ).style.display =
-    complianceEdit ? "block" : "none";
-
-}
-
-async function saveCompliance(){
-
-  alert("Compliance updated.");
-
-  toggleComplianceEdit();
-
-}
-
-/* =========================================
    VITALINK EDIT
 ========================================= */
 

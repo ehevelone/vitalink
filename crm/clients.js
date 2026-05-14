@@ -1,8 +1,6 @@
-function logout(){
+if(!sessionStorage.getItem("crm_uuid")){
 
-  sessionStorage.clear();
-
-  window.location.href = "login.html";
+  window.location = "login.html";
 
 }
 
@@ -181,14 +179,7 @@ async function loadClients(){
             View
           </button>
 
-          <button
-            onclick="editClient('${client.id}')"
-            style="margin-left:8px;"
-          >
-            Edit
-          </button>
-
-          <button
+           <button
             class="danger-btn"
             onclick="deleteClient('${client.id}')"
             style="

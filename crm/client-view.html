@@ -126,9 +126,7 @@
 
     <div class="top-actions">
 
-      <button class="top-action-btn secondary">
-        Send Notification
-      </button>
+
 
     </div>
 
@@ -138,61 +136,182 @@
 
   <div class="grid">
 
-  <!-- CLIENT INFO -->
+ <!-- CLIENT INFO -->
 
 <div class="card">
 
-  <h3>Client Information</h3>
+  <div class="card-header">
 
-  <div class="info-row">
-    <div class="label">First Name</div>
-    <div class="value" id="firstName"></div>
+    <h3 class="card-title">
+      Client Information
+    </h3>
+
+    <button
+      class="edit-btn secondary"
+      onclick="toggleClientEdit()"
+    >
+      Edit
+    </button>
+
   </div>
 
   <div class="info-row">
-    <div class="label">Last Name</div>
-    <div class="value" id="lastName"></div>
+
+    <div class="label">
+      First Name
+    </div>
+
+    <input
+      class="edit-input"
+      id="firstName"
+      type="text"
+      disabled
+    >
+
   </div>
 
   <div class="info-row">
-    <div class="label">Date of Birth</div>
-    <div class="value" id="dob"></div>
+
+    <div class="label">
+      Last Name
+    </div>
+
+    <input
+      class="edit-input"
+      id="lastName"
+      type="text"
+      disabled
+    >
+
   </div>
 
   <div class="info-row">
-    <div class="label">Mobile Phone</div>
-    <div class="value" id="mobilePhone"></div>
+
+    <div class="label">
+      Date of Birth
+    </div>
+
+    <input
+      class="edit-input"
+      id="dob"
+      type="date"
+      disabled
+    >
+
   </div>
 
   <div class="info-row">
-    <div class="label">Landline Phone</div>
-    <div class="value" id="landlinePhone"></div>
+
+    <div class="label">
+      Mobile Phone
+    </div>
+
+    <input
+      class="edit-input"
+      id="mobilePhone"
+      type="text"
+      disabled
+    >
+
   </div>
 
   <div class="info-row">
-    <div class="label">Email</div>
-    <div class="value" id="email"></div>
+
+    <div class="label">
+      Landline Phone
+    </div>
+
+    <input
+      class="edit-input"
+      id="landlinePhone"
+      type="text"
+      disabled
+    >
+
   </div>
 
   <div class="info-row">
-    <div class="label">Address</div>
-    <div class="value" id="address"></div>
+
+    <div class="label">
+      Email
+    </div>
+
+    <input
+      class="edit-input"
+      id="email"
+      type="email"
+      disabled
+    >
+
   </div>
 
   <div class="info-row">
-    <div class="label">City</div>
-    <div class="value" id="city"></div>
+
+    <div class="label">
+      Address
+    </div>
+
+    <input
+      class="edit-input"
+      id="address"
+      type="text"
+      disabled
+    >
+
   </div>
 
   <div class="info-row">
-    <div class="label">State</div>
-    <div class="value" id="state"></div>
+
+    <div class="label">
+      City
+    </div>
+
+    <input
+      class="edit-input"
+      id="city"
+      type="text"
+      disabled
+    >
+
   </div>
 
   <div class="info-row">
-    <div class="label">ZIP Code</div>
-    <div class="value" id="zip"></div>
+
+    <div class="label">
+      State
+    </div>
+
+    <input
+      class="edit-input"
+      id="state"
+      type="text"
+      disabled
+    >
+
   </div>
+
+  <div class="info-row">
+
+    <div class="label">
+      ZIP Code
+    </div>
+
+    <input
+      class="edit-input"
+      id="zip"
+      type="text"
+      disabled
+    >
+
+  </div>
+
+  <button
+    class="save-btn"
+    id="saveClientBtn"
+    onclick="saveClientInfo()"
+  >
+    Save Client Information
+  </button>
 
 </div>
 
@@ -260,21 +379,20 @@
 
   </div>
 
-<div class="info-row">
+  <div class="info-row">
 
-  <div class="label">
-    Spouse Profile
+    <div class="label">
+      Spouse Profile
+    </div>
+
+    <div
+      class="value"
+      id="spouseProfileStatus"
+    >
+      Not Linked
+    </div>
+
   </div>
-
-  <button
-    id="createSpouseBtn"
-    class="secondary-btn"
-    onclick="createSpouseProfile()"
-  >
-    + Create Spouse Profile
-  </button>
-
-</div>
 
   <button
     class="save-btn"
@@ -578,61 +696,49 @@
       Compliance
     </h3>
 
-    <button
-      class="edit-btn secondary"
-      onclick="toggleComplianceEdit()"
-    >
-      Edit
-    </button>
-
   </div>
 
   <div class="info-row">
 
-    <div class="label">SOA Signed</div>
+    <div class="label">
+      SOA Signed
+    </div>
 
-    <input
-      class="edit-input"
+    <div
+      class="value"
       id="soaSigned"
-      type="text"
-      disabled
     >
+    </div>
 
   </div>
 
   <div class="info-row">
 
-    <div class="label">HIPAA Signed</div>
+    <div class="label">
+      HIPAA Signed
+    </div>
 
-    <input
-      class="edit-input"
+    <div
+      class="value"
       id="hipaaSigned"
-      type="text"
-      disabled
     >
+    </div>
 
   </div>
 
   <div class="info-row">
 
-    <div class="label">Last Policy Review</div>
+    <div class="label">
+      Last Policy Review
+    </div>
 
-    <input
-      class="edit-input"
+    <div
+      class="value"
       id="lastPolicyReview"
-      type="date"
-      disabled
     >
+    </div>
 
   </div>
-
-  <button
-    class="save-btn"
-    id="saveComplianceBtn"
-    onclick="saveCompliance()"
-  >
-    Save Compliance
-  </button>
 
 </div>
 
@@ -646,87 +752,79 @@
       VitaLink Status
     </h3>
 
-    <button
-      class="edit-btn secondary"
-      onclick="toggleVitaLinkEdit()"
-    >
-      Edit
-    </button>
-
   </div>
 
   <div class="info-row">
 
-    <div class="label">Profile Linked</div>
+    <div class="label">
+      Profile Linked
+    </div>
 
-    <input
-      class="edit-input"
+    <div
+      class="value"
       id="profileLinked"
-      type="text"
-      disabled
     >
+    </div>
 
   </div>
 
   <div class="info-row">
 
-    <div class="label">Emergency Profile</div>
+    <div class="label">
+      Emergency Profile
+    </div>
 
-    <input
-      class="edit-input"
+    <div
+      class="value"
       id="emergencyProfile"
-      type="text"
-      disabled
     >
+    </div>
 
   </div>
 
   <div class="info-row">
 
-    <div class="label">Insurance Cards Uploaded</div>
+    <div class="label">
+      Insurance Cards Uploaded
+    </div>
 
-    <input
-      class="edit-input"
+    <div
+      class="value"
       id="insuranceCardsUploaded"
-      type="text"
-      disabled
     >
+    </div>
 
   </div>
 
   <div class="info-row">
 
-    <div class="label">Medication List</div>
+    <div class="label">
+      Medication List
+    </div>
 
-    <input
-      class="edit-input"
+    <div
+      class="value"
       id="medicationList"
-      type="text"
-      disabled
     >
+    </div>
 
   </div>
 
   <div class="info-row">
 
-    <div class="label">Last Sync</div>
+    <div class="label">
+      Last Sync
+    </div>
 
-    <input
-      class="edit-input"
+    <div
+      class="value"
       id="lastSync"
-      type="date"
-      disabled
     >
+    </div>
 
   </div>
 
-  <button
-    class="save-btn"
-    id="saveVitaLinkBtn"
-    onclick="saveVitaLink()"
-  >
-    Save VitaLink Status
-  </button>
+</div>
 
 </div>
 
