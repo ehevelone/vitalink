@@ -129,9 +129,9 @@
       <option>T65 Consultation</option>
     </select>
 
-    <button>
-      + New Appointment
-    </button>
+<button onclick="openAppointmentModal()">
+  + New Appointment
+</button>
 
   </div>
 
@@ -280,6 +280,100 @@
      </tbody>
 
     </table>
+
+  </div>
+
+</div>
+
+<!-- =========================================
+     APPOINTMENT MODAL
+========================================= -->
+
+<div
+  class="modal-overlay"
+  id="appointmentModal"
+>
+
+  <div class="modal">
+
+    <div class="modal-header">
+
+      <h2>
+        New Appointment
+      </h2>
+
+      <button
+        class="close-btn"
+        onclick="closeAppointmentModal()"
+      >
+        ✕
+      </button>
+
+    </div>
+
+    <div class="modal-grid">
+
+      <input
+        type="text"
+        id="appointmentClientId"
+        placeholder="Client ID"
+      >
+
+      <select id="appointmentType">
+
+        <option value="">
+          Select Type
+        </option>
+
+        <option>
+          Annual Review
+        </option>
+
+        <option>
+          Follow-Up
+        </option>
+
+        <option>
+          Enrollment Meeting
+        </option>
+
+        <option>
+          T65 Consultation
+        </option>
+
+      </select>
+
+      <input
+        type="date"
+        id="appointmentDate"
+      >
+
+      <input
+        type="time"
+        id="appointmentTime"
+      >
+
+      <input
+        type="text"
+        id="appointmentLocation"
+        placeholder="Location"
+      >
+
+      <textarea
+        id="appointmentNotes"
+        placeholder="Notes"
+        rows="4"
+      ></textarea>
+
+    </div>
+
+    <button
+      class="save-btn"
+      style="display:block;"
+      onclick="saveAppointment()"
+    >
+      Save Appointment
+    </button>
 
   </div>
 
