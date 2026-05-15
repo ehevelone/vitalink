@@ -6,6 +6,7 @@ if(!sessionStorage.getItem("crm_uuid")){
 
 let clients = [];
 let appointments = [];
+let crmSettings = {};
 
 function formatPhone(phone){
 
@@ -70,7 +71,10 @@ async function saveClient(){
       document.getElementById("state").value,
 
     zip:
-      document.getElementById("zip").value
+      document.getElementById("zip").value,
+
+    status:
+      crmSettings.default_client_status || "Active"
 
   };
 
@@ -155,6 +159,23 @@ async function loadClients(){
     appointmentsData.success ? appointmentsData.appointments || [] : [];
 
   renderClients();
+
+}
+
+async function loadCrmSettings(){
+
+  const agent_id =
+    sessionStorage.getItem("crm_uuid");
+
+  const res = await fetch(
+    `/.netlify/functions/get-crm-settings?agent_id=${agent_id}`
+  );
+
+  const data = await res.json();
+
+  if(data.success){
+    crmSettings = data.settings || {};
+  }
 
 }
 
@@ -264,10 +285,13 @@ function renderClients(){
       (client.mobile_phone || "").toLowerCase().includes(search) ||
       (client.city || "").toLowerCase().includes(search);
 
+    const clientStatus =
+      client.status || "Active";
+
     const matchesStatus =
       !statusFilter ||
       statusFilter === "All Statuses" ||
-      statusFilter === "Active";
+      clientStatus === statusFilter;
 
     return matchesSearch &&
       matchesStatus &&
@@ -319,8 +343,8 @@ function renderClients(){
 
         <td>
 
-          <span class="status active">
-            Active
+          <span class="status ${(client.status || "active").toLowerCase().replace(/\s+/g,"-")}">
+            ${client.status || "Active"}
           </span>
 
         </td>
@@ -603,6 +627,8 @@ document.getElementById("clientStatusFilter")
 document.getElementById("clientScheduleFilter")
   ?.addEventListener("change", renderClients);
 
-loadClients();
+loadCrmSettings().then(() => {
+  loadClients();
+});
 
 loadMiniWeek();

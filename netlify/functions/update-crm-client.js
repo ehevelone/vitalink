@@ -18,6 +18,7 @@ const editableFields = [
   "city",
   "state",
   "zip",
+  "status",
   "marital_status",
   "spouse_name",
   "spouse_dob",
@@ -60,6 +61,7 @@ async function ensureClientColumns(){
     ADD COLUMN IF NOT EXISTS best_time_to_call TEXT,
     ADD COLUMN IF NOT EXISTS text_messaging TEXT,
     ADD COLUMN IF NOT EXISTS email_communication TEXT,
+    ADD COLUMN IF NOT EXISTS status TEXT,
     ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW()
   `);
 

@@ -7,9 +7,20 @@ const pool = new Pool({
   }
 });
 
+async function ensureClientColumns(){
+
+  await pool.query(`
+    ALTER TABLE crm_clients
+    ADD COLUMN IF NOT EXISTS status TEXT
+  `);
+
+}
+
 exports.handler = async (event) => {
 
   try{
+
+    await ensureClientColumns();
 
     const body = JSON.parse(event.body);
 
@@ -32,13 +43,14 @@ exports.handler = async (event) => {
         address,
         city,
         state,
-        zip
+        zip,
+        status
 
       )
 
       VALUES (
 
-        $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11
+        $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12
 
       )
 
@@ -61,7 +73,8 @@ exports.handler = async (event) => {
         body.address,
         body.city,
         body.state,
-        body.zip
+        body.zip,
+        body.status || "Active"
 
       ]
 

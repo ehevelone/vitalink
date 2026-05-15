@@ -11,6 +11,11 @@ exports.handler = async (event) => {
 
   try{
 
+    await pool.query(`
+      ALTER TABLE crm_clients
+      ADD COLUMN IF NOT EXISTS status TEXT
+    `);
+
     const agent_id = event.queryStringParameters.agent_id;
 
     const result = await pool.query(

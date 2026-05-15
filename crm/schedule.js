@@ -6,6 +6,8 @@ if(!sessionStorage.getItem("crm_uuid")){
 
 let appointments = [];
 
+let crmSettings = {};
+
 let currentDate = new Date();
 
 let selectedDate = new Date();
@@ -539,7 +541,8 @@ function openAppointmentModal(){
 
     document.getElementById(
       "appointmentType"
-    ).value = "";
+    ).value =
+      crmSettings.default_appointment_type || "";
 
     document.getElementById(
       "appointmentDate"
@@ -571,7 +574,8 @@ function openAppointmentModal(){
 
     document.getElementById(
       "appointmentLocation"
-    ).value = "";
+    ).value =
+      crmSettings.default_appointment_location || "";
 
     document.getElementById(
       "appointmentNotes"
@@ -764,6 +768,23 @@ async function loadClientDropdown(){
     select.value =
       selectedClientId;
 
+  }
+
+}
+
+async function loadCrmSettings(){
+
+  const agent_id =
+    sessionStorage.getItem("crm_uuid");
+
+  const res = await fetch(
+    `/.netlify/functions/get-crm-settings?agent_id=${agent_id}`
+  );
+
+  const data = await res.json();
+
+  if(data.success){
+    crmSettings = data.settings || {};
   }
 
 }
@@ -1023,7 +1044,10 @@ function renderUpcomingAppointments(){
 
 }
 
-loadClientDropdown().then(() => {
+Promise.all([
+  loadCrmSettings(),
+  loadClientDropdown()
+]).then(() => {
   openAppointmentFromUrl();
 });
 

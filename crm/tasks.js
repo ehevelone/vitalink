@@ -6,6 +6,7 @@ if(!sessionStorage.getItem("crm_uuid")){
 
 let tasks = [];
 let editingTaskId = null;
+let crmSettings = {};
 
 function getClientName(task){
 
@@ -23,15 +24,52 @@ function formatTaskDate(value){
 
 }
 
+async function loadCrmSettings(){
+
+  const agent_id =
+    sessionStorage.getItem("crm_uuid");
+
+  const res = await fetch(
+    `/.netlify/functions/get-crm-settings?agent_id=${agent_id}`
+  );
+
+  const data = await res.json();
+
+  if(data.success){
+    crmSettings = data.settings || {};
+  }
+
+}
+
 function clearTaskForm(){
 
   document.getElementById("taskTitle").value = "";
-  document.getElementById("taskPriority").value = "Medium";
+  document.getElementById("taskPriority").value =
+    crmSettings.default_task_priority || "Medium";
   document.getElementById("taskClientId").value =
     new URLSearchParams(window.location.search).get("client_id") || "";
-  document.getElementById("taskDueDate").value = "";
+  document.getElementById("taskDueDate").value =
+    getDefaultTaskDueDate();
   document.getElementById("taskStatus").value = "Open";
   document.getElementById("taskNotes").value = "";
+
+}
+
+function getDefaultTaskDueDate(){
+
+  const dueDays =
+    Number(crmSettings.default_task_due_days);
+
+  if(!Number.isFinite(dueDays)){
+    return "";
+  }
+
+  const date =
+    new Date();
+
+  date.setDate(date.getDate() + dueDays);
+
+  return date.toISOString().split("T")[0];
 
 }
 
@@ -429,7 +467,10 @@ document.getElementById("priorityFilter")
 document.getElementById("statusFilter")
   .addEventListener("change", renderTasks);
 
-loadClientDropdown().then(() => {
+Promise.all([
+  loadCrmSettings(),
+  loadClientDropdown()
+]).then(() => {
 
   const params =
     new URLSearchParams(window.location.search);
