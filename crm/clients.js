@@ -814,43 +814,12 @@ function renderClients(){
 
         <td>
 
-          <div class="row-options">
-
-            <button
-              class="options-btn secondary"
-              onclick="toggleClientOptions(event, '${client.id}')"
-            >
-              ...
-            </button>
-
-            <div
-              class="options-menu"
-              id="clientOptions-${client.id}"
-            >
-
-              <button onclick="viewClient('${client.id}')">
-                View
-              </button>
-
-              <button onclick="newAppointmentForClient('${client.id}')">
-                New Appointment
-              </button>
-
-              <button onclick="followUpForClient('${client.id}')">
-                Follow-Up
-              </button>
-
-              <button onclick="taskForClient('${client.id}')">
-                Task
-              </button>
-
-              <button onclick="deleteClient('${client.id}')">
-                Remove
-              </button>
-
-            </div>
-
-          </div>
+          <button
+            class="secondary"
+            onclick="viewClient('${client.id}')"
+          >
+            View
+          </button>
 
         </td>
 
@@ -975,47 +944,6 @@ function viewClient(id){
 
 }
 
-function newAppointmentForClient(id){
-
-  window.location.href =
-    `schedule.html?client_id=${id}&new_appointment=1`;
-
-}
-
-function followUpForClient(id){
-
-  window.location.href =
-    `schedule.html?client_id=${id}&new_appointment=1&type=Follow-Up`;
-
-}
-
-function taskForClient(id){
-
-  window.location.href =
-    `tasks.html?client_id=${id}`;
-
-}
-
-function toggleClientOptions(event, id){
-
-  event.stopPropagation();
-
-  document
-    .querySelectorAll(".options-menu.open")
-    .forEach(menu => {
-
-      if(menu.id !== `clientOptions-${id}`){
-        menu.classList.remove("open");
-      }
-
-    });
-
-  document
-    .getElementById(`clientOptions-${id}`)
-    .classList.toggle("open");
-
-}
-
 async function deleteClient(id){
 
   const confirmed = confirm(
@@ -1069,12 +997,6 @@ window.onclick = function(event){
     closeImportModal();
 
   }
-
-  document
-    .querySelectorAll(".options-menu.open")
-    .forEach(menu => {
-      menu.classList.remove("open");
-    });
 
 }
 
