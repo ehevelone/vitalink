@@ -51,6 +51,41 @@ function showSettingsSaved(message){
 
 }
 
+function updateSettingsSummaries(){
+
+  const appointmentType =
+    document.getElementById("defaultAppointmentType")?.value || "Follow-Up";
+
+  const duration =
+    document.getElementById("defaultAppointmentDuration")?.value || "60";
+
+  const location =
+    document.getElementById("defaultAppointmentLocation")?.value || "no preset location";
+
+  const calendarSummary =
+    document.getElementById("calendarDefaultsSummary");
+
+  if(calendarSummary){
+    calendarSummary.innerText =
+      `New appointments will start as ${appointmentType}, ${duration} minutes, with ${location}.`;
+  }
+
+  const priority =
+    document.getElementById("defaultTaskPriority")?.value || "Medium";
+
+  const dueDays =
+    document.getElementById("defaultTaskDueDays")?.value || "7";
+
+  const taskSummary =
+    document.getElementById("taskDefaultsSummary");
+
+  if(taskSummary){
+    taskSummary.innerText =
+      `New tasks will start as ${priority} priority and due ${dueDays} day${String(dueDays) === "1" ? "" : "s"} after creation.`;
+  }
+
+}
+
 async function loadCrmSettings(){
 
   const res = await fetch(
@@ -150,6 +185,8 @@ async function loadCrmSettings(){
     crmSettings.custom_carriers
   );
 
+  updateSettingsSummaries();
+
 }
 
 async function saveCrmSettings(patch, message){
@@ -224,6 +261,8 @@ async function saveCalendarDefaults(){
     "Calendar defaults saved."
   );
 
+  updateSettingsSummaries();
+
 }
 
 async function saveTaskDefaults(){
@@ -239,6 +278,8 @@ async function saveTaskDefaults(){
     },
     "Task defaults saved."
   );
+
+  updateSettingsSummaries();
 
 }
 
@@ -384,6 +425,22 @@ async function exportCrmData(type){
   );
 
 }
+
+[
+  "defaultAppointmentType",
+  "defaultAppointmentDuration",
+  "defaultAppointmentLocation",
+  "defaultTaskPriority",
+  "defaultTaskDueDays"
+].forEach(id => {
+
+  document.getElementById(id)
+    ?.addEventListener("input", updateSettingsSummaries);
+
+  document.getElementById(id)
+    ?.addEventListener("change", updateSettingsSummaries);
+
+});
 
 async function loadGoogleCalendarStatus(){
 

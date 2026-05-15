@@ -263,7 +263,7 @@
           </h3>
 
           <div class="client-sub">
-            Defaults used when creating appointments.
+            These values pre-fill the New Appointment window.
           </div>
         </div>
 
@@ -271,26 +271,35 @@
 
       <div class="settings-grid">
 
-        <select id="defaultAppointmentType">
-          <option>Annual Review</option>
-          <option>Follow-Up</option>
-          <option>Enrollment Meeting</option>
-          <option>T65 Consultation</option>
-        </select>
+        <label class="settings-field">
+          <span>Appointment type</span>
+          <select id="defaultAppointmentType">
+            <option>Annual Review</option>
+            <option>Follow-Up</option>
+            <option>Enrollment Meeting</option>
+            <option>T65 Consultation</option>
+          </select>
+        </label>
 
-        <input
-          id="defaultAppointmentDuration"
-          type="number"
-          min="15"
-          step="15"
-          placeholder="Default Duration"
-        >
+        <label class="settings-field">
+          <span>Default length</span>
+          <input
+            id="defaultAppointmentDuration"
+            type="number"
+            min="15"
+            step="15"
+            placeholder="Minutes"
+          >
+        </label>
 
-        <input
-          id="defaultAppointmentLocation"
-          type="text"
-          placeholder="Default Location"
-        >
+        <label class="settings-field settings-wide">
+          <span>Default location</span>
+          <input
+            id="defaultAppointmentLocation"
+            type="text"
+            placeholder="Office, phone, video call, or blank"
+          >
+        </label>
 
       </div>
 
@@ -303,6 +312,12 @@
           Sync appointment notes to Google Calendar
         </span>
       </label>
+
+      <div
+        class="settings-summary"
+        id="calendarDefaultsSummary"
+      >
+      </div>
 
       <button
         class="save-btn"
@@ -323,7 +338,7 @@
           </h3>
 
           <div class="client-sub">
-            Defaults for follow-ups and reminders.
+            These values pre-fill the Add Task window.
           </div>
         </div>
 
@@ -331,19 +346,25 @@
 
       <div class="settings-grid">
 
-        <select id="defaultTaskPriority">
-          <option>High</option>
-          <option>Medium</option>
-          <option>Low</option>
-        </select>
+        <label class="settings-field">
+          <span>Task priority</span>
+          <select id="defaultTaskPriority">
+            <option>High</option>
+            <option>Medium</option>
+            <option>Low</option>
+          </select>
+        </label>
 
-        <input
-          id="defaultTaskDueDays"
-          type="number"
-          min="0"
-          step="1"
-          placeholder="Due In Days"
-        >
+        <label class="settings-field">
+          <span>Due after</span>
+          <input
+            id="defaultTaskDueDays"
+            type="number"
+            min="0"
+            step="1"
+            placeholder="Days"
+          >
+        </label>
 
       </div>
 
@@ -356,6 +377,12 @@
           Show completed tasks by default
         </span>
       </label>
+
+      <div
+        class="settings-summary"
+        id="taskDefaultsSummary"
+      >
+      </div>
 
       <button
         class="save-btn"
@@ -464,39 +491,51 @@
           </h3>
 
           <div class="client-sub">
-            Lists you can standardize for your workflow.
+            Optional lists for future dropdowns. Put one item per line.
           </div>
         </div>
 
       </div>
 
-      <textarea
-        id="customAppointmentTypes"
-        class="settings-textarea"
-        rows="3"
-        placeholder="Appointment Types"
-      ></textarea>
+      <label class="settings-field">
+        <span>Appointment types</span>
+        <textarea
+          id="customAppointmentTypes"
+          class="settings-textarea"
+          rows="3"
+          placeholder="Annual Review&#10;Follow-Up&#10;Enrollment Meeting"
+        ></textarea>
+      </label>
 
-      <textarea
-        id="customTaskPriorities"
-        class="settings-textarea"
-        rows="3"
-        placeholder="Task Priorities"
-      ></textarea>
+      <label class="settings-field">
+        <span>Task priorities</span>
+        <textarea
+          id="customTaskPriorities"
+          class="settings-textarea"
+          rows="3"
+          placeholder="High&#10;Medium&#10;Low"
+        ></textarea>
+      </label>
 
-      <textarea
-        id="customLeadSources"
-        class="settings-textarea"
-        rows="3"
-        placeholder="Lead Sources"
-      ></textarea>
+      <label class="settings-field">
+        <span>Lead sources</span>
+        <textarea
+          id="customLeadSources"
+          class="settings-textarea"
+          rows="3"
+          placeholder="Referral&#10;Seminar&#10;Website"
+        ></textarea>
+      </label>
 
-      <textarea
-        id="customCarriers"
-        class="settings-textarea"
-        rows="3"
-        placeholder="Carriers / Plans"
-      ></textarea>
+      <label class="settings-field">
+        <span>Carriers and plans</span>
+        <textarea
+          id="customCarriers"
+          class="settings-textarea"
+          rows="3"
+          placeholder="Aetna&#10;Humana&#10;UnitedHealthcare"
+        ></textarea>
+      </label>
 
       <button
         class="save-btn"
