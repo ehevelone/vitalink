@@ -17,13 +17,13 @@ exports.handler = async (event) => {
     const client_id =
       event.queryStringParameters.client_id;
 
-    if(!agent_id || !client_id){
+    if(!client_id){
 
       return{
         statusCode:400,
         body:JSON.stringify({
           success:false,
-          error:"Missing required fields"
+          error:"Missing client_id"
         })
       };
 
@@ -66,13 +66,22 @@ exports.handler = async (event) => {
       `
       SELECT *
       FROM crm_client_notes
-      WHERE agent_id = $1
-        AND client_id = $2
+      WHERE client_id = $1
+        AND (
+          $2 = ''
+          OR agent_id = $2
+        )
       ORDER BY created_at DESC
       LIMIT 25
       `,
-      [agent_id, client_id]
+      [client_id, agent_id || ""]
     );
+
+    console.log("get-crm-notes result:", {
+      agent_id,
+      client_id,
+      count:result.rows.length
+    });
 
     return{
       statusCode:200,
