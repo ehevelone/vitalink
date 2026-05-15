@@ -529,6 +529,11 @@ async function login(){
       );
 
       sessionStorage.setItem(
+        "agentEmail",
+        data.agent.email || email
+      );
+
+      sessionStorage.setItem(
         "agentId",
         String(data.agent.id)
       );
@@ -642,6 +647,11 @@ async function verifyCode(){
     sessionStorage.setItem(
       "agentName",
       getAgentName(data.agent)
+    );
+
+    sessionStorage.setItem(
+      "agentEmail",
+      data.agent.email || currentEmail
     );
 
     sessionStorage.setItem(
