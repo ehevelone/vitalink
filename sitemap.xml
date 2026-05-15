@@ -24,14 +24,6 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   </url>
 
   <url>
-    <loc>https://myvitalink.app/agent-onboard.html</loc>
-  </url>
-
-  <url>
-    <loc>https://myvitalink.app/agent-qr.html</loc>
-  </url>
-
-  <url>
     <loc>https://myvitalink.app/agent-success.html</loc>
   </url>
 
