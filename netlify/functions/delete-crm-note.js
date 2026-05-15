@@ -35,7 +35,7 @@ async function deleteLinkedAppNote(note){
       JOIN crm_clients c
         ON c.linked_app_client_id = i.user_id::TEXT
       WHERE a.crm_uuid = $1
-        AND c.id = $2
+        AND c.id::TEXT = $2
         AND i.item_type = 'note'
         AND i.body = COALESCE($3, '')
       ORDER BY i.created_at DESC
@@ -81,6 +81,12 @@ exports.handler = async (event) => {
     await pool.query(`
       ALTER TABLE crm_client_notes
       ADD COLUMN IF NOT EXISTS source_app_item_id BIGINT
+    `);
+
+    await pool.query(`
+      ALTER TABLE crm_client_notes
+      ALTER COLUMN client_id TYPE TEXT
+      USING client_id::TEXT
     `);
 
     const result = await pool.query(

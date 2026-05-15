@@ -33,7 +33,7 @@ exports.handler = async (event) => {
       CREATE TABLE IF NOT EXISTS crm_client_notes (
         id BIGSERIAL PRIMARY KEY,
         agent_id TEXT NOT NULL,
-        client_id BIGINT NOT NULL,
+        client_id TEXT NOT NULL,
         note TEXT NOT NULL,
         source TEXT,
         source_app_item_id BIGINT,
@@ -44,6 +44,12 @@ exports.handler = async (event) => {
     await pool.query(`
       ALTER TABLE crm_client_notes
       ADD COLUMN IF NOT EXISTS source_app_item_id BIGINT
+    `);
+
+    await pool.query(`
+      ALTER TABLE crm_client_notes
+      ALTER COLUMN client_id TYPE TEXT
+      USING client_id::TEXT
     `);
 
     await pool.query(`

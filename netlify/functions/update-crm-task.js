@@ -35,7 +35,7 @@ async function deleteLinkedAppTask(task){
       JOIN crm_clients c
         ON c.linked_app_client_id = i.user_id::TEXT
       WHERE a.crm_uuid = $1
-        AND c.id = $2
+        AND c.id::TEXT = $2::TEXT
         AND i.item_type = 'task'
         AND (
           i.body = COALESCE($3, '')
