@@ -2,6 +2,8 @@ const params = new URLSearchParams(window.location.search);
 
 const clientId = params.get("id");
 
+console.log("VitaLink client view loaded: notes sync enabled");
+
 function normalizeClientStatus(status){
 
   if(status === "Active"){
@@ -293,6 +295,8 @@ async function loadClientTasks(){
 }
 
 async function loadClientNotes(){
+
+  console.log("Loading client notes for", clientId);
 
   const container =
     document.getElementById("clientNotesList");
