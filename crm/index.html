@@ -159,38 +159,16 @@
       <div class="muted">Tasks needing attention</div>
     </div>
 
-    <div class="card">
-      <h3>Recent Activity</h3>
-      <div class="metric" id="recentActivity">0</div>
-      <div class="muted">Client updates this week</div>
+    <div class="card dashboard-task-card">
+      <div class="card-header">
+        <h3 class="card-title">Open Tasks</h3>
+        <button class="secondary compact-btn" onclick="window.location.href='tasks.html'">
+          View All
+        </button>
+      </div>
+      <div id="dashboardTaskSummary" class="dashboard-task-summary"></div>
+      <div id="dashboardTaskList" class="dashboard-task-list"></div>
     </div>
-
-  </div>
-
-  <!-- TASKS -->
-
-  <div class="section-title">
-    Open Tasks
-  </div>
-
-  <div class="table-card" style="margin-bottom:24px;">
-
-    <table>
-
-      <thead>
-        <tr>
-          <th>Task</th>
-          <th>Client</th>
-          <th>Priority</th>
-          <th>Due Date</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-
-      <tbody id="dashboardTasksTable">
-      </tbody>
-
-    </table>
 
   </div>
 

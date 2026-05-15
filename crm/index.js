@@ -28,8 +28,7 @@ async function loadRecentClients(){
 
   const [
     clientsRes,
-    tasksRes,
-    appointmentsRes
+    tasksRes
   ] = await Promise.all([
 
     fetch(
@@ -38,17 +37,12 @@ async function loadRecentClients(){
 
     fetch(
       `/.netlify/functions/get-crm-tasks?agent_id=${agent_id}`
-    ),
-
-    fetch(
-      `/.netlify/functions/get-crm-appointments?agent_id=${agent_id}`
     )
 
   ]);
 
   const data = await clientsRes.json();
   const tasksData = await tasksRes.json();
-  const appointmentsData = await appointmentsRes.json();
 
   if(!data.success){
     return;
@@ -60,10 +54,6 @@ async function loadRecentClients(){
   const tasks =
     tasksData.success ? tasksData.tasks || [] : [];
 
-  const appointments =
-    appointmentsData.success ? appointmentsData.appointments || [] : [];
-
-
   document.getElementById("totalClients").innerText =
     clients.length;
 
@@ -72,13 +62,6 @@ async function loadRecentClients(){
 
   document.getElementById("pendingFollowUps").innerText =
     countOpenTasks(tasks);
-
-  document.getElementById("recentActivity").innerText =
-    countRecentActivity(
-      clients,
-      tasks,
-      appointments
-    );
 
   renderDashboardTasks(tasks);
 
@@ -208,59 +191,94 @@ function countUpcomingRenewals(clients){
 
 }
 
-function countRecentActivity(
-  clients,
-  tasks,
-  appointments
-){
-
-  const weekAgo =
-    new Date();
-
-  weekAgo.setDate(weekAgo.getDate() - 7);
-
-  const allItems = [
-    ...clients,
-    ...tasks,
-    ...appointments
-  ];
-
-  return allItems.filter(item => {
-
-    const value =
-      item.updated_at ||
-      item.created_at;
-
-    if(!value){
-      return false;
-    }
-
-    return new Date(value) >= weekAgo;
-
-  }).length;
-
-}
-
 function renderDashboardTasks(tasks){
 
-  const table =
-    document.getElementById("dashboardTasksTable");
+  const list =
+    document.getElementById("dashboardTaskList");
+
+  const summary =
+    document.getElementById("dashboardTaskSummary");
+
+  const allOpenTasks =
+    tasks.filter(task => task.status !== "Complete");
+
+  const today =
+    new Date();
+
+  today.setHours(0,0,0,0);
+
+  const tomorrow =
+    new Date(today);
+
+  tomorrow.setDate(today.getDate() + 1);
+
+  const overdueCount =
+    allOpenTasks.filter(task => {
+      if(!task.due_date){
+        return false;
+      }
+
+      const dueDate =
+        new Date(task.due_date);
+
+      dueDate.setHours(0,0,0,0);
+
+      return dueDate < today;
+    }).length;
+
+  const dueTodayCount =
+    allOpenTasks.filter(task => {
+      if(!task.due_date){
+        return false;
+      }
+
+      const dueDate =
+        new Date(task.due_date);
+
+      return dueDate >= today && dueDate < tomorrow;
+    }).length;
+
+  const highPriorityCount =
+    allOpenTasks.filter(task =>
+      String(task.priority || "").toLowerCase() === "high"
+    ).length;
+
+  summary.innerHTML = `
+    <div>
+      <strong>${overdueCount}</strong>
+      <span>Overdue</span>
+    </div>
+    <div>
+      <strong>${dueTodayCount}</strong>
+      <span>Today</span>
+    </div>
+    <div>
+      <strong>${highPriorityCount}</strong>
+      <span>High</span>
+    </div>
+  `;
 
   const openTasks =
-    tasks
-      .filter(task => task.status !== "Complete")
-      .slice(0,5);
+    allOpenTasks
+      .sort((a,b) => {
+        const aDate =
+          a.due_date ? new Date(a.due_date).getTime() : Number.MAX_SAFE_INTEGER;
 
-  table.innerHTML = "";
+        const bDate =
+          b.due_date ? new Date(b.due_date).getTime() : Number.MAX_SAFE_INTEGER;
+
+        return aDate - bDate;
+      })
+      .slice(0,3);
+
+  list.innerHTML = "";
 
   if(openTasks.length === 0){
 
-    table.innerHTML = `
-      <tr>
-        <td colspan="5">
-          No open tasks.
-        </td>
-      </tr>
+    list.innerHTML = `
+      <div class="empty-state">
+        No open tasks.
+      </div>
     `;
 
     return;
@@ -272,22 +290,16 @@ function renderDashboardTasks(tasks){
     const clientName =
       `${task.first_name || ""} ${task.last_name || ""}`.trim();
 
-    table.innerHTML += `
-      <tr>
-        <td>${task.title || ""}</td>
-        <td>${clientName || "--"}</td>
-        <td>
-          <span class="status ${(task.priority || "medium").toLowerCase()}">
-            ${task.priority || "Medium"}
-          </span>
-        </td>
-        <td>${formatDate(task.due_date) || "--"}</td>
-        <td>
-          <button onclick="window.location.href='tasks.html'">
-            View
-          </button>
-        </td>
-      </tr>
+    list.innerHTML += `
+      <button class="dashboard-task-row" onclick="window.location.href='tasks.html'">
+        <span>
+          <strong>${task.title || "Task"}</strong>
+          <small>${clientName || "No client"} • ${formatDate(task.due_date) || "No due date"}</small>
+        </span>
+        <span class="status ${(task.priority || "medium").toLowerCase()}">
+          ${task.priority || "Medium"}
+        </span>
+      </button>
     `;
 
   });
