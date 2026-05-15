@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notifications - VitaLink CRM</title>
+<link rel="stylesheet" href="crm.css">
+</head>
+<body>
+
+<div class="sidebar">
+  <a href="index.html"><img src="../images/vitalink-logo.png" class="logo"></a>
+  <div class="nav-section">
+    <div class="nav-title">CRM</div>
+    <a href="index.html"><div class="nav-item">Dashboard</div></a>
+    <a href="clients.html"><div class="nav-item">Clients</div></a>
+    <a href="schedule.html"><div class="nav-item">Schedule</div></a>
+    <a href="tasks.html"><div class="nav-item">Tasks</div></a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-title">VitaLink</div>
+    <a href="vitalink-profiles.html"><div class="nav-item">Linked Profiles</div></a>
+    <a href="vitalink-notifications.html"><div class="nav-item active">Notifications</div></a>
+    <a href="vitalink-exports.html"><div class="nav-item">Exports</div></a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-title">Account</div>
+    <a href="settings.html"><div class="nav-item">Settings</div></a>
+    <div class="nav-item disabled" aria-disabled="true">Logout</div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div>
+      <h1>Notifications</h1>
+      <div style="color:#6b7280;">Send VitaLink app reminders to your connected clients.</div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Send Client Reminder</h3>
+      </div>
+
+      <div class="info-row">
+        <div class="label">Campaign</div>
+        <select id="campaign">
+          <option value="GENERAL">General Info Request</option>
+          <option value="PREP">Enrollment Prep</option>
+          <option value="AEP">AEP Review</option>
+          <option value="OEP">OEP Review</option>
+          <option value="UPDATE">App Update</option>
+        </select>
+      </div>
+
+      <button id="sendNotificationBtn" onclick="sendNotification()">Send Notification</button>
+
+      <div class="client-sub" id="notificationResult" style="margin-top:16px;"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Linked Profile Status</h3>
+      </div>
+      <div class="info-row">
+        <div class="label">Agent Email</div>
+        <div class="value" id="agentEmailValue"></div>
+      </div>
+      <div class="info-row">
+        <div class="label">Tip</div>
+        <div class="value">Clients need the app installed and registered on a device before notifications can be delivered.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="crm.js"></script>
+<script src="vitalink-notifications.js"></script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linked Profiles - VitaLink CRM</title>
+<link rel="stylesheet" href="crm.css">
+</head>
+<body>
+
+<div class="sidebar">
+  <a href="index.html">
+    <img src="../images/vitalink-logo.png" class="logo">
+  </a>
+
+  <div class="nav-section">
+    <div class="nav-title">CRM</div>
+    <a href="index.html"><div class="nav-item">Dashboard</div></a>
+    <a href="clients.html"><div class="nav-item">Clients</div></a>
+    <a href="schedule.html"><div class="nav-item">Schedule</div></a>
+    <a href="tasks.html"><div class="nav-item">Tasks</div></a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-title">VitaLink</div>
+    <a href="vitalink-profiles.html"><div class="nav-item active">Linked Profiles</div></a>
+    <a href="vitalink-notifications.html"><div class="nav-item">Notifications</div></a>
+    <a href="vitalink-exports.html"><div class="nav-item">Exports</div></a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-title">Account</div>
+    <a href="settings.html"><div class="nav-item">Settings</div></a>
+    <div class="nav-item disabled" aria-disabled="true">Logout</div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div>
+      <h1>Linked Profiles</h1>
+      <div style="color:#6b7280;">Review which VitaLink app clients are connected to CRM records.</div>
+    </div>
+
+    <div class="top-actions">
+      <button class="secondary" onclick="syncVitalinkClients()">Sync VitaLink</button>
+      <button onclick="loadProfiles()">Refresh</button>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-number" id="totalProfiles">0</div>
+      <div class="muted">VitaLink clients</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" id="linkedProfiles">0</div>
+      <div class="muted">Linked to CRM</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" id="deviceProfiles">0</div>
+      <div class="muted">Can receive app notifications</div>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>Client</th>
+          <th>Phone</th>
+          <th>Email</th>
+          <th>CRM Link</th>
+          <th>App Device</th>
+          <th>Last Sync</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="profilesTable"></tbody>
+    </table>
+  </div>
+</div>
+
+<script src="crm.js"></script>
+<script src="vitalink-profiles.js"></script>
+</body>
+</html>

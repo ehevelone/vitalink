@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exports - VitaLink CRM</title>
+<link rel="stylesheet" href="crm.css">
+</head>
+<body>
+
+<div class="sidebar">
+  <a href="index.html"><img src="../images/vitalink-logo.png" class="logo"></a>
+  <div class="nav-section">
+    <div class="nav-title">CRM</div>
+    <a href="index.html"><div class="nav-item">Dashboard</div></a>
+    <a href="clients.html"><div class="nav-item">Clients</div></a>
+    <a href="schedule.html"><div class="nav-item">Schedule</div></a>
+    <a href="tasks.html"><div class="nav-item">Tasks</div></a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-title">VitaLink</div>
+    <a href="vitalink-profiles.html"><div class="nav-item">Linked Profiles</div></a>
+    <a href="vitalink-notifications.html"><div class="nav-item">Notifications</div></a>
+    <a href="vitalink-exports.html"><div class="nav-item active">Exports</div></a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-title">Account</div>
+    <a href="settings.html"><div class="nav-item">Settings</div></a>
+    <div class="nav-item disabled" aria-disabled="true">Logout</div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div>
+      <h1>Exports</h1>
+      <div style="color:#6b7280;">Download VitaLink and CRM data for reporting or backup.</div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">VitaLink App Export</h3>
+      </div>
+      <div class="client-sub">Exports app clients with medications and doctors from VitaLink.</div>
+      <button style="margin-top:18px;" onclick="exportVitalinkClients()">Download VitaLink CSV</button>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">CRM Export</h3>
+      </div>
+      <div class="client-sub">Exports CRM client records currently loaded in the CRM.</div>
+      <button style="margin-top:18px;" onclick="window.location.href='clients.html'">Open CRM Clients</button>
+    </div>
+  </div>
+</div>
+
+<script src="crm.js"></script>
+<script src="vitalink-exports.js"></script>
+</body>
+</html>
