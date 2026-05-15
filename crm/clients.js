@@ -7,6 +7,36 @@ if(!sessionStorage.getItem("crm_uuid")){
 let clients = [];
 let appointments = [];
 let crmSettings = {};
+let importRows = [];
+
+function normalizeClientStatus(status){
+
+  if(status === "Active"){
+    return "Client";
+  }
+
+  if(status === "Follow-Up"){
+    return "Follow Up";
+  }
+
+  if(status === "Prospect - Cold" ||
+    status === "Prospect - Warm" ||
+    status === "Prospect - Hot"){
+    return "Prospect";
+  }
+
+  return status || "Client";
+
+}
+
+function getClientStatusClass(status){
+
+  return normalizeClientStatus(status)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+
+}
 
 function formatPhone(phone){
 
@@ -24,6 +54,9 @@ function formatPhone(phone){
 }
 
 function openClientModal(){
+
+  document.getElementById("clientStatus").value =
+    crmSettings.default_client_status || "Client";
 
   document.getElementById(
     "clientModal"
@@ -74,7 +107,9 @@ async function saveClient(){
       document.getElementById("zip").value,
 
     status:
-      crmSettings.default_client_status || "Active"
+      document.getElementById("clientStatus").value ||
+      crmSettings.default_client_status ||
+      "Client"
 
   };
 
@@ -114,10 +149,131 @@ async function saveClient(){
   document.getElementById("city").value = "";
   document.getElementById("state").value = "";
   document.getElementById("zip").value = "";
+  document.getElementById("clientStatus").value =
+    crmSettings.default_client_status || "Client";
 
   closeClientModal();
 
   loadClients();
+
+}
+
+async function importClients(){
+
+  if(importRows.length === 0){
+    alert("Choose a CSV file first.");
+    return;
+  }
+
+  const button =
+    document.getElementById("importClientsBtn");
+
+  button.disabled = true;
+  button.innerText = "Importing...";
+
+  const res = await fetch(
+    "/.netlify/functions/import-crm-clients",
+    {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        agent_id:sessionStorage.getItem("crm_uuid"),
+        default_status:crmSettings.default_client_status || "Client",
+        clients:importRows
+      })
+    }
+  );
+
+  const data = await res.json();
+
+  button.disabled = false;
+  button.innerText = "Import Clients";
+
+  if(!data.success){
+
+    alert(data.error || "Failed to import clients.");
+    return;
+
+  }
+
+  document.getElementById("importSummary").innerText =
+    `Imported ${data.imported}. Skipped ${data.skipped}. Duplicates ${data.duplicates}.`;
+
+  document.getElementById("importClientsBtn").style.display = "none";
+
+  loadClients();
+
+}
+
+function convertRowsToCsv(rows){
+
+  if(!rows.length){
+    return "";
+  }
+
+  const columns =
+    Array.from(
+      rows.reduce((set, row) => {
+
+        Object.keys(row).forEach(key =>
+          set.add(key)
+        );
+
+        return set;
+
+      }, new Set())
+    );
+
+  const escapeCell = value => {
+
+    if(value === null || value === undefined){
+      return "";
+    }
+
+    return `"${String(value).replace(/"/g, '""')}"`;
+
+  };
+
+  return [
+    columns.join(","),
+    ...rows.map(row =>
+      columns.map(column =>
+        escapeCell(row[column])
+      ).join(",")
+    )
+  ].join("\n");
+
+}
+
+function downloadCsv(filename, csv){
+
+  const blob =
+    new Blob([csv], {
+      type:"text/csv;charset=utf-8;"
+    });
+
+  const url =
+    URL.createObjectURL(blob);
+
+  const link =
+    document.createElement("a");
+
+  link.href = url;
+  link.download = filename;
+  link.click();
+
+  URL.revokeObjectURL(url);
+
+}
+
+function exportClientsCsv(){
+
+  downloadCsv(
+    "vitalink-clients.csv",
+    convertRowsToCsv(clients)
+  );
 
 }
 
@@ -159,6 +315,292 @@ async function loadClients(){
     appointmentsData.success ? appointmentsData.appointments || [] : [];
 
   renderClients();
+
+}
+
+function openImportModal(){
+
+  importRows = [];
+
+  document.getElementById("clientImportFile").value = "";
+  document.getElementById("importSummary").innerText = "";
+  document.getElementById("importPreviewTable").innerHTML = "";
+  document.getElementById("importPreviewCard").style.display = "none";
+  document.getElementById("importClientsBtn").style.display = "none";
+  document.getElementById("importModal").style.display = "flex";
+
+}
+
+function closeImportModal(){
+
+  document.getElementById("importModal").style.display = "none";
+
+}
+
+function parseCsv(text){
+
+  const rows = [];
+  let row = [];
+  let value = "";
+  let inQuotes = false;
+
+  for(let i = 0; i < text.length; i++){
+
+    const char = text[i];
+    const next = text[i + 1];
+
+    if(char === '"' && inQuotes && next === '"'){
+      value += '"';
+      i += 1;
+      continue;
+    }
+
+    if(char === '"'){
+      inQuotes = !inQuotes;
+      continue;
+    }
+
+    if(char === "," && !inQuotes){
+      row.push(value);
+      value = "";
+      continue;
+    }
+
+    if((char === "\n" || char === "\r") && !inQuotes){
+
+      if(char === "\r" && next === "\n"){
+        i += 1;
+      }
+
+      row.push(value);
+
+      if(row.some(cell => cell.trim())){
+        rows.push(row);
+      }
+
+      row = [];
+      value = "";
+      continue;
+
+    }
+
+    value += char;
+
+  }
+
+  row.push(value);
+
+  if(row.some(cell => cell.trim())){
+    rows.push(row);
+  }
+
+  return rows;
+
+}
+
+function normalizeHeader(value){
+
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+
+}
+
+function getImportValue(row, aliases){
+
+  for(const alias of aliases){
+
+    const value =
+      row[alias];
+
+    if(value){
+      return value.trim();
+    }
+
+  }
+
+  return "";
+
+}
+
+function splitFullName(name){
+
+  const parts =
+    String(name || "").trim().split(/\s+/);
+
+  if(parts.length <= 1){
+    return {
+      first_name:parts[0] || "",
+      last_name:""
+    };
+  }
+
+  return {
+    first_name:parts.slice(0, -1).join(" "),
+    last_name:parts[parts.length - 1]
+  };
+
+}
+
+function mapImportRow(row){
+
+  const fullName =
+    getImportValue(row, [
+      "name",
+      "fullname",
+      "clientname",
+      "membername"
+    ]);
+
+  const splitName =
+    splitFullName(fullName);
+
+  return {
+    first_name:
+      getImportValue(row, [
+        "firstname",
+        "first"
+      ]) || splitName.first_name,
+    last_name:
+      getImportValue(row, [
+        "lastname",
+        "last"
+      ]) || splitName.last_name,
+    dob:
+      getImportValue(row, [
+        "dob",
+        "dateofbirth",
+        "birthdate"
+      ]),
+    mobile_phone:
+      getImportValue(row, [
+        "mobilephone",
+        "mobile",
+        "cellphone",
+        "cell",
+        "phone",
+        "primaryphone"
+      ]),
+    landline_phone:
+      getImportValue(row, [
+        "landlinephone",
+        "homephone",
+        "secondaryphone"
+      ]),
+    email:
+      getImportValue(row, [
+        "email",
+        "emailaddress"
+      ]),
+    address:
+      getImportValue(row, [
+        "address",
+        "street",
+        "streetaddress",
+        "address1"
+      ]),
+    city:
+      getImportValue(row, [
+        "city"
+      ]),
+    state:
+      getImportValue(row, [
+        "state"
+      ]),
+    zip:
+      getImportValue(row, [
+        "zip",
+        "zipcode",
+        "postalcode"
+      ]),
+    status:
+      normalizeClientStatus(getImportValue(row, [
+        "status",
+        "clientstatus"
+      ]) || crmSettings.default_client_status || "Client")
+  };
+
+}
+
+function renderImportPreview(){
+
+  const table =
+    document.getElementById("importPreviewTable");
+
+  table.innerHTML = "";
+
+  importRows.slice(0, 8).forEach(client => {
+
+    table.innerHTML += `
+      <tr>
+        <td>${client.first_name || ""} ${client.last_name || ""}</td>
+        <td>${client.mobile_phone || ""}</td>
+        <td>${client.email || ""}</td>
+        <td>${client.city || ""}</td>
+        <td>${normalizeClientStatus(client.status)}</td>
+      </tr>
+    `;
+
+  });
+
+  document.getElementById("importPreviewCard").style.display =
+    importRows.length ? "block" : "none";
+
+  document.getElementById("importClientsBtn").style.display =
+    importRows.length ? "block" : "none";
+
+  document.getElementById("importSummary").innerText =
+    importRows.length
+      ? `${importRows.length} client row${importRows.length === 1 ? "" : "s"} ready to import. Previewing the first ${Math.min(importRows.length, 8)}.`
+      : "No client rows found in this file.";
+
+}
+
+function handleImportFile(){
+
+  const file =
+    document.getElementById("clientImportFile").files[0];
+
+  if(!file){
+    return;
+  }
+
+  const reader =
+    new FileReader();
+
+  reader.onload = () => {
+
+    const parsed =
+      parseCsv(reader.result || "");
+
+    const headers =
+      (parsed[0] || []).map(normalizeHeader);
+
+    importRows =
+      parsed.slice(1)
+        .map(row => {
+
+          const keyed = {};
+
+          headers.forEach((header, index) => {
+            keyed[header] = String(row[index] || "");
+          });
+
+          return mapImportRow(keyed);
+
+        })
+        .filter(client =>
+          client.first_name ||
+          client.last_name ||
+          client.email ||
+          client.mobile_phone
+        );
+
+    renderImportPreview();
+
+  };
+
+  reader.readAsText(file);
 
 }
 
@@ -236,6 +678,11 @@ function matchesScheduleFilter(client, filter){
 
   weekEnd.setDate(today.getDate() + 7);
 
+  const monthEnd =
+    new Date(today);
+
+  monthEnd.setMonth(today.getMonth() + 1);
+
   return clientAppointments.some(appointment => {
 
     const date =
@@ -249,6 +696,10 @@ function matchesScheduleFilter(client, filter){
 
     if(filter === "This Week"){
       return date >= today && date <= weekEnd;
+    }
+
+    if(filter === "This Month"){
+      return date >= today && date <= monthEnd;
     }
 
     return true;
@@ -286,7 +737,7 @@ function renderClients(){
       (client.city || "").toLowerCase().includes(search);
 
     const clientStatus =
-      client.status || "Active";
+      normalizeClientStatus(client.status);
 
     const matchesStatus =
       !statusFilter ||
@@ -343,8 +794,8 @@ function renderClients(){
 
         <td>
 
-          <span class="status ${(client.status || "active").toLowerCase().replace(/\s+/g,"-")}">
-            ${client.status || "Active"}
+          <span class="status ${getClientStatusClass(client.status)}">
+            ${normalizeClientStatus(client.status)}
           </span>
 
         </td>
@@ -607,6 +1058,15 @@ window.onclick = function(event){
   if(event.target === modal){
 
     closeClientModal();
+
+  }
+
+  const importModal =
+    document.getElementById("importModal");
+
+  if(event.target === importModal){
+
+    closeImportModal();
 
   }
 

@@ -19,6 +19,13 @@ const editableFields = [
   "state",
   "zip",
   "status",
+  "linked_app_client_id",
+  "profile_linked",
+  "emergency_profile",
+  "insurance_cards_uploaded",
+  "medication_list",
+  "doctor_list",
+  "last_sync",
   "marital_status",
   "spouse_name",
   "spouse_dob",
@@ -62,6 +69,13 @@ async function ensureClientColumns(){
     ADD COLUMN IF NOT EXISTS text_messaging TEXT,
     ADD COLUMN IF NOT EXISTS email_communication TEXT,
     ADD COLUMN IF NOT EXISTS status TEXT,
+    ADD COLUMN IF NOT EXISTS linked_app_client_id TEXT,
+    ADD COLUMN IF NOT EXISTS profile_linked TEXT,
+    ADD COLUMN IF NOT EXISTS emergency_profile TEXT,
+    ADD COLUMN IF NOT EXISTS insurance_cards_uploaded TEXT,
+    ADD COLUMN IF NOT EXISTS medication_list TEXT,
+    ADD COLUMN IF NOT EXISTS doctor_list TEXT,
+    ADD COLUMN IF NOT EXISTS last_sync TIMESTAMPTZ,
     ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW()
   `);
 

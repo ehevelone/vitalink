@@ -7,17 +7,17 @@ const pool = new Pool({
   }
 });
 
-async function deleteLinkedAppTask(task){
+async function deleteLinkedAppNote(note){
 
-  if(task.source_app_item_id){
+  if(note.source_app_item_id){
 
     await pool.query(
       `
       DELETE FROM agent_client_items
       WHERE id = $1
-        AND item_type = 'task'
+        AND item_type = 'note'
       `,
-      [task.source_app_item_id]
+      [note.source_app_item_id]
     );
 
     return;
@@ -36,16 +36,13 @@ async function deleteLinkedAppTask(task){
         ON c.linked_app_client_id = i.user_id::TEXT
       WHERE a.crm_uuid = $1
         AND c.id = $2
-        AND i.item_type = 'task'
-        AND (
-          i.body = COALESCE($3, '')
-          OR i.body = COALESCE($4, '')
-        )
+        AND i.item_type = 'note'
+        AND i.body = COALESCE($3, '')
       ORDER BY i.created_at DESC
       LIMIT 1
     )
     `,
-    [task.agent_id, task.client_id, task.notes, task.title]
+    [note.agent_id, note.client_id, note.note]
   );
 
 }
@@ -75,58 +72,36 @@ exports.handler = async (event) => {
         statusCode:400,
         body:JSON.stringify({
           success:false,
-          error:"Missing task id"
+          error:"Missing note id"
         })
       };
 
     }
 
-    const completedAt =
-      body.status === "Complete" ? new Date() : null;
-
     await pool.query(`
-      ALTER TABLE crm_tasks
+      ALTER TABLE crm_client_notes
       ADD COLUMN IF NOT EXISTS source_app_item_id BIGINT
     `);
 
     const result = await pool.query(
       `
-      UPDATE crm_tasks
-      SET
-        client_id = $1,
-        title = $2,
-        notes = $3,
-        due_date = $4,
-        priority = $5,
-        status = $6,
-        completed_at = $7,
-        updated_at = NOW()
-      WHERE id = $8
-      RETURNING *
+      DELETE FROM crm_client_notes
+      WHERE id = $1
+      RETURNING source_app_item_id, agent_id, client_id, note
       `,
-      [
-        body.client_id || null,
-        body.title,
-        body.notes || null,
-        body.due_date || null,
-        body.priority || "Medium",
-        body.status || "Open",
-        completedAt,
-        body.id
-      ]
+      [body.id]
     );
 
-    if(body.status === "Complete" && result.rows[0]){
+    if(result.rows[0]){
 
-      await deleteLinkedAppTask(result.rows[0]);
+      await deleteLinkedAppNote(result.rows[0]);
       
     }
 
     return{
       statusCode:200,
       body:JSON.stringify({
-        success:true,
-        task:result.rows[0]
+        success:true
       })
     };
 

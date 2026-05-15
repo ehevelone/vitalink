@@ -208,6 +208,34 @@ a{
   resize:vertical;
 }
 
+.import-modal{
+  max-width:860px;
+}
+
+.import-dropzone{
+  margin-top:18px;
+  padding:18px;
+  border:1px dashed #cbd5e1;
+  border-radius:12px;
+  background:#f8fafc;
+}
+
+.import-dropzone input{
+  width:100%;
+}
+
+.import-summary{
+  margin-top:16px;
+  color:#374151;
+  line-height:1.45;
+}
+
+.import-preview-card{
+  margin-top:16px;
+  max-height:260px;
+  overflow:auto;
+}
+
 @media(max-width:760px){
 
   .settings-grid{
@@ -309,6 +337,18 @@ button:hover{
   font-size:.8rem;
   color:var(--muted);
   margin-top:8px;
+}
+
+.note-footer{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-top:8px;
+}
+
+.note-footer .note-date{
+  margin-top:0;
 }
 
 /* =========================================
@@ -562,6 +602,11 @@ td{
   color:#166534;
 }
 
+.client{
+  background:#dcfce7;
+  color:#166534;
+}
+
 .followup{
   background:#fef3c7;
   color:#92400e;
@@ -570,6 +615,51 @@ td{
 .follow-up{
   background:#fef3c7;
   color:#92400e;
+}
+
+.prospect-cold{
+  background:#e5e7eb;
+  color:#374151;
+}
+
+.prospect-warm{
+  background:#fef3c7;
+  color:#92400e;
+}
+
+.prospect-hot{
+  background:#fee2e2;
+  color:#991b1b;
+}
+
+.prospect{
+  background:#e0f2fe;
+  color:#075985;
+}
+
+.appointment-set{
+  background:#ede9fe;
+  color:#5b21b6;
+}
+
+.follow-up{
+  background:#fef3c7;
+  color:#92400e;
+}
+
+.not-interested{
+  background:#f3f4f6;
+  color:#4b5563;
+}
+
+.do-not-call{
+  background:#fee2e2;
+  color:#991b1b;
+}
+
+.deceased{
+  background:#111827;
+  color:#f9fafb;
 }
 
 .search-card{

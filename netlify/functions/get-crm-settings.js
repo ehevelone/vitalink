@@ -118,7 +118,7 @@ exports.handler = async (event) => {
           default_task_due_days:7,
           show_completed_tasks:false,
           renewal_reminder_days:60,
-          default_client_status:"Active",
+          default_client_status:"Client",
           notify_appointments:true,
           notify_overdue_tasks:true,
           notify_renewals:true,

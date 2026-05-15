@@ -131,13 +131,16 @@
     <div class="top-actions">
 
       <button
-        class="top-action-btn secondary"
-        onclick="sendClientNotification()"
->
-        Send Notification
+        class="secondary"
+        onclick="openImportModal()"
+      >
+        Import Clients
       </button>
 
-      <button class="secondary-btn">
+      <button
+        class="secondary"
+        onclick="exportClientsCsv()"
+      >
         Export CSV
       </button>
 
@@ -167,9 +170,13 @@
 
       <select id="clientStatusFilter">
         <option>All Statuses</option>
-        <option>Active</option>
-        <option>Follow-Up</option>
-        <option>Inactive</option>
+        <option>Prospect</option>
+        <option>Appointment Set</option>
+        <option>Follow Up</option>
+        <option>Client</option>
+        <option>Not Interested</option>
+        <option>Do Not Call</option>
+        <option>Deceased</option>
       </select>
 
       <select id="clientScheduleFilter">
@@ -233,6 +240,84 @@
       </tbody>
 
     </table>
+
+  </div>
+
+</div>
+
+<!-- =========================================
+     IMPORT CLIENTS MODAL
+========================================= -->
+
+<div id="importModal" class="modal-overlay">
+
+  <div class="modal import-modal">
+
+    <div class="modal-header">
+
+      <h2>Import Clients</h2>
+
+      <button
+        class="close-btn"
+        onclick="closeImportModal()"
+      >
+        âœ•
+      </button>
+
+    </div>
+
+    <div class="client-sub">
+      Upload a CSV. The importer will match common columns like name, phone, email, address, and status.
+    </div>
+
+    <div class="import-dropzone">
+
+      <input
+        id="clientImportFile"
+        type="file"
+        accept=".csv,text/csv"
+        onchange="handleImportFile()"
+      >
+
+    </div>
+
+    <div
+      class="import-summary"
+      id="importSummary"
+    >
+    </div>
+
+    <div
+      class="table-card import-preview-card"
+      id="importPreviewCard"
+      style="display:none;"
+    >
+
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>City</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+
+        <tbody id="importPreviewTable">
+        </tbody>
+
+      </table>
+
+    </div>
+
+    <button
+      id="importClientsBtn"
+      onclick="importClients()"
+      style="margin-top:20px; width:100%; display:none;"
+    >
+      Import Clients
+    </button>
 
   </div>
 
@@ -320,6 +405,16 @@
         type="text"
         placeholder="ZIP"
       >
+
+      <select id="clientStatus">
+        <option>Prospect</option>
+        <option>Appointment Set</option>
+        <option>Follow Up</option>
+        <option>Client</option>
+        <option>Not Interested</option>
+        <option>Do Not Call</option>
+        <option>Deceased</option>
+      </select>
 
     </div>
 

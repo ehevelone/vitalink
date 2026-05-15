@@ -144,7 +144,7 @@ async function loadCrmSettings(){
 
   setInputValue(
     "defaultClientStatus",
-    crmSettings.default_client_status || "Active"
+    crmSettings.default_client_status || "Client"
   );
   setInputValue(
     "renewalReminderDays",

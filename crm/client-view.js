@@ -2,6 +2,26 @@ const params = new URLSearchParams(window.location.search);
 
 const clientId = params.get("id");
 
+function normalizeClientStatus(status){
+
+  if(status === "Active"){
+    return "Client";
+  }
+
+  if(status === "Follow-Up"){
+    return "Follow Up";
+  }
+
+  if(status === "Prospect - Cold" ||
+    status === "Prospect - Warm" ||
+    status === "Prospect - Hot"){
+    return "Prospect";
+  }
+
+  return status || "Client";
+
+}
+
 async function loadClient(){
 
   const res = await fetch(
@@ -33,6 +53,9 @@ async function loadClient(){
 
   document.getElementById("lastName").value =
     client.last_name || "";
+
+  document.getElementById("clientStatus").value =
+    normalizeClientStatus(client.status);
 
   document.getElementById("dob").value =
     formatDate(client.dob);
@@ -107,7 +130,8 @@ async function loadClient(){
   setText("profileLinked", client.profile_linked || "Not Linked");
   setText("emergencyProfile", client.emergency_profile || "Not Recorded");
   setText("insuranceCardsUploaded", client.insurance_cards_uploaded || "Not Recorded");
-  setText("medicationList", client.medication_list || "Not Recorded");
+  setValue("medicationList", client.medication_list);
+  setValue("doctorList", client.doctor_list);
   setText("lastSync", formatDate(client.last_sync) || "Not Synced");
 
   /* =========================================
@@ -151,6 +175,7 @@ function toggleClientEdit(){
 
     "firstName",
     "lastName",
+    "clientStatus",
     "dob",
     "mobilePhone",
     "landlinePhone",
@@ -189,6 +214,17 @@ function setText(id, value){
   if(document.getElementById(id)){
     document.getElementById(id).innerText = value || "";
   }
+
+}
+
+function escapeHtml(value){
+
+  return (value || "").toString()
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 
 }
 
@@ -253,6 +289,105 @@ async function loadClientTasks(){
     `;
 
   });
+
+}
+
+async function loadClientNotes(){
+
+  const container =
+    document.getElementById("clientNotesList");
+
+  if(!container){
+    return;
+  }
+
+  const agent_id =
+    sessionStorage.getItem("crm_uuid");
+
+  const res = await fetch(
+    `/.netlify/functions/get-crm-notes?agent_id=${agent_id}&client_id=${clientId}`
+  );
+
+  const data = await res.json();
+
+  if(!data.success){
+    return;
+  }
+
+  const notes =
+    data.notes || [];
+
+  container.innerHTML = "";
+
+  if(notes.length === 0){
+
+    container.innerHTML = `
+      <div class="client-sub">
+        No notes for this client.
+      </div>
+    `;
+
+    return;
+
+  }
+
+  notes.forEach(note => {
+
+    container.innerHTML += `
+      <div class="note">
+        <div>
+          ${escapeHtml(note.note)}
+        </div>
+        <div class="note-footer">
+          <div class="note-date">
+            ${note.created_at ? formatDate(note.created_at) : ""}
+            ${note.source ? ` - ${escapeHtml(note.source)}` : ""}
+          </div>
+          <button
+            class="edit-btn danger-btn"
+            onclick="deleteClientNote('${note.id}')"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    `;
+
+  });
+
+}
+
+async function deleteClientNote(id){
+
+  const confirmed = confirm(
+    "Delete this note?"
+  );
+
+  if(!confirmed){
+    return;
+  }
+
+  const res = await fetch(
+    "/.netlify/functions/delete-crm-note",
+    {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({ id })
+    }
+  );
+
+  const data = await res.json();
+
+  if(!data.success){
+
+    alert("Failed to delete note.");
+    return;
+
+  }
+
+  loadClientNotes();
 
 }
 
@@ -327,7 +462,10 @@ async function saveClientInfo(){
       document.getElementById("state").value,
 
     zip:
-      document.getElementById("zip").value
+      document.getElementById("zip").value,
+
+    status:
+      document.getElementById("clientStatus").value
 
   };
 
@@ -356,6 +494,48 @@ async function saveClientInfo(){
   toggleClientEdit();
 
   loadClient();
+
+}
+
+/* =========================================
+   CLINICAL EDIT
+========================================= */
+
+let clinicalEdit = false;
+
+function toggleClinicalEdit(){
+
+  clinicalEdit = !clinicalEdit;
+
+  [
+    "medicationList",
+    "doctorList"
+  ].forEach(id => {
+
+    document.getElementById(id).disabled =
+      !clinicalEdit;
+
+  });
+
+  document.getElementById(
+    "saveClinicalBtn"
+  ).style.display =
+    clinicalEdit ? "block" : "none";
+
+}
+
+async function saveClinicalInfo(){
+
+  const saved = await saveClientPatch({
+    medication_list:
+      document.getElementById("medicationList").value,
+    doctor_list:
+      document.getElementById("doctorList").value
+  });
+
+  if(saved){
+    toggleClinicalEdit();
+  }
 
 }
 
@@ -484,6 +664,7 @@ async function createSpouseProfile(){
 
 loadClient();
 loadClientTasks();
+loadClientNotes();
 
 /* =========================================
    LEAD EDIT

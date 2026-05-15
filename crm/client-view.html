@@ -188,6 +188,28 @@
   <div class="info-row">
 
     <div class="label">
+      Status
+    </div>
+
+    <select
+      class="edit-input"
+      id="clientStatus"
+      disabled
+    >
+      <option>Prospect</option>
+      <option>Appointment Set</option>
+      <option>Follow Up</option>
+      <option>Client</option>
+      <option>Not Interested</option>
+      <option>Do Not Call</option>
+      <option>Deceased</option>
+    </select>
+
+  </div>
+
+  <div class="info-row">
+
+    <div class="label">
       Date of Birth
     </div>
 
@@ -799,20 +821,6 @@
   <div class="info-row">
 
     <div class="label">
-      Medication List
-    </div>
-
-    <div
-      class="value"
-      id="medicationList"
-    >
-    </div>
-
-  </div>
-
-  <div class="info-row">
-
-    <div class="label">
       Last Sync
     </div>
 
@@ -823,6 +831,63 @@
     </div>
 
   </div>
+
+</div>
+
+<!-- MEDICATIONS & DOCTORS -->
+
+<div class="card">
+
+  <div class="card-header">
+
+    <h3 class="card-title">
+      Medications & Doctors
+    </h3>
+
+    <button
+      class="edit-btn secondary"
+      onclick="toggleClinicalEdit()"
+    >
+      Edit
+    </button>
+
+  </div>
+
+  <div class="info-row">
+
+    <div class="label">
+      Medications
+    </div>
+
+    <textarea
+      class="edit-textarea"
+      id="medicationList"
+      disabled
+    ></textarea>
+
+  </div>
+
+  <div class="info-row">
+
+    <div class="label">
+      Doctors
+    </div>
+
+    <textarea
+      class="edit-textarea"
+      id="doctorList"
+      disabled
+    ></textarea>
+
+  </div>
+
+  <button
+    class="save-btn"
+    id="saveClinicalBtn"
+    onclick="saveClinicalInfo()"
+  >
+    Save Medications & Doctors
+  </button>
 
 </div>
 
@@ -846,6 +911,23 @@
   </div>
 
   <div id="clientTasksList">
+  </div>
+
+</div>
+
+<!-- CLIENT NOTES -->
+
+<div class="card">
+
+  <div class="card-header">
+
+    <h3 class="card-title">
+      Client Notes
+    </h3>
+
+  </div>
+
+  <div id="clientNotesList">
   </div>
 
 </div>

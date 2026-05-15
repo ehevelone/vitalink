@@ -74,7 +74,7 @@ exports.handler = async (event) => {
         body.city,
         body.state,
         body.zip,
-        body.status || "Active"
+        body.status || "Client"
 
       ]
 
