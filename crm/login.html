@@ -515,8 +515,6 @@ async function login(){
 
     const data = await res.json();
 
-    console.log("LOGIN RESPONSE:", data);
-
     // ✅ DIRECT LOGIN
     if(data.step === "login_success"){
 

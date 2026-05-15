@@ -80,6 +80,16 @@ a{
   font-weight:600;
 }
 
+.nav-item.disabled{
+  color:#9ca3af;
+  cursor:not-allowed;
+  opacity:.72;
+}
+
+.nav-item.disabled:hover{
+  background:transparent;
+}
+
 /* =========================================
    MAIN
 ========================================= */
@@ -654,6 +664,49 @@ input, select{
   display:flex;
   gap:14px;
   flex-wrap:wrap;
+}
+
+.tasks-filter-card{
+  max-width:900px;
+}
+
+.tasks-filter-row{
+  display:grid;
+  grid-template-columns:minmax(260px, 1fr) 180px 180px;
+  gap:14px;
+}
+
+.task-modal-grid{
+  grid-template-columns:1.4fr 180px;
+}
+
+.task-title-input,
+.task-notes-input{
+  grid-column:1/3;
+}
+
+.task-notes-input{
+  width:100%;
+  padding:12px 14px;
+  border-radius:10px;
+  border:1px solid #d1d5db;
+  font-size:.95rem;
+  font-family:inherit;
+  resize:vertical;
+}
+
+@media(max-width:900px){
+
+  .tasks-filter-row,
+  .task-modal-grid{
+    grid-template-columns:1fr;
+  }
+
+  .task-title-input,
+  .task-notes-input{
+    grid-column:auto;
+  }
+
 }
 
 .renewal-grid{

@@ -51,17 +51,17 @@
 
     <div class="nav-title">VitaLink</div>
 
-    <a href="linked-profiles.html">
-      <div class="nav-item">📱 Linked Profiles</div>
-    </a>
+    <div class="nav-item disabled" aria-disabled="true">
+      📱 Linked Profiles
+    </div>
 
-    <a href="notifications.html">
-      <div class="nav-item">🔔 Notifications</div>
-    </a>
+    <div class="nav-item disabled" aria-disabled="true">
+      🔔 Notifications
+    </div>
 
-    <a href="exports.html">
-      <div class="nav-item">📤 Exports</div>
-    </a>
+    <div class="nav-item disabled" aria-disabled="true">
+      📤 Exports
+    </div>
 
   </div>
 
@@ -73,9 +73,9 @@
       <div class="nav-item">⚙ Settings</div>
     </a>
 
-    <a href="billing.html">
-      <div class="nav-item">💳 Billing</div>
-    </a>
+    <div class="nav-item disabled" aria-disabled="true">
+      💳 Billing
+    </div>
 
   </div>
 
@@ -138,9 +138,9 @@
 
   <!-- FILTERS -->
 
-  <div class="filter-card">
+  <div class="filter-card tasks-filter-card">
 
-    <div class="filter-row">
+    <div class="filter-row tasks-filter-row">
 
       <input
         id="taskSearch"
@@ -221,12 +221,13 @@
 
     </div>
 
-    <div class="modal-grid">
+    <div class="modal-grid task-modal-grid">
 
       <input
         id="taskTitle"
         type="text"
         placeholder="Task Title"
+        class="task-title-input"
       >
 
       <select id="taskPriority">
@@ -257,7 +258,7 @@
         id="taskNotes"
         placeholder="Notes"
         rows="4"
-        style="grid-column:1/3;"
+        class="task-notes-input"
       ></textarea>
 
     </div>

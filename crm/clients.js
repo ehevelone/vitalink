@@ -4,6 +4,9 @@ if(!sessionStorage.getItem("crm_uuid")){
 
 }
 
+let clients = [];
+let appointments = [];
+
 function formatPhone(phone){
 
   if(!phone) return "";
@@ -119,11 +122,23 @@ async function loadClients(){
   const agent_id =
     sessionStorage.getItem("crm_uuid");
 
-  const res = await fetch(
-    `/.netlify/functions/get-crm-clients?agent_id=${agent_id}`
-  );
+  const [
+    clientsRes,
+    appointmentsRes
+  ] = await Promise.all([
 
-  const data = await res.json();
+    fetch(
+      `/.netlify/functions/get-crm-clients?agent_id=${agent_id}`
+    ),
+
+    fetch(
+      `/.netlify/functions/get-crm-appointments?agent_id=${agent_id}`
+    )
+
+  ]);
+
+  const data = await clientsRes.json();
+  const appointmentsData = await appointmentsRes.json();
 
   if(!data.success){
 
@@ -133,12 +148,148 @@ async function loadClients(){
 
   }
 
+  clients =
+    data.clients || [];
+
+  appointments =
+    appointmentsData.success ? appointmentsData.appointments || [] : [];
+
+  renderClients();
+
+}
+
+function getClientAppointments(clientId){
+
+  return appointments.filter(appointment =>
+    String(appointment.client_id) === String(clientId)
+  );
+
+}
+
+function getScheduleLabel(clientId){
+
+  const clientAppointments =
+    getClientAppointments(clientId);
+
+  if(clientAppointments.length === 0){
+    return "No Schedule";
+  }
+
+  const nextAppointment =
+    clientAppointments
+      .filter(appointment =>
+        new Date(appointment.appointment_date) >= new Date()
+      )
+      .sort((a, b) =>
+        new Date(a.appointment_date) - new Date(b.appointment_date)
+      )[0];
+
+  if(!nextAppointment){
+    return "No Upcoming";
+  }
+
+  return formatDate(nextAppointment.appointment_date);
+
+}
+
+function matchesScheduleFilter(client, filter){
+
+  if(!filter || filter === "All Schedules"){
+    return true;
+  }
+
+  const clientAppointments =
+    getClientAppointments(client.id);
+
+  if(filter === "No Schedule"){
+    return clientAppointments.length === 0;
+  }
+
+  const today =
+    new Date();
+
+  today.setHours(0,0,0,0);
+
+  const weekEnd =
+    new Date(today);
+
+  weekEnd.setDate(today.getDate() + 7);
+
+  return clientAppointments.some(appointment => {
+
+    const date =
+      new Date(
+        `${String(appointment.appointment_date).split("T")[0]}T00:00:00`
+      );
+
+    if(filter === "Today"){
+      return date.getTime() === today.getTime();
+    }
+
+    if(filter === "This Week"){
+      return date >= today && date <= weekEnd;
+    }
+
+    return true;
+
+  });
+
+}
+
+function renderClients(){
+
+  const search =
+    (document.getElementById("clientSearch")?.value || "").toLowerCase();
+
+  const statusFilter =
+    document.getElementById("clientStatusFilter")?.value || "";
+
+  const scheduleFilter =
+    document.getElementById("clientScheduleFilter")?.value || "";
+
   const table =
     document.getElementById("clientsTable");
 
   table.innerHTML = "";
 
-  data.clients.forEach(client => {
+  const filteredClients = clients.filter(client => {
+
+    const name =
+      `${client.first_name || ""} ${client.last_name || ""}`.toLowerCase();
+
+    const matchesSearch =
+      !search ||
+      name.includes(search) ||
+      (client.email || "").toLowerCase().includes(search) ||
+      (client.mobile_phone || "").toLowerCase().includes(search) ||
+      (client.city || "").toLowerCase().includes(search);
+
+    const matchesStatus =
+      !statusFilter ||
+      statusFilter === "All Statuses" ||
+      statusFilter === "Active";
+
+    return matchesSearch &&
+      matchesStatus &&
+      matchesScheduleFilter(client, scheduleFilter);
+
+  });
+
+  if(filteredClients.length === 0){
+
+    table.innerHTML = `
+      <tr>
+        <td colspan="7">
+          No clients found.
+        </td>
+      </tr>
+    `;
+
+    return;
+
+  }
+
+  filteredClients.forEach(client => {
 
     table.innerHTML += `
 
@@ -175,7 +326,7 @@ async function loadClients(){
         </td>
 
         <td>
-          No Schedule
+          ${getScheduleLabel(client.id)}
         </td>
 
         <td>
@@ -194,13 +345,17 @@ async function loadClients(){
               class="options-btn secondary"
               onclick="toggleClientOptions(event, '${client.id}')"
             >
-              ⋯
+              ...
             </button>
 
             <div
               class="options-menu"
               id="clientOptions-${client.id}"
             >
+
+              <button onclick="viewClient('${client.id}')">
+                View
+              </button>
 
               <button onclick="newAppointmentForClient('${client.id}')">
                 New Appointment
@@ -210,10 +365,12 @@ async function loadClients(){
                 Follow-Up
               </button>
 
-              <button
-                onclick="taskForClient('${client.id}')"
-              >
+              <button onclick="taskForClient('${client.id}')">
                 Task
+              </button>
+
+              <button onclick="deleteClient('${client.id}')">
+                Remove
               </button>
 
             </div>
@@ -227,46 +384,6 @@ async function loadClients(){
     `;
 
   });
-
-}
-
-function sendClientNotification(){
-
-  alert("Client notifications are not connected yet.");
-
-}
-
-async function deleteClient(id){
-
-  const confirmed = confirm(
-    "Remove this client?"
-  );
-
-  if(!confirmed){
-    return;
-  }
-
-  const res = await fetch(
-    "/.netlify/functions/delete-crm-client",
-    {
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify({ id })
-    }
-  );
-
-  const data = await res.json();
-
-  if(!data.success){
-
-    alert("Failed to remove client.");
-    return;
-
-  }
-
-  loadClients();
 
 }
 
@@ -356,6 +473,7 @@ async function loadMiniWeek(){
           ${dayNames[i]}
         </div>
 
+    
         <div class="mini-date">
           ${current.getDate()}
         </div>
@@ -423,6 +541,40 @@ function toggleClientOptions(event, id){
 
 }
 
+async function deleteClient(id){
+
+  const confirmed = confirm(
+    "Remove this client?"
+  );
+
+  if(!confirmed){
+    return;
+  }
+
+  const res = await fetch(
+    "/.netlify/functions/delete-crm-client",
+    {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({ id })
+    }
+  );
+
+  const data = await res.json();
+
+  if(!data.success){
+
+    alert("Failed to remove client.");
+    return;
+
+  }
+
+  loadClients();
+
+}
+
 window.onclick = function(event){
 
   const modal =
@@ -441,6 +593,15 @@ window.onclick = function(event){
     });
 
 }
+
+document.getElementById("clientSearch")
+  ?.addEventListener("input", renderClients);
+
+document.getElementById("clientStatusFilter")
+  ?.addEventListener("change", renderClients);
+
+document.getElementById("clientScheduleFilter")
+  ?.addEventListener("change", renderClients);
 
 loadClients();
 

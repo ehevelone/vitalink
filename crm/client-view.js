@@ -10,8 +10,6 @@ async function loadClient(){
 
   const data = await res.json();
 
-  console.log(data);
-
   const client = data.client;
 
   if(!client){
@@ -85,6 +83,33 @@ async function loadClient(){
 
   }
 
+  setValue("leadSource", client.lead_source);
+  setValue("referralSource", client.referral_source);
+  setValue("seminarEvent", client.seminar_event);
+  setValue("leadCost", client.lead_cost);
+  setValue("dateAdded", formatDate(client.date_added));
+
+  setValue("policyCarrier", client.policy_carrier);
+  setValue("planName", client.plan_name);
+  setValue("planType", client.plan_type);
+  setValue("effectiveDate", formatDate(client.effective_date));
+  setValue("renewalMonth", client.renewal_month);
+  setValue("monthlyPremium", client.monthly_premium);
+
+  setValue("preferredContactMethod", client.preferred_contact_method);
+  setValue("bestTimeToCall", client.best_time_to_call);
+  setValue("textMessaging", client.text_messaging);
+  setValue("emailCommunication", client.email_communication);
+
+  setText("soaSigned", client.soa_signed || "Not Recorded");
+  setText("hipaaSigned", client.hipaa_signed || "Not Recorded");
+  setText("lastPolicyReview", formatDate(client.last_policy_review) || "Not Recorded");
+  setText("profileLinked", client.profile_linked || "Not Linked");
+  setText("emergencyProfile", client.emergency_profile || "Not Recorded");
+  setText("insuranceCardsUploaded", client.insurance_cards_uploaded || "Not Recorded");
+  setText("medicationList", client.medication_list || "Not Recorded");
+  setText("lastSync", formatDate(client.last_sync) || "Not Synced");
+
   /* =========================================
      FAMILY
   ========================================= */
@@ -148,6 +173,123 @@ function toggleClientEdit(){
     "saveClientBtn"
   ).style.display =
     clientEdit ? "block" : "none";
+
+}
+
+function setValue(id, value){
+
+  if(document.getElementById(id)){
+    document.getElementById(id).value = value || "";
+  }
+
+}
+
+function setText(id, value){
+
+  if(document.getElementById(id)){
+    document.getElementById(id).innerText = value || "";
+  }
+
+}
+
+async function loadClientTasks(){
+
+  const container =
+    document.getElementById("clientTasksList");
+
+  if(!container){
+    return;
+  }
+
+  const agent_id =
+    sessionStorage.getItem("crm_uuid");
+
+  const res = await fetch(
+    `/.netlify/functions/get-crm-tasks?agent_id=${agent_id}&client_id=${clientId}`
+  );
+
+  const data = await res.json();
+
+  if(!data.success){
+    return;
+  }
+
+  const openTasks =
+    (data.tasks || []).filter(task =>
+      task.status !== "Complete"
+    );
+
+  container.innerHTML = "";
+
+  if(openTasks.length === 0){
+
+    container.innerHTML = `
+      <div class="client-sub">
+        No open tasks for this client.
+      </div>
+    `;
+
+    return;
+
+  }
+
+  openTasks.slice(0,5).forEach(task => {
+
+    container.innerHTML += `
+      <div class="task">
+        <div>
+          <div class="client-name">
+            ${task.title || ""}
+          </div>
+          <div class="client-meta">
+            ${task.due_date ? formatDate(task.due_date) : "No due date"}
+          </div>
+        </div>
+
+        <span class="status ${(task.priority || "medium").toLowerCase()}">
+          ${task.priority || "Medium"}
+        </span>
+      </div>
+    `;
+
+  });
+
+}
+
+function newClientTask(){
+
+  window.location.href =
+    `tasks.html?client_id=${clientId}`;
+
+}
+
+async function saveClientPatch(patch){
+
+  patch.id = clientId;
+
+  const res = await fetch(
+    "/.netlify/functions/update-crm-client",
+    {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify(patch)
+    }
+  );
+
+  const data = await res.json();
+
+  if(!data.success){
+
+    alert("Failed to update client.");
+    return false;
+
+  }
+
+  loadClient();
+
+  return true;
 
 }
 
@@ -260,9 +402,18 @@ function toggleHouseholdEdit(){
 
 async function saveHousehold(){
 
-  alert("Household updated.");
+  const saved = await saveClientPatch({
+    marital_status:
+      document.getElementById("maritalStatus").value,
+    spouse_name:
+      document.getElementById("spouseName").value,
+    spouse_dob:
+      document.getElementById("spouseDob").value
+  });
 
-  toggleHouseholdEdit();
+  if(saved){
+    toggleHouseholdEdit();
+  }
 
 }
 
@@ -331,55 +482,8 @@ async function createSpouseProfile(){
 
 }
 
-/* =========================================
-   FAMILY EDIT
-========================================= */
-
-let familyEdit = false;
-
-function toggleFamilyEdit(){
-
-  familyEdit = !familyEdit;
-
-  const fields = [
-
-    "familyNote1",
-    "familyNote2",
-    "familyNote3"
-
-  ];
-
-  fields.forEach(id => {
-
-    if(document.getElementById(id)){
-
-      document.getElementById(id).disabled =
-        !familyEdit;
-
-    }
-
-  });
-
-  if(document.getElementById("saveFamilyBtn")){
-
-    document.getElementById(
-      "saveFamilyBtn"
-    ).style.display =
-      familyEdit ? "block" : "none";
-
-  }
-
-}
-
-async function saveFamily(){
-
-  alert("Family notes updated.");
-
-  toggleFamilyEdit();
-
-}
-
 loadClient();
+loadClientTasks();
 
 /* =========================================
    LEAD EDIT
@@ -421,9 +525,22 @@ function toggleLeadEdit(){
 
 async function saveLead(){
 
-  alert("Lead information updated.");
+  const saved = await saveClientPatch({
+    lead_source:
+      document.getElementById("leadSource").value,
+    referral_source:
+      document.getElementById("referralSource").value,
+    seminar_event:
+      document.getElementById("seminarEvent").value,
+    lead_cost:
+      document.getElementById("leadCost").value,
+    date_added:
+      document.getElementById("dateAdded").value
+  });
 
-  toggleLeadEdit();
+  if(saved){
+    toggleLeadEdit();
+  }
 
 }
 
@@ -468,9 +585,24 @@ function togglePolicyEdit(){
 
 async function savePolicy(){
 
-  alert("Policy information updated.");
+  const saved = await saveClientPatch({
+    policy_carrier:
+      document.getElementById("policyCarrier").value,
+    plan_name:
+      document.getElementById("planName").value,
+    plan_type:
+      document.getElementById("planType").value,
+    effective_date:
+      document.getElementById("effectiveDate").value,
+    renewal_month:
+      document.getElementById("renewalMonth").value,
+    monthly_premium:
+      document.getElementById("monthlyPremium").value
+  });
 
-  togglePolicyEdit();
+  if(saved){
+    togglePolicyEdit();
+  }
 
 }
 
@@ -513,55 +645,20 @@ function toggleCommunicationEdit(){
 
 async function saveCommunication(){
 
-  alert("Communication preferences updated.");
-
-  toggleCommunicationEdit();
-
-}
-
-/* =========================================
-   VITALINK EDIT
-========================================= */
-
-let vitaLinkEdit = false;
-
-function toggleVitaLinkEdit(){
-
-  vitaLinkEdit = !vitaLinkEdit;
-
-  const fields = [
-
-    "profileLinked",
-    "emergencyProfile",
-    "insuranceCardsUploaded",
-    "medicationList",
-    "lastSync"
-
-  ];
-
-  fields.forEach(id => {
-
-    if(document.getElementById(id)){
-
-      document.getElementById(id).disabled =
-        !vitaLinkEdit;
-
-    }
-
+  const saved = await saveClientPatch({
+    preferred_contact_method:
+      document.getElementById("preferredContactMethod").value,
+    best_time_to_call:
+      document.getElementById("bestTimeToCall").value,
+    text_messaging:
+      document.getElementById("textMessaging").value,
+    email_communication:
+      document.getElementById("emailCommunication").value
   });
 
-  document.getElementById(
-    "saveVitaLinkBtn"
-  ).style.display =
-    vitaLinkEdit ? "block" : "none";
-
-}
-
-async function saveVitaLink(){
-
-  alert("VitaLink status updated.");
-
-  toggleVitaLinkEdit();
+  if(saved){
+    toggleCommunicationEdit();
+  }
 
 }
 

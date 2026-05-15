@@ -23,9 +23,7 @@ function formatTaskDate(value){
 
 }
 
-function openTaskModal(){
-
-  editingTaskId = null;
+function clearTaskForm(){
 
   document.getElementById("taskTitle").value = "";
   document.getElementById("taskPriority").value = "Medium";
@@ -34,6 +32,13 @@ function openTaskModal(){
   document.getElementById("taskDueDate").value = "";
   document.getElementById("taskStatus").value = "Open";
   document.getElementById("taskNotes").value = "";
+
+}
+
+function openTaskModal(){
+
+  editingTaskId = null;
+  clearTaskForm();
 
   document.getElementById("taskModal").style.display = "flex";
 
@@ -63,15 +68,24 @@ async function loadClientDropdown(){
   const select =
     document.getElementById("taskClientId");
 
+  const selectedClientId =
+    new URLSearchParams(window.location.search).get("client_id") || "";
+
   select.innerHTML = `
     <option value="">No Client</option>
   `;
 
   data.clients.forEach(client => {
 
+    const name =
+      `${client.first_name || ""} ${client.last_name || ""}`.trim();
+
     select.innerHTML += `
-      <option value="${client.id}">
-        ${client.first_name || ""} ${client.last_name || ""}
+      <option
+        value="${client.id}"
+        ${String(client.id) === selectedClientId ? "selected" : ""}
+      >
+        ${name}
       </option>
     `;
 
@@ -98,7 +112,6 @@ async function loadTasks(){
   }
 
   const res = await fetch(url);
-
   const data = await res.json();
 
   if(!data.success){
@@ -168,9 +181,7 @@ function renderTasks(){
   filtered.forEach(task => {
 
     table.innerHTML += `
-
       <tr>
-
         <td>
           <span class="status ${(task.priority || "medium").toLowerCase()}">
             ${task.priority || "Medium"}
@@ -221,9 +232,7 @@ function renderTasks(){
             Delete
           </button>
         </td>
-
       </tr>
-
     `;
 
   });
@@ -241,7 +250,7 @@ async function saveTask(){
       document.getElementById("taskClientId").value,
 
     title:
-      document.getElementById("taskTitle").value,
+      document.getElementById("taskTitle").value.trim(),
 
     notes:
       document.getElementById("taskNotes").value,
@@ -293,7 +302,6 @@ async function saveTask(){
   }
 
   closeTaskModal();
-
   loadTasks();
 
 }
@@ -301,7 +309,7 @@ async function saveTask(){
 function editTask(id){
 
   const task =
-    tasks.find(item => item.id === id);
+    tasks.find(item => String(item.id) === String(id));
 
   if(!task){
     return;
@@ -334,13 +342,11 @@ function editTask(id){
 async function completeTask(id){
 
   const task =
-    tasks.find(item => item.id === id);
+    tasks.find(item => String(item.id) === String(id));
 
   if(!task){
     return;
   }
-
-  task.status = "Complete";
 
   const res = await fetch(
     "/.netlify/functions/update-crm-task",
@@ -349,7 +355,10 @@ async function completeTask(id){
       headers:{
         "Content-Type":"application/json"
       },
-      body:JSON.stringify(task)
+      body:JSON.stringify({
+        ...task,
+        status:"Complete"
+      })
     }
   );
 

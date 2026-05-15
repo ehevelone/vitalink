@@ -51,17 +51,17 @@
 
     <div class="nav-title">VitaLink</div>
 
-    <a href="linked-profiles.html">
-      <div class="nav-item">📱 Linked Profiles</div>
-    </a>
+    <div class="nav-item disabled" aria-disabled="true">
+      📱 Linked Profiles
+    </div>
 
-    <a href="notifications.html">
-      <div class="nav-item">🔔 Notifications</div>
-    </a>
+    <div class="nav-item disabled" aria-disabled="true">
+      🔔 Notifications
+    </div>
 
-    <a href="exports.html">
-      <div class="nav-item">📤 Exports</div>
-    </a>
+    <div class="nav-item disabled" aria-disabled="true">
+      📤 Exports
+    </div>
 
   </div>
 
@@ -73,9 +73,9 @@
       <div class="nav-item">⚙ Settings</div>
     </a>
 
-    <a href="billing.html">
-      <div class="nav-item">💳 Billing</div>
-    </a>
+    <div class="nav-item disabled" aria-disabled="true">
+      💳 Billing
+    </div>
 
   </div>
 
@@ -164,6 +164,33 @@
       <div class="metric" id="recentActivity">0</div>
       <div class="muted">Client updates this week</div>
     </div>
+
+  </div>
+
+  <!-- TASKS -->
+
+  <div class="section-title">
+    Open Tasks
+  </div>
+
+  <div class="table-card" style="margin-bottom:24px;">
+
+    <table>
+
+      <thead>
+        <tr>
+          <th>Task</th>
+          <th>Client</th>
+          <th>Priority</th>
+          <th>Due Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody id="dashboardTasksTable">
+      </tbody>
+
+    </table>
 
   </div>
 

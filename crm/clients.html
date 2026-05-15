@@ -51,17 +51,17 @@
 
     <div class="nav-title">VitaLink</div>
 
-    <a href="linked-profiles.html">
-      <div class="nav-item">📱 Linked Profiles</div>
-    </a>
+    <div class="nav-item disabled" aria-disabled="true">
+      📱 Linked Profiles
+    </div>
 
-    <a href="notifications.html">
-      <div class="nav-item">🔔 Notifications</div>
-    </a>
+    <div class="nav-item disabled" aria-disabled="true">
+      🔔 Notifications
+    </div>
 
-    <a href="exports.html">
-      <div class="nav-item">📤 Exports</div>
-    </a>
+    <div class="nav-item disabled" aria-disabled="true">
+      📤 Exports
+    </div>
 
   </div>
 
@@ -73,9 +73,9 @@
       <div class="nav-item">⚙ Settings</div>
     </a>
 
-    <a href="billing.html">
-      <div class="nav-item">💳 Billing</div>
-    </a>
+    <div class="nav-item disabled" aria-disabled="true">
+      💳 Billing
+    </div>
 
   </div>
 
@@ -160,18 +160,19 @@
     <div class="clients-filters">
 
       <input
+        id="clientSearch"
         type="text"
         placeholder="Search clients..."
       >
 
-      <select>
+      <select id="clientStatusFilter">
         <option>All Statuses</option>
         <option>Active</option>
         <option>Follow-Up</option>
         <option>Inactive</option>
       </select>
 
-      <select>
+      <select id="clientScheduleFilter">
         <option>All Schedules</option>
         <option>Today</option>
         <option>This Week</option>
