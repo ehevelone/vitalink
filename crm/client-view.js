@@ -4,6 +4,21 @@ const clientId = params.get("id");
 
 console.log("VitaLink client view loaded: notes sync enabled");
 
+function normalizePhoneForStorage(phone){
+
+  if(!phone) return "";
+
+  let digits =
+    String(phone).replace(/\D/g,"");
+
+  if(digits.length === 11 && digits.startsWith("1")){
+    digits = digits.slice(1);
+  }
+
+  return digits.length === 10 ? digits : String(phone).trim();
+
+}
+
 function normalizeClientStatus(status){
 
   if(status === "Active"){
@@ -448,10 +463,10 @@ async function saveClientInfo(){
       document.getElementById("dob").value,
 
     mobile_phone:
-      document.getElementById("mobilePhone").value,
+      normalizePhoneForStorage(document.getElementById("mobilePhone").value),
 
     landline_phone:
-      document.getElementById("landlinePhone").value,
+      normalizePhoneForStorage(document.getElementById("landlinePhone").value),
 
     email:
       document.getElementById("email").value,

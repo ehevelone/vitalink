@@ -72,7 +72,7 @@ function renderProfiles(){
           <div class="client-name">${clientName(profile)}</div>
           <div class="client-meta">App ID ${profile.app_client_id}</div>
         </td>
-        <td>${profile.phone || ""}</td>
+        <td>${formatPhone(profile.phone)}</td>
         <td>${profile.email || ""}</td>
         <td>
           <span class="status ${profile.linked ? "client" : "prospect"}">

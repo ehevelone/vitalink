@@ -42,8 +42,12 @@ function formatPhone(phone){
 
   if(!phone) return "";
 
-  const digits =
+  let digits =
     phone.replace(/\D/g,"");
+
+  if(digits.length === 11 && digits.startsWith("1")){
+    digits = digits.slice(1);
+  }
 
   if(digits.length !== 10){
     return phone;
@@ -86,10 +90,10 @@ async function saveClient(){
       document.getElementById("dob").value,
 
     mobile_phone:
-      document.getElementById("mobilePhone").value,
+      normalizePhoneForStorage(document.getElementById("mobilePhone").value),
 
     landline_phone:
-      document.getElementById("landlinePhone").value,
+      normalizePhoneForStorage(document.getElementById("landlinePhone").value),
 
     email:
       document.getElementById("email").value,
@@ -155,6 +159,21 @@ async function saveClient(){
   closeClientModal();
 
   loadClients();
+
+}
+
+function normalizePhoneForStorage(phone){
+
+  if(!phone) return "";
+
+  let digits =
+    String(phone).replace(/\D/g,"");
+
+  if(digits.length === 11 && digits.startsWith("1")){
+    digits = digits.slice(1);
+  }
+
+  return digits.length === 10 ? digits : String(phone).trim();
 
 }
 
@@ -532,20 +551,20 @@ function mapImportRow(row){
         "birthdate"
       ]),
     mobile_phone:
-      getImportValue(row, [
+      normalizePhoneForStorage(getImportValue(row, [
         "mobilephone",
         "mobile",
         "cellphone",
         "cell",
         "phone",
         "primaryphone"
-      ]),
+      ])),
     landline_phone:
-      getImportValue(row, [
+      normalizePhoneForStorage(getImportValue(row, [
         "landlinephone",
         "homephone",
         "secondaryphone"
-      ]),
+      ])),
     email:
       getImportValue(row, [
         "email",
@@ -593,7 +612,7 @@ function renderImportPreview(){
     table.innerHTML += `
       <tr>
         <td>${client.first_name || ""} ${client.last_name || ""}</td>
-        <td>${client.mobile_phone || ""}</td>
+        <td>${formatPhone(client.mobile_phone)}</td>
         <td>${client.email || ""}</td>
         <td>${client.city || ""}</td>
         <td>${normalizeClientStatus(client.status)}</td>

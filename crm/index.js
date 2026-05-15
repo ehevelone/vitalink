@@ -10,8 +10,12 @@ function formatPhone(phone){
 
   if(!phone) return "";
 
-  const digits =
+  let digits =
     phone.replace(/\D/g,"");
+
+  if(digits.length === 11 && digits.startsWith("1")){
+    digits = digits.slice(1);
+  }
 
   if(digits.length !== 10){
     return phone;

@@ -22,6 +22,23 @@ function digitsOnly(value){
 
 }
 
+function normalizeUsPhone(value){
+
+  let digits =
+    digitsOnly(value);
+
+  if(digits.length === 11 && digits.startsWith("1")){
+    digits = digits.slice(1);
+  }
+
+  if(digits.length === 10){
+    return digits;
+  }
+
+  return clean(value);
+
+}
+
 async function ensureClientColumns(client){
 
   await client.query(`
@@ -94,7 +111,7 @@ async function getExistingCrmClient(client, crmAgentId, appClient){
         AND (
           linked_app_client_id = $2
           OR ($3::text IS NOT NULL AND LOWER(COALESCE(email,'')) = LOWER($3))
-          OR ($4::text <> '' AND REGEXP_REPLACE(COALESCE(mobile_phone,''), '\\D', '', 'g') = $4)
+          OR ($4::text <> '' AND RIGHT(REGEXP_REPLACE(COALESCE(mobile_phone,''), '\\D', '', 'g'), 10) = $4)
         )
       ORDER BY
         CASE WHEN linked_app_client_id = $2 THEN 0 ELSE 1 END,
@@ -105,7 +122,7 @@ async function getExistingCrmClient(client, crmAgentId, appClient){
         crmAgentId,
         String(appClient.id),
         email,
-        phoneDigits
+        normalizeUsPhone(phoneDigits) || ""
       ]
     );
 
@@ -132,7 +149,7 @@ async function updateCrmClient(client, crmClientId, appClient){
       clean(appClient.first_name),
       clean(appClient.last_name),
       clean(appClient.email),
-      clean(appClient.phone),
+      normalizeUsPhone(appClient.phone),
       String(appClient.id),
       crmClientId
     ]
@@ -162,7 +179,7 @@ async function createCrmClient(client, crmAgentId, appClient, defaultStatus){
       clean(appClient.first_name),
       clean(appClient.last_name),
       clean(appClient.email),
-      clean(appClient.phone),
+      normalizeUsPhone(appClient.phone),
       defaultStatus || "Client",
       String(appClient.id)
     ]

@@ -16,6 +16,20 @@ async function ensureClientColumns(){
 
 }
 
+function normalizeUsPhone(value){
+  let digits = String(value || "").replace(/\D/g, "");
+
+  if(digits.length === 11 && digits.startsWith("1")){
+    digits = digits.slice(1);
+  }
+
+  if(digits.length === 10){
+    return digits;
+  }
+
+  return value || null;
+}
+
 exports.handler = async (event) => {
 
   try{
@@ -65,8 +79,8 @@ exports.handler = async (event) => {
 
         body.dob,
 
-        body.mobile_phone,
-        body.landline_phone,
+        normalizeUsPhone(body.mobile_phone),
+        normalizeUsPhone(body.landline_phone),
 
         body.email,
 

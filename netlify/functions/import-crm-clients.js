@@ -25,6 +25,20 @@ function clean(value){
 
 }
 
+function normalizeUsPhone(value){
+  let digits = String(value || "").replace(/\D/g, "");
+
+  if(digits.length === 11 && digits.startsWith("1")){
+    digits = digits.slice(1);
+  }
+
+  if(digits.length === 10){
+    return digits;
+  }
+
+  return clean(value);
+}
+
 function cleanDate(value){
 
   const text =
@@ -109,7 +123,7 @@ exports.handler = async (event) => {
       const firstName = clean(row.first_name);
       const lastName = clean(row.last_name);
       const email = clean(row.email);
-      const mobilePhone = clean(row.mobile_phone);
+      const mobilePhone = normalizeUsPhone(row.mobile_phone);
 
       if(!firstName && !lastName && !email && !mobilePhone){
         summary.skipped += 1;
@@ -126,7 +140,7 @@ exports.handler = async (event) => {
             AND (
               ($2::text IS NOT NULL AND LOWER(email) = LOWER($2))
               OR
-              ($3::text IS NOT NULL AND REGEXP_REPLACE(mobile_phone, '\\D', '', 'g') = REGEXP_REPLACE($3::text, '\\D', '', 'g'))
+              ($3::text IS NOT NULL AND RIGHT(REGEXP_REPLACE(mobile_phone, '\\D', '', 'g'), 10) = RIGHT(REGEXP_REPLACE($3::text, '\\D', '', 'g'), 10))
             )
           LIMIT 1
           `,
@@ -168,7 +182,7 @@ exports.handler = async (event) => {
           lastName,
           cleanDate(row.dob),
           mobilePhone,
-          clean(row.landline_phone),
+          normalizeUsPhone(row.landline_phone),
           email,
           clean(row.address),
           clean(row.city),

@@ -46,6 +46,20 @@ const editableFields = [
   "email_communication"
 ];
 
+function normalizeUsPhone(value){
+  let digits = String(value || "").replace(/\D/g, "");
+
+  if(digits.length === 11 && digits.startsWith("1")){
+    digits = digits.slice(1);
+  }
+
+  if(digits.length === 10){
+    return digits;
+  }
+
+  return value || null;
+}
+
 async function ensureClientColumns(){
 
   await pool.query(`
@@ -121,7 +135,12 @@ exports.handler = async (event) => {
 
       if(Object.prototype.hasOwnProperty.call(body, field)){
 
-        values.push(body[field] || null);
+        const value =
+          field === "mobile_phone" || field === "landline_phone"
+            ? normalizeUsPhone(body[field])
+            : body[field] || null;
+
+        values.push(value);
         updates.push(`${field} = $${values.length}`);
 
       }
