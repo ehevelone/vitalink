@@ -207,6 +207,65 @@ async function importClients(){
 
 }
 
+async function syncVitalinkClients(){
+
+  const button =
+    document.getElementById("syncVitalinkBtn");
+
+  const agentId =
+    sessionStorage.getItem("crm_uuid");
+
+  if(!agentId){
+    alert("Please log in again before syncing.");
+    return;
+  }
+
+  button.disabled = true;
+  button.innerText = "Syncing...";
+
+  try{
+
+    const res = await fetch(
+      "/.netlify/functions/sync-vitalink-clients",
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          agent_id:agentId,
+          default_status:crmSettings.default_client_status || "Client"
+        })
+      }
+    );
+
+    const data = await res.json();
+
+    if(!data.success){
+      alert(data.error || "Failed to sync VitaLink clients.");
+      return;
+    }
+
+    alert(
+      `VitaLink sync complete. Created ${data.created}. Updated ${data.updated}. Skipped ${data.skipped}.`
+    );
+
+    loadClients();
+
+  }catch(err){
+
+    console.error(err);
+    alert("Failed to sync VitaLink clients.");
+
+  }finally{
+
+    button.disabled = false;
+    button.innerText = "Sync VitaLink";
+
+  }
+
+}
+
 function convertRowsToCsv(rows){
 
   if(!rows.length){
