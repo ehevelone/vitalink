@@ -338,7 +338,7 @@ async function sendReset(){
     headers:{ "Content-Type":"application/json" },
     body: JSON.stringify({
       emailOrPhone: email,
-      role: "agents"
+      role: "rsms"
     })
   });
 
@@ -365,7 +365,7 @@ async function confirmReset(){
       emailOrPhone: currentEmail,
       code,
       newPassword: password,
-      role: "agents"
+      role: "rsms"
     })
   });
 

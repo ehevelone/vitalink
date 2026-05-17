@@ -225,7 +225,10 @@ async function loadClients(){
     const res=await fetch(`${API}/get_agent_clients`,{
       method:"POST",
       headers:{ "Content-Type":"application/json" },
-      body:JSON.stringify({ agentId:Number(agentId) })
+      body:JSON.stringify({
+        agentId:Number(agentId),
+        agentSessionToken:token
+      })
     });
 
     const data=await res.json();
@@ -304,7 +307,8 @@ async function toggleClient(id){
       },
       body:JSON.stringify({ 
         clientId:id,
-        agentId:Number(agentId)
+        agentId:Number(agentId),
+        agentSessionToken:token
       })
     });
 
@@ -387,7 +391,8 @@ const res = await fetch(`${API}/send-agent-invite`,{
   body:JSON.stringify({
     email: email,
     agent_id: Number(agentId),
-    agent_name: agentName
+    agent_name: agentName,
+    agentSessionToken:token
   })
 });
 

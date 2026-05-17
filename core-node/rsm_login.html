@@ -171,8 +171,9 @@
 
     // If already logged in, bounce straight to report page
     (function boot() {
-      const token = localStorage.getItem("rsmToken");
-      if (token) {
+      const token = sessionStorage.getItem("adminSessionToken");
+      const role = sessionStorage.getItem("userRole");
+      if (token && role === "rsm") {
         window.location.href = REPORT_PAGE;
       }
     })();
@@ -205,7 +206,8 @@
         const data = await res.json().catch(() => ({}));
 
         if (res.ok && data.success && data.token) {
-          localStorage.setItem("rsmToken", data.token);
+          sessionStorage.setItem("adminSessionToken", data.token);
+          sessionStorage.setItem("userRole", "rsm");
           window.location.href = REPORT_PAGE; // ✅ go to report page
           return;
         }
@@ -222,7 +224,7 @@
     }
 
     function forgotPassword() {
-      window.location.href = "/core-node/rsm_reset_request.html";
+      window.location.href = "/core-node/admin.html";
     }
   </script>
 

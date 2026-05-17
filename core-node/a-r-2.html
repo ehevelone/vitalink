@@ -218,7 +218,10 @@ async function loadClients(){
     const res = await fetch(`${API}/get_agent_clients`, {
       method: "POST",
       headers: { "Content-Type":"application/json" },
-      body: JSON.stringify({ agentId: Number(agentId) })
+      body: JSON.stringify({
+        agentId: Number(agentId),
+        agentSessionToken: token
+      })
     });
 
     const data = await res.json();

@@ -134,13 +134,10 @@
     const ENROLL_BASE = "https://myvitalink.app/core-node/agent_enrolled.html?code=";
 
     const rsmToken =
-      sessionStorage.getItem("adminSessionToken") ||
-      sessionStorage.getItem("rsmToken") ||
-      localStorage.getItem("adminSessionToken") ||
-      localStorage.getItem("rsmToken");
+      sessionStorage.getItem("adminSessionToken");
 
     if (!rsmToken) {
-      window.location.href = "/core-node/rsm_login.html";
+      window.location.href = "/core-node/admin.html";
     }
 
     async function generateAgent() {
