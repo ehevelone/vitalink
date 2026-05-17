@@ -1,4 +1,17 @@
-const { getRedirectUri } = require("./google-calendar-sync");
+const crypto = require("crypto");
+const {
+  ensureGoogleCalendarTables,
+  getRedirectUri
+} = require("./google-calendar-sync");
+const { requireCrmAgent } = require("./crm-auth");
+const { Pool } = require("pg");
+
+const pool = new Pool({
+  connectionString:process.env.SUPABASE_URL,
+  ssl:{
+    rejectUnauthorized:false
+  }
+});
 
 exports.handler = async (event) => {
 
@@ -19,6 +32,20 @@ exports.handler = async (event) => {
 
     }
 
+    const auth = await requireCrmAgent(event, agentId);
+
+    if(auth.error){
+
+      return {
+        statusCode:403,
+        body:JSON.stringify({
+          success:false,
+          error:auth.error
+        })
+      };
+
+    }
+
     if(!process.env.GOOGLE_CLIENT_ID){
 
       return {
@@ -31,6 +58,26 @@ exports.handler = async (event) => {
 
     }
 
+    const state =
+      crypto.randomBytes(24).toString("hex");
+
+    await ensureGoogleCalendarTables(pool);
+
+    await pool.query(
+      `
+      INSERT INTO crm_google_calendar_oauth_states (
+        state,
+        agent_id,
+        expires_at
+      )
+      VALUES ($1,$2,NOW() + INTERVAL '15 minutes')
+      `,
+      [
+        state,
+        auth.crmAgentId
+      ]
+    );
+
     const params = new URLSearchParams({
       client_id:process.env.GOOGLE_CLIENT_ID,
       redirect_uri:getRedirectUri(event),
@@ -38,7 +85,7 @@ exports.handler = async (event) => {
       access_type:"offline",
       prompt:"consent",
       scope:"https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar.calendarlist.readonly",
-      state:String(agentId)
+      state
     });
 
     return {

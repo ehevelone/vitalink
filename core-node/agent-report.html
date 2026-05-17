@@ -166,6 +166,7 @@ button.primary{
 <th>Phone</th>
 <th>Address</th>
 <th>Status</th>
+<th>Push</th>
 <th>Action</th>
 </tr>
 </thead>
@@ -205,6 +206,17 @@ function logout(){
 }
 
 let allClients=[];
+
+function pushHealthLabel(client){
+  return client.push_health || (client.has_device ? "Registered" : "No Device");
+}
+
+function pushHealthStyle(label){
+  if(label === "OK") return "background:#16a34a;color:#fff;";
+  if(label === "Needs Contact") return "background:#ef4444;color:#fff;";
+  if(label === "Stale") return "background:#f59e0b;color:#111;";
+  return "background:#374151;color:#fff;";
+}
 
 // LOAD
 async function loadClients(){
@@ -254,6 +266,11 @@ async function loadClients(){
 </td>
 
 <td>${c.active?"Active":"Inactive"}</td>
+<td>
+  <span style="display:inline-block;padding:4px 8px;border-radius:999px;font-size:.8rem;${pushHealthStyle(pushHealthLabel(c))}">
+    ${pushHealthLabel(c)}
+  </span>
+</td>
       <td>
         <button class="primary"
         onclick="event.stopPropagation();confirmToggle('${c.id}','${c.first_name}','${c.active}')">

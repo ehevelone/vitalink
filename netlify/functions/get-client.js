@@ -1,4 +1,5 @@
 const { Pool } = require("pg");
+const { requireCrmClient } = require("./crm-auth");
 
 const pool = new Pool({
   connectionString: process.env.SUPABASE_URL,
@@ -23,6 +24,17 @@ exports.handler = async (event) => {
     `);
 
     const id = event.queryStringParameters.id;
+    const auth = await requireCrmClient(event, id);
+
+    if(auth.error){
+      return{
+        statusCode:403,
+        body:JSON.stringify({
+          success:false,
+          error:auth.error
+        })
+      };
+    }
 
     const result = await pool.query(
 

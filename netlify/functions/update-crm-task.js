@@ -1,4 +1,5 @@
 const { Pool } = require("pg");
+const { requireCrmAgent } = require("./crm-auth");
 
 const pool = new Pool({
   connectionString: process.env.SUPABASE_URL,
@@ -81,6 +82,38 @@ exports.handler = async (event) => {
 
     }
 
+    const currentTask = await pool.query(
+      `
+      SELECT agent_id
+      FROM crm_tasks
+      WHERE id = $1
+      LIMIT 1
+      `,
+      [body.id]
+    );
+
+    if(!currentTask.rows.length){
+      return{
+        statusCode:404,
+        body:JSON.stringify({
+          success:false,
+          error:"Task not found"
+        })
+      };
+    }
+
+    const auth = await requireCrmAgent(event, currentTask.rows[0].agent_id);
+
+    if(auth.error){
+      return{
+        statusCode:403,
+        body:JSON.stringify({
+          success:false,
+          error:auth.error
+        })
+      };
+    }
+
     const completedAt =
       body.status === "Complete" ? new Date() : null;
 
@@ -102,6 +135,7 @@ exports.handler = async (event) => {
         completed_at = $7,
         updated_at = NOW()
       WHERE id = $8
+        AND agent_id = $9
       RETURNING *
       `,
       [
@@ -112,7 +146,8 @@ exports.handler = async (event) => {
         body.priority || "Medium",
         body.status || "Open",
         completedAt,
-        body.id
+        body.id,
+        auth.crmAgentId
       ]
     );
 

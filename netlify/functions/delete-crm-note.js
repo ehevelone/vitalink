@@ -1,4 +1,5 @@
 const { Pool } = require("pg");
+const { requireCrmAgent } = require("./crm-auth");
 
 const pool = new Pool({
   connectionString: process.env.SUPABASE_URL,
@@ -78,6 +79,38 @@ exports.handler = async (event) => {
 
     }
 
+    const currentNote = await pool.query(
+      `
+      SELECT agent_id
+      FROM crm_client_notes
+      WHERE id = $1
+      LIMIT 1
+      `,
+      [body.id]
+    );
+
+    if(!currentNote.rows.length){
+      return{
+        statusCode:404,
+        body:JSON.stringify({
+          success:false,
+          error:"Note not found"
+        })
+      };
+    }
+
+    const auth = await requireCrmAgent(event, currentNote.rows[0].agent_id);
+
+    if(auth.error){
+      return{
+        statusCode:403,
+        body:JSON.stringify({
+          success:false,
+          error:auth.error
+        })
+      };
+    }
+
     await pool.query(`
       ALTER TABLE crm_client_notes
       ADD COLUMN IF NOT EXISTS source_app_item_id BIGINT
@@ -93,9 +126,10 @@ exports.handler = async (event) => {
       `
       DELETE FROM crm_client_notes
       WHERE id = $1
+        AND agent_id = $2
       RETURNING source_app_item_id, agent_id, client_id, note
       `,
-      [body.id]
+      [body.id, auth.crmAgentId]
     );
 
     if(result.rows[0]){

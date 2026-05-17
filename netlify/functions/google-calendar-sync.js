@@ -13,6 +13,15 @@ async function ensureGoogleCalendarTables(pool){
   `);
 
   await pool.query(`
+    CREATE TABLE IF NOT EXISTS crm_google_calendar_oauth_states (
+      state TEXT PRIMARY KEY,
+      agent_id TEXT NOT NULL,
+      expires_at TIMESTAMPTZ NOT NULL,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  `);
+
+  await pool.query(`
     ALTER TABLE crm_appointments
     ADD COLUMN IF NOT EXISTS google_event_id TEXT
   `);

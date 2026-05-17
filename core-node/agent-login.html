@@ -272,7 +272,12 @@ async function login() {
 
     if (data.step === "login_success") {
 
-      sessionStorage.setItem("agentSessionToken", data.token || "dev");
+      if (!data.token) {
+        showError("Login failed: missing session token");
+        return;
+      }
+
+      sessionStorage.setItem("agentSessionToken", data.token);
       sessionStorage.setItem("agentName", data.agent.name);
       sessionStorage.setItem("agentId", String(data.agent.id));
 
@@ -341,7 +346,12 @@ async function verifyCode() {
       return;
     }
 
-    sessionStorage.setItem("agentSessionToken", data.token || "dev");
+    if (!data.token) {
+      showError("Login failed: missing session token");
+      return;
+    }
+
+    sessionStorage.setItem("agentSessionToken", data.token);
     sessionStorage.setItem("agentId", String(data.agent.id));
     sessionStorage.setItem("agentName", data.agent.name);
 

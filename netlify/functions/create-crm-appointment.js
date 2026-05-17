@@ -1,5 +1,6 @@
 const { Pool } = require("pg");
 const { syncGoogleAppointment } = require("./google-calendar-sync");
+const { requireCrmClient } = require("./crm-auth");
 
 const pool = new Pool({
   connectionString: process.env.SUPABASE_URL,
@@ -46,6 +47,18 @@ async function handler(event){
         })
       };
 
+    }
+
+    const auth = await requireCrmClient(event, client_id, agent_id);
+
+    if(auth.error){
+      return {
+        statusCode:403,
+        body:JSON.stringify({
+          success:false,
+          error:auth.error
+        })
+      };
     }
 
     const result = await pool.query(

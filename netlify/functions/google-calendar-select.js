@@ -1,5 +1,6 @@
 const { Pool } = require("pg");
 const { ensureGoogleCalendarTables } = require("./google-calendar-sync");
+const { requireCrmAgent } = require("./crm-auth");
 
 const pool = new Pool({
   connectionString:process.env.SUPABASE_URL,
@@ -39,6 +40,20 @@ exports.handler = async (event) => {
 
     }
 
+    const auth = await requireCrmAgent(event, body.agent_id);
+
+    if(auth.error){
+
+      return {
+        statusCode:403,
+        body:JSON.stringify({
+          success:false,
+          error:auth.error
+        })
+      };
+
+    }
+
     await ensureGoogleCalendarTables(pool);
 
     const result = await pool.query(
@@ -51,7 +66,7 @@ exports.handler = async (event) => {
       `,
       [
         body.calendar_id,
-        String(body.agent_id)
+        auth.crmAgentId
       ]
     );
 

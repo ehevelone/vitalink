@@ -1,4 +1,5 @@
 const { Pool } = require("pg");
+const { requireCrmAgent } = require("./crm-auth");
 
 const pool = new Pool({
   connectionString:process.env.SUPABASE_URL,
@@ -26,6 +27,20 @@ exports.handler = async (event) => {
 
     }
 
+    const auth = await requireCrmAgent(event, agentId);
+
+    if(auth.error){
+
+      return{
+        statusCode:403,
+        body:JSON.stringify({
+          success:false,
+          error:auth.error
+        })
+      };
+
+    }
+
     await pool.query(`
       ALTER TABLE crm_clients
       ADD COLUMN IF NOT EXISTS linked_app_client_id TEXT,
@@ -40,7 +55,7 @@ exports.handler = async (event) => {
       WHERE crm_uuid = $1
       LIMIT 1
       `,
-      [agentId]
+      [auth.crmAgentId]
     );
 
     const appAgentId =
@@ -61,7 +76,7 @@ exports.handler = async (event) => {
       WHERE agent_id = $1
       ORDER BY last_sync DESC NULLS LAST, created_at DESC
       `,
-      [agentId]
+      [auth.crmAgentId]
     );
 
     let appClients = [];

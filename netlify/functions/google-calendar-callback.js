@@ -32,6 +32,28 @@ exports.handler = async (event) => {
 
     await ensureGoogleCalendarTables(pool);
 
+    const stateResult = await pool.query(
+      `
+      DELETE FROM crm_google_calendar_oauth_states
+      WHERE state = $1
+        AND expires_at > NOW()
+      RETURNING agent_id
+      `,
+      [String(agentId)]
+    );
+
+    if(!stateResult.rows.length){
+
+      return {
+        statusCode:400,
+        body:"Google authorization expired or was not started from VitaLink CRM."
+      };
+
+    }
+
+    const crmAgentId =
+      stateResult.rows[0].agent_id;
+
     const params = new URLSearchParams({
       code,
       client_id:process.env.GOOGLE_CLIENT_ID,
@@ -79,7 +101,7 @@ exports.handler = async (event) => {
         updated_at = NOW()
       `,
       [
-        String(agentId),
+        String(crmAgentId),
         data.access_token,
         data.refresh_token || null,
         expiresAt

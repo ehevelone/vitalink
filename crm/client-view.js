@@ -1,3 +1,9 @@
+if(!sessionStorage.getItem("crm_uuid")){
+
+  window.location = "login.html";
+
+}
+
 const params = new URLSearchParams(window.location.search);
 
 const clientId = params.get("id");

@@ -1,4 +1,5 @@
 const { Pool } = require("pg");
+const { requireCrmClient } = require("./crm-auth");
 
 const pool = new Pool({
   connectionString: process.env.SUPABASE_URL,
@@ -38,6 +39,18 @@ exports.handler = async (event) => {
 
     }
 
+    const auth = await requireCrmClient(event, body.id);
+
+    if(auth.error){
+      return{
+        statusCode:403,
+        body:JSON.stringify({
+          success:false,
+          error:auth.error
+        })
+      };
+    }
+
     const client =
       await pool.connect();
 
@@ -49,25 +62,28 @@ exports.handler = async (event) => {
         `
         DELETE FROM crm_tasks
         WHERE client_id = $1
+          AND agent_id = $2
         `,
-        [body.id]
+        [body.id, auth.crmAgentId]
       );
 
       await client.query(
         `
         DELETE FROM crm_appointments
         WHERE client_id = $1
+          AND agent_id = $2
         `,
-        [body.id]
+        [body.id, auth.crmAgentId]
       );
 
       const result = await client.query(
         `
         DELETE FROM crm_clients
         WHERE id = $1
+          AND agent_id = $2
         RETURNING id
         `,
-        [body.id]
+        [body.id, auth.crmAgentId]
       );
 
       if(result.rows.length === 0){

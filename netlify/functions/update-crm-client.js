@@ -1,4 +1,5 @@
 const { Pool } = require("pg");
+const { requireCrmClient } = require("./crm-auth");
 
 const pool = new Pool({
   connectionString: process.env.SUPABASE_URL,
@@ -128,6 +129,18 @@ exports.handler = async (event) => {
 
     }
 
+    const auth = await requireCrmClient(event, body.id);
+
+    if(auth.error){
+      return{
+        statusCode:403,
+        body:JSON.stringify({
+          success:false,
+          error:auth.error
+        })
+      };
+    }
+
     const updates = [];
     const values = [];
 
@@ -168,9 +181,10 @@ exports.handler = async (event) => {
         ${updates.join(",\n        ")},
         updated_at = NOW()
       WHERE id = $${values.length}
+        AND agent_id = $${values.length + 1}
       RETURNING *
       `,
-      values
+      [...values, auth.crmAgentId]
     );
 
     if(result.rows.length === 0){

@@ -1,5 +1,6 @@
 const { Pool } = require("pg");
 const { syncGoogleAppointment } = require("./google-calendar-sync");
+const { requireCrmAgent } = require("./crm-auth");
 
 const pool = new Pool({
   connectionString: process.env.SUPABASE_URL,
@@ -36,6 +37,41 @@ exports.handler = async (event) => {
       notes
     } = body;
 
+    const currentAppointment = await pool.query(
+      `
+      SELECT agent_id
+      FROM crm_appointments
+      WHERE id = $1
+      LIMIT 1
+      `,
+      [id]
+    );
+
+    if(!currentAppointment.rows.length){
+      return{
+        statusCode:404,
+        body:JSON.stringify({
+          success:false,
+          error:"Appointment not found"
+        })
+      };
+    }
+
+    const auth = await requireCrmAgent(
+      event,
+      currentAppointment.rows[0].agent_id
+    );
+
+    if(auth.error){
+      return{
+        statusCode:403,
+        body:JSON.stringify({
+          success:false,
+          error:auth.error
+        })
+      };
+    }
+
     const result = await pool.query(
 
       `
@@ -51,6 +87,7 @@ exports.handler = async (event) => {
         notes = $6
 
       WHERE id = $7
+        AND agent_id = $8
 
       RETURNING *
       `,
@@ -62,7 +99,8 @@ exports.handler = async (event) => {
         appointment_time,
         location,
         notes,
-        id
+        id,
+        auth.crmAgentId
       ]
 
     );

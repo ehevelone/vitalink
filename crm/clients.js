@@ -38,6 +38,21 @@ function getClientStatusClass(status){
 
 }
 
+function getPushHealth(client){
+
+  return client.push_health || "No Device";
+
+}
+
+function getPushHealthClass(client){
+
+  return getPushHealth(client)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+
+}
+
 function formatPhone(phone){
 
   if(!phone) return "";
@@ -874,6 +889,14 @@ function renderClients(){
 
           <span class="status ${getClientStatusClass(client.status)}">
             ${normalizeClientStatus(client.status)}
+          </span>
+
+        </td>
+
+        <td>
+
+          <span class="status push-${getPushHealthClass(client)}">
+            ${getPushHealth(client)}
           </span>
 
         </td>

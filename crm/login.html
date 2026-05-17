@@ -518,9 +518,14 @@ async function login(){
     // ✅ DIRECT LOGIN
     if(data.step === "login_success"){
 
+      if(!data.token){
+        showError("Login failed: missing session token");
+        return;
+      }
+
       sessionStorage.setItem(
         "agentSessionToken",
-        data.token || "dev"
+        data.token
       );
 
       sessionStorage.setItem(
@@ -634,9 +639,14 @@ async function verifyCode(){
 
     }
 
+    if(!data.token){
+      showError("Login failed: missing session token");
+      return;
+    }
+
     sessionStorage.setItem(
       "agentSessionToken",
-      data.token || "dev"
+      data.token
     );
 
     sessionStorage.setItem(

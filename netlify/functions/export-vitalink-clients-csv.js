@@ -1,4 +1,5 @@
 const { Pool } = require("pg");
+const { requireCrmAgent } = require("./crm-auth");
 
 const pool = new Pool({
   connectionString:process.env.SUPABASE_URL,
@@ -64,6 +65,18 @@ exports.handler = async (event) => {
           "Content-Type":"text/plain"
         },
         body:"Missing agent_id"
+      };
+    }
+
+    const auth = await requireCrmAgent(event, crmAgentId);
+
+    if(auth.error){
+      return{
+        statusCode:403,
+        headers:{
+          "Content-Type":"text/plain"
+        },
+        body:"Unauthorized"
       };
     }
 
