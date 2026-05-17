@@ -316,10 +316,10 @@ footer{
 
       <button class="resource-card" onclick="startAgentCheckout()">
         <div>
-          <h3>Agent Checkout</h3>
-          <p>Use the existing VitaLink payment flow to start a new agent subscription.</p>
+          <h3>App + CRM Checkout</h3>
+          <p>Start a Founders App + CRM subscription for a new VitaLink agent account.</p>
         </div>
-        <span class="action secondary-action">Start Checkout</span>
+        <span class="action secondary-action">Start App + CRM</span>
       </button>
     </div>
 
@@ -339,7 +339,13 @@ async function startAgentCheckout(){
     const res = await fetch(
       "https://vitalink-app.netlify.app/.netlify/functions/vl-agent-checkout",
       {
-        method:"POST"
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          plan:"app_crm"
+        })
       }
     );
 

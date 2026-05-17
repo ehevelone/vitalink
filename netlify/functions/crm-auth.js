@@ -28,17 +28,23 @@ async function requireCrmAgent(event, requestedAgentId) {
   await pool.query(`
     ALTER TABLE agents
     ADD COLUMN IF NOT EXISTS session_token TEXT,
-    ADD COLUMN IF NOT EXISTS session_expires TIMESTAMPTZ
+    ADD COLUMN IF NOT EXISTS session_expires TIMESTAMPTZ,
+    ADD COLUMN IF NOT EXISTS crm_subscription_status TEXT,
+    ADD COLUMN IF NOT EXISTS crm_subscription_valid BOOLEAN DEFAULT false
   `);
 
   const result = await pool.query(
     `
-    SELECT id, crm_uuid, email, name
+    SELECT id, crm_uuid, email, name, crm_subscription_status, crm_subscription_valid
     FROM agents
     WHERE crm_uuid = $1
       AND session_token = $2
       AND session_expires > NOW()
       AND (active = TRUE OR (billing_owner IS NOT NULL AND subscription_status = 'active'))
+      AND (
+        crm_subscription_valid = TRUE
+        OR crm_subscription_status IN ('active', 'trialing')
+      )
     LIMIT 1
     `,
     [String(crmUuid), token]

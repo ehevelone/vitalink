@@ -111,9 +111,9 @@ Clients of participating insurance agents receive a code from their agent.
 
 <!-- AGENT ACCESS -->
 <div class="activate-box">
-  <div class="price">$10 / Month Agent Access</div>
+  <div class="price">$30 / Month App + CRM Founders Access</div>
   <button onclick="startAgentCheckout()">
-    Start Agent Access
+    Start App + CRM Access
   </button>
 </div>
 
@@ -173,7 +173,13 @@ async function startCheckout() {
 async function startAgentCheckout() {
   try {
     const res = await fetch('https://vitalink-app.netlify.app/.netlify/functions/vl-agent-checkout', {
-      method: 'POST'
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        plan: 'app_crm'
+      })
     });
 
     const data = await res.json();

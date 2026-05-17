@@ -426,6 +426,36 @@ async function exportCrmData(type){
 
 }
 
+async function openCrmBilling(){
+
+  const res = await fetch(
+    "https://vitalink-app.netlify.app/.netlify/functions/create-crm-billing-session",
+    {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "x-agent-session":
+          sessionStorage.getItem("agentSessionToken") || ""
+      },
+      body:JSON.stringify({
+        agentId:sessionStorage.getItem("agentId"),
+        agentSessionToken:
+          sessionStorage.getItem("agentSessionToken")
+      })
+    }
+  );
+
+  const data = await res.json();
+
+  if(!res.ok || !data.url){
+    alert(data.error || "Unable to open CRM billing.");
+    return;
+  }
+
+  window.location.href = data.url;
+
+}
+
 [
   "defaultAppointmentType",
   "defaultAppointmentDuration",

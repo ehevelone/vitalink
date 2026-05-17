@@ -152,8 +152,11 @@ background:var(--accent);
 color:#000;
 text-decoration:none;
 border-radius:10px;
+border:0;
+cursor:pointer;
 font-weight:700;
 font-size:1rem;
+font-family:inherit;
 }
 
 .faq{
@@ -757,9 +760,9 @@ Yes. VitaLink is designed to help agents stay visible year-round by keeping agen
 Help your clients stay prepared while strengthening long-term retention and household relationships.
 </p>
 
-<a href="https://vitalink-app.netlify.app/.netlify/functions/vl-agent-checkout" class="button">
-Start Agent Access
-</a>
+<button type="button" class="button" onclick="startAgentCheckout()">
+Start App + CRM Access
+</button>
 
 </section>
 
@@ -780,6 +783,33 @@ Screenshots shown throughout this page may contain simulated names, contact info
 </footer>
 
 </main>
+
+<script>
+async function startAgentCheckout() {
+  try {
+    const res = await fetch("https://vitalink-app.netlify.app/.netlify/functions/vl-agent-checkout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        plan: "app_crm"
+      })
+    });
+
+    const data = await res.json();
+
+    if (data.url) {
+      window.location = data.url;
+      return;
+    }
+
+    alert("Agent checkout failed. Please try again.");
+  } catch (err) {
+    alert("Error connecting to payment system.");
+  }
+}
+</script>
 
 </body>
 </html>

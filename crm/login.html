@@ -362,6 +362,18 @@ button:hover{
 
       </div>
 
+      <div id="billingStep" class="hidden">
+
+        <div class="login-sub">
+          CRM access requires an active CRM subscription.
+        </div>
+
+        <button id="billingBtn" type="button" onclick="startCrmBilling()">
+          Activate CRM Billing
+        </button>
+
+      </div>
+
       <div id="recaptcha-container"></div>
 
       <div class="security">
@@ -481,6 +493,117 @@ function getAgentName(agent){
 
 }
 
+function storeCrmSession(data, fallbackEmail){
+
+  sessionStorage.setItem(
+    "agentSessionToken",
+    data.token
+  );
+
+  sessionStorage.setItem(
+    "agentName",
+    getAgentName(data.agent)
+  );
+
+  sessionStorage.setItem(
+    "agentEmail",
+    data.agent.email || fallbackEmail
+  );
+
+  sessionStorage.setItem(
+    "agentId",
+    String(data.agent.id)
+  );
+
+  sessionStorage.setItem(
+    "crm_uuid",
+    data.agent.crm_uuid
+  );
+
+}
+
+function handleCrmLoginSuccess(data, fallbackEmail){
+
+  if(!data.token){
+    showError("Login failed: missing session token");
+    return;
+  }
+
+  storeCrmSession(data, fallbackEmail);
+
+  if(data.requires_crm_payment === true){
+
+    document
+      .getElementById("step1")
+      .classList.add("hidden");
+
+    document
+      .getElementById("step2")
+      .classList.add("hidden");
+
+    document
+      .getElementById("billingStep")
+      .classList.remove("hidden");
+
+    showError("CRM billing is required before opening the dashboard.");
+
+    return;
+
+  }
+
+  window.location.href = "index.html";
+
+}
+
+async function startCrmBilling(){
+
+  const button =
+    document.getElementById("billingBtn");
+
+  button.disabled = true;
+  button.innerText = "Opening billing...";
+
+  try{
+
+    const res = await fetch(
+      "https://vitalink-app.netlify.app/.netlify/functions/create-crm-billing-session",
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "x-agent-session":
+            sessionStorage.getItem("agentSessionToken") || ""
+        },
+        body:JSON.stringify({
+          agentId:sessionStorage.getItem("agentId"),
+          agentSessionToken:
+            sessionStorage.getItem("agentSessionToken")
+        })
+      }
+    );
+
+    const data = await res.json();
+
+    if(!res.ok || !data.url){
+      showError(data.error || "Unable to open CRM billing.");
+      button.disabled = false;
+      button.innerText = "Activate CRM Billing";
+      return;
+    }
+
+    window.location.href = data.url;
+
+  }catch(err){
+
+    console.error(err);
+    showError("Unable to open CRM billing.");
+    button.disabled = false;
+    button.innerText = "Activate CRM Billing";
+
+  }
+
+}
+
 // ---------------- LOGIN ----------------
 
 async function login(){
@@ -509,7 +632,8 @@ async function login(){
       body:JSON.stringify({
         email,
         password,
-        step:"login"
+        step:"login",
+        product:"crm"
       })
     });
 
@@ -518,37 +642,7 @@ async function login(){
     // ✅ DIRECT LOGIN
     if(data.step === "login_success"){
 
-      if(!data.token){
-        showError("Login failed: missing session token");
-        return;
-      }
-
-      sessionStorage.setItem(
-        "agentSessionToken",
-        data.token
-      );
-
-      sessionStorage.setItem(
-        "agentName",
-        getAgentName(data.agent)
-      );
-
-      sessionStorage.setItem(
-        "agentEmail",
-        data.agent.email || email
-      );
-
-      sessionStorage.setItem(
-        "agentId",
-        String(data.agent.id)
-      );
-
-      sessionStorage.setItem(
-        "crm_uuid",
-        data.agent.crm_uuid
-      );
-
-      window.location.href = "index.html";
+      handleCrmLoginSuccess(data, email);
 
       return;
 
@@ -625,7 +719,8 @@ async function verifyCode(){
         email: currentEmail,
         password:
           document.getElementById("password").value,
-        step:"verify"
+        step:"verify",
+        product:"crm"
       })
     });
 
@@ -639,37 +734,7 @@ async function verifyCode(){
 
     }
 
-    if(!data.token){
-      showError("Login failed: missing session token");
-      return;
-    }
-
-    sessionStorage.setItem(
-      "agentSessionToken",
-      data.token
-    );
-
-    sessionStorage.setItem(
-      "agentId",
-      String(data.agent.id)
-    );
-
-    sessionStorage.setItem(
-      "agentName",
-      getAgentName(data.agent)
-    );
-
-    sessionStorage.setItem(
-      "agentEmail",
-      data.agent.email || currentEmail
-    );
-
-    sessionStorage.setItem(
-      "crm_uuid",
-      data.agent.crm_uuid
-    );
-
-    window.location.href = "index.html";
+    handleCrmLoginSuccess(data, currentEmail);
 
   }catch(err){
 

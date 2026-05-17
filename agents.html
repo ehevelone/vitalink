@@ -401,7 +401,7 @@ max-width:520px;
     font-weight:600;
     margin-bottom:12px;
   ">
-    $10 / Month Agent Access
+    $30 / Month App + CRM Founders Access
   </div>
 
   <div style="
@@ -411,7 +411,7 @@ max-width:520px;
     max-width:420px;
     margin:0 auto;
   ">
-    Provide VitaLink to your clients at no cost, while maintaining visibility and control.
+    Provide VitaLink to your clients at no cost, manage follow-ups, and keep client work organized in the VitaLink CRM.
   </div>
 
    <!-- 🔥 FOUNDING AGENT -->
@@ -432,9 +432,9 @@ max-width:520px;
     </span>
 
     The first 1,000 agents who join VitaLink will be locked in at 
-    <strong>$10/month for life.</strong>
+    <strong>$30/month for App + CRM access.</strong>
 
-    After the first 1,000 agents, VitaLink pricing for new accounts will increase to $20/month.
+    After the first 1,000 agents, VitaLink App + CRM access for new accounts will increase to $40/month.
 
   </div>
 
@@ -446,7 +446,7 @@ max-width:520px;
 margin-top:6px;
 box-shadow:0 6px 20px rgba(124,198,232,0.25);
 ">
-Start Agent Access
+Start App + CRM Access
 </button>
 
 </section>
@@ -457,7 +457,13 @@ Start Agent Access
 async function startAgentCheckout() {
   try {
     const res = await fetch('https://vitalink-app.netlify.app/.netlify/functions/vl-agent-checkout', {
-      method: 'POST'
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        plan: 'app_crm'
+      })
     });
 
     const data = await res.json();
