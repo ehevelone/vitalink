@@ -428,6 +428,13 @@ async function exportCrmData(type){
 
 async function openCrmBilling(){
 
+  const button = document.getElementById("crmBillingBtn");
+
+  if(button){
+    button.disabled = true;
+    button.textContent = "Opening Billing...";
+  }
+
   const res = await fetch(
     "https://vitalink-app.netlify.app/.netlify/functions/create-crm-billing-session",
     {
@@ -449,6 +456,10 @@ async function openCrmBilling(){
 
   if(!res.ok || !data.url){
     alert(data.error || "Unable to open CRM billing.");
+    if(button){
+      button.disabled = false;
+      button.textContent = "Edit CRM Billing";
+    }
     return;
   }
 

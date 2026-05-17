@@ -70,9 +70,11 @@
       <div class="nav-item active">⚙ Settings</div>
     </a>
 
-    <div class="nav-item disabled" aria-disabled="true">
-      💳 Billing
-    </div>
+    <a href="settings.html#billing">
+      <div class="nav-item">
+        💳 Billing
+      </div>
+    </a>
 
   </div>
 
@@ -113,7 +115,10 @@
 
   <div class="grid">
 
-    <div class="card settings-card">
+    <div
+      class="card settings-card"
+      id="billing"
+    >
 
       <div class="card-header">
 
@@ -123,17 +128,18 @@
           </h3>
 
           <div class="client-sub">
-            Manage the CRM subscription for this agent account.
+            Edit payment method, subscription status, invoices, and CRM billing details through Stripe.
           </div>
         </div>
 
       </div>
 
       <button
-        class="save-btn"
+        class="billing-btn"
+        id="crmBillingBtn"
         onclick="openCrmBilling()"
       >
-        Manage CRM Billing
+        Edit CRM Billing
       </button>
 
     </div>

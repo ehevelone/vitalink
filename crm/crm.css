@@ -439,6 +439,27 @@ button:hover{
   display:none;
 }
 
+.billing-btn{
+  width:100%;
+  margin-top:18px;
+  padding:11px 16px;
+  border:0;
+  border-radius:8px;
+  background:var(--accent);
+  color:#ffffff;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.billing-btn:hover{
+  filter:brightness(.95);
+}
+
+.billing-btn:disabled{
+  opacity:.7;
+  cursor:wait;
+}
+
 /* =========================================
    TASKS
 ========================================= */
