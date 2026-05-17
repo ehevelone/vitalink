@@ -138,6 +138,71 @@ th{
   font-size:.85rem;
 }
 
+.muted{
+  color:#999;
+  font-size:.85rem;
+}
+
+.status-pill{
+  display:inline-block;
+  padding:4px 9px;
+  border-radius:999px;
+  font-size:.75rem;
+  font-weight:700;
+  background:#2b2b2b;
+  color:#ddd;
+}
+
+.status-pill.ok{
+  background:rgba(46,204,113,.16);
+  color:#2ecc71;
+}
+
+.status-pill.warn{
+  background:rgba(241,196,15,.16);
+  color:#f1c40f;
+}
+
+.status-pill.bad{
+  background:rgba(231,76,60,.16);
+  color:#ff7b72;
+}
+
+.agent-list{
+  margin-top:8px;
+  display:grid;
+  gap:6px;
+}
+
+.agent-row{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  padding:8px 10px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:rgba(255,255,255,.03);
+}
+
+.audit-cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:12px;
+  margin-bottom:16px;
+}
+
+.audit-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:14px;
+}
+
+.audit-card strong{
+  display:block;
+  font-size:1.4rem;
+}
+
 tr:nth-child(even){
   background:rgba(255,255,255,.03);
 }
@@ -263,6 +328,33 @@ Send App Update Notification
 
 </div>
 
+<div class="section">
+
+<h2>RSM Billing Audit</h2>
+<button class="primary" onclick="loadStats()">Run Full Audit</button>
+
+<div class="audit-cards">
+<div class="audit-card"><span class="muted">Checked</span><strong id="auditChecked">0</strong></div>
+<div class="audit-card"><span class="muted">Matched</span><strong id="auditMatched">0</strong></div>
+<div class="audit-card"><span class="muted">Mismatches</span><strong id="auditMismatches">0</strong></div>
+<div class="audit-card"><span class="muted">Not Checked</span><strong id="auditNotChecked">0</strong></div>
+</div>
+
+<table>
+<thead>
+<tr>
+<th>RSM</th>
+<th>Status</th>
+<th>Agents</th>
+<th>Clients</th>
+<th>Billing Audit</th>
+</tr>
+</thead>
+<tbody id="rsmList"></tbody>
+</table>
+
+</div>
+
 <script>
 
 const BACKEND="https://vitalink-app.netlify.app/.netlify/functions";
@@ -301,6 +393,79 @@ localStorage.setItem("theme",newTheme);
 applyTheme(newTheme);
 };
 
+function safeText(value){
+return String(value ?? "").replace(/[&<>"']/g,(char)=>({
+"&":"&amp;",
+"<":"&lt;",
+">":"&gt;",
+'"':"&quot;",
+"'":"&#039;"
+}[char]));
+}
+
+function auditClass(status){
+if(status==="matched") return "ok";
+if(status==="mismatch") return "bad";
+return "warn";
+}
+
+function auditLabel(status){
+if(status==="matched") return "Matched";
+if(status==="mismatch") return "Mismatch";
+return "Not Checked";
+}
+
+function renderRsmList(rsms){
+const tbody=document.getElementById("rsmList");
+
+if(!rsms||!rsms.length){
+tbody.innerHTML=`<tr><td colspan="5">No RSMs registered yet.</td></tr>`;
+return;
+}
+
+tbody.innerHTML=rsms.map((rsm)=>{
+const agents=(rsm.agents||[]).slice(0,5).map((agent)=>`
+<div class="agent-row">
+<span>${safeText(agent.email||"Pending agent")}</span>
+<span class="muted">${agent.active?"Active":"Inactive"} • ${Number(agent.client_count||0)} clients</span>
+</div>
+`).join("");
+
+const more=(rsm.agents||[]).length>5
+? `<div class="muted">+${(rsm.agents||[]).length-5} more agents</div>`
+: "";
+
+const billed=rsm.billed_quantity===null||rsm.billed_quantity===undefined
+? "not checked"
+: rsm.billed_quantity;
+
+return `
+<tr>
+<td>
+<strong>${safeText(rsm.name||rsm.email||"RSM")}</strong>
+<div class="muted">${safeText(rsm.email||"")}</div>
+<div class="muted">${safeText(rsm.region||"")}</div>
+<div class="agent-list">${agents || '<div class="muted">No agents registered.</div>'}${more}</div>
+</td>
+<td>
+<span class="status-pill ${rsm.active?"ok":"bad"}">${rsm.active?"Active":"Inactive"}</span>
+<div class="muted">Billing: ${safeText(rsm.subscription_status||"none")}</div>
+</td>
+<td>
+<strong>${Number(rsm.active_agent_count||0)}</strong>
+<div class="muted">${Number(rsm.agent_count||0)} total</div>
+</td>
+<td>${Number(rsm.client_count||0)}</td>
+<td>
+<span class="status-pill ${auditClass(rsm.billing_audit_status)}">${auditLabel(rsm.billing_audit_status)}</span>
+<div class="muted">Expected: ${Number(rsm.expected_billed_quantity||0)}</div>
+<div class="muted">Stripe: ${billed}</div>
+</td>
+</tr>
+`;
+}).join("");
+}
+
 /* LOAD STATS */
 
 async function loadStats(){
@@ -326,6 +491,11 @@ document.getElementById("totalAgents").innerText =
 document.getElementById("activeAgents").innerText = data.rsm_users || 0;
 document.getElementById("inactiveAgents").innerText = data.independent_users || 0;
 
+document.getElementById("auditChecked").innerText = data.billing_audit?.checked || 0;
+document.getElementById("auditMatched").innerText = data.billing_audit?.matched || 0;
+document.getElementById("auditMismatches").innerText = data.billing_audit?.mismatches || 0;
+document.getElementById("auditNotChecked").innerText = data.billing_audit?.not_checked || 0;
+
 // 🔥 BREAKDOWN
 const tbody=document.getElementById("rsmBreakdown");
 tbody.innerHTML=`
@@ -346,6 +516,8 @@ tbody.innerHTML=`
 <td colspan="3">${data.independent_users}</td>
 </tr>
 `;
+
+renderRsmList(data.rsms || []);
 
 }
 
