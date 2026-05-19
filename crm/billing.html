@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Billing - VitaLink CRM</title>
+
+<link rel="stylesheet" href="crm.css">
+
+</head>
+
+<body>
+
+<div class="sidebar">
+
+  <a href="index.html">
+    <img src="../images/vitalink-logo.png" class="logo">
+  </a>
+
+  <div class="nav-section">
+
+    <div class="nav-title">Dashboard</div>
+
+    <a href="index.html">
+      <div class="nav-item">📊 Dashboard</div>
+    </a>
+
+    <a href="clients.html">
+      <div class="nav-item">👥 Clients</div>
+    </a>
+
+    <a href="schedule.html">
+      <div class="nav-item">📅 Schedule</div>
+    </a>
+
+    <a href="tasks.html">
+      <div class="nav-item">⏰ Tasks</div>
+    </a>
+
+  </div>
+
+  <div class="nav-section">
+
+    <div class="nav-title">VitaLink</div>
+
+    <a href="vitalink-profiles.html">
+      <div class="nav-item">Linked Profiles</div>
+    </a>
+
+    <a href="vitalink-notifications.html">
+      <div class="nav-item">Notifications</div>
+    </a>
+
+    <a href="vitalink-exports.html">
+      <div class="nav-item">Exports</div>
+    </a>
+
+  </div>
+
+  <div class="nav-section">
+
+    <div class="nav-title">Account</div>
+
+    <a href="settings.html">
+      <div class="nav-item">⚙ Settings</div>
+    </a>
+
+    <a href="billing.html">
+      <div class="nav-item active">💳 Billing</div>
+    </a>
+
+  </div>
+
+  <div class="sidebar-footer">
+
+    <button
+      class="logout-btn"
+      onclick="logout()"
+    >
+      Logout
+    </button>
+
+  </div>
+
+</div>
+
+<div class="main">
+
+  <div class="topbar">
+
+    <div>
+      <h1>Billing</h1>
+      <div class="muted">
+        Manage CRM payment method, subscription, invoices, and billing details.
+      </div>
+    </div>
+
+  </div>
+
+  <div class="grid">
+
+    <div class="card settings-card">
+
+      <div class="card-header">
+
+        <div>
+          <h3 class="card-title">
+            CRM Subscription
+          </h3>
+
+          <div class="client-sub">
+            Open the secure Stripe billing portal to edit payment method, view invoices, or manage the CRM subscription.
+          </div>
+        </div>
+
+      </div>
+
+      <button
+        class="billing-btn"
+        id="crmBillingBtn"
+        onclick="openCrmBilling()"
+      >
+        Update Billing in Stripe
+      </button>
+
+      <div
+        class="settings-summary"
+        id="billingStatus"
+      >
+        Loading billing summary...
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="crm.js"></script>
+<script src="billing.js"></script>
+
+</body>
+</html>
