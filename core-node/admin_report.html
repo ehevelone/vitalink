@@ -330,6 +330,30 @@ Send App Update Notification
 
 <div class="section">
 
+<h2>Site Traffic</h2>
+
+<div class="audit-cards">
+<div class="audit-card"><span class="muted">30-Day Views</span><strong id="trafficViews">0</strong></div>
+<div class="audit-card"><span class="muted">Today</span><strong id="trafficToday">0</strong></div>
+<div class="audit-card"><span class="muted">Visitors</span><strong id="trafficVisitors">0</strong></div>
+<div class="audit-card"><span class="muted">Sessions</span><strong id="trafficSessions">0</strong></div>
+</div>
+
+<table>
+<thead>
+<tr>
+<th>Top Page</th>
+<th>Views</th>
+<th>Visitors</th>
+</tr>
+</thead>
+<tbody id="trafficPages"></tbody>
+</table>
+
+</div>
+
+<div class="section">
+
 <h2>RSM Billing Audit</h2>
 <button class="primary" onclick="loadStats()">Run Full Audit</button>
 
@@ -521,6 +545,42 @@ renderRsmList(data.rsms || []);
 
 }
 
+async function loadSiteTraffic(){
+const res=await fetch(BACKEND+"/get-site-traffic-report",{
+headers:{ "x-admin-session":token }
+});
+
+if(!res.ok){
+return;
+}
+
+const data=await res.json();
+
+if(!data.success){
+return;
+}
+
+const summary=data.summary||{};
+
+document.getElementById("trafficViews").innerText=summary.total_views||0;
+document.getElementById("trafficToday").innerText=summary.views_today||0;
+document.getElementById("trafficVisitors").innerText=summary.unique_visitors||0;
+document.getElementById("trafficSessions").innerText=summary.sessions||0;
+
+const tbody=document.getElementById("trafficPages");
+const pages=data.top_pages||[];
+
+tbody.innerHTML=pages.length
+? pages.map(page=>`
+<tr>
+<td>${safeText(page.page_path||"/")}</td>
+<td>${Number(page.views||0)}</td>
+<td>${Number(page.visitors||0)}</td>
+</tr>
+`).join("")
+: `<tr><td colspan="3">No traffic recorded yet.</td></tr>`;
+}
+
 /* CREATE RSM */
 
 document.getElementById("createBtn").onclick=async function(){
@@ -592,8 +652,10 @@ alert("Failed to send notification");
 /* INIT */
 
 loadStats();
+loadSiteTraffic();
 
 </script>
 
+<script src="../site-traffic.js" defer></script>
 </body>
 </html>

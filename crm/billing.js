@@ -55,19 +55,19 @@ async function loadBillingSummary(){
       data.billing || {};
 
     status.innerHTML = `
-      <div class="info-row">
+      <div class="billing-summary-card">
         <div class="label">Subscription</div>
         <div class="value">${safeText(billing.status || "Inactive")}</div>
       </div>
-      <div class="info-row">
+      <div class="billing-summary-card">
         <div class="label">Plan</div>
         <div class="value">${safeText(billing.plan || "CRM Access")}</div>
       </div>
-      <div class="info-row">
+      <div class="billing-summary-card">
         <div class="label">Payment Method</div>
         <div class="value">${safeText(billing.payment_method || "No payment method on file")}</div>
       </div>
-      <div class="info-row">
+      <div class="billing-summary-card">
         <div class="label">Next Billing Date</div>
         <div class="value">${safeText(billing.next_billing_date || "Not scheduled")}</div>
       </div>
