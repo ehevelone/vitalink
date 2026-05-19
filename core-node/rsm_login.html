@@ -148,6 +148,9 @@
       <div class="field">
         <label>Password</label>
         <input type="password" id="password" autocomplete="current-password" />
+        <div style="margin-top:6px; font-size:0.8rem; color:#7cc6e8; cursor:pointer;" onclick="togglePassword('password')">
+          Show Password
+        </div>
       </div>
 
       <button id="btn" onclick="loginRSM()">Login</button>
@@ -188,12 +191,6 @@
       resultDiv.textContent = "";
 
       if (!email || !password) {
-        if (res.ok && data.step === "firebase_2fa") {
-          resultDiv.classList.add("error");
-          resultDiv.textContent = "Admin accounts must use Admin Access for phone verification.";
-          return;
-        }
-
         resultDiv.classList.add("error");
         resultDiv.textContent = "Email and password required.";
         return;
@@ -227,6 +224,11 @@
       } finally {
         btn.disabled = false;
       }
+    }
+
+    function togglePassword(id) {
+      const input = document.getElementById(id);
+      input.type = input.type === "password" ? "text" : "password";
     }
 
     function forgotPassword() {
