@@ -105,6 +105,37 @@ input[type="file"]{
 padding:12px;
 }
 
+.batch-results{
+display:grid;
+gap:12px;
+margin-top:16px;
+}
+
+.batch-result{
+padding:14px;
+border-radius:10px;
+border:1px solid #155d34;
+background:#082b18;
+}
+
+.batch-result.error{
+border-color:#5d1515;
+background:#2b0808;
+color:#ffc2c2;
+}
+
+.download-link{
+display:block;
+margin-top:10px;
+padding:12px;
+text-align:center;
+background:#7cc6e8;
+color:#000;
+border-radius:10px;
+font-weight:700;
+text-decoration:none;
+}
+
 button{
 width:100%;
 padding:15px 24px;
@@ -186,7 +217,7 @@ Convert VitaLink client exports into CRM-ready import files using built-in CRM m
 <h2>1. Upload VitaLink CSV Export</h2>
 
 <p>
-Upload the VitaLink client CSV export you want to convert into another CRM format.
+Upload one VitaLink client CSV export, or select multiple files to convert a batch.
 </p>
 
 <label for="vitalinkCsv">VitaLink CSV File</label>
@@ -196,6 +227,7 @@ type="file"
 id="vitalinkCsv"
 name="vitalinkCsv"
 accept=".csv"
+multiple
 required
 />
 
@@ -256,7 +288,7 @@ accept=".csv"
 <h2>4. Convert File</h2>
 
 <p>
-VitaLink will convert your export into a CRM-ready CSV file for download.
+VitaLink will convert your export files into CRM-ready CSV files for download.
 </p>
 
 <button type="submit" id="convertBtn">
@@ -340,8 +372,8 @@ form.addEventListener("submit", async function(e){
   statusBox.style.display = "none";
   statusBox.textContent = "";
 
-  const vitalinkCsv =
-    document.getElementById("vitalinkCsv").files[0];
+  const vitalinkFiles =
+    Array.from(document.getElementById("vitalinkCsv").files || []);
 
   const crmTemplateCsv =
     document.getElementById("crmTemplateCsv").files[0];
@@ -352,105 +384,73 @@ form.addEventListener("submit", async function(e){
   const customCrmName =
     document.getElementById("customCrmName").value;
 
-  if(!vitalinkCsv || !crmTypeValue){
-    showError("Please upload a VitaLink CSV and select a CRM.");
+  if(!vitalinkFiles.length || !crmTypeValue){
+    showError("Please upload at least one VitaLink CSV and select a CRM.");
     return;
   }
 
-     if(crmTypeValue === "custom"){
-
-  if(!customCrmName){
-      showError(
-        "Please enter a CRM name."
-      );
-      return;
-    }
-
-  }
-
-  const formData = new FormData();
-
-  formData.append("vitalinkCsv", vitalinkCsv);
-  formData.append("crmType", crmTypeValue);
-
-  if(crmTemplateCsv){
-    formData.append("crmTemplateCsv", crmTemplateCsv);
-  }
-
-  if(customCrmName){
-    formData.append("customCrmName", customCrmName);
+  if(crmTypeValue === "custom" && !customCrmName){
+    showError("Please enter a CRM name.");
+    return;
   }
 
   try{
 
     convertBtn.disabled = true;
-    convertBtn.textContent = "Converting...";
+    convertBtn.textContent =
+      vitalinkFiles.length > 1
+        ? `Converting 0 of ${vitalinkFiles.length}...`
+        : "Converting...";
 
-    const res = await fetch(
-      "/.netlify/functions/convert-crm-csv",
-      {
-        method:"POST",
-        body:formData
+    statusBox.className = "status success";
+    statusBox.style.display = "block";
+    statusBox.innerHTML =
+      `<strong>Converting ${vitalinkFiles.length} file${vitalinkFiles.length === 1 ? "" : "s"}...</strong>`;
+
+    const results =
+      document.createElement("div");
+
+    results.className =
+      "batch-results";
+
+    statusBox.appendChild(results);
+
+    let successCount = 0;
+
+    for(let i = 0; i < vitalinkFiles.length; i++){
+      const file = vitalinkFiles[i];
+
+      convertBtn.textContent =
+        vitalinkFiles.length > 1
+          ? `Converting ${i + 1} of ${vitalinkFiles.length}...`
+          : "Converting...";
+
+      try{
+        const convertedBlob =
+          await convertSingleFile({
+            vitalinkCsv:file,
+            crmTypeValue,
+            crmTemplateCsv,
+            customCrmName
+          });
+
+        successCount++;
+
+        results.appendChild(
+          buildResultRow({
+            file,
+            blob:convertedBlob,
+            crmTypeValue
+          })
+        );
+      }catch(fileErr){
+        console.error(fileErr);
+        results.appendChild(buildErrorRow(file));
       }
-    );
-
-    if(!res.ok){
-
-      const text = await res.text();
-
-      throw new Error(
-        text || "CSV conversion failed."
-      );
-
     }
 
-    const blob = await res.blob();
-
-    const url =
-      window.URL.createObjectURL(blob);
-
-const downloadLink =
-  document.createElement("a");
-
-downloadLink.href = url;
-
-downloadLink.download =
-  "vitalink-crm-import.csv";
-
-downloadLink.textContent =
-  "⬇ Download Converted CSV";
-
-downloadLink.style.display = "block";
-downloadLink.style.marginTop = "18px";
-downloadLink.style.padding = "14px";
-downloadLink.style.textAlign = "center";
-downloadLink.style.background = "#7cc6e8";
-downloadLink.style.color = "#000";
-downloadLink.style.borderRadius = "10px";
-downloadLink.style.fontWeight = "700";
-downloadLink.style.textDecoration = "none";
-
-statusBox.innerHTML = "";
-
-statusBox.appendChild(downloadLink);
-
-statusBox.className = "status success";
-
-statusBox.style.display = "block";
-
-const autoDownload =
-  document.createElement("a");
-
-autoDownload.href = url;
-
-autoDownload.download =
-  "vitalink-crm-import.csv";
-
-document.body.appendChild(autoDownload);
-
-autoDownload.click();
-
-autoDownload.remove();
+    statusBox.firstElementChild.textContent =
+      `${successCount} of ${vitalinkFiles.length} file${vitalinkFiles.length === 1 ? "" : "s"} converted.`;
 
   }catch(err){
 
@@ -469,6 +469,128 @@ autoDownload.remove();
 
 });
 
+async function convertSingleFile({
+  vitalinkCsv,
+  crmTypeValue,
+  crmTemplateCsv,
+  customCrmName
+}){
+  const formData = new FormData();
+
+  formData.append("vitalinkCsv", vitalinkCsv);
+  formData.append("crmType", crmTypeValue);
+
+  if(crmTemplateCsv){
+    formData.append("crmTemplateCsv", crmTemplateCsv);
+  }
+
+  if(customCrmName){
+    formData.append("customCrmName", customCrmName);
+  }
+
+  const res = await fetch(
+    "/.netlify/functions/convert-crm-csv",
+    {
+      method:"POST",
+      body:formData
+    }
+  );
+
+  if(!res.ok){
+    const text = await res.text();
+    throw new Error(text || "CSV conversion failed.");
+  }
+
+  return res.blob();
+}
+
+function buildResultRow({
+  file,
+  blob,
+  crmTypeValue
+}){
+  const url =
+    window.URL.createObjectURL(blob);
+
+  const row =
+    document.createElement("div");
+
+  row.className =
+    "batch-result";
+
+  const name =
+    buildDownloadName(file.name, crmTypeValue);
+
+  row.innerHTML =
+    `<strong>${escapeHtml(file.name)}</strong><div>Converted successfully.</div>`;
+
+  const link =
+    document.createElement("a");
+
+  link.href = url;
+  link.download = name;
+  link.textContent = `Download ${name}`;
+  link.className = "download-link";
+
+  row.appendChild(link);
+
+  autoDownloadFile(url, name);
+
+  return row;
+}
+
+function buildErrorRow(file){
+  const row =
+    document.createElement("div");
+
+  row.className =
+    "batch-result error";
+
+  row.innerHTML =
+    `<strong>${escapeHtml(file.name)}</strong><div>Conversion failed. Check this file and try again.</div>`;
+
+  return row;
+}
+
+function buildDownloadName(fileName, crmTypeValue){
+  const base =
+    String(fileName || "vitalink")
+      .replace(/\.csv$/i, "")
+      .replace(/[^a-z0-9-_]+/gi, "-")
+      .replace(/^-+|-+$/g, "") ||
+    "vitalink";
+
+  const crm =
+    String(crmTypeValue || "crm")
+      .replace(/[^a-z0-9-_]+/gi, "-")
+      .replace(/^-+|-+$/g, "")
+      .toLowerCase() ||
+    "crm";
+
+  return `${base}-${crm}-import.csv`;
+}
+
+function autoDownloadFile(url, name){
+  const autoDownload =
+    document.createElement("a");
+
+  autoDownload.href = url;
+  autoDownload.download = name;
+
+  document.body.appendChild(autoDownload);
+  autoDownload.click();
+  autoDownload.remove();
+}
+
+function escapeHtml(value){
+  return String(value ?? "").replace(/[&<>"']/g,(char)=>({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#039;"
+  }[char]));
+}
 function showSuccess(msg){
 
   statusBox.className = "status success";
