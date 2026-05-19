@@ -216,7 +216,10 @@
         }
 
         resultDiv.classList.add("error");
-        resultDiv.textContent = data.error || "Login failed.";
+        resultDiv.textContent =
+          data.code
+            ? `${data.error || "Login failed."} (${data.code})`
+            : data.error || "Login failed.";
 
       } catch {
         resultDiv.classList.add("error");
