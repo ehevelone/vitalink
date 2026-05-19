@@ -253,12 +253,12 @@ async function login() {
     body: JSON.stringify({ email, password })
   });
 
+  const data = await res.json().catch(() => ({}));
+
   if (!res.ok){
-    showError("Login failed");
+    showError(data.error || "Login failed");
     return;
   }
-
-  const data = await res.json();
 
   if (data.step === "firebase_2fa") {
 
