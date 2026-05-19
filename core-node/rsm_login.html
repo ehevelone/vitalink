@@ -188,6 +188,12 @@
       resultDiv.textContent = "";
 
       if (!email || !password) {
+        if (res.ok && data.step === "firebase_2fa") {
+          resultDiv.classList.add("error");
+          resultDiv.textContent = "Admin accounts must use Admin Access for phone verification.";
+          return;
+        }
+
         resultDiv.classList.add("error");
         resultDiv.textContent = "Email and password required.";
         return;
@@ -207,7 +213,7 @@
 
         if (res.ok && data.success && data.token) {
           sessionStorage.setItem("adminSessionToken", data.token);
-          sessionStorage.setItem("userRole", "rsm");
+          sessionStorage.setItem("userRole", data.role || "rsm");
           window.location.href = REPORT_PAGE; // ✅ go to report page
           return;
         }

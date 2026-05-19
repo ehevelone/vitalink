@@ -247,7 +247,7 @@ async function login() {
 
   currentEmail = email;
 
-  const res = await fetch(`${API}/admin-login`, {
+  const res = await fetch(`${API}/rsm-login`, {
     method:"POST",
     headers:{ "Content-Type":"application/json" },
     body: JSON.stringify({ email, password })
