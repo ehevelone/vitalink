@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>VitaLink - Site Traffic</title>
+
+<style>
+:root{
+  --bg:#0c0c0c;
+  --card:#111;
+  --text:#eaeaea;
+  --border:#1e1e1e;
+}
+
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:20px 30px;
+  border-bottom:1px solid var(--border);
+}
+
+.header h1{
+  margin:0;
+  font-size:1.4rem;
+}
+
+button.primary,
+a.primary{
+  display:inline-block;
+  padding:10px 16px;
+  border-radius:999px;
+  border:none;
+  background:#7cc6e8;
+  color:#000;
+  font-weight:600;
+  cursor:pointer;
+  text-decoration:none;
+}
+
+.container{
+  padding:30px;
+}
+
+.audit-cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:12px;
+  margin-bottom:16px;
+}
+
+.audit-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:14px;
+}
+
+.audit-card strong{
+  display:block;
+  font-size:1.4rem;
+}
+
+.muted{
+  color:#999;
+  font-size:.85rem;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  background:var(--card);
+  border-radius:12px;
+  overflow:hidden;
+  margin-bottom:24px;
+}
+
+th,td{
+  padding:12px;
+  border-bottom:1px solid var(--border);
+  text-align:left;
+}
+
+th{
+  color:#999;
+  font-size:.85rem;
+}
+
+tr:nth-child(even){
+  background:rgba(255,255,255,.03);
+}
+</style>
+</head>
+
+<body>
+<div class="header">
+<h1>Site Traffic</h1>
+<a class="primary" href="admin_report.html">Back to Admin Dashboard</a>
+</div>
+
+<div class="container">
+<div class="audit-cards">
+<div class="audit-card"><span class="muted">Unique Visitors</span><strong id="trafficVisitors">0</strong></div>
+<div class="audit-card"><span class="muted">30-Day Views</span><strong id="trafficViews">0</strong></div>
+<div class="audit-card"><span class="muted">Today</span><strong id="trafficToday">0</strong></div>
+<div class="audit-card"><span class="muted">Sessions</span><strong id="trafficSessions">0</strong></div>
+</div>
+
+<h2>Key Pages</h2>
+<table>
+<thead>
+<tr>
+<th>Page</th>
+<th>Unique Hits</th>
+<th>Views</th>
+<th>Sessions</th>
+</tr>
+</thead>
+<tbody id="trafficKeyPages"></tbody>
+</table>
+
+<h2>Top Pages</h2>
+<table>
+<thead>
+<tr>
+<th>Page</th>
+<th>Views</th>
+<th>Visitors</th>
+</tr>
+</thead>
+<tbody id="trafficPages"></tbody>
+</table>
+</div>
+
+<script>
+const BACKEND="https://vitalink-app.netlify.app/.netlify/functions";
+const token=sessionStorage.getItem("adminSessionToken");
+const role=sessionStorage.getItem("userRole");
+
+if(!token||role!=="admin"){
+window.location.href="admin.html";
+}
+
+function safeText(value){
+return String(value ?? "").replace(/[&<>"']/g,(char)=>({
+"&":"&amp;",
+"<":"&lt;",
+">":"&gt;",
+'"':"&quot;",
+"'":"&#039;"
+}[char]));
+}
+
+async function loadSiteTraffic(){
+const res=await fetch(BACKEND+"/get-site-traffic-report",{
+headers:{ "x-admin-session":token }
+});
+
+if(!res.ok){
+return;
+}
+
+const data=await res.json();
+
+if(!data.success){
+return;
+}
+
+const summary=data.summary||{};
+
+document.getElementById("trafficViews").innerText=summary.total_views||0;
+document.getElementById("trafficToday").innerText=summary.views_today||0;
+document.getElementById("trafficVisitors").innerText=summary.unique_visitors||0;
+document.getElementById("trafficSessions").innerText=summary.sessions||0;
+
+const keyPageBody=document.getElementById("trafficKeyPages");
+const keyPages=data.key_pages||[];
+
+keyPageBody.innerHTML=keyPages.length
+? keyPages.map(page=>`
+<tr>
+<td>${safeText(page.page_name||"")}</td>
+<td>${Number(page.unique_hits||0)}</td>
+<td>${Number(page.views||0)}</td>
+<td>${Number(page.sessions||0)}</td>
+</tr>
+`).join("")
+: `<tr><td colspan="4">No key page traffic recorded yet.</td></tr>`;
+
+const tbody=document.getElementById("trafficPages");
+const pages=data.top_pages||[];
+
+tbody.innerHTML=pages.length
+? pages.map(page=>`
+<tr>
+<td>${safeText(page.page_path||"/")}</td>
+<td>${Number(page.views||0)}</td>
+<td>${Number(page.visitors||0)}</td>
+</tr>
+`).join("")
+: `<tr><td colspan="3">No traffic recorded yet.</td></tr>`;
+}
+
+loadSiteTraffic();
+</script>
+</body>
+</html>
