@@ -3,6 +3,17 @@
     "https://vitalink-app.netlify.app/.netlify/functions/track-site-traffic";
 
   try{
+    const path =
+      window.location.pathname || "";
+
+    if(
+      /\/core-node\/(rsm_login|admin|agent-login|a-r-2)\.html$/i.test(path) ||
+      /\/crm\/login\.html$/i.test(path) ||
+      /\/accessories\/login\.html$/i.test(path)
+    ){
+      return;
+    }
+
     const ignored =
       navigator.doNotTrack === "1" ||
       window.doNotTrack === "1";
@@ -64,6 +75,7 @@
 
     fetch(TRACK_URL,{
       method:"POST",
+      credentials:"omit",
       headers:{ "Content-Type":"application/json" },
       body,
       keepalive:true

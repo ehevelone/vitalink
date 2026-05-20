@@ -202,6 +202,8 @@
       try {
         const res = await fetch("https://vitalink-app.netlify.app/.netlify/functions/rsm-login", {
           method: "POST",
+          credentials: "omit",
+          cache: "no-store",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password })
         });
