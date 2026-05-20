@@ -7,6 +7,8 @@
 
   <meta name="description" content="RSM login for VitaLink." />
   <meta name="robots" content="noindex, nofollow" />
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 
   <style>
     :root {
@@ -118,6 +120,7 @@
     }
 
     .error { color: var(--danger); }
+    .hidden { display: none; }
 
     footer {
       margin-top: 60px;
@@ -140,6 +143,7 @@
 
     <div class="card">
 
+      <div id="step1">
       <div class="field">
         <label>Email</label>
         <input type="email" id="email" autocomplete="email" />
@@ -158,8 +162,19 @@
       <div class="forgot" onclick="forgotPassword()">
         Forgot your password?
       </div>
+      </div>
+
+      <div id="step2" class="hidden">
+        <div class="field">
+          <label>Verification Code</label>
+          <input type="text" id="smsCode" inputmode="numeric" autocomplete="one-time-code" />
+        </div>
+
+        <button id="verifyBtn" onclick="verifyCode()">Verify Code</button>
+      </div>
 
       <div class="result" id="result"></div>
+      <div id="recaptcha-container"></div>
 
     </div>
 
@@ -171,6 +186,19 @@
 
   <script>
     const REPORT_PAGE = "/core-node/rsm_report.html";
+    const ADMIN_REPORT_PAGE = "/core-node/admin_report.html";
+    const API = "https://vitalink-app.netlify.app/.netlify/functions";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCTZiiluPy5ydX62RfM-E7f8EIWHNG12S8",
+      authDomain: "vitalink-7e832.firebaseapp.com",
+      projectId: "vitalink-7e832",
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    let confirmationResult = null;
+    let currentEmail = null;
 
     // If already logged in, bounce straight to report page
     (function boot() {
@@ -198,9 +226,10 @@
 
       btn.disabled = true;
       resultDiv.textContent = "Signing in...";
+      currentEmail = email;
 
       try {
-        const res = await fetch("https://vitalink-app.netlify.app/.netlify/functions/rsm-login", {
+        const res = await fetch(`${API}/rsm-login`, {
           method: "POST",
           credentials: "omit",
           cache: "no-store",
@@ -209,6 +238,28 @@
         });
 
         const data = await res.json().catch(() => ({}));
+
+        if (res.ok && data.step === "firebase_2fa") {
+          resultDiv.textContent = "Sending verification code...";
+          document.getElementById("recaptcha-container").innerHTML = "";
+
+          const verifier = new firebase.auth.RecaptchaVerifier(
+            "recaptcha-container",
+            { size: "invisible" }
+          );
+
+          await verifier.render();
+
+          confirmationResult = await firebase.auth().signInWithPhoneNumber(
+            data.phone,
+            verifier
+          );
+
+          document.getElementById("step1").classList.add("hidden");
+          document.getElementById("step2").classList.remove("hidden");
+          resultDiv.textContent = "Enter the verification code.";
+          return;
+        }
 
         if (res.ok && data.success && data.token) {
           sessionStorage.setItem("adminSessionToken", data.token);
@@ -226,6 +277,55 @@
       } catch {
         resultDiv.classList.add("error");
         resultDiv.textContent = "Server error.";
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function verifyCode() {
+      const code = document.getElementById("smsCode").value.trim();
+      const resultDiv = document.getElementById("result");
+      const btn = document.getElementById("verifyBtn");
+
+      resultDiv.className = "result";
+
+      if (!code || !confirmationResult || !currentEmail) {
+        resultDiv.classList.add("error");
+        resultDiv.textContent = "Verification code required.";
+        return;
+      }
+
+      btn.disabled = true;
+      resultDiv.textContent = "Verifying...";
+
+      try {
+        const result = await confirmationResult.confirm(code);
+        const idToken = await result.user.getIdToken();
+
+        const res = await fetch(`${API}/admin-verify`, {
+          method: "POST",
+          credentials: "omit",
+          cache: "no-store",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ idToken, email: currentEmail })
+        });
+
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok || !data.token) {
+          resultDiv.classList.add("error");
+          resultDiv.textContent = data.error || "Verification failed.";
+          return;
+        }
+
+        sessionStorage.setItem("adminSessionToken", data.token);
+        sessionStorage.setItem("userRole", data.role);
+
+        window.location.href =
+          data.role === "admin" ? ADMIN_REPORT_PAGE : REPORT_PAGE;
+      } catch {
+        resultDiv.classList.add("error");
+        resultDiv.textContent = "Verification failed.";
       } finally {
         btn.disabled = false;
       }
