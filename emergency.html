@@ -275,13 +275,22 @@ app.innerHTML = `
 </div>
 
 <div class="section">
-<div class="label">Emergency Contact</div>
-<div class="value">${safeText(decoded.emergencyContactName) || "N/A"}</div>
+<div class="label">Emergency Contacts</div>
+<div class="value">
+${
+Array.isArray(decoded.emergencyContacts) && decoded.emergencyContacts.length
+? decoded.emergencyContacts.map((contact, index) => `
+<div style="margin-bottom:12px;">
+<strong>${safeText(contact.name) || `Contact ${index + 1}`}</strong><br>
+${contact.phone ? phoneLink(contact.phone) : "No phone"}
 </div>
-
-<div class="section">
-<div class="label">Phone</div>
-<div class="value">${phoneLink(decoded.emergencyContactPhone)}</div>
+`).join("")
+: `
+<div>${safeText(decoded.emergencyContactName) || "N/A"}</div>
+<div>${phoneLink(decoded.emergencyContactPhone)}</div>
+`
+}
+</div>
 </div>
 
 <div class="section">
@@ -396,6 +405,7 @@ bloodType: e.bloodType,
 organDonor: e.organDonor,
 emergencyContactName: e.emergencyContactName || e.contact || "",
 emergencyContactPhone: e.emergencyContactPhone || e.phone || "",
+emergencyContacts: e.emergencyContacts || e.contacts || [],
 meds: e.meds,
 providers: e.providers
 });
