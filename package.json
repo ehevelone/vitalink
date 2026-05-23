@@ -1,8 +1,10 @@
 {
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "busboy": "^1.6.0",
     "csv-parser": "^3.2.1",
     "csv-writer": "^1.6.0",
-    "pg": "^8.20.0"
+    "pg": "^8.20.0",
+    "stripe": "^20.3.1"
   }
 }
