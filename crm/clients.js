@@ -53,6 +53,37 @@ function getPushHealthClass(client){
 
 }
 
+function clientRequestHeaders(extraHeaders = {}){
+
+  const headers = {
+    ...extraHeaders
+  };
+
+  if(typeof getCrmSessionHeaders === "function"){
+    return {
+      ...headers,
+      ...getCrmSessionHeaders()
+    };
+  }
+
+  const token =
+    sessionStorage.getItem("agentSessionToken") || "";
+
+  const crmAgentId =
+    sessionStorage.getItem("crm_uuid") || "";
+
+  if(token){
+    headers["x-agent-session"] = token;
+  }
+
+  if(crmAgentId){
+    headers["x-crm-agent-id"] = crmAgentId;
+  }
+
+  return headers;
+
+}
+
 function formatPhone(phone){
 
   if(!phone) return "";
@@ -209,9 +240,9 @@ async function importClients(){
     "/.netlify/functions/import-crm-clients",
     {
       method:"POST",
-      headers:{
+      headers:clientRequestHeaders({
         "Content-Type":"application/json"
-      },
+      }),
       body:JSON.stringify({
         agent_id:sessionStorage.getItem("crm_uuid"),
         default_status:crmSettings.default_client_status || "Client",
@@ -263,9 +294,9 @@ async function syncVitalinkClients(){
       "/.netlify/functions/sync-vitalink-clients",
       {
         method:"POST",
-        headers:{
+        headers:clientRequestHeaders({
           "Content-Type":"application/json"
-        },
+        }),
         body:JSON.stringify({
           agent_id:agentId,
           default_status:crmSettings.default_client_status || "Client"
@@ -381,11 +412,17 @@ async function loadClients(){
   ] = await Promise.all([
 
     fetch(
-      `/.netlify/functions/get-crm-clients?agent_id=${agent_id}`
+      `/.netlify/functions/get-crm-clients?agent_id=${agent_id}`,
+      {
+        headers:clientRequestHeaders()
+      }
     ),
 
     fetch(
-      `/.netlify/functions/get-crm-appointments?agent_id=${agent_id}`
+      `/.netlify/functions/get-crm-appointments?agent_id=${agent_id}`,
+      {
+        headers:clientRequestHeaders()
+      }
     )
 
   ]);
@@ -395,7 +432,7 @@ async function loadClients(){
 
   if(!data.success){
 
-    alert("Failed to load clients");
+    alert(data.error || "Failed to load clients");
 
     return;
 
@@ -703,7 +740,10 @@ async function loadCrmSettings(){
     sessionStorage.getItem("crm_uuid");
 
   const res = await fetch(
-    `/.netlify/functions/get-crm-settings?agent_id=${agent_id}`
+    `/.netlify/functions/get-crm-settings?agent_id=${agent_id}`,
+    {
+      headers:clientRequestHeaders()
+    }
   );
 
   const data = await res.json();
@@ -951,7 +991,10 @@ async function loadMiniWeek(){
     sessionStorage.getItem("crm_uuid");
 
   const res = await fetch(
-    `/.netlify/functions/get-crm-appointments?agent_id=${agent_id}`
+    `/.netlify/functions/get-crm-appointments?agent_id=${agent_id}`,
+    {
+      headers:clientRequestHeaders()
+    }
   );
 
   const data = await res.json();
@@ -1059,9 +1102,9 @@ async function deleteClient(id){
     "/.netlify/functions/delete-crm-client",
     {
       method:"POST",
-      headers:{
+      headers:clientRequestHeaders({
         "Content-Type":"application/json"
-      },
+      }),
       body:JSON.stringify({ id })
     }
   );
