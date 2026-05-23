@@ -13,6 +13,8 @@ let clientId =
 
 let currentPolicy = null;
 
+let productLibraryCarriers = [];
+
 function setValue(id, value){
   const field =
     document.getElementById(id);
@@ -102,6 +104,66 @@ function calculateExpectedCommission(){
 
   document.getElementById("commissionAmount").value =
     (annualPremium * (rate / 100)).toFixed(2);
+}
+
+function renderCarrierOptions(searchText = ""){
+  const list =
+    document.getElementById("carrierOptions");
+
+  if(!list){
+    return;
+  }
+
+  const search =
+    String(searchText || "").trim().toLowerCase();
+
+  const matches =
+    productLibraryCarriers
+      .filter(carrier =>
+        !search ||
+        String(carrier.name || "").toLowerCase().includes(search)
+      )
+      .slice(0, 40);
+
+  list.innerHTML =
+    matches
+      .map(carrier =>
+        `<option value="${String(carrier.name || "").replace(/"/g, "&quot;")}"></option>`
+      )
+      .join("");
+}
+
+async function loadProductLibrary(){
+  const agentId =
+    sessionStorage.getItem("crm_uuid");
+
+  if(!agentId){
+    return;
+  }
+
+  try{
+    const res =
+      await fetch(
+        `/.netlify/functions/get-crm-product-library?agent_id=${encodeURIComponent(agentId)}`,
+        {
+          headers:getCrmSessionHeaders()
+        }
+      );
+
+    const data =
+      await res.json();
+
+    if(!data.success){
+      return;
+    }
+
+    productLibraryCarriers =
+      Array.isArray(data.carriers) ? data.carriers : [];
+
+    renderCarrierOptions();
+  }catch(err){
+    console.warn("Unable to load product library carriers", err);
+  }
 }
 
 async function findCommissionMatch(){
@@ -326,6 +388,12 @@ document
   .getElementById("commissionRate")
   .addEventListener("input", calculateExpectedCommission);
 
+document
+  .getElementById("carrier")
+  .addEventListener("input", event => renderCarrierOptions(event.target.value));
+
 updateCommissionFields();
+
+loadProductLibrary();
 
 loadPolicy();
