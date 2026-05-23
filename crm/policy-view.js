@@ -104,6 +104,55 @@ function calculateExpectedCommission(){
     (annualPremium * (rate / 100)).toFixed(2);
 }
 
+async function findCommissionMatch(){
+  const res = await fetch(
+    "/.netlify/functions/match-crm-commission",
+    {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        ...getCrmSessionHeaders()
+      },
+      body:JSON.stringify({
+        agent_id:sessionStorage.getItem("crm_uuid"),
+        carrier:document.getElementById("carrier").value,
+        plan_name:document.getElementById("planName").value,
+        policy_type:document.getElementById("policyType").value,
+        annual_premium:document.getElementById("annualPremium").value
+      })
+    }
+  );
+
+  const data = await res.json();
+
+  if(!data.success){
+    alert(data.error || "Unable to find commission match.");
+    return;
+  }
+
+  if(!data.match){
+    alert("No schedule match found yet.");
+    return;
+  }
+
+  const match =
+    data.match;
+
+  if(match.commission_type === "percent"){
+    setValue("commissionRate", match.commission_rate);
+  }
+
+  if(match.expected_commission){
+    setValue("commissionAmount", Number(match.expected_commission).toFixed(2));
+  }else if(match.commission_amount){
+    setValue("commissionAmount", match.commission_amount);
+  }
+
+  alert(
+    `Matched ${match.carrier || "schedule"} from ${match.source_file || "uploaded schedule"}.`
+  );
+}
+
 function policyBody(){
   return {
     id:policyId || undefined,

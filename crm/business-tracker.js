@@ -3,6 +3,7 @@ if(!sessionStorage.getItem("crm_uuid")){
 }
 
 let businessPolicies = [];
+let uploadedSchedules = [];
 
 function safeText(value){
   return String(value ?? "")
@@ -259,6 +260,200 @@ function renderBusinessTracker(){
       .join("");
 }
 
+function parseCsv(text){
+  const rows = [];
+  let current = "";
+  let row = [];
+  let quoted = false;
+
+  for(let index = 0; index < text.length; index += 1){
+    const char =
+      text[index];
+
+    const next =
+      text[index + 1];
+
+    if(char === "\"" && quoted && next === "\""){
+      current += "\"";
+      index += 1;
+      continue;
+    }
+
+    if(char === "\""){
+      quoted = !quoted;
+      continue;
+    }
+
+    if(char === "," && !quoted){
+      row.push(current);
+      current = "";
+      continue;
+    }
+
+    if((char === "\n" || char === "\r") && !quoted){
+      if(char === "\r" && next === "\n"){
+        index += 1;
+      }
+
+      row.push(current);
+
+      if(row.some(value => String(value).trim())){
+        rows.push(row);
+      }
+
+      row = [];
+      current = "";
+      continue;
+    }
+
+    current += char;
+  }
+
+  row.push(current);
+
+  if(row.some(value => String(value).trim())){
+    rows.push(row);
+  }
+
+  if(rows.length < 2){
+    return [];
+  }
+
+  const headers =
+    rows[0].map(header => String(header || "").trim());
+
+  return rows.slice(1).map(values => {
+    const item = {};
+
+    headers.forEach((header, index) => {
+      if(header){
+        item[header] = values[index] ?? "";
+      }
+    });
+
+    return item;
+  });
+}
+
+async function readScheduleFile(file){
+  const text =
+    await file.text();
+
+  return {
+    name:file.name,
+    rows:parseCsv(text)
+  };
+}
+
+function renderCommissionSchedules(){
+  const status =
+    document.getElementById("commissionScheduleStatus");
+
+  if(!status){
+    return;
+  }
+
+  if(!uploadedSchedules.length){
+    status.innerHTML = `
+      <div class="empty-state">
+        No commission schedules uploaded yet.
+      </div>
+    `;
+    return;
+  }
+
+  status.innerHTML =
+    uploadedSchedules
+      .map(schedule => `
+        <div class="business-schedule-row">
+          <strong>${safeText(schedule.source_file || "Carrier schedule")}</strong>
+          <small>${safeText(schedule.row_count)} imported rows</small>
+        </div>
+      `)
+      .join("");
+}
+
+async function loadCommissionSchedules(){
+  const agentId =
+    sessionStorage.getItem("crm_uuid");
+
+  try{
+    const res = await fetch(
+      `/.netlify/functions/get-crm-commission-schedules?agent_id=${encodeURIComponent(agentId)}`,
+      {
+        headers:getCrmSessionHeaders()
+      }
+    );
+
+    const data = await res.json();
+
+    if(!data.success){
+      throw new Error(data.error || "Unable to load commission schedules.");
+    }
+
+    uploadedSchedules =
+      data.schedules || [];
+
+    renderCommissionSchedules();
+  }catch(err){
+    document.getElementById("commissionScheduleStatus").innerHTML = `
+      <div class="empty-state">
+        ${safeText(err.message || "Unable to load commission schedules.")}
+      </div>
+    `;
+  }
+}
+
+async function uploadCommissionSchedules(){
+  const input =
+    document.getElementById("commissionScheduleFiles");
+
+  const files =
+    Array.from(input.files || []);
+
+  if(!files.length){
+    alert("Choose one or more CSV files first.");
+    return;
+  }
+
+  const parsedFiles =
+    await Promise.all(files.map(readScheduleFile));
+
+  const emptyFile =
+    parsedFiles.find(file => !file.rows.length);
+
+  if(emptyFile){
+    alert(`${emptyFile.name} did not have readable CSV rows.`);
+    return;
+  }
+
+  const res = await fetch(
+    "/.netlify/functions/import-crm-commission-schedules",
+    {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        ...getCrmSessionHeaders()
+      },
+      body:JSON.stringify({
+        agent_id:sessionStorage.getItem("crm_uuid"),
+        files:parsedFiles
+      })
+    }
+  );
+
+  const data = await res.json();
+
+  if(!data.success){
+    alert(data.error || "Unable to import commission schedules.");
+    return;
+  }
+
+  input.value = "";
+  alert(`Imported ${data.imported} commission schedule rows.`);
+  loadCommissionSchedules();
+}
+
 async function loadBusinessPolicies(){
   const agentId =
     sessionStorage.getItem("crm_uuid");
@@ -296,4 +491,5 @@ async function loadBusinessPolicies(){
   }
 }
 
+loadCommissionSchedules();
 loadBusinessPolicies();

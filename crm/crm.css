@@ -621,9 +621,49 @@ button:hover{
   flex-wrap:wrap;
 }
 
+.business-upload-row{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:12px;
+  align-items:center;
+}
+
+.business-upload-row input{
+  width:100%;
+  padding:11px 12px;
+  border:1px solid #d1d5db;
+  border-radius:10px;
+  background:#fff;
+}
+
+.business-schedule-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-top:14px;
+}
+
+.business-schedule-row{
+  border:1px solid #e5e7eb;
+  background:#f8fafc;
+  border-radius:10px;
+  padding:12px;
+}
+
+.business-schedule-row strong,
+.business-schedule-row small{
+  display:block;
+}
+
+.business-schedule-row small{
+  color:var(--muted);
+  margin-top:4px;
+}
+
 @media(max-width:820px){
 
   .business-filter-row,
+  .business-upload-row,
   .business-policy-row{
     grid-template-columns:1fr;
   }

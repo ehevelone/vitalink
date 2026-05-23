@@ -111,6 +111,40 @@
 
     <div class="card-header">
       <div>
+        <h3 class="card-title">Commission Schedules</h3>
+        <div class="client-sub">
+          Upload one or more carrier CSV schedules. The CRM can use these to suggest commission values on policies.
+        </div>
+      </div>
+    </div>
+
+    <div class="business-upload-row">
+      <input
+        id="commissionScheduleFiles"
+        type="file"
+        accept=".csv"
+        multiple
+      >
+
+      <button onclick="uploadCommissionSchedules()">
+        Upload Schedules
+      </button>
+    </div>
+
+    <div class="settings-summary">
+      CSV files should include columns like Carrier, Policy Type, Plan, Commission, Rate, Amount, State, or Year. XLSX import can be added next.
+    </div>
+
+    <div id="commissionScheduleStatus" class="business-schedule-list">
+      Loading uploaded schedules...
+    </div>
+
+  </div>
+
+  <div class="card settings-card business-tracker-card">
+
+    <div class="card-header">
+      <div>
         <h3 class="card-title">Policies</h3>
         <div class="client-sub">
           Filter and review policies across your CRM book of business.
