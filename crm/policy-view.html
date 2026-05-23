@@ -100,8 +100,10 @@
 
       <div class="settings-grid">
 
-        <input id="carrier" type="text" placeholder="Carrier" list="carrierOptions" autocomplete="off">
-        <datalist id="carrierOptions"></datalist>
+        <div class="typeahead-field">
+          <input id="carrier" type="text" placeholder="Carrier" autocomplete="off">
+          <div id="carrierSuggestions" class="typeahead-menu"></div>
+        </div>
         <input id="planName" type="text" placeholder="Plan Name">
 
         <select id="policyType">

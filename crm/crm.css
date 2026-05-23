@@ -517,6 +517,50 @@ button:hover{
   max-width:680px;
 }
 
+.typeahead-field{
+  position:relative;
+}
+
+.typeahead-field input{
+  width:100%;
+}
+
+.typeahead-menu{
+  display:none;
+  position:absolute;
+  top:calc(100% + 4px);
+  left:0;
+  right:0;
+  z-index:20;
+  max-height:220px;
+  overflow:auto;
+  background:#fff;
+  border:1px solid #d1d5db;
+  border-radius:10px;
+  box-shadow:0 14px 30px rgba(15,23,42,.16);
+}
+
+.typeahead-menu.active{
+  display:block;
+}
+
+.typeahead-option{
+  width:100%;
+  padding:10px 12px;
+  border:0;
+  border-bottom:1px solid #eef2f7;
+  background:#fff;
+  text-align:left;
+  cursor:pointer;
+  color:#111827;
+}
+
+.typeahead-option:hover,
+.typeahead-option:focus{
+  background:#eef8fc;
+  outline:none;
+}
+
 .policy-delete-btn{
   width:100%;
   margin-top:12px;

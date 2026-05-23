@@ -106,31 +106,59 @@ function calculateExpectedCommission(){
     (annualPremium * (rate / 100)).toFixed(2);
 }
 
-function renderCarrierOptions(searchText = ""){
-  const list =
-    document.getElementById("carrierOptions");
+function escapeAttribute(value){
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#039;"
+  }[char]));
+}
 
-  if(!list){
+function renderCarrierOptions(searchText = ""){
+  const menu =
+    document.getElementById("carrierSuggestions");
+
+  if(!menu){
     return;
   }
 
   const search =
     String(searchText || "").trim().toLowerCase();
 
+  if(!search){
+    menu.classList.remove("active");
+    menu.innerHTML = "";
+    return;
+  }
+
   const matches =
     productLibraryCarriers
       .filter(carrier =>
-        !search ||
         String(carrier.name || "").toLowerCase().includes(search)
       )
-      .slice(0, 40);
+      .slice(0, 12);
 
-  list.innerHTML =
+  if(!matches.length){
+    menu.classList.remove("active");
+    menu.innerHTML = "";
+    return;
+  }
+
+  menu.innerHTML =
     matches
       .map(carrier =>
-        `<option value="${String(carrier.name || "").replace(/"/g, "&quot;")}"></option>`
+        `<button class="typeahead-option" type="button" data-carrier="${escapeAttribute(carrier.name)}">${escapeAttribute(carrier.name)}</button>`
       )
       .join("");
+
+  menu.classList.add("active");
+}
+
+function selectCarrierSuggestion(value){
+  setValue("carrier", value);
+  renderCarrierOptions("");
 }
 
 async function loadProductLibrary(){
@@ -391,6 +419,28 @@ document
 document
   .getElementById("carrier")
   .addEventListener("input", event => renderCarrierOptions(event.target.value));
+
+document
+  .getElementById("carrier")
+  .addEventListener("focus", event => renderCarrierOptions(event.target.value));
+
+document
+  .getElementById("carrierSuggestions")
+  .addEventListener("mousedown", event => {
+    const option =
+      event.target.closest(".typeahead-option");
+
+    if(option){
+      event.preventDefault();
+      selectCarrierSuggestion(option.dataset.carrier);
+    }
+  });
+
+document.addEventListener("click", event => {
+  if(!event.target.closest(".typeahead-field")){
+    renderCarrierOptions("");
+  }
+});
 
 updateCommissionFields();
 
