@@ -120,6 +120,61 @@ input{
   border-radius:6px;
 }
 
+.action-row{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:10px;
+}
+
+.spinner{
+  display:none;
+  color:#999;
+  font-size:.9rem;
+}
+
+.spinner.active{
+  display:inline-block;
+}
+
+.result-card{
+  margin-top:16px;
+  display:none;
+  max-width:760px;
+}
+
+.result-card.active{
+  display:block;
+}
+
+.result-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:10px;
+  margin-top:12px;
+}
+
+.result-item{
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:10px;
+  background:rgba(255,255,255,.03);
+}
+
+.result-item span{
+  display:block;
+  color:#999;
+  font-size:.78rem;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+}
+
+.result-item strong{
+  display:block;
+  margin-top:4px;
+  font-size:1.2rem;
+}
+
 #qrContainer{
   margin-top:20px;
 }
@@ -315,6 +370,23 @@ tr:nth-child(even){
 <button class="primary" onclick="sendUpdateNotification()">
 Send App Update Notification
 </button>
+
+</div>
+
+<div class="section">
+
+<h2>Carrier/Product Library Import</h2>
+
+<div class="card">
+<div class="action-row">
+<input id="productLibraryFile" type="file" accept=".csv,.xlsx,.xls" multiple />
+<button class="primary" id="importProductLibraryBtn">Import Carrier/Product Library</button>
+<span id="productLibrarySpinner" class="spinner">Importing...</span>
+</div>
+<div class="muted">Upload CSV or Excel files up to 5MB each.</div>
+</div>
+
+<div id="productLibraryResult" class="card result-card"></div>
 
 </div>
 
@@ -598,6 +670,75 @@ alert("Failed to send notification");
 }
 
 }
+
+function statValue(stats, name){
+return Number(stats?.[name] || 0);
+}
+
+function renderImportResults(data){
+const result=document.getElementById("productLibraryResult");
+const stats=data.import_stats || {};
+const errors=Array.isArray(stats.errors) ? stats.errors : [];
+
+result.classList.add("active");
+result.innerHTML=`
+<h2>Import Summary</h2>
+<div class="result-grid">
+<div class="result-item"><span>Carriers Added</span><strong>${statValue(stats,"carriers_added")}</strong></div>
+<div class="result-item"><span>Carriers Updated</span><strong>${statValue(stats,"carriers_updated")}</strong></div>
+<div class="result-item"><span>Products Added</span><strong>${statValue(stats,"products_added")}</strong></div>
+<div class="result-item"><span>Products Updated</span><strong>${statValue(stats,"products_updated")}</strong></div>
+<div class="result-item"><span>Aliases Added</span><strong>${statValue(stats,"aliases_added")}</strong></div>
+<div class="result-item"><span>Rows Skipped</span><strong>${statValue(stats,"rows_skipped")}</strong></div>
+<div class="result-item"><span>Errors</span><strong>${errors.length}</strong></div>
+</div>
+${errors.length ? `<p class="muted">${safeText(errors.slice(0,3).map(error => error.error || "Import error").join(" | "))}</p>` : ""}
+`;
+}
+
+document.getElementById("importProductLibraryBtn").onclick=async function(){
+const input=document.getElementById("productLibraryFile");
+const spinner=document.getElementById("productLibrarySpinner");
+const result=document.getElementById("productLibraryResult");
+
+if(!input.files.length){
+result.classList.add("active");
+result.innerHTML="<h2>Import Summary</h2><p>Select a CSV or Excel file first.</p>";
+return;
+}
+
+const formData=new FormData();
+
+Array.from(input.files).forEach(file => {
+formData.append("files",file,file.name);
+});
+
+spinner.classList.add("active");
+result.classList.remove("active");
+
+try{
+const res=await fetch(BACKEND+"/import-crm-product-library",{
+method:"POST",
+headers:{ "x-admin-session":token },
+body:formData
+});
+
+const data=await res.json().catch(()=>({ success:false,error:"Import failed" }));
+
+if(!res.ok || !data.success){
+result.classList.add("active");
+result.innerHTML=`<h2>Import Summary</h2><p>${safeText(data.error || "Import failed")}</p>`;
+return;
+}
+
+renderImportResults(data);
+}catch(err){
+result.classList.add("active");
+result.innerHTML=`<h2>Import Summary</h2><p>${safeText(err.message || "Import failed")}</p>`;
+}finally{
+spinner.classList.remove("active");
+}
+};
 
 /* INIT */
 
