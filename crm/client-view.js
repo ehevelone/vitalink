@@ -7,6 +7,8 @@ if(!sessionStorage.getItem("crm_uuid")){
 const params = new URLSearchParams(window.location.search);
 
 const clientId = params.get("id");
+let currentClient = null;
+let clientPolicies = [];
 
 console.log("VitaLink client view loaded: notes sync enabled");
 
@@ -112,6 +114,7 @@ async function loadClient(){
   const data = await res.json();
 
   const client = data.client;
+  currentClient = client;
 
   if(!client){
 
@@ -193,13 +196,6 @@ async function loadClient(){
   setValue("leadCost", client.lead_cost);
   setValue("dateAdded", formatDate(client.date_added));
 
-  setValue("policyCarrier", client.policy_carrier);
-  setValue("planName", client.plan_name);
-  setValue("planType", client.plan_type);
-  setValue("effectiveDate", formatDate(client.effective_date));
-  setValue("renewalMonth", client.renewal_month);
-  setValue("monthlyPremium", client.monthly_premium);
-
   setValue("preferredContactMethod", client.preferred_contact_method);
   setValue("bestTimeToCall", client.best_time_to_call);
   setValue("textMessaging", client.text_messaging);
@@ -239,6 +235,8 @@ async function loadClient(){
       client.family_note_3 || "";
 
   }
+
+  renderLeadRoi();
 
 }
 
@@ -748,6 +746,7 @@ async function createSpouseProfile(){
 loadClient();
 loadClientTasks();
 loadClientNotes();
+loadClientPolicies();
 
 /* =========================================
    LEAD EDIT
@@ -811,64 +810,167 @@ async function saveLead(){
 }
 
 /* =========================================
-   POLICY EDIT
+   POLICIES / ROI
 ========================================= */
 
-let policyEdit = false;
+function moneyValue(value){
 
-function togglePolicyEdit(){
+  const number =
+    Number(String(value ?? "").replace(/[$,]/g, ""));
 
-  policyEdit = !policyEdit;
-
-  const fields = [
-
-    "policyCarrier",
-    "planName",
-    "planType",
-    "effectiveDate",
-    "renewalMonth",
-    "monthlyPremium"
-
-  ];
-
-  fields.forEach(id => {
-
-    if(document.getElementById(id)){
-
-      document.getElementById(id).disabled =
-        !policyEdit;
-
-    }
-
-  });
-
-  document.getElementById(
-    "savePolicyBtn"
-  ).style.display =
-    policyEdit ? "block" : "none";
+  return Number.isFinite(number) ? number : 0;
 
 }
 
-async function savePolicy(){
+function formatMoney(value){
 
-  const saved = await saveClientPatch({
-    policy_carrier:
-      document.getElementById("policyCarrier").value,
-    plan_name:
-      document.getElementById("planName").value,
-    plan_type:
-      document.getElementById("planType").value,
-    effective_date:
-      document.getElementById("effectiveDate").value,
-    renewal_month:
-      document.getElementById("renewalMonth").value,
-    monthly_premium:
-      document.getElementById("monthlyPremium").value
+  return moneyValue(value).toLocaleString("en-US", {
+    style:"currency",
+    currency:"USD"
   });
 
-  if(saved){
-    togglePolicyEdit();
+}
+
+function formatRoi(value){
+
+  if(!Number.isFinite(value)){
+    return "N/A";
   }
+
+  return `${value.toFixed(1)}%`;
+
+}
+
+function newPolicy(){
+
+  window.location.href =
+    `policy-view.html?client_id=${clientId}`;
+
+}
+
+function openPolicy(policyId){
+
+  window.location.href =
+    `policy-view.html?id=${policyId}`;
+
+}
+
+function renderLeadRoi(){
+
+  const container =
+    document.getElementById("leadRoiSummary");
+
+  if(!container){
+    return;
+  }
+
+  const leadCost =
+    moneyValue(currentClient?.lead_cost);
+
+  const commission =
+    clientPolicies.reduce(
+      (total, policy) => total + moneyValue(policy.commission_amount),
+      0
+    );
+
+  const net =
+    commission - leadCost;
+
+  const roi =
+    leadCost > 0 ? (net / leadCost) * 100 : NaN;
+
+  container.innerHTML = `
+    <div class="billing-summary-card">
+      <div class="label">Lead Cost</div>
+      <div class="value">${formatMoney(leadCost)}</div>
+    </div>
+    <div class="billing-summary-card">
+      <div class="label">Commission</div>
+      <div class="value">${formatMoney(commission)}</div>
+    </div>
+    <div class="billing-summary-card">
+      <div class="label">Net Return</div>
+      <div class="value">${formatMoney(net)}</div>
+    </div>
+    <div class="billing-summary-card">
+      <div class="label">ROI</div>
+      <div class="value">${formatRoi(roi)}</div>
+    </div>
+  `;
+
+}
+
+function renderPolicies(){
+
+  const container =
+    document.getElementById("policiesList");
+
+  if(!container){
+    return;
+  }
+
+  if(clientPolicies.length === 0){
+    container.innerHTML = `
+      <div class="client-sub">
+        No policies saved for this client.
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = "";
+
+  clientPolicies.forEach(policy => {
+
+    container.innerHTML += `
+      <div class="policy-row">
+        <div>
+          <div class="client-name">
+            ${escapeHtml(policy.carrier || "Policy")}
+          </div>
+          <div class="client-meta">
+            ${escapeHtml([policy.plan_name, policy.policy_type].filter(Boolean).join(" - "))}
+          </div>
+          <div class="client-meta">
+            ${policy.effective_date ? formatDate(policy.effective_date) : "No effective date"}
+            ${policy.monthly_premium ? ` · ${formatMoney(policy.monthly_premium)}/mo` : ""}
+          </div>
+        </div>
+        <button
+          class="edit-btn secondary"
+          onclick="openPolicy('${policy.id}')"
+        >
+          View
+        </button>
+      </div>
+    `;
+
+  });
+
+}
+
+async function loadClientPolicies(){
+
+  const agentId =
+    sessionStorage.getItem("crm_uuid");
+
+  const res = await fetch(
+    `/.netlify/functions/get-crm-policies?agent_id=${agentId}&client_id=${clientId}`
+  );
+
+  const data = await res.json();
+
+  if(!data.success){
+    document.getElementById("policiesList").innerHTML =
+      data.error || "Unable to load policies.";
+    return;
+  }
+
+  clientPolicies =
+    data.policies || [];
+
+  renderPolicies();
+  renderLeadRoi();
 
 }
 

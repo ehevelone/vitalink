@@ -45,6 +45,10 @@
       <div class="nav-item">⏰ Tasks</div>
     </a>
 
+    <a href="business-tracker.html">
+      <div class="nav-item">Business Tracker</div>
+    </a>
+
   </div>
 
   <div class="nav-section">
@@ -525,110 +529,58 @@
 
 </div>
 
-<!-- POLICY INFORMATION -->
+<!-- POLICIES -->
 
 <div class="card">
 
   <div class="card-header">
 
     <h3 class="card-title">
-      Policy Information
+      Policies
     </h3>
 
     <button
       class="edit-btn secondary"
-      onclick="togglePolicyEdit()"
+      onclick="newPolicy()"
     >
-      Edit
+      Add Policy
     </button>
 
   </div>
 
-  <div class="info-row">
-
-    <div class="label">Carrier</div>
-
-    <input
-      class="edit-input"
-      id="policyCarrier"
-      type="text"
-      disabled
-    >
-
-  </div>
-
-  <div class="info-row">
-
-    <div class="label">Plan Name</div>
-
-    <input
-      class="edit-input"
-      id="planName"
-      type="text"
-      disabled
-    >
-
-  </div>
-
-  <div class="info-row">
-
-    <div class="label">Plan Type</div>
-
-    <input
-      class="edit-input"
-      id="planType"
-      type="text"
-      disabled
-    >
-
-  </div>
-
-  <div class="info-row">
-
-    <div class="label">Effective Date</div>
-
-    <input
-      class="edit-input"
-      id="effectiveDate"
-      type="date"
-      disabled
-    >
-
-  </div>
-
-  <div class="info-row">
-
-    <div class="label">Renewal Month</div>
-
-    <input
-      class="edit-input"
-      id="renewalMonth"
-      type="text"
-      disabled
-    >
-
-  </div>
-
-  <div class="info-row">
-
-    <div class="label">Monthly Premium</div>
-
-    <input
-      class="edit-input"
-      id="monthlyPremium"
-      type="text"
-      disabled
-    >
-
-  </div>
-
-  <button
-    class="save-btn"
-    id="savePolicyBtn"
-    onclick="savePolicy()"
+  <div
+    id="policiesList"
+    class="policy-list"
   >
-    Save Policy Information
-  </button>
+    Loading policies...
+  </div>
+
+</div>
+
+<!-- LEAD ROI -->
+
+<div class="card">
+
+  <div class="card-header">
+
+    <div>
+      <h3 class="card-title">
+        Lead ROI
+      </h3>
+
+      <div class="client-sub">
+        Compares lead cost against saved policy commission.
+      </div>
+    </div>
+
+  </div>
+
+  <div
+    id="leadRoiSummary"
+    class="roi-summary-grid"
+  >
+    Loading ROI...
+  </div>
 
 </div>
 

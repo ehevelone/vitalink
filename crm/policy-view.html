@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Policy - VitaLink CRM</title>
+
+<link rel="stylesheet" href="crm.css">
+
+</head>
+
+<body>
+
+<div class="sidebar">
+
+  <a href="index.html">
+    <img src="../images/vitalink-logo.png" class="logo">
+  </a>
+
+  <div class="nav-section">
+
+    <div class="nav-title">Dashboard</div>
+
+    <a href="index.html">
+      <div class="nav-item">Dashboard</div>
+    </a>
+
+    <a href="clients.html">
+      <div class="nav-item">Clients</div>
+    </a>
+
+    <a href="schedule.html">
+      <div class="nav-item">Schedule</div>
+    </a>
+
+    <a href="tasks.html">
+      <div class="nav-item">Tasks</div>
+    </a>
+
+    <a href="business-tracker.html">
+      <div class="nav-item">Business Tracker</div>
+    </a>
+
+  </div>
+
+  <div class="nav-section">
+
+    <div class="nav-title">Account</div>
+
+    <a href="settings.html">
+      <div class="nav-item">Settings</div>
+    </a>
+
+    <a href="billing.html">
+      <div class="nav-item">Billing</div>
+    </a>
+
+  </div>
+
+  <div class="sidebar-footer">
+    <button class="logout-btn" onclick="logout()">
+      Logout
+    </button>
+  </div>
+
+</div>
+
+<div class="main">
+
+  <div class="topbar">
+
+    <div>
+      <h1 id="policyPageTitle">Policy</h1>
+      <div class="muted" id="policyPageSubtitle">
+        Add or edit a client policy.
+      </div>
+    </div>
+
+    <div class="top-actions">
+      <button class="secondary" onclick="returnToClient()">
+        Back to Client
+      </button>
+    </div>
+
+  </div>
+
+  <div class="grid policy-page-grid">
+
+    <div class="card settings-card policy-card">
+
+      <div class="card-header">
+        <div>
+          <h3 class="card-title">Policy Details</h3>
+          <div class="client-sub">
+            Premium and commission are used for lead ROI reporting.
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-grid">
+
+        <input id="carrier" type="text" placeholder="Carrier">
+        <input id="planName" type="text" placeholder="Plan Name">
+
+        <select id="policyType">
+          <option value="">Policy Type</option>
+          <option>Medicare Advantage</option>
+          <option>MAPD</option>
+          <option>Medicare Supplement</option>
+          <option>Prescription Drug Plan</option>
+          <option>PDP</option>
+          <option>Dental/Vision/Hearing</option>
+          <option>Life Insurance</option>
+          <option>Final Expense</option>
+          <option>Hospital Indemnity</option>
+          <option>Annuity</option>
+          <option>Long Term Care</option>
+          <option>Other</option>
+        </select>
+
+        <select id="status">
+          <option>Active</option>
+          <option>Pending</option>
+          <option>Submitted</option>
+          <option>Paid</option>
+          <option>Partial</option>
+          <option>Chargeback</option>
+          <option>Not Payable</option>
+          <option>Cancelled</option>
+          <option>Lapsed</option>
+        </select>
+
+        <input id="policyNumber" type="text" placeholder="Policy Number">
+        <input id="memberId" type="text" placeholder="Member ID">
+
+        <input id="effectiveDate" type="date">
+        <input id="renewalMonth" type="text" placeholder="Renewal Month">
+
+        <input id="monthlyPremium" type="text" placeholder="Monthly Premium">
+        <input id="annualPremium" type="text" placeholder="Annual Premium">
+
+        <input id="commissionRate" type="text" placeholder="Commission Rate %">
+        <input id="commissionAmount" type="text" placeholder="Expected Commission">
+
+        <input id="paidAmount" type="text" placeholder="Paid Amount">
+        <input id="paidDate" type="date">
+
+        <textarea
+          class="settings-textarea settings-wide"
+          id="notes"
+          placeholder="Policy notes"
+        ></textarea>
+
+      </div>
+
+      <button class="billing-btn" onclick="savePolicy()">
+        Save Policy
+      </button>
+
+      <button
+        class="secondary policy-delete-btn"
+        id="deletePolicyBtn"
+        onclick="deletePolicy()"
+      >
+        Delete Policy
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="crm.js"></script>
+<script src="policy-view.js"></script>
+
+<script src="../site-traffic.js" defer></script>
+</body>
+</html>
