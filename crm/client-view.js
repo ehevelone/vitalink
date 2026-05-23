@@ -74,6 +74,26 @@ function updateLeadSourceDetailLabel(){
 
 }
 
+function setFieldEditable(id, editable){
+
+  const field =
+    document.getElementById(id);
+
+  if(!field){
+    return;
+  }
+
+  field.disabled =
+    !editable;
+
+  if(editable){
+    field.removeAttribute("disabled");
+  }else{
+    field.setAttribute("disabled", "disabled");
+  }
+
+}
+
 function leadSourceDetailFromClient(client){
 
   return client.lead_source_detail ||
@@ -750,14 +770,11 @@ function toggleLeadEdit(){
 
   fields.forEach(id => {
 
-    if(document.getElementById(id)){
-
-      document.getElementById(id).disabled =
-        !leadEdit;
-
-    }
+    setFieldEditable(id, leadEdit);
 
   });
+
+  updateLeadSourceDetailLabel();
 
   document.getElementById(
     "saveLeadBtn"
