@@ -68,6 +68,14 @@ async function loadBillingSummary(){
         <div class="value">${safeText(billing.payment_method || "No payment method on file")}</div>
       </div>
       <div class="billing-summary-card">
+        <div class="label">Billing Owner</div>
+        <div class="value">${safeText(billing.billing_owner || "Agent")}</div>
+      </div>
+      <div class="billing-summary-card">
+        <div class="label">Last Payment Status</div>
+        <div class="value">${safeText(billing.last_payment_status || "Not available")}</div>
+      </div>
+      <div class="billing-summary-card">
         <div class="label">Next Billing Date</div>
         <div class="value">${safeText(billing.next_billing_date || "Not scheduled")}</div>
       </div>

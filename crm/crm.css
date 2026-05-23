@@ -460,9 +460,18 @@ button:hover{
   cursor:wait;
 }
 
+.billing-page-grid{
+  grid-template-columns:minmax(320px,460px);
+  align-items:start;
+}
+
+.billing-card{
+  max-width:460px;
+}
+
 .billing-summary-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+  grid-template-columns:1fr;
   gap:12px;
   margin-top:18px;
 }
@@ -487,6 +496,10 @@ button:hover{
   font-size:1rem;
   font-weight:700;
   word-break:break-word;
+}
+
+.billing-security-note{
+  margin-top:18px;
 }
 
 /* =========================================
