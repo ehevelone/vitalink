@@ -449,35 +449,40 @@
 
     <div class="label">Lead Source</div>
 
-    <input
+    <select
       class="edit-input"
       id="leadSource"
-      type="text"
+      onchange="updateLeadSourceDetailLabel()"
       disabled
     >
+      <option value="">Select lead source</option>
+      <option>Referral</option>
+      <option>Seminar/Event</option>
+      <option>Facebook</option>
+      <option>Google</option>
+      <option>Website</option>
+      <option>Direct Mail</option>
+      <option>Phone Call</option>
+      <option>Walk-In</option>
+      <option>Existing Client</option>
+      <option>Purchased Lead</option>
+      <option>Other</option>
+    </select>
 
   </div>
 
   <div class="info-row">
 
-    <div class="label">Referral Source</div>
-
-    <input
-      class="edit-input"
-      id="referralSource"
-      type="text"
-      disabled
+    <div
+      class="label"
+      id="leadSourceDetailLabel"
     >
-
-  </div>
-
-  <div class="info-row">
-
-    <div class="label">Seminar/Event</div>
+      Source Details
+    </div>
 
     <input
       class="edit-input"
-      id="seminarEvent"
+      id="leadSourceDetail"
       type="text"
       disabled
     >

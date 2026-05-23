@@ -20,7 +20,8 @@ exports.handler = async (event) => {
       ADD COLUMN IF NOT EXISTS insurance_cards_uploaded TEXT,
       ADD COLUMN IF NOT EXISTS medication_list TEXT,
       ADD COLUMN IF NOT EXISTS doctor_list TEXT,
-      ADD COLUMN IF NOT EXISTS last_sync TIMESTAMPTZ
+      ADD COLUMN IF NOT EXISTS last_sync TIMESTAMPTZ,
+      ADD COLUMN IF NOT EXISTS lead_source_detail TEXT
     `);
 
     const id = event.queryStringParameters.id;

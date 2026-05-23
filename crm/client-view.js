@@ -45,6 +45,44 @@ function normalizeClientStatus(status){
 
 }
 
+const leadSourceDetailLabels = {
+  "Referral":"Referred By",
+  "Seminar/Event":"Event / Seminar Location",
+  "Facebook":"Campaign / Ad Name",
+  "Google":"Campaign / Search Term",
+  "Website":"Website Page / Form",
+  "Direct Mail":"Mailer / Campaign",
+  "Phone Call":"Call Source",
+  "Walk-In":"Office / Event Location",
+  "Existing Client":"Existing Client Name",
+  "Purchased Lead":"Lead Vendor / Purchase Source",
+  "Other":"Source Details"
+};
+
+function updateLeadSourceDetailLabel(){
+
+  const source =
+    document.getElementById("leadSource")?.value || "";
+
+  const label =
+    document.getElementById("leadSourceDetailLabel");
+
+  if(label){
+    label.innerText =
+      leadSourceDetailLabels[source] || "Source Details";
+  }
+
+}
+
+function leadSourceDetailFromClient(client){
+
+  return client.lead_source_detail ||
+    client.referral_source ||
+    client.seminar_event ||
+    "";
+
+}
+
 async function loadClient(){
 
   const res = await fetch(
@@ -130,8 +168,8 @@ async function loadClient(){
   }
 
   setValue("leadSource", client.lead_source);
-  setValue("referralSource", client.referral_source);
-  setValue("seminarEvent", client.seminar_event);
+  updateLeadSourceDetailLabel();
+  setValue("leadSourceDetail", leadSourceDetailFromClient(client));
   setValue("leadCost", client.lead_cost);
   setValue("dateAdded", formatDate(client.date_added));
 
@@ -704,8 +742,7 @@ function toggleLeadEdit(){
   const fields = [
 
     "leadSource",
-    "referralSource",
-    "seminarEvent",
+    "leadSourceDetail",
     "leadCost",
     "dateAdded",    
 
@@ -731,13 +768,19 @@ function toggleLeadEdit(){
 
 async function saveLead(){
 
+  const leadSource =
+    document.getElementById("leadSource").value;
+
+  const leadSourceDetail =
+    document.getElementById("leadSourceDetail").value;
+
   const saved = await saveClientPatch({
-    lead_source:
-      document.getElementById("leadSource").value,
+    lead_source:leadSource,
+    lead_source_detail:leadSourceDetail,
     referral_source:
-      document.getElementById("referralSource").value,
+      leadSource === "Referral" ? leadSourceDetail : "",
     seminar_event:
-      document.getElementById("seminarEvent").value,
+      leadSource === "Seminar/Event" ? leadSourceDetail : "",
     lead_cost:
       document.getElementById("leadCost").value,
     date_added:
