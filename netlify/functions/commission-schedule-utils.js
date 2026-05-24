@@ -14,6 +14,8 @@ async function ensureCommissionScheduleTable(){
       id BIGSERIAL PRIMARY KEY,
       agent_id TEXT NOT NULL,
       source_file TEXT,
+      carrier_id BIGINT,
+      product_id BIGINT,
       carrier TEXT,
       policy_type TEXT,
       plan_name TEXT,
@@ -25,6 +27,12 @@ async function ensureCommissionScheduleTable(){
       raw_data JSONB,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )
+  `);
+
+  await pool.query(`
+    ALTER TABLE crm_commission_schedules
+    ADD COLUMN IF NOT EXISTS carrier_id BIGINT,
+    ADD COLUMN IF NOT EXISTS product_id BIGINT
   `);
 
   await pool.query(`
@@ -161,6 +169,11 @@ function normalizeScheduleRow(row, sourceFile){
   const number =
     cleanNumber(commissionValue);
 
+  const rate =
+    commissionType === "percent" && number !== null && Math.abs(number) <= 1 ?
+      number * 100 :
+      number;
+
   if(!carrier && !policyType && !planName && !ruleLabel && number === null){
     return null;
   }
@@ -173,7 +186,7 @@ function normalizeScheduleRow(row, sourceFile){
     state,
     rule_label:ruleLabel,
     commission_type:commissionType,
-    commission_rate:commissionType === "percent" ? number : null,
+    commission_rate:commissionType === "percent" ? rate : null,
     commission_amount:commissionType === "flat" ? number : null,
     raw_data:row
   };

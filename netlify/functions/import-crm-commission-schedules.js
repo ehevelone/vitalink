@@ -42,6 +42,14 @@ async function scheduleExists(agentId, normalized){
   return Boolean(existing.rows.length);
 }
 
+async function ensureCanonicalColumns(){
+  await pool.query(`
+    ALTER TABLE crm_commission_schedules
+    ADD COLUMN IF NOT EXISTS carrier_id BIGINT,
+    ADD COLUMN IF NOT EXISTS product_id BIGINT
+  `);
+}
+
 function cleanCell(value){
   if(value && typeof value === "object"){
     if(value.text){
@@ -240,6 +248,7 @@ exports.handler = async (event) => {
   try{
 
     await ensureCommissionScheduleTable();
+    await ensureCanonicalColumns();
 
     const body =
       JSON.parse(event.body || "{}");
