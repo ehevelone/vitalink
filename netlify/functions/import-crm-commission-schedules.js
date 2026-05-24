@@ -1,54 +1,11 @@
 const { requireCrmAgent } = require("./crm-auth");
 const ExcelJS = require("exceljs");
 const {
-  pool,
-  ensureCommissionScheduleTable,
   normalizeScheduleRow
 } = require("./commission-schedule-utils");
 const {
   getOrCreateCanonicalProduct
 } = require("./product-library-utils");
-
-async function scheduleExists(agentId, normalized){
-  const existing =
-    await pool.query(
-      `
-      SELECT id
-      FROM crm_commission_schedules
-      WHERE agent_id = $1
-        AND carrier IS NOT DISTINCT FROM $2
-        AND policy_type IS NOT DISTINCT FROM $3
-        AND plan_name IS NOT DISTINCT FROM $4
-        AND state IS NOT DISTINCT FROM $5
-        AND rule_label IS NOT DISTINCT FROM $6
-        AND commission_type IS NOT DISTINCT FROM $7
-        AND commission_rate IS NOT DISTINCT FROM $8
-        AND commission_amount IS NOT DISTINCT FROM $9
-      LIMIT 1
-      `,
-      [
-        agentId,
-        normalized.carrier,
-        normalized.policy_type,
-        normalized.plan_name,
-        normalized.state,
-        normalized.rule_label,
-        normalized.commission_type,
-        normalized.commission_rate,
-        normalized.commission_amount
-      ]
-    );
-
-  return Boolean(existing.rows.length);
-}
-
-async function ensureCanonicalColumns(){
-  await pool.query(`
-    ALTER TABLE crm_commission_schedules
-    ADD COLUMN IF NOT EXISTS carrier_id BIGINT,
-    ADD COLUMN IF NOT EXISTS product_id BIGINT
-  `);
-}
 
 function cleanCell(value){
   if(value && typeof value === "object"){
@@ -233,6 +190,15 @@ async function rowsFromFile(file){
   return [];
 }
 
+function normalizeKey(value){
+  return String(value ?? "")
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 exports.handler = async (event) => {
 
   if(event.httpMethod !== "POST"){
@@ -246,10 +212,6 @@ exports.handler = async (event) => {
   }
 
   try{
-
-    await ensureCommissionScheduleTable();
-    await ensureCanonicalColumns();
-
     const body =
       JSON.parse(event.body || "{}");
 
@@ -272,82 +234,68 @@ exports.handler = async (event) => {
     const files =
       Array.isArray(body.files) ? body.files : [];
 
-    let imported = 0;
-    let skipped_duplicates = 0;
+    let names_imported = 0;
+    let rows_scanned = 0;
+    let rows_skipped = 0;
+    const uniqueProducts =
+      new Map();
 
     for(const file of files){
       const rows =
         await rowsFromFile(file);
 
       for(const row of rows){
+        rows_scanned += 1;
+
         const normalized =
           normalizeScheduleRow(row, file.name);
 
         if(!normalized){
+          rows_skipped += 1;
           continue;
         }
 
-        const exists =
-          await scheduleExists(auth.crmAgentId, normalized);
-
-        if(exists){
-          skipped_duplicates += 1;
+        if(!normalized.carrier || (!normalized.plan_name && !normalized.policy_type)){
+          rows_skipped += 1;
           continue;
         }
 
-        const canonical =
-          await getOrCreateCanonicalProduct({
+        const key =
+          [
+            normalizeKey(normalized.carrier),
+            normalizeKey(normalized.plan_name),
+            normalizeKey(normalized.policy_type)
+          ].join("|");
+
+        if(!uniqueProducts.has(key)){
+          uniqueProducts.set(key, {
             carrier:normalized.carrier,
             planName:normalized.plan_name,
             policyType:normalized.policy_type
           });
-
-        await pool.query(
-          `
-          INSERT INTO crm_commission_schedules (
-            agent_id,
-            source_file,
-            carrier_id,
-            product_id,
-            carrier,
-            policy_type,
-            plan_name,
-            state,
-            rule_label,
-            commission_type,
-            commission_rate,
-            commission_amount,
-            raw_data
-          )
-          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
-          `,
-          [
-            auth.crmAgentId,
-            normalized.source_file,
-            canonical.carrier?.id || null,
-            canonical.product?.id || null,
-            normalized.carrier,
-            normalized.policy_type,
-            normalized.plan_name,
-            normalized.state,
-            normalized.rule_label,
-            normalized.commission_type,
-            normalized.commission_rate,
-            normalized.commission_amount,
-            normalized.raw_data
-          ]
-        );
-
-        imported += 1;
+        }
       }
+    }
+
+    for(const product of uniqueProducts.values()){
+        await getOrCreateCanonicalProduct({
+          carrier:product.carrier,
+          planName:product.planName,
+          policyType:product.policyType
+        });
+
+        names_imported += 1;
     }
 
     return{
       statusCode:200,
       body:JSON.stringify({
         success:true,
-        imported,
-        skipped_duplicates
+        imported:names_imported,
+        names_imported,
+        unique_products:uniqueProducts.size,
+        rows_scanned,
+        rows_skipped
       })
     };
 

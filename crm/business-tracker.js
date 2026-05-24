@@ -390,7 +390,7 @@ function renderCommissionSchedules(){
   if(!uploadedSchedules.length){
     status.innerHTML = `
       <div class="empty-state">
-        No commission schedules uploaded yet.
+        No carrier/product uploads shown yet.
       </div>
     `;
     return;
@@ -470,7 +470,7 @@ async function uploadCommissionSchedules(){
       return;
     }
 
-    setUploadMessage("Uploading and importing commission schedule...");
+    setUploadMessage("Uploading and importing carrier/product names...");
 
     const res = await fetch(
       "/.netlify/functions/import-crm-commission-schedules",
@@ -500,8 +500,9 @@ async function uploadCommissionSchedules(){
 
     input.value = "";
     setUploadMessage(
-      `Imported ${data.imported} commission schedule rows.` +
-      (data.skipped_duplicates ? ` Skipped ${data.skipped_duplicates} duplicates.` : "")
+      `Imported ${data.names_imported || data.imported || 0} carrier/product name rows.` +
+      (data.unique_products ? ` Found ${data.unique_products} unique carrier/product combinations.` : "") +
+      (data.rows_skipped ? ` Skipped ${data.rows_skipped} blank/unmatched rows.` : "")
     );
     loadCommissionSchedules();
   }catch(err){
