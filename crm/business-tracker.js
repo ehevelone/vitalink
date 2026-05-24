@@ -5,6 +5,16 @@ if(!sessionStorage.getItem("crm_uuid")){
 let businessPolicies = [];
 let uploadedSchedules = [];
 
+function setUploadMessage(message){
+  const container =
+    document.getElementById("commissionUploadMessage");
+
+  if(container){
+    container.innerHTML =
+      message ? safeText(message) : "";
+  }
+}
+
 function safeText(value){
   return String(value ?? "")
     .replace(/&/g, "&amp;")
@@ -432,55 +442,73 @@ async function uploadCommissionSchedules(){
   const input =
     document.getElementById("commissionScheduleFiles");
 
+  const button =
+    document.getElementById("uploadCommissionSchedulesBtn");
+
   const files =
     Array.from(input.files || []);
 
   if(!files.length){
-    alert("Choose one or more CSV or Excel files first.");
+    setUploadMessage("Choose one or more CSV or Excel files first.");
     return;
   }
 
-  const parsedFiles =
-    await Promise.all(files.map(readScheduleFile));
+  button.disabled = true;
+  setUploadMessage("Reading selected schedule file...");
 
-  const emptyFile =
-    parsedFiles.find(file =>
-      Array.isArray(file.rows) && !file.rows.length
+  try{
+    const parsedFiles =
+      await Promise.all(files.map(readScheduleFile));
+
+    const emptyFile =
+      parsedFiles.find(file =>
+        Array.isArray(file.rows) && !file.rows.length
+      );
+
+    if(emptyFile){
+      setUploadMessage(`${emptyFile.name} did not have readable rows.`);
+      return;
+    }
+
+    setUploadMessage("Uploading and importing commission schedule...");
+
+    const res = await fetch(
+      "/.netlify/functions/import-crm-commission-schedules",
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          ...getCrmSessionHeaders()
+        },
+        body:JSON.stringify({
+          agent_id:sessionStorage.getItem("crm_uuid"),
+          files:parsedFiles
+        })
+      }
     );
 
-  if(emptyFile){
-    alert(`${emptyFile.name} did not have readable rows.`);
-    return;
-  }
+    const data =
+      await res.json().catch(() => ({
+        success:false,
+        error:`Import failed with status ${res.status}. Check Netlify function logs.`
+      }));
 
-  const res = await fetch(
-    "/.netlify/functions/import-crm-commission-schedules",
-    {
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json",
-        ...getCrmSessionHeaders()
-      },
-      body:JSON.stringify({
-        agent_id:sessionStorage.getItem("crm_uuid"),
-        files:parsedFiles
-      })
+    if(!res.ok || !data.success){
+      setUploadMessage(data.error || "Unable to import commission schedules.");
+      return;
     }
-  );
 
-  const data = await res.json();
-
-  if(!data.success){
-    alert(data.error || "Unable to import commission schedules.");
-    return;
+    input.value = "";
+    setUploadMessage(
+      `Imported ${data.imported} commission schedule rows.` +
+      (data.skipped_duplicates ? ` Skipped ${data.skipped_duplicates} duplicates.` : "")
+    );
+    loadCommissionSchedules();
+  }catch(err){
+    setUploadMessage(err.message || "Unable to import commission schedules.");
+  }finally{
+    button.disabled = false;
   }
-
-  input.value = "";
-  alert(
-    `Imported ${data.imported} commission schedule rows.` +
-    (data.skipped_duplicates ? ` Skipped ${data.skipped_duplicates} duplicates.` : "")
-  );
-  loadCommissionSchedules();
 }
 
 async function loadBusinessPolicies(){
