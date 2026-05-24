@@ -400,6 +400,154 @@ async function getOrCreateCanonicalProduct({ carrier, planName, policyType }){
   };
 }
 
+async function importCanonicalProductsBulk(items = []){
+  await ensureProductLibraryTables();
+
+  const cleanedItems =
+    items
+      .map(item => ({
+        carrier:clean(item.carrier),
+        planName:clean(item.planName || item.product || item.policyType),
+        policyType:clean(item.policyType)
+      }))
+      .filter(item => item.carrier && item.planName);
+
+  if(!cleanedItems.length){
+    return {
+      carriers:0,
+      products:0,
+      aliases:0
+    };
+  }
+
+  const carriers =
+    [...new Map(
+      cleanedItems.map(item => [
+        normalizeName(item.carrier),
+        {
+          name:item.carrier,
+          normalized_name:normalizeName(item.carrier)
+        }
+      ])
+    ).values()];
+
+  await pool.query(
+    `
+    WITH input AS (
+      SELECT *
+      FROM jsonb_to_recordset($1::jsonb)
+      AS x(name TEXT, normalized_name TEXT)
+    )
+    INSERT INTO crm_carriers (name, normalized_name, scope)
+    SELECT name, normalized_name, 'global'
+    FROM input
+    ON CONFLICT (normalized_name)
+    DO UPDATE SET name = EXCLUDED.name
+    `,
+    [JSON.stringify(carriers)]
+  );
+
+  await pool.query(
+    `
+    WITH input AS (
+      SELECT *
+      FROM jsonb_to_recordset($1::jsonb)
+      AS x(name TEXT, normalized_name TEXT)
+    )
+    INSERT INTO crm_carrier_aliases (carrier_id, alias_text, normalized_alias)
+    SELECT c.id, input.name, input.normalized_name
+    FROM input
+    JOIN crm_carriers c
+      ON c.normalized_name = input.normalized_name
+    ON CONFLICT (normalized_alias) DO NOTHING
+    `,
+    [JSON.stringify(carriers)]
+  );
+
+  const carrierRows =
+    await pool.query(
+      `
+      SELECT id, normalized_name
+      FROM crm_carriers
+      WHERE normalized_name = ANY($1::text[])
+      `,
+      [carriers.map(carrier => carrier.normalized_name)]
+    );
+
+  const carrierIds =
+    new Map(
+      carrierRows.rows.map(row => [row.normalized_name, row.id])
+    );
+
+  const products =
+    [...new Map(
+      cleanedItems.map(item => {
+        const carrierKey =
+          normalizeName(item.carrier);
+
+        const productKey =
+          normalizeName(item.planName);
+
+        return [
+          `${carrierKey}|${productKey}`,
+          {
+            carrier_id:carrierIds.get(carrierKey),
+            name:item.planName,
+            normalized_name:productKey,
+            product_type:item.policyType || null
+          }
+        ];
+      })
+    ).values()]
+      .filter(item => item.carrier_id && item.normalized_name);
+
+  await pool.query(
+    `
+    WITH input AS (
+      SELECT *
+      FROM jsonb_to_recordset($1::jsonb)
+      AS x(carrier_id BIGINT, name TEXT, normalized_name TEXT, product_type TEXT)
+    )
+    INSERT INTO crm_products (
+      carrier_id,
+      name,
+      normalized_name,
+      product_type,
+      scope
+    )
+    SELECT carrier_id, name, normalized_name, product_type, 'global'
+    FROM input
+    ON CONFLICT (carrier_id, normalized_name)
+    DO UPDATE SET product_type = COALESCE(crm_products.product_type, EXCLUDED.product_type)
+    `,
+    [JSON.stringify(products)]
+  );
+
+  await pool.query(
+    `
+    WITH input AS (
+      SELECT *
+      FROM jsonb_to_recordset($1::jsonb)
+      AS x(carrier_id BIGINT, name TEXT, normalized_name TEXT)
+    )
+    INSERT INTO crm_product_aliases (product_id, alias_text, normalized_alias)
+    SELECT p.id, input.name, input.normalized_name
+    FROM input
+    JOIN crm_products p
+      ON p.carrier_id = input.carrier_id
+      AND p.normalized_name = input.normalized_name
+    ON CONFLICT (product_id, normalized_alias) DO NOTHING
+    `,
+    [JSON.stringify(products)]
+  );
+
+  return {
+    carriers:carriers.length,
+    products:products.length,
+    aliases:carriers.length + products.length
+  };
+}
+
 module.exports = {
   pool,
   clean,
@@ -409,5 +557,6 @@ module.exports = {
   matchProduct,
   findCarrier,
   findProduct,
-  getOrCreateCanonicalProduct
+  getOrCreateCanonicalProduct,
+  importCanonicalProductsBulk
 };

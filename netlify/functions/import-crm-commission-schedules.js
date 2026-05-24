@@ -4,7 +4,7 @@ const {
   normalizeScheduleRow
 } = require("./commission-schedule-utils");
 const {
-  getOrCreateCanonicalProduct
+  importCanonicalProductsBulk
 } = require("./product-library-utils");
 
 function cleanCell(value){
@@ -277,15 +277,11 @@ exports.handler = async (event) => {
       }
     }
 
-    for(const product of uniqueProducts.values()){
-        await getOrCreateCanonicalProduct({
-          carrier:product.carrier,
-          planName:product.planName,
-          policyType:product.policyType
-        });
+    const bulkResult =
+      await importCanonicalProductsBulk([...uniqueProducts.values()]);
 
-        names_imported += 1;
-    }
+    names_imported =
+      bulkResult.products;
 
     return{
       statusCode:200,
@@ -293,6 +289,8 @@ exports.handler = async (event) => {
         success:true,
         imported:names_imported,
         names_imported,
+        carriers_imported:bulkResult.carriers,
+        aliases_imported:bulkResult.aliases,
         unique_products:uniqueProducts.size,
         rows_scanned,
         rows_skipped
