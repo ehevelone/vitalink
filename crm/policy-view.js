@@ -127,22 +127,25 @@ function renderCarrierOptions(searchText = ""){
   const search =
     String(searchText || "").trim().toLowerCase();
 
-  if(!search){
-    menu.classList.remove("active");
-    menu.innerHTML = "";
+  if(!productLibraryCarriers.length){
+    menu.innerHTML =
+      `<div class="typeahead-empty">No carrier library loaded yet. Preload ASB from Admin first.</div>`;
+    menu.classList.add("active");
     return;
   }
 
   const matches =
     productLibraryCarriers
       .filter(carrier =>
+        !search ||
         String(carrier.name || "").toLowerCase().includes(search)
       )
       .slice(0, 12);
 
   if(!matches.length){
-    menu.classList.remove("active");
-    menu.innerHTML = "";
+    menu.innerHTML =
+      `<div class="typeahead-empty">No matching companies found.</div>`;
+    menu.classList.add("active");
     return;
   }
 
@@ -423,6 +426,10 @@ document
 document
   .getElementById("carrier")
   .addEventListener("focus", event => renderCarrierOptions(event.target.value));
+
+document
+  .getElementById("carrier")
+  .addEventListener("click", event => renderCarrierOptions(event.target.value));
 
 document
   .getElementById("carrierSuggestions")

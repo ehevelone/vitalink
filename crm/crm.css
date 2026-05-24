@@ -561,6 +561,12 @@ button:hover{
   outline:none;
 }
 
+.typeahead-empty{
+  padding:10px 12px;
+  color:#64748b;
+  font-size:.9rem;
+}
+
 .policy-delete-btn{
   width:100%;
   margin-top:12px;
