@@ -386,6 +386,14 @@ Send App Update Notification
 <div class="muted">Upload CSV or Excel files up to 5MB each.</div>
 </div>
 
+<div class="card">
+<div class="action-row">
+<button class="primary" id="seedAsbLibraryBtn">Preload ASB Carrier/Product Library</button>
+<span id="seedAsbSpinner" class="spinner">Loading ASB library...</span>
+</div>
+<div class="muted">Loads the built-in ASB carrier and product names for CRM dropdowns. Safe to re-run.</div>
+</div>
+
 <div id="productLibraryResult" class="card result-card"></div>
 
 </div>
@@ -737,6 +745,68 @@ result.classList.add("active");
 result.innerHTML=`<h2>Import Summary</h2><p>${safeText(err.message || "Import failed")}</p>`;
 }finally{
 spinner.classList.remove("active");
+}
+};
+
+document.getElementById("seedAsbLibraryBtn").onclick=async function(){
+const spinner=document.getElementById("seedAsbSpinner");
+const result=document.getElementById("productLibraryResult");
+const button=document.getElementById("seedAsbLibraryBtn");
+
+spinner.classList.add("active");
+button.disabled=true;
+result.classList.add("active");
+result.innerHTML="<h2>ASB Library Seed</h2><p>Starting ASB carrier/product preload...</p>";
+
+try{
+let chunk=1;
+let total=1;
+let statements=0;
+
+while(chunk<=total){
+const res=await fetch("/.netlify/functions/seed-asb-product-library",{
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+"x-admin-session":token
+},
+body:JSON.stringify({chunk})
+});
+
+const data=await res.json().catch(()=>({success:false,error:"Unable to seed ASB library"}));
+
+if(!res.ok || !data.success){
+throw new Error(data.error || "Unable to seed ASB library");
+}
+
+total=Number(data.total_chunks || total);
+statements+=Number(data.statements_executed || 0);
+
+result.innerHTML=`
+<h2>ASB Library Seed</h2>
+<p>Loaded chunk ${data.chunk} of ${total}.</p>
+<div class="result-grid">
+<div class="result-item"><span>Chunks Complete</span><strong>${data.chunk}/${total}</strong></div>
+<div class="result-item"><span>Statements Run</span><strong>${statements}</strong></div>
+</div>
+`;
+
+chunk+=1;
+}
+
+result.innerHTML=`
+<h2>ASB Library Seed</h2>
+<p>ASB carrier/product library loaded. Carrier dropdowns can now search these names.</p>
+<div class="result-grid">
+<div class="result-item"><span>Chunks Complete</span><strong>${total}/${total}</strong></div>
+<div class="result-item"><span>Statements Run</span><strong>${statements}</strong></div>
+</div>
+`;
+}catch(err){
+result.innerHTML=`<h2>ASB Library Seed</h2><p>${safeText(err.message || "Unable to seed ASB library")}</p>`;
+}finally{
+spinner.classList.remove("active");
+button.disabled=false;
 }
 };
 

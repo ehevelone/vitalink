@@ -336,11 +336,35 @@ function parseCsv(text){
 }
 
 async function readScheduleFile(file){
+  const name =
+    file.name || "commission-schedule";
+
+  const lowerName =
+    name.toLowerCase();
+
+  if(lowerName.endsWith(".xlsx") || lowerName.endsWith(".xls")){
+    const buffer =
+      await file.arrayBuffer();
+
+    let binary = "";
+    const bytes =
+      new Uint8Array(buffer);
+
+    bytes.forEach(byte => {
+      binary += String.fromCharCode(byte);
+    });
+
+    return {
+      name,
+      contentBase64:btoa(binary)
+    };
+  }
+
   const text =
     await file.text();
 
   return {
-    name:file.name,
+    name,
     rows:parseCsv(text)
   };
 }
@@ -412,7 +436,7 @@ async function uploadCommissionSchedules(){
     Array.from(input.files || []);
 
   if(!files.length){
-    alert("Choose one or more CSV files first.");
+    alert("Choose one or more CSV or Excel files first.");
     return;
   }
 
@@ -420,10 +444,12 @@ async function uploadCommissionSchedules(){
     await Promise.all(files.map(readScheduleFile));
 
   const emptyFile =
-    parsedFiles.find(file => !file.rows.length);
+    parsedFiles.find(file =>
+      Array.isArray(file.rows) && !file.rows.length
+    );
 
   if(emptyFile){
-    alert(`${emptyFile.name} did not have readable CSV rows.`);
+    alert(`${emptyFile.name} did not have readable rows.`);
     return;
   }
 
@@ -450,7 +476,10 @@ async function uploadCommissionSchedules(){
   }
 
   input.value = "";
-  alert(`Imported ${data.imported} commission schedule rows.`);
+  alert(
+    `Imported ${data.imported} commission schedule rows.` +
+    (data.skipped_duplicates ? ` Skipped ${data.skipped_duplicates} duplicates.` : "")
+  );
   loadCommissionSchedules();
 }
 
