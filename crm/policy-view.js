@@ -14,6 +14,7 @@ let clientId =
 let currentPolicy = null;
 
 let productLibraryCarriers = [];
+let productLibraryProducts = [];
 let productLibraryLoaded = false;
 let productLibraryLoadError = "";
 
@@ -178,11 +179,125 @@ function renderCarrierOptions(searchText = ""){
 function selectCarrierSuggestion(value){
   setValue("carrier", value);
   hideCarrierOptions();
+
+  if(document.activeElement === document.getElementById("planName")){
+    renderProductOptions(document.getElementById("planName").value);
+  }
 }
 
 function hideCarrierOptions(){
   const menu =
     document.getElementById("carrierSuggestions");
+
+  if(menu){
+    menu.classList.remove("active");
+  }
+}
+
+function selectedCarrierText(){
+  return String(document.getElementById("carrier")?.value || "")
+    .trim()
+    .toLowerCase();
+}
+
+function renderProductOptions(searchText = ""){
+  const menu =
+    document.getElementById("productSuggestions");
+
+  if(!menu){
+    return;
+  }
+
+  const search =
+    String(searchText || "").trim().toLowerCase();
+
+  if(productLibraryLoadError){
+    menu.innerHTML =
+      `<div class="typeahead-empty">${escapeAttribute(productLibraryLoadError)}</div>`;
+    menu.classList.add("active");
+    return;
+  }
+
+  if(!productLibraryLoaded){
+    menu.innerHTML =
+      `<div class="typeahead-empty">Loading product library...</div>`;
+    menu.classList.add("active");
+    return;
+  }
+
+  if(!productLibraryProducts.length){
+    menu.innerHTML =
+      `<div class="typeahead-empty">Product library is empty. Upload names from Business Tracker or preload ASB from Admin.</div>`;
+    menu.classList.add("active");
+    return;
+  }
+
+  const carrier =
+    selectedCarrierText();
+
+  const seen =
+    new Set();
+
+  const matches =
+    productLibraryProducts
+      .filter(product => {
+        const productName =
+          String(product.name || "");
+
+        const productCarrier =
+          String(product.carrier_name || "").trim().toLowerCase();
+
+        if(carrier && productCarrier !== carrier){
+          return false;
+        }
+
+        return !search ||
+          productName.toLowerCase().includes(search);
+      })
+      .filter(product => {
+        const key =
+          `${String(product.carrier_name || "").toLowerCase()}|${String(product.name || "").toLowerCase()}`;
+
+        if(seen.has(key)){
+          return false;
+        }
+
+        seen.add(key);
+        return true;
+      })
+      .slice(0, 12);
+
+  if(!matches.length){
+    menu.innerHTML =
+      `<div class="typeahead-empty">No matching products found.</div>`;
+    menu.classList.add("active");
+    return;
+  }
+
+  menu.innerHTML =
+    matches
+      .map(product =>
+        `<button class="typeahead-option" type="button" data-product="${escapeAttribute(product.name)}" data-policy-type="${escapeAttribute(product.product_type || "")}">${escapeAttribute(product.name)}</button>`
+      )
+      .join("");
+
+  menu.classList.add("active");
+}
+
+function selectProductSuggestion(value, policyType = ""){
+  setValue("planName", value);
+
+  if(policyType){
+    setValue("policyType", policyType);
+    updateCommissionFields();
+  }
+
+  hideProductOptions();
+}
+
+function hideProductOptions(){
+  const menu =
+    document.getElementById("productSuggestions");
 
   if(menu){
     menu.classList.remove("active");
@@ -225,6 +340,9 @@ async function loadProductLibrary(){
     productLibraryCarriers =
       Array.isArray(data.carriers) ? data.carriers : [];
 
+    productLibraryProducts =
+      Array.isArray(data.products) ? data.products : [];
+
     productLibraryLoaded = true;
 
     console.info(
@@ -234,12 +352,17 @@ async function loadProductLibrary(){
     if(document.activeElement === document.getElementById("carrier")){
       renderCarrierOptions(document.getElementById("carrier").value);
     }
+
+    if(document.activeElement === document.getElementById("planName")){
+      renderProductOptions(document.getElementById("planName").value);
+    }
   }catch(err){
     console.warn("Unable to load product library carriers", err);
     productLibraryLoadError =
       "Carrier library failed to load. Check the product library function deploy.";
     productLibraryLoaded = true;
     renderCarrierOptions(document.getElementById("carrier")?.value || "");
+    renderProductOptions(document.getElementById("planName")?.value || "");
   }
 }
 
@@ -467,7 +590,13 @@ document
 
 document
   .getElementById("carrier")
-  .addEventListener("input", event => renderCarrierOptions(event.target.value));
+  .addEventListener("input", event => {
+    renderCarrierOptions(event.target.value);
+
+    if(document.activeElement === document.getElementById("planName")){
+      renderProductOptions(document.getElementById("planName").value);
+    }
+  });
 
 document
   .getElementById("carrier")
@@ -489,9 +618,34 @@ document
     }
   });
 
+document
+  .getElementById("planName")
+  .addEventListener("input", event => renderProductOptions(event.target.value));
+
+document
+  .getElementById("planName")
+  .addEventListener("focus", event => renderProductOptions(event.target.value));
+
+document
+  .getElementById("planName")
+  .addEventListener("click", event => renderProductOptions(event.target.value));
+
+document
+  .getElementById("productSuggestions")
+  .addEventListener("mousedown", event => {
+    const option =
+      event.target.closest(".typeahead-option");
+
+    if(option){
+      event.preventDefault();
+      selectProductSuggestion(option.dataset.product, option.dataset.policyType);
+    }
+  });
+
 document.addEventListener("click", event => {
   if(!event.target.closest(".typeahead-field")){
     hideCarrierOptions();
+    hideProductOptions();
   }
 });
 
