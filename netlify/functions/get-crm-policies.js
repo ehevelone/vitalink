@@ -40,11 +40,11 @@ exports.handler = async (event) => {
       [auth.crmAgentId];
 
     let where =
-      "WHERE p.agent_id = $1";
+      "WHERE p.agent_id::TEXT = $1::TEXT";
 
     if(client_id){
       values.push(String(client_id));
-      where += ` AND p.client_id = $${values.length}`;
+      where += ` AND p.client_id::TEXT = $${values.length}::TEXT`;
     }
 
     const result = await pool.query(
@@ -55,7 +55,7 @@ exports.handler = async (event) => {
         c.last_name
       FROM crm_policies p
       LEFT JOIN crm_clients c
-        ON c.id::TEXT = p.client_id
+        ON c.id::TEXT = p.client_id::TEXT
       ${where}
       ORDER BY
         p.effective_date DESC NULLS LAST,
