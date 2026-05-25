@@ -37,10 +37,26 @@ async function ensurePolicyTable(){
 
   await pool.query(`
     ALTER TABLE crm_policies
+    ADD COLUMN IF NOT EXISTS agent_id TEXT,
+    ADD COLUMN IF NOT EXISTS client_id TEXT,
+    ADD COLUMN IF NOT EXISTS carrier TEXT,
+    ADD COLUMN IF NOT EXISTS plan_name TEXT,
+    ADD COLUMN IF NOT EXISTS policy_type TEXT,
+    ADD COLUMN IF NOT EXISTS policy_number TEXT,
+    ADD COLUMN IF NOT EXISTS member_id TEXT,
+    ADD COLUMN IF NOT EXISTS effective_date DATE,
+    ADD COLUMN IF NOT EXISTS renewal_month TEXT,
+    ADD COLUMN IF NOT EXISTS monthly_premium NUMERIC,
+    ADD COLUMN IF NOT EXISTS annual_premium NUMERIC,
     ADD COLUMN IF NOT EXISTS commission_type TEXT,
     ADD COLUMN IF NOT EXISTS commission_rate NUMERIC,
+    ADD COLUMN IF NOT EXISTS commission_amount NUMERIC,
     ADD COLUMN IF NOT EXISTS paid_amount NUMERIC,
-    ADD COLUMN IF NOT EXISTS paid_date DATE
+    ADD COLUMN IF NOT EXISTS paid_date DATE,
+    ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'Active',
+    ADD COLUMN IF NOT EXISTS notes TEXT,
+    ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
   `);
 
   await pool.query(`
