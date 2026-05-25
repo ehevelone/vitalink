@@ -14,6 +14,8 @@ let clientId =
 let currentPolicy = null;
 
 let productLibraryCarriers = [];
+let productLibraryLoaded = false;
+let productLibraryLoadError = "";
 
 function setValue(id, value){
   const field =
@@ -127,9 +129,23 @@ function renderCarrierOptions(searchText = ""){
   const search =
     String(searchText || "").trim().toLowerCase();
 
+  if(productLibraryLoadError){
+    menu.innerHTML =
+      `<div class="typeahead-empty">${escapeAttribute(productLibraryLoadError)}</div>`;
+    menu.classList.add("active");
+    return;
+  }
+
+  if(!productLibraryLoaded){
+    menu.innerHTML =
+      `<div class="typeahead-empty">Loading carrier library...</div>`;
+    menu.classList.add("active");
+    return;
+  }
+
   if(!productLibraryCarriers.length){
     menu.innerHTML =
-      `<div class="typeahead-empty">No carrier library loaded yet. Preload ASB from Admin first.</div>`;
+      `<div class="typeahead-empty">Carrier library is empty. Upload names from Business Tracker or preload ASB from Admin.</div>`;
     menu.classList.add("active");
     return;
   }
@@ -161,7 +177,16 @@ function renderCarrierOptions(searchText = ""){
 
 function selectCarrierSuggestion(value){
   setValue("carrier", value);
-  renderCarrierOptions("");
+  hideCarrierOptions();
+}
+
+function hideCarrierOptions(){
+  const menu =
+    document.getElementById("carrierSuggestions");
+
+  if(menu){
+    menu.classList.remove("active");
+  }
 }
 
 async function loadProductLibrary(){
@@ -171,6 +196,9 @@ async function loadProductLibrary(){
   if(!agentId){
     return;
   }
+
+  productLibraryLoaded = false;
+  productLibraryLoadError = "";
 
   try{
     const res =
@@ -182,18 +210,36 @@ async function loadProductLibrary(){
       );
 
     const data =
-      await res.json();
+      await res.json().catch(() => null);
 
-    if(!data.success){
+    if(!res.ok || !data || !data.success){
+      productLibraryLoadError =
+        data?.error ?
+          `Carrier library failed to load: ${data.error}` :
+          `Carrier library failed to load (${res.status}).`;
+      productLibraryLoaded = true;
+      renderCarrierOptions(document.getElementById("carrier")?.value || "");
       return;
     }
 
     productLibraryCarriers =
       Array.isArray(data.carriers) ? data.carriers : [];
 
-    renderCarrierOptions();
+    productLibraryLoaded = true;
+
+    console.info(
+      `Loaded ${data.carrier_count ?? productLibraryCarriers.length} carriers and ${data.product_count ?? 0} products.`
+    );
+
+    if(document.activeElement === document.getElementById("carrier")){
+      renderCarrierOptions(document.getElementById("carrier").value);
+    }
   }catch(err){
     console.warn("Unable to load product library carriers", err);
+    productLibraryLoadError =
+      "Carrier library failed to load. Check the product library function deploy.";
+    productLibraryLoaded = true;
+    renderCarrierOptions(document.getElementById("carrier")?.value || "");
   }
 }
 
@@ -445,7 +491,7 @@ document
 
 document.addEventListener("click", event => {
   if(!event.target.closest(".typeahead-field")){
-    renderCarrierOptions("");
+    hideCarrierOptions();
   }
 });
 
