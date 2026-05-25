@@ -88,6 +88,18 @@ function cleanNumber(value){
 }
 
 function policyValues(body, agentId){
+  const paidDate =
+    clean(body.paid_date);
+
+  let status =
+    clean(body.status) || "Active";
+
+  if(
+    paidDate &&
+    ["active", "pending", "submitted"].includes(status.toLowerCase())
+  ){
+    status = "Paid";
+  }
 
   return [
     String(agentId),
@@ -105,8 +117,8 @@ function policyValues(body, agentId){
     cleanNumber(body.commission_rate),
     cleanNumber(body.commission_amount),
     cleanNumber(body.paid_amount),
-    clean(body.paid_date),
-    clean(body.status) || "Active",
+    paidDate,
+    status,
     clean(body.notes)
   ];
 

@@ -48,16 +48,61 @@ function normalizedStatus(policy){
   return String(policy.status || "Active").trim();
 }
 
+function trackerStatus(policy){
+  const status =
+    normalizedStatus(policy);
+
+  if(isChargebackStatus(status)){
+    return status;
+  }
+
+  if(policy.paid_date){
+    return "Paid";
+  }
+
+  return status;
+}
+
 function isPendingStatus(status){
   return ["pending", "submitted"].includes(status.toLowerCase());
 }
 
-function isPaidStatus(status){
-  return status.toLowerCase() === "paid";
+function isPaidPolicy(policy){
+  return Boolean(policy.paid_date) ||
+    trackerStatus(policy).toLowerCase() === "paid";
 }
 
 function isChargebackStatus(status){
   return status.toLowerCase() === "chargeback";
+}
+
+function policyExpectedCommission(policy){
+  return moneyValue(policy.commission_amount);
+}
+
+function policyPaidAmount(policy){
+  if(!isPaidPolicy(policy)){
+    return 0;
+  }
+
+  return moneyValue(policy.paid_amount) ||
+    policyExpectedCommission(policy);
+}
+
+function policyPendingAmount(policy){
+  if(isPaidPolicy(policy) || isChargebackStatus(normalizedStatus(policy))){
+    return 0;
+  }
+
+  return isPendingStatus(normalizedStatus(policy)) ?
+    policyExpectedCommission(policy) :
+    0;
+}
+
+function policyDisplayAmount(policy){
+  return isPaidPolicy(policy) ?
+    policyPaidAmount(policy) :
+    policyExpectedCommission(policy);
 }
 
 function policyMatchesFilters(policy){
@@ -85,7 +130,7 @@ function policyMatchesFilters(policy){
     return false;
   }
 
-  if(status && normalizedStatus(policy) !== status){
+  if(status && trackerStatus(policy) !== status){
     return false;
   }
 
@@ -129,28 +174,26 @@ function renderBusinessSummary(){
 
   const expectedCommission =
     businessPolicies.reduce(
-      (sum, policy) => sum + moneyValue(policy.commission_amount),
+      (sum, policy) => sum + policyExpectedCommission(policy),
       0
     );
 
   const pendingCommission =
-    businessPolicies
-      .filter(policy => isPendingStatus(normalizedStatus(policy)))
-      .reduce((sum, policy) => sum + moneyValue(policy.commission_amount), 0);
+    businessPolicies.reduce(
+      (sum, policy) => sum + policyPendingAmount(policy),
+      0
+    );
 
   const paidCommission =
-    businessPolicies
-      .filter(policy => isPaidStatus(normalizedStatus(policy)))
-      .reduce(
-        (sum, policy) =>
-          sum + moneyValue(policy.paid_amount || policy.commission_amount),
-        0
-      );
+    businessPolicies.reduce(
+      (sum, policy) => sum + policyPaidAmount(policy),
+      0
+    );
 
   const chargebacks =
     businessPolicies
       .filter(policy => isChargebackStatus(normalizedStatus(policy)))
-      .reduce((sum, policy) => sum + moneyValue(policy.commission_amount), 0);
+      .reduce((sum, policy) => sum + policyExpectedCommission(policy), 0);
 
   const activeClients =
     new Set(
@@ -224,10 +267,16 @@ function renderBusinessTracker(){
           clientName(policy);
 
         const status =
-          normalizedStatus(policy);
+          trackerStatus(policy);
 
         const effective =
           formatDate(policy.effective_date) || "No effective date";
+
+        const paid =
+          formatDate(policy.paid_date);
+
+        const amountLabel =
+          isPaidPolicy(policy) ? "Paid" : "Expected";
 
         return `
           <div class="business-policy-row">
@@ -245,7 +294,9 @@ function renderBusinessTracker(){
 
             <div class="business-policy-meta">
               <span class="tag">${safeText(status)}</span>
-              <strong>${formatMoney(policy.paid_amount || policy.commission_amount)}</strong>
+              <strong>${formatMoney(policyDisplayAmount(policy))}</strong>
+              <small>${safeText(amountLabel)}</small>
+              ${paid ? `<small>Paid ${safeText(paid)}</small>` : ""}
               <small>${safeText(effective)}</small>
             </div>
 

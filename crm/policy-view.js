@@ -476,6 +476,19 @@ async function findCommissionMatch(){
 }
 
 function policyBody(){
+  const paidDate =
+    document.getElementById("paidDate").value;
+
+  let status =
+    document.getElementById("status").value;
+
+  if(
+    paidDate &&
+    ["active", "pending", "submitted"].includes(String(status || "").toLowerCase())
+  ){
+    status = "Paid";
+  }
+
   return {
     id:policyId || undefined,
     agent_id:sessionStorage.getItem("crm_uuid"),
@@ -493,8 +506,8 @@ function policyBody(){
     commission_rate:document.getElementById("commissionRate").value,
     commission_amount:moneyValue(document.getElementById("commissionAmount").value),
     paid_amount:moneyValue(document.getElementById("paidAmount").value),
-    paid_date:document.getElementById("paidDate").value,
-    status:document.getElementById("status").value,
+    paid_date:paidDate,
+    status,
     notes:document.getElementById("notes").value
   };
 }
@@ -651,6 +664,20 @@ document
 document
   .getElementById("commissionRate")
   .addEventListener("input", calculateExpectedCommission);
+
+document
+  .getElementById("paidDate")
+  .addEventListener("change", event => {
+    const status =
+      document.getElementById("status");
+
+    if(
+      event.target.value &&
+      ["Active", "Pending", "Submitted"].includes(status.value)
+    ){
+      status.value = "Paid";
+    }
+  });
 
 [
   "monthlyPremium",
