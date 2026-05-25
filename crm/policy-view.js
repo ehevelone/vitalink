@@ -43,6 +43,31 @@ function moneyValue(value){
   return Number.isFinite(number) ? number : 0;
 }
 
+function formatCurrency(value){
+  const number =
+    moneyValue(value);
+
+  if(!number){
+    return "";
+  }
+
+  return number.toLocaleString("en-US", {
+    style:"currency",
+    currency:"USD",
+    minimumFractionDigits:2,
+    maximumFractionDigits:2
+  });
+}
+
+function formatMoneyField(id){
+  const field =
+    document.getElementById(id);
+
+  if(field){
+    field.value = formatCurrency(field.value);
+  }
+}
+
 function flatCommissionTypes(){
   return [
     "medicare advantage",
@@ -107,7 +132,7 @@ function calculateExpectedCommission(){
   }
 
   document.getElementById("commissionAmount").value =
-    (annualPremium * (rate / 100)).toFixed(2);
+    formatCurrency(annualPremium * (rate / 100));
 }
 
 function syncPremiumFromMonthly(){
@@ -121,7 +146,7 @@ function syncPremiumFromMonthly(){
     moneyValue(document.getElementById("monthlyPremium").value);
 
   document.getElementById("annualPremium").value =
-    monthly ? (monthly * 12).toFixed(2) : "";
+    monthly ? formatCurrency(monthly * 12) : "";
 
   syncingPremiumFields = false;
   calculateExpectedCommission();
@@ -138,7 +163,7 @@ function syncPremiumFromAnnual(){
     moneyValue(document.getElementById("annualPremium").value);
 
   document.getElementById("monthlyPremium").value =
-    annual ? (annual / 12).toFixed(2) : "";
+    annual ? formatCurrency(annual / 12) : "";
 
   syncingPremiumFields = false;
   calculateExpectedCommission();
@@ -415,7 +440,7 @@ async function findCommissionMatch(){
         carrier:document.getElementById("carrier").value,
         plan_name:document.getElementById("planName").value,
         policy_type:document.getElementById("policyType").value,
-        annual_premium:document.getElementById("annualPremium").value
+        annual_premium:moneyValue(document.getElementById("annualPremium").value)
       })
     }
   );
@@ -440,9 +465,9 @@ async function findCommissionMatch(){
   }
 
   if(match.expected_commission){
-    setValue("commissionAmount", Number(match.expected_commission).toFixed(2));
+    setValue("commissionAmount", formatCurrency(match.expected_commission));
   }else if(match.commission_amount){
-    setValue("commissionAmount", match.commission_amount);
+    setValue("commissionAmount", formatCurrency(match.commission_amount));
   }
 
   alert(
@@ -462,12 +487,12 @@ function policyBody(){
     member_id:document.getElementById("memberId").value,
     effective_date:document.getElementById("effectiveDate").value,
     renewal_month:document.getElementById("renewalMonth").value,
-    monthly_premium:document.getElementById("monthlyPremium").value,
-    annual_premium:document.getElementById("annualPremium").value,
+    monthly_premium:moneyValue(document.getElementById("monthlyPremium").value),
+    annual_premium:moneyValue(document.getElementById("annualPremium").value),
     commission_type:commissionTypeForPolicy(),
     commission_rate:document.getElementById("commissionRate").value,
-    commission_amount:document.getElementById("commissionAmount").value,
-    paid_amount:document.getElementById("paidAmount").value,
+    commission_amount:moneyValue(document.getElementById("commissionAmount").value),
+    paid_amount:moneyValue(document.getElementById("paidAmount").value),
     paid_date:document.getElementById("paidDate").value,
     status:document.getElementById("status").value,
     notes:document.getElementById("notes").value
@@ -485,11 +510,11 @@ function fillPolicy(policy){
   setValue("memberId", policy.member_id);
   setValue("effectiveDate", formatDate(policy.effective_date));
   setValue("renewalMonth", policy.renewal_month);
-  setValue("monthlyPremium", policy.monthly_premium);
-  setValue("annualPremium", policy.annual_premium);
+  setValue("monthlyPremium", formatCurrency(policy.monthly_premium));
+  setValue("annualPremium", formatCurrency(policy.annual_premium));
   setValue("commissionRate", policy.commission_rate);
-  setValue("commissionAmount", policy.commission_amount);
-  setValue("paidAmount", policy.paid_amount);
+  setValue("commissionAmount", formatCurrency(policy.commission_amount));
+  setValue("paidAmount", formatCurrency(policy.paid_amount));
   setValue("paidDate", formatDate(policy.paid_date));
   setValue("status", policy.status || "Active");
   setValue("notes", policy.notes);
@@ -626,6 +651,17 @@ document
 document
   .getElementById("commissionRate")
   .addEventListener("input", calculateExpectedCommission);
+
+[
+  "monthlyPremium",
+  "annualPremium",
+  "commissionAmount",
+  "paidAmount"
+].forEach(id => {
+  document
+    .getElementById(id)
+    .addEventListener("blur", () => formatMoneyField(id));
+});
 
 document
   .getElementById("carrier")
