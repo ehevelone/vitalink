@@ -17,6 +17,7 @@ let productLibraryCarriers = [];
 let productLibraryProducts = [];
 let productLibraryLoaded = false;
 let productLibraryLoadError = "";
+let syncingPremiumFields = false;
 
 function setValue(id, value){
   const field =
@@ -107,6 +108,40 @@ function calculateExpectedCommission(){
 
   document.getElementById("commissionAmount").value =
     (annualPremium * (rate / 100)).toFixed(2);
+}
+
+function syncPremiumFromMonthly(){
+  if(syncingPremiumFields){
+    return;
+  }
+
+  syncingPremiumFields = true;
+
+  const monthly =
+    moneyValue(document.getElementById("monthlyPremium").value);
+
+  document.getElementById("annualPremium").value =
+    monthly ? (monthly * 12).toFixed(2) : "";
+
+  syncingPremiumFields = false;
+  calculateExpectedCommission();
+}
+
+function syncPremiumFromAnnual(){
+  if(syncingPremiumFields){
+    return;
+  }
+
+  syncingPremiumFields = true;
+
+  const annual =
+    moneyValue(document.getElementById("annualPremium").value);
+
+  document.getElementById("monthlyPremium").value =
+    annual ? (annual / 12).toFixed(2) : "";
+
+  syncingPremiumFields = false;
+  calculateExpectedCommission();
 }
 
 function escapeAttribute(value){
@@ -582,7 +617,11 @@ document
 
 document
   .getElementById("annualPremium")
-  .addEventListener("input", calculateExpectedCommission);
+  .addEventListener("input", syncPremiumFromAnnual);
+
+document
+  .getElementById("monthlyPremium")
+  .addEventListener("input", syncPremiumFromMonthly);
 
 document
   .getElementById("commissionRate")
