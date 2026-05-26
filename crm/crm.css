@@ -287,6 +287,15 @@ button:hover{
   gap:22px;
 }
 
+@media(min-width:1400px){
+
+  .dashboard-grid{
+    grid-template-columns:repeat(5,minmax(0,1fr));
+    gap:16px;
+  }
+
+}
+
 .card{
   background:#fff;
   border:1px solid var(--border);
