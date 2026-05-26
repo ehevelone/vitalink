@@ -850,7 +850,17 @@ button:hover{
   min-height:150px;
 }
 
+.dashboard-business-card{
+  display:flex;
+  flex-direction:column;
+  min-height:150px;
+}
+
 .dashboard-task-card .card-header{
+  margin-bottom:12px;
+}
+
+.dashboard-business-card .card-header{
   margin-bottom:12px;
 }
 
@@ -861,7 +871,14 @@ button:hover{
   margin-bottom:12px;
 }
 
-.dashboard-task-summary div{
+.dashboard-business-summary{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+
+.dashboard-task-summary div,
+.dashboard-business-summary div{
   background:#f8fafc;
   border:1px solid #e2e8f0;
   border-radius:12px;
@@ -870,16 +887,21 @@ button:hover{
 }
 
 .dashboard-task-summary strong,
-.dashboard-task-summary span{
+.dashboard-task-summary span,
+.dashboard-business-summary strong,
+.dashboard-business-summary span{
   display:block;
 }
 
-.dashboard-task-summary strong{
+.dashboard-task-summary strong,
+.dashboard-business-summary strong{
   color:var(--accent-dark);
   font-size:1.15rem;
+  word-break:break-word;
 }
 
-.dashboard-task-summary span{
+.dashboard-task-summary span,
+.dashboard-business-summary span{
   color:var(--muted);
   font-size:.76rem;
   margin-top:2px;

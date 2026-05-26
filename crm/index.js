@@ -25,6 +25,24 @@ function formatPhone(phone){
 
 }
 
+function moneyValue(value){
+
+  const number =
+    Number(String(value ?? "").replace(/[^0-9.-]/g, ""));
+
+  return Number.isFinite(number) ? number : 0;
+
+}
+
+function formatMoney(value){
+
+  return moneyValue(value).toLocaleString("en-US", {
+    style:"currency",
+    currency:"USD"
+  });
+
+}
+
 async function loadRecentClients(){
 
   const agent_id =
@@ -32,7 +50,8 @@ async function loadRecentClients(){
 
   const [
     clientsRes,
-    tasksRes
+    tasksRes,
+    policiesRes
   ] = await Promise.all([
 
     fetch(
@@ -41,12 +60,20 @@ async function loadRecentClients(){
 
     fetch(
       `/.netlify/functions/get-crm-tasks?agent_id=${agent_id}`
+    ),
+
+    fetch(
+      `/.netlify/functions/get-crm-policies?agent_id=${agent_id}`,
+      {
+        headers:getCrmSessionHeaders()
+      }
     )
 
   ]);
 
   const data = await clientsRes.json();
   const tasksData = await tasksRes.json();
+  const policiesData = await policiesRes.json();
 
   if(!data.success){
     return;
@@ -58,6 +85,9 @@ async function loadRecentClients(){
   const tasks =
     tasksData.success ? tasksData.tasks || [] : [];
 
+  const policies =
+    policiesData.success ? policiesData.policies || [] : [];
+
   document.getElementById("totalClients").innerText =
     clients.length;
 
@@ -68,6 +98,7 @@ async function loadRecentClients(){
     countOpenTasks(tasks);
 
   renderDashboardTasks(tasks);
+  renderDashboardBusiness(policies);
 
   const table = document.getElementById("recentClientsTable");
 
@@ -108,6 +139,133 @@ async function loadRecentClients(){
     `;
 
   });
+
+}
+
+function normalizedPolicyStatus(policy){
+
+  if(policy.paid_date){
+    return "Paid";
+  }
+
+  return String(policy.status || "Active").trim();
+
+}
+
+function isPolicyPaid(policy){
+
+  return normalizedPolicyStatus(policy).toLowerCase() === "paid";
+
+}
+
+function isPolicyPending(policy){
+
+  const status =
+    normalizedPolicyStatus(policy).toLowerCase();
+
+  return ["pending", "submitted"].includes(status);
+
+}
+
+function policyExpectedAmount(policy){
+
+  return moneyValue(policy.commission_amount);
+
+}
+
+function policyPaidAmount(policy){
+
+  if(!isPolicyPaid(policy)){
+    return 0;
+  }
+
+  return moneyValue(policy.paid_amount) ||
+    policyExpectedAmount(policy);
+
+}
+
+function paidDate(policy){
+
+  if(!policy.paid_date){
+    return null;
+  }
+
+  const date =
+    new Date(policy.paid_date);
+
+  if(Number.isNaN(date.getTime())){
+    return null;
+  }
+
+  date.setHours(0,0,0,0);
+  return date;
+
+}
+
+function renderDashboardBusiness(policies){
+
+  const container =
+    document.getElementById("dashboardBusinessSummary");
+
+  if(!container){
+    return;
+  }
+
+  const today =
+    new Date();
+
+  today.setHours(0,0,0,0);
+
+  const thirtyDaysAgo =
+    new Date(today);
+
+  thirtyDaysAgo.setDate(today.getDate() - 30);
+
+  const thisMonthStart =
+    new Date(today.getFullYear(), today.getMonth(), 1);
+
+  const lastMonthStart =
+    new Date(today.getFullYear(), today.getMonth() - 1, 1);
+
+  const pending =
+    policies
+      .filter(policy => isPolicyPending(policy))
+      .reduce((sum, policy) => sum + policyExpectedAmount(policy), 0);
+
+  const paidLast30 =
+    policies
+      .filter(policy => {
+        const date =
+          paidDate(policy);
+
+        return date && date >= thirtyDaysAgo && date <= today;
+      })
+      .reduce((sum, policy) => sum + policyPaidAmount(policy), 0);
+
+  const paidLastMonth =
+    policies
+      .filter(policy => {
+        const date =
+          paidDate(policy);
+
+        return date && date >= lastMonthStart && date < thisMonthStart;
+      })
+      .reduce((sum, policy) => sum + policyPaidAmount(policy), 0);
+
+  container.innerHTML = `
+    <div>
+      <strong>${formatMoney(pending)}</strong>
+      <span>Pending</span>
+    </div>
+    <div>
+      <strong>${formatMoney(paidLast30)}</strong>
+      <span>Paid 30 Days</span>
+    </div>
+    <div>
+      <strong>${formatMoney(paidLastMonth)}</strong>
+      <span>Last Month</span>
+    </div>
+  `;
 
 }
 
