@@ -55,4 +55,24 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <loc>https://myvitalink.app/emergency.html</loc>
   </url>
 
+  <url>
+    <loc>https://myvitalink.app/what-is-vitalink</loc>
+  </url>
+
+  <url>
+    <loc>https://myvitalink.app/emergency-qr-access</loc>
+  </url>
+
+  <url>
+    <loc>https://myvitalink.app/medication-organization</loc>
+  </url>
+
+  <url>
+    <loc>https://myvitalink.app/health-information-management</loc>
+  </url>
+
+  <url>
+    <loc>https://myvitalink.app/for-insurance-agents</loc>
+  </url>
+
 </urlset>
