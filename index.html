@@ -736,9 +736,45 @@ Agent & Agency Access
 Client reporting and management tools for licensed agents and agency owners.
 </p>
 
-<div class="agent-links">
+<div style="
+  margin:26px 0 22px 0;
+  text-align:center;
+">
 
-<a href="#" onclick="startAgentAccessCheckout(event)">Agent Access</a>
+  <div style="
+    font-size:1.6rem;
+    color:#ffffff;
+    font-weight:700;
+    margin-bottom:6px;
+  ">
+    $10 / Month Founders Agent Access
+  </div>
+
+  <div style="
+    font-size:1.1rem;
+    color:#cfcfcf;
+    font-weight:500;
+  ">
+    App-only access for participating agents.
+  </div>
+
+</div>
+
+<a href="/agent-access" style="
+  display:inline-block;
+  margin:10px auto 0 auto;
+  padding:14px 28px;
+  font-size:1.15rem;
+  font-weight:600;
+  background:#7cc6e8;
+  color:#000;
+  border-radius:8px;
+  text-decoration:none;
+">
+Agent Access
+</a>
+
+<div class="agent-links">
 
 <a href="/agent-resources.html">Agent Portal</a>
 
@@ -839,34 +875,6 @@ VitaLink™ Health & Insurance ID is a secure platform for your critical informa
 </footer>
 
 </main>
-
-<script>
-async function startAgentAccessCheckout(event) {
-  if (event) {
-    event.preventDefault();
-  }
-
-  try {
-    const res = await fetch('https://vitalink-app.netlify.app/.netlify/functions/vl-agent-checkout', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({})
-    });
-
-    const data = await res.json();
-
-    if (data.url) {
-      window.location = data.url;
-    } else {
-      alert("Agent checkout failed. Please try again.");
-    }
-  } catch (err) {
-    alert("Error connecting to payment system.");
-  }
-}
-</script>
 
 <script src="/site-traffic.js" defer></script>
 </body>

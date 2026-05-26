@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>VitaLink Agent Access | Founders Pricing</title>
+<meta name="description" content="Start VitaLink Agent Access with founders pricing for the VitaLink app." />
+<meta name="robots" content="noindex, follow" />
+<link rel="canonical" href="https://myvitalink.app/agent-access">
+<style>
+:root{
+--bg-black:#000000;
+--text-primary:#eaeaea;
+--text-muted:#b5b5b5;
+--accent-blue:#7cc6e8;
+--divider:#1e1e1e;
+}
+*{box-sizing:border-box;}
+body{
+margin:0;
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+background:var(--bg-black);
+color:var(--text-primary);
+line-height:1.6;
+}
+main{
+max-width:760px;
+margin:0 auto;
+padding:70px 24px;
+text-align:center;
+}
+.logo{
+max-width:360px;
+width:100%;
+margin:0 auto 32px auto;
+display:block;
+filter:
+drop-shadow(0 0 12px rgba(124,198,232,0.35))
+drop-shadow(0 0 30px rgba(124,198,232,0.15));
+}
+.card{
+margin:0 auto;
+padding:32px 24px;
+text-align:center;
+background:linear-gradient(180deg, #111 0%, #0c0c0c 100%);
+border:1px solid var(--divider);
+border-radius:14px;
+box-shadow:0 0 0 1px rgba(124,198,232,0.08), 0 10px 28px rgba(0,0,0,0.65);
+}
+h1{
+font-size:2rem;
+margin:0 0 12px 0;
+}
+.price{
+font-size:1.65rem;
+font-weight:700;
+color:#ffffff;
+margin:18px 0 6px 0;
+}
+p{
+color:#d0d0d0;
+font-size:1.08rem;
+margin:0 auto 18px auto;
+max-width:560px;
+}
+button{
+display:inline-block;
+margin:14px auto 0 auto;
+padding:14px 28px;
+font-size:1.1rem;
+font-weight:600;
+background:var(--accent-blue);
+color:#000;
+border-radius:8px;
+border:none;
+cursor:pointer;
+}
+button:hover{opacity:.9;}
+.status{
+color:#a8a8a8;
+font-size:.95rem;
+margin-top:18px;
+}
+</style>
+</head>
+<body>
+<main>
+  <img src="/images/vitalink-logo.png" alt="VitaLink" class="logo">
+  <section class="card">
+    <h1>VitaLink Agent Access</h1>
+    <div class="price">$10 / Month Founders Agent Access</div>
+    <p>Start app-only agent access for VitaLink. CRM access can be added separately when needed.</p>
+    <button onclick="startAgentAccessCheckout()">Continue to Stripe</button>
+    <div class="status" id="checkoutStatus">Opening secure Stripe checkout...</div>
+  </section>
+</main>
+
+<script>
+async function startAgentAccessCheckout() {
+  const status = document.getElementById("checkoutStatus");
+  if (status) {
+    status.textContent = "Opening secure Stripe checkout...";
+  }
+
+  try {
+    const res = await fetch("https://vitalink-app.netlify.app/.netlify/functions/vl-agent-checkout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({})
+    });
+
+    const data = await res.json();
+
+    if (data.url) {
+      window.location = data.url;
+      return;
+    }
+
+    if (status) {
+      status.textContent = "Agent checkout failed. Please try again.";
+    }
+  } catch (err) {
+    if (status) {
+      status.textContent = "Error connecting to payment system. Please try again.";
+    }
+  }
+}
+
+window.addEventListener("DOMContentLoaded", startAgentAccessCheckout);
+</script>
+<script src="/site-traffic.js" defer></script>
+</body>
+</html>
