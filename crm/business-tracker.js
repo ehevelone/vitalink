@@ -4,6 +4,7 @@ if(!sessionStorage.getItem("crm_uuid")){
 
 let businessPolicies = [];
 let uploadedSchedules = [];
+let sharedProductLibrary = null;
 
 function setUploadMessage(message){
   const container =
@@ -438,10 +439,28 @@ function renderCommissionSchedules(){
     return;
   }
 
+  if(sharedProductLibrary){
+    const carrierCount =
+      Number(sharedProductLibrary.carrier_count || 0);
+
+    const productCount =
+      Number(sharedProductLibrary.product_count || 0);
+
+    if(carrierCount || productCount){
+      status.innerHTML = `
+        <div class="business-schedule-row">
+          <strong>Shared carrier/product library loaded</strong>
+          <small>${carrierCount} carriers - ${productCount} products available to all CRM agents</small>
+        </div>
+      `;
+      return;
+    }
+  }
+
   if(!uploadedSchedules.length){
     status.innerHTML = `
       <div class="empty-state">
-        No carrier/product uploads shown yet.
+        No shared carrier/product library names found yet.
       </div>
     `;
     return;
@@ -463,6 +482,25 @@ async function loadCommissionSchedules(){
     sessionStorage.getItem("crm_uuid");
 
   try{
+    const libraryRes = await fetch(
+      `/.netlify/functions/get-crm-product-library?agent_id=${encodeURIComponent(agentId)}`,
+      {
+        headers:getCrmSessionHeaders()
+      }
+    );
+
+    const libraryData =
+      await libraryRes.json();
+
+    if(libraryRes.ok && libraryData.success){
+      sharedProductLibrary = {
+        carrier_count:libraryData.carrier_count,
+        product_count:libraryData.product_count
+      };
+      renderCommissionSchedules();
+      return;
+    }
+
     const res = await fetch(
       `/.netlify/functions/get-crm-commission-schedules?agent_id=${encodeURIComponent(agentId)}`,
       {
