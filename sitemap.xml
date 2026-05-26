@@ -1,78 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<urlset
-xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://myvitalink.app/</loc>
   </url>
-
-  <url>
-    <loc>https://myvitalink.app/index.html</loc>
-  </url>
-
-  <url>
-    <loc>https://myvitalink.app/activate.html</loc>
-  </url>
-
-  <url>
-    <loc>https://myvitalink.app/activate-success.html</loc>
-  </url>
-
-  <url>
-    <loc>https://myvitalink.app/agents.html</loc>
-  </url>
-
-  <url>
-    <loc>https://myvitalink.app/agent-success.html</loc>
-  </url>
-
-  <url>
-    <loc>https://myvitalink.app/crm-converter.html</loc>
-  </url>
-
-  <url>
-    <loc>https://myvitalink.app/quick_start.html</loc>
-  </url>
-
-  <url>
-    <loc>https://myvitalink.app/privacy.html</loc>
-  </url>
-
-  <url>
-    <loc>https://myvitalink.app/terms.html</loc>
-  </url>
-
-  <url>
-    <loc>https://myvitalink.app/recover.html</loc>
-  </url>
-
-  <url>
-    <loc>https://myvitalink.app/delete-account.html</loc>
-  </url>
-
-  <url>
-    <loc>https://myvitalink.app/emergency.html</loc>
-  </url>
-
   <url>
     <loc>https://myvitalink.app/what-is-vitalink</loc>
   </url>
-
   <url>
     <loc>https://myvitalink.app/emergency-qr-access</loc>
   </url>
-
   <url>
     <loc>https://myvitalink.app/medication-organization</loc>
   </url>
-
   <url>
     <loc>https://myvitalink.app/health-information-management</loc>
   </url>
-
   <url>
     <loc>https://myvitalink.app/for-insurance-agents</loc>
   </url>
-
+  <url>
+    <loc>https://myvitalink.app/agents</loc>
+  </url>
+  <url>
+    <loc>https://myvitalink.app/activate</loc>
+  </url>
+  <url>
+    <loc>https://myvitalink.app/quick_start</loc>
+  </url>
+  <url>
+    <loc>https://myvitalink.app/privacy.html</loc>
+  </url>
+  <url>
+    <loc>https://myvitalink.app/terms.html</loc>
+  </url>
 </urlset>
