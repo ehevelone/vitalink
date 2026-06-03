@@ -786,7 +786,7 @@ spinner.classList.add("active");
 document.getElementById("cmsImportResult").classList.remove("active");
 
 try{
-const res=await fetch(BACKEND+"/import-cms-pbp-benefits",fetchOptions);
+const res=await fetch("/.netlify/functions/import-cms-pbp-benefits",fetchOptions);
 const data=await res.json().catch(()=>({ success:false,error:"CMS import failed" }));
 
 if(!res.ok || !data.success){
