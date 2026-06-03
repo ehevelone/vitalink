@@ -27,7 +27,10 @@ function reply(statusCode, body){
     statusCode,
     headers:{
       "Content-Type":"application/json",
-      "Cache-Control":"no-store"
+      "Cache-Control":"no-store",
+      "Access-Control-Allow-Origin":"*",
+      "Access-Control-Allow-Headers":"Content-Type, x-admin-session, x-admin-key",
+      "Access-Control-Allow-Methods":"POST, OPTIONS"
     },
     body:JSON.stringify(body)
   };
@@ -401,6 +404,25 @@ async function importZip({ buffer, planYear, sourceName, maxFiles }){
 }
 
 exports.handler = async function(event){
+  console.info("import-cms-pbp-benefits hit", {
+    method:event.httpMethod,
+    contentType:getHeader(event, "content-type") || ""
+  });
+
+  if(event.httpMethod === "OPTIONS"){
+    return reply(200, {
+      success:true
+    });
+  }
+
+  if(event.httpMethod === "GET"){
+    return reply(200, {
+      success:true,
+      function:"import-cms-pbp-benefits",
+      status:"ready"
+    });
+  }
+
   if(event.httpMethod !== "POST"){
     return reply(405, {
       success:false,
