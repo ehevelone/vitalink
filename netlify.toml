@@ -1,0 +1,2 @@
+[functions."auto-cms-pbp-import"]
+schedule = "*/3 10-15 1 10 *"
