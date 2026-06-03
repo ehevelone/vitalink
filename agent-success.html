@@ -119,7 +119,14 @@ Open the VitaLink app and enter this code to unlock Agent access.
 async function loadCode(retry = 0){
 
 const params = new URLSearchParams(window.location.search);
+const inviteCode = params.get("code");
 const sessionId = params.get("session_id");
+
+if(inviteCode){
+document.getElementById("code").innerText =
+inviteCode.trim().toUpperCase();
+return;
+}
 
 if(!sessionId){
 document.getElementById("code").innerText = "Invalid session";
