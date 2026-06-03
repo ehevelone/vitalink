@@ -313,7 +313,7 @@ async function upsertPlan(record, sourceFile){
   return Boolean(result.rows[0]?.inserted);
 }
 
-async function importZip({ buffer, planYear, sourceName, maxFiles }){
+async function importZip({ buffer, planYear, sourceName, maxFiles, offset }){
   const zip =
     new AdmZip(buffer);
   const entries =
@@ -331,8 +331,12 @@ async function importZip({ buffer, planYear, sourceName, maxFiles }){
 
   const limit =
     Number(maxFiles || entries.length);
+  const start =
+    Math.max(0, Number(offset || 0));
+  const selectedEntries =
+    entries.slice(start, start + limit);
 
-  for(const entry of entries.slice(0, limit)){
+  for(const entry of selectedEntries){
     stats.files_processed += 1;
 
     try{
@@ -399,6 +403,9 @@ async function importZip({ buffer, planYear, sourceName, maxFiles }){
   return {
     ...stats,
     files_available:entries.length,
+    offset:start,
+    next_offset:start + selectedEntries.length,
+    done:start + selectedEntries.length >= entries.length,
     errors:stats.errors.slice(0, 20)
   };
 }
@@ -460,7 +467,8 @@ exports.handler = async function(event){
         buffer:zipInput.buffer,
         planYear,
         sourceName:zipInput.sourceName,
-        maxFiles:zipInput.fields.max_files || zipInput.fields.maxFiles
+        maxFiles:zipInput.fields.max_files || zipInput.fields.maxFiles,
+        offset:zipInput.fields.offset
       });
 
     return reply(200, {
