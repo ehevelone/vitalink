@@ -400,6 +400,30 @@ Send App Update Notification
 
 <div class="section">
 
+<h2>CMS Medicare Benefits Import</h2>
+
+<div class="card">
+<div class="action-row">
+<input id="cmsPlanYear" type="number" min="2020" max="2100" placeholder="Plan Year" />
+<input id="cmsZipFile" type="file" accept=".zip" />
+</div>
+<div class="action-row">
+<input id="cmsZipUrl" style="min-width:420px;" placeholder="CMS ZIP URL" />
+<button class="primary" id="importCmsUrlBtn">Import CMS ZIP URL</button>
+<button class="primary" id="importCmsFileBtn">Upload CMS ZIP</button>
+<span id="cmsImportSpinner" class="spinner">Importing CMS benefits...</span>
+</div>
+<div class="muted">
+Use the CMS PBP Benefits ZIP for the plan year. The URL import is preferred for the full CMS file because the ZIP is large.
+</div>
+</div>
+
+<div id="cmsImportResult" class="card result-card"></div>
+
+</div>
+
+<div class="section">
+
 <h2>Breakdown Summary</h2>
 
 <table>
@@ -683,6 +707,101 @@ function statValue(stats, name){
 return Number(stats?.[name] || 0);
 }
 
+function currentCmsPlanYear(){
+const now=new Date();
+return now.getFullYear();
+}
+
+function renderCmsImportResults(data){
+const result=document.getElementById("cmsImportResult");
+const stats=data.import_stats || {};
+const errors=Array.isArray(stats.errors) ? stats.errors : [];
+
+result.classList.add("active");
+result.innerHTML=`
+<h2>CMS Benefits Import Summary</h2>
+<p class="muted">${safeText(data.source || "CMS PBP Benefits ZIP")}</p>
+<div class="result-grid">
+<div class="result-item"><span>Plan Year</span><strong>${safeText(data.plan_year || "")}</strong></div>
+<div class="result-item"><span>Files Available</span><strong>${statValue(stats,"files_available")}</strong></div>
+<div class="result-item"><span>Files Processed</span><strong>${statValue(stats,"files_processed")}</strong></div>
+<div class="result-item"><span>Plans Added</span><strong>${statValue(stats,"plans_added")}</strong></div>
+<div class="result-item"><span>Plans Updated</span><strong>${statValue(stats,"plans_updated")}</strong></div>
+<div class="result-item"><span>Rows Skipped</span><strong>${statValue(stats,"rows_skipped")}</strong></div>
+<div class="result-item"><span>Errors</span><strong>${errors.length}</strong></div>
+</div>
+${errors.length ? `<p class="muted">${safeText(errors.slice(0,3).map(error => `${error.file || "file"}: ${error.error || "Import error"}`).join(" | "))}</p>` : ""}
+`;
+}
+
+function showCmsImportMessage(message){
+const result=document.getElementById("cmsImportResult");
+result.classList.add("active");
+result.innerHTML=`<h2>CMS Benefits Import Summary</h2><p>${safeText(message)}</p>`;
+}
+
+async function runCmsImport({ useFile }){
+const year=document.getElementById("cmsPlanYear").value.trim();
+const url=document.getElementById("cmsZipUrl").value.trim();
+const fileInput=document.getElementById("cmsZipFile");
+const spinner=document.getElementById("cmsImportSpinner");
+
+if(!year){
+showCmsImportMessage("Enter a plan year first.");
+return;
+}
+
+let fetchOptions;
+
+if(useFile){
+if(!fileInput.files.length){
+showCmsImportMessage("Choose a CMS ZIP file first.");
+return;
+}
+
+const formData=new FormData();
+formData.append("plan_year",year);
+formData.append("file",fileInput.files[0],fileInput.files[0].name);
+
+fetchOptions={
+method:"POST",
+headers:{ "x-admin-session":token },
+body:formData
+};
+}else{
+fetchOptions={
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+"x-admin-session":token
+},
+body:JSON.stringify({
+plan_year:Number(year),
+cms_url:url
+})
+};
+}
+
+spinner.classList.add("active");
+document.getElementById("cmsImportResult").classList.remove("active");
+
+try{
+const res=await fetch(BACKEND+"/import-cms-pbp-benefits",fetchOptions);
+const data=await res.json().catch(()=>({ success:false,error:"CMS import failed" }));
+
+if(!res.ok || !data.success){
+showCmsImportMessage(data.error || "CMS import failed");
+return;
+}
+
+renderCmsImportResults(data);
+}catch(err){
+showCmsImportMessage(err.message || "CMS import failed");
+}finally{
+spinner.classList.remove("active");
+}
+}
+
 function renderImportResults(data){
 const result=document.getElementById("productLibraryResult");
 const stats=data.import_stats || {};
@@ -809,6 +928,11 @@ spinner.classList.remove("active");
 button.disabled=false;
 }
 };
+
+document.getElementById("cmsPlanYear").value=String(currentCmsPlanYear());
+document.getElementById("cmsZipUrl").value="https://www.cms.gov/files/zip/pbp-benefits-2026-json.zip";
+document.getElementById("importCmsUrlBtn").onclick=()=>runCmsImport({ useFile:false });
+document.getElementById("importCmsFileBtn").onclick=()=>runCmsImport({ useFile:true });
 
 /* INIT */
 
