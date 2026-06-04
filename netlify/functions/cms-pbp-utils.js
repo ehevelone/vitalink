@@ -78,7 +78,9 @@ function directCopay(details){
   const components = [
     details.CopaymentComponent,
     details.CostShareABComponent,
-    details.TierCopaymentComponent
+    details.TierCopaymentComponent,
+    details.CopayAdmWaivedTimelineComponent?.CopayAdmWaivedTimelineComptCopayment,
+    details.CopaymentAdmissionWaivedHospitalComponent?.bdCopayComponent
   ].filter(Boolean);
 
   for(const component of components){
@@ -89,6 +91,15 @@ function directCopay(details){
 
     if(amount !== undefined && amount !== null){
       return formatCurrency(amount);
+    }
+
+    const min =
+      component.bdCopaymentMinAmount;
+    const max =
+      component.bdCopaymentMaxAmount;
+
+    if(min !== undefined && min !== null && max !== undefined && max !== null){
+      return `${formatCurrency(min)} - ${formatCurrency(max)}`;
     }
   }
 
@@ -110,6 +121,15 @@ function directCoinsurance(details){
 
     if(amount !== undefined && amount !== null){
       return formatPercent(amount);
+    }
+
+    const min =
+      component.bdCoinsuranceMinAmount;
+    const max =
+      component.bdCoinsuranceMaxAmount;
+
+    if(min !== undefined && min !== null && max !== undefined && max !== null){
+      return `${formatPercent(min)} - ${formatPercent(max)}`;
     }
   }
 
@@ -154,7 +174,28 @@ function intervalCopays(details){
 }
 
 function categoryCostShare(details){
-  return intervalCopays(details) || directCopay(details) || directCoinsurance(details);
+  return intervalCopays(details) ||
+    directCopay(details) ||
+    directCoinsurance(details) ||
+    maxPlanBenefit(details);
+}
+
+function maxPlanBenefit(details){
+  const components = [
+    details.MaximumPlanBenefitCoverageComponent,
+    details.OutOfNetworkCostShareComponent?.maxPlanBenCov
+  ].filter(Boolean);
+
+  for(const component of components){
+    const amount =
+      component.bdMaxPlanBenefitCovAmt;
+
+    if(amount !== undefined && amount !== null && amount !== ""){
+      return `Up to ${formatCurrency(amount)}`;
+    }
+  }
+
+  return "";
 }
 
 function extractMedicalCostShareSnapshot(pbpPlan){
