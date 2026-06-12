@@ -4,6 +4,7 @@
 /index.html       /index.html       200
 /agents /agents.html 200
 /agent-access /agent-access.html 200
+/agent-resources /agent-resources.html 200
 /agent-portal-activation /agent-portal-activation.html 200
 /activate /activate.html 200
 /quick_start /quick_start.html 200
@@ -12,4 +13,6 @@
 /medication-organization /medication-organization.html 200
 /health-information-management /health-information-management.html 200
 /for-insurance-agents /for-insurance-agents.html 200
+/for-individuals /for-individuals.html 200
+/referral/:token /referral.html 200
 /*                /index.html       200
