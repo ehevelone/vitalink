@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VitaLink Referral</title>
+  <meta name="robots" content="noindex, nofollow">
+  <style>
+    :root {
+      --bg: #020617;
+      --panel: #0f172a;
+      --panel-soft: #111827;
+      --text: #f8fafc;
+      --muted: #cbd5e1;
+      --blue: #7dd3fc;
+      --blue-strong: #38bdf8;
+      --border: rgba(125, 211, 252, .35);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top, rgba(14, 165, 233, .14), transparent 34rem),
+        var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    main {
+      width: min(760px, 100%);
+      background: rgba(15, 23, 42, .94);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, .45);
+      padding: clamp(24px, 5vw, 44px);
+    }
+
+    .logo {
+      display: block;
+      width: 110px;
+      margin: 0 auto 18px;
+    }
+
+    h1 {
+      margin: 0;
+      text-align: center;
+      font-size: clamp(2rem, 7vw, 3.7rem);
+      line-height: 1.05;
+    }
+
+    .lead {
+      margin: 18px auto 0;
+      max-width: 620px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 1.15rem;
+      line-height: 1.6;
+    }
+
+    .name-line {
+      color: var(--blue);
+      font-weight: 800;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin: 28px 0;
+    }
+
+    .card {
+      background: var(--panel-soft);
+      border: 1px solid rgba(125, 211, 252, .22);
+      border-radius: 14px;
+      padding: 16px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    form {
+      border-top: 1px solid rgba(125, 211, 252, .2);
+      padding-top: 24px;
+    }
+
+    label {
+      display: block;
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    select,
+    input {
+      width: 100%;
+      margin: 0 0 16px;
+      padding: 14px 15px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #000;
+      color: var(--text);
+      font-size: 1rem;
+    }
+
+    button {
+      width: 100%;
+      border: 0;
+      border-radius: 14px;
+      padding: 16px;
+      background: var(--blue);
+      color: #06111f;
+      font-size: 1.05rem;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    button:hover { background: var(--blue-strong); }
+
+    .status {
+      margin-top: 16px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .success {
+      margin-top: 18px;
+      padding: 18px;
+      border: 1px solid rgba(74, 222, 128, .35);
+      border-radius: 14px;
+      background: rgba(22, 101, 52, .16);
+      color: #dcfce7;
+      text-align: center;
+      font-weight: 800;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <img class="logo" src="/images/vitalink-logo.png" alt="VitaLink">
+    <h1>Someone Thought VitaLink Might Help You</h1>
+    <p class="lead" id="intro">Loading referral...</p>
+
+    <div class="grid" aria-label="VitaLink helps organize">
+      <div class="card">Medications</div>
+      <div class="card">Doctors</div>
+      <div class="card">Insurance Cards</div>
+      <div class="card">Emergency Information</div>
+      <div class="card">Family Access</div>
+      <div class="card">Caregiver Support</div>
+    </div>
+
+    <form id="preferenceForm" hidden>
+      <label for="preference">How would you prefer to be contacted?</label>
+      <select id="preference" required>
+        <option>Text Me</option>
+        <option>Call Me</option>
+        <option>Email Me</option>
+      </select>
+
+      <label for="phone">Phone</label>
+      <input id="phone" type="tel" autocomplete="tel">
+
+      <label for="email">Email</label>
+      <input id="email" type="email" autocomplete="email">
+
+      <button type="submit">Submit Contact Preference</button>
+    </form>
+
+    <div class="status" id="status"></div>
+  </main>
+
+  <script>
+    const API = "https://vitalink-app.netlify.app/.netlify/functions";
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("r") || params.get("token") || "";
+    const intro = document.getElementById("intro");
+    const statusBox = document.getElementById("status");
+    const form = document.getElementById("preferenceForm");
+    const phoneInput = document.getElementById("phone");
+    const emailInput = document.getElementById("email");
+    const preferenceInput = document.getElementById("preference");
+
+    function setStatus(message, success = false) {
+      statusBox.className = success ? "success" : "status";
+      statusBox.textContent = message;
+    }
+
+    async function loadReferral() {
+      if (!token) {
+        intro.textContent = "This referral link is missing information.";
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API}/open_referral_link?r=${encodeURIComponent(token)}`);
+        const data = await res.json();
+
+        if (!data.success) {
+          intro.textContent = data.error || "This referral link could not be opened.";
+          return;
+        }
+
+        const referringClient = data.referringClient || "A VitaLink user";
+        const agentName = data.agent?.name || "their insurance agent";
+        intro.innerHTML =
+          `<span class="name-line">${referringClient}</span> uses VitaLink to keep important health and insurance information organized and thought you might benefit from it as well.<br><br>` +
+          `If you would like to learn more, choose how you prefer to be contacted. ${agentName} will follow up.`;
+        form.hidden = false;
+      } catch (err) {
+        intro.textContent = "This referral link could not be loaded.";
+      }
+    }
+
+    preferenceInput.addEventListener("change", () => {
+      const preference = preferenceInput.value;
+      phoneInput.required = preference === "Text Me" || preference === "Call Me";
+      emailInput.required = preference === "Email Me";
+    });
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      setStatus("Submitting...");
+
+      try {
+        const res = await fetch(`${API}/submit_referral_preference`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            token,
+            contactPreference: preferenceInput.value,
+            phone: phoneInput.value,
+            email: emailInput.value,
+          }),
+        });
+        const data = await res.json();
+
+        if (!data.success) {
+          setStatus(data.error || "Unable to submit contact preference.");
+          return;
+        }
+
+        form.hidden = true;
+        setStatus("Contact preference submitted. Thank you.", true);
+      } catch (err) {
+        setStatus("Unable to submit contact preference.");
+      }
+    });
+
+    loadReferral();
+  </script>
+</body>
+</html>
