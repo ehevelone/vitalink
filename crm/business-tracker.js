@@ -273,6 +273,9 @@ function renderBusinessTracker(){
         const effective =
           formatDate(policy.effective_date) || "No effective date";
 
+        const submitted =
+          formatDate(policy.submitted_date);
+
         const paid =
           formatDate(policy.paid_date);
 
@@ -297,6 +300,7 @@ function renderBusinessTracker(){
               <span class="tag">${safeText(status)}</span>
               <strong>${formatMoney(policyDisplayAmount(policy))}</strong>
               <small>${safeText(amountLabel)}</small>
+              ${submitted ? `<small>Submitted ${safeText(submitted)}</small>` : ""}
               ${paid ? `<small>Paid ${safeText(paid)}</small>` : ""}
               <small>${safeText(effective)}</small>
             </div>

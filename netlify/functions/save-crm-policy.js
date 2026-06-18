@@ -88,18 +88,19 @@ exports.handler = async (event) => {
           policy_number = $6,
           member_id = $7,
           effective_date = $8,
-          renewal_month = $9,
-          monthly_premium = $10,
-          annual_premium = $11,
-          commission_type = $12,
-          commission_rate = $13,
-          commission_amount = $14,
-          paid_amount = $15,
-          paid_date = $16,
-          status = $17,
-          notes = $18,
+          submitted_date = $9,
+          renewal_month = $10,
+          monthly_premium = $11,
+          annual_premium = $12,
+          commission_type = $13,
+          commission_rate = $14,
+          commission_amount = $15,
+          paid_amount = $16,
+          paid_date = $17,
+          status = $18,
+          notes = $19,
           updated_at = NOW()
-        WHERE id = $19
+        WHERE id = $20
           AND agent_id = $1
         RETURNING *
         `,
@@ -126,6 +127,7 @@ exports.handler = async (event) => {
         policy_number,
         member_id,
         effective_date,
+        submitted_date,
         renewal_month,
         monthly_premium,
         annual_premium,
@@ -137,7 +139,7 @@ exports.handler = async (event) => {
         status,
         notes
       )
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19)
       RETURNING *
       `,
       policyValues(body, auth.crmAgentId)

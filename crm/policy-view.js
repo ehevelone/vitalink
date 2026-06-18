@@ -499,6 +499,7 @@ function policyBody(){
     policy_number:document.getElementById("policyNumber").value,
     member_id:document.getElementById("memberId").value,
     effective_date:document.getElementById("effectiveDate").value,
+    submitted_date:document.getElementById("submittedDate").value,
     renewal_month:document.getElementById("renewalMonth").value,
     monthly_premium:moneyValue(document.getElementById("monthlyPremium").value),
     annual_premium:moneyValue(document.getElementById("annualPremium").value),
@@ -522,6 +523,7 @@ function fillPolicy(policy){
   setValue("policyNumber", policy.policy_number);
   setValue("memberId", policy.member_id);
   setValue("effectiveDate", formatDate(policy.effective_date));
+  setValue("submittedDate", formatDate(policy.submitted_date));
   setValue("renewalMonth", policy.renewal_month);
   setValue("monthlyPremium", formatCurrency(policy.monthly_premium));
   setValue("annualPremium", formatCurrency(policy.annual_premium));
@@ -676,6 +678,25 @@ document
       ["Active", "Pending", "Submitted"].includes(status.value)
     ){
       status.value = "Paid";
+    }
+  });
+
+document
+  .getElementById("status")
+  .addEventListener("change", event => {
+    const submittedDate =
+      document.getElementById("submittedDate");
+
+    if(event.target.value === "Submitted" && !submittedDate.value){
+      const today =
+        new Date();
+
+      today.setMinutes(
+        today.getMinutes() - today.getTimezoneOffset()
+      );
+
+      submittedDate.value =
+        today.toISOString().slice(0, 10);
     }
   });
 
