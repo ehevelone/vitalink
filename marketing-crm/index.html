@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VitaLink Growth CRM</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+
+<aside class="sidebar">
+  <a href="../index.html">
+    <img src="../images/vitalink-logo.png" class="logo" alt="VitaLink">
+  </a>
+
+  <div class="nav-section">
+    <div class="nav-title">Growth CRM</div>
+    <button class="nav-item active" data-view="dashboard">Dashboard</button>
+    <button class="nav-item" data-view="contacts">Pipeline</button>
+    <button class="nav-item" data-view="schedule">Scheduler</button>
+    <button class="nav-item" data-view="activities">Follow-Ups</button>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-title">Segments</div>
+    <button class="nav-item small-filter" data-filter-type="FMO">FMOs</button>
+    <button class="nav-item small-filter" data-filter-type="Agency Owner">Agency Owners</button>
+    <button class="nav-item small-filter" data-filter-type="Podcast">Podcasts</button>
+    <button class="nav-item small-filter" data-filter-type="Conference">Conferences</button>
+    <button class="nav-item small-filter" data-filter-type="Referral">Referrals</button>
+  </div>
+</aside>
+
+<main class="main">
+  <section class="topbar">
+    <div>
+      <h1>VitaLink Growth CRM</h1>
+      <p>Track FMOs, agency owners, podcasts, conferences, demos, follow-ups, referrals, and marketing relationships.</p>
+    </div>
+    <div class="top-actions">
+      <button class="secondary" id="refreshBtn">Refresh</button>
+      <button id="newContactBtn">Add Relationship</button>
+    </div>
+  </section>
+
+  <section id="loginCard" class="card login-card">
+    <h2>Marketing Team Access</h2>
+    <p>Enter the admin access key to open the growth CRM.</p>
+    <div class="login-row">
+      <input type="password" id="adminKeyInput" placeholder="Admin key">
+      <button id="unlockBtn">Unlock</button>
+    </div>
+    <div id="loginMessage" class="muted"></div>
+  </section>
+
+  <section id="appShell" class="app-shell" hidden>
+    <section id="dashboardView" class="view active">
+      <div class="metric-grid">
+        <article class="card metric-card">
+          <span>Total Relationships</span>
+          <strong id="totalContacts">0</strong>
+        </article>
+        <article class="card metric-card">
+          <span>Demos Scheduled</span>
+          <strong id="demoCount">0</strong>
+        </article>
+        <article class="card metric-card">
+          <span>Follow-Ups Due</span>
+          <strong id="followUpsDue">0</strong>
+        </article>
+        <article class="card metric-card">
+          <span>Referral Sources</span>
+          <strong id="referralCount">0</strong>
+        </article>
+      </div>
+
+      <div class="dashboard-layout">
+        <article class="card">
+          <div class="card-header">
+            <h2>Priority Follow-Ups</h2>
+            <button class="secondary compact" data-view-jump="activities">View All</button>
+          </div>
+          <div id="priorityFollowUps" class="list"></div>
+        </article>
+
+        <article class="card">
+          <div class="card-header">
+            <h2>Upcoming Schedule</h2>
+            <button class="secondary compact" data-view-jump="schedule">View Calendar</button>
+          </div>
+          <div id="upcomingSchedule" class="list"></div>
+        </article>
+      </div>
+
+      <article class="card">
+        <div class="card-header">
+          <h2>Pipeline Snapshot</h2>
+          <button class="secondary compact" data-view-jump="contacts">Open Pipeline</button>
+        </div>
+        <div id="pipelineSnapshot" class="pipeline-grid"></div>
+      </article>
+    </section>
+
+    <section id="contactsView" class="view">
+      <article class="card">
+        <div class="card-header">
+          <div>
+            <h2>Marketing Pipeline</h2>
+            <p>FMOs, agency owners, podcasts, conferences, demo prospects, and referral partners.</p>
+          </div>
+          <button id="newContactBtn2">Add Relationship</button>
+        </div>
+        <div class="filter-row">
+          <input id="searchInput" placeholder="Search name, organization, email, phone, notes...">
+          <select id="typeFilter">
+            <option value="">All Types</option>
+            <option>FMO</option>
+            <option>Agency Owner</option>
+            <option>Podcast</option>
+            <option>Conference</option>
+            <option>Referral</option>
+            <option>Marketing Partner</option>
+            <option>Carrier Contact</option>
+            <option>Other</option>
+          </select>
+          <select id="stageFilter">
+            <option value="">All Stages</option>
+            <option>New</option>
+            <option>Researching</option>
+            <option>Contacted</option>
+            <option>Demo Scheduled</option>
+            <option>Demo Completed</option>
+            <option>Proposal Sent</option>
+            <option>Active Partner</option>
+            <option>Nurture</option>
+            <option>Not A Fit</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Stage</th>
+                <th>Demo</th>
+                <th>Follow-Up</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="contactsTable"></tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <section id="scheduleView" class="view">
+      <div class="two-column">
+        <article class="card">
+          <h2>Schedule Demo / Event</h2>
+          <form id="appointmentForm" class="form-grid">
+            <input type="hidden" id="appointmentId">
+            <label>
+              Contact
+              <select id="appointmentContactId"></select>
+            </label>
+            <label>
+              Type
+              <select id="appointmentType">
+                <option>Demo</option>
+                <option>Follow-Up</option>
+                <option>Podcast</option>
+                <option>Conference</option>
+                <option>Intro Call</option>
+                <option>Team Training</option>
+              </select>
+            </label>
+            <label>
+              Date
+              <input type="date" id="appointmentDate" required>
+            </label>
+            <label>
+              Time
+              <input type="time" id="appointmentTime">
+            </label>
+            <label class="wide">
+              Title
+              <input id="appointmentTitle" placeholder="Demo with agency owner" required>
+            </label>
+            <label class="wide">
+              Location / Link
+              <input id="appointmentLocation" placeholder="Zoom, phone, conference room, etc.">
+            </label>
+            <label class="wide">
+              Notes
+              <textarea id="appointmentNotes" rows="4"></textarea>
+            </label>
+            <button class="wide" type="submit">Save Schedule Item</button>
+          </form>
+        </article>
+
+        <article class="card">
+          <h2>Upcoming Items</h2>
+          <div id="scheduleList" class="list"></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="activitiesView" class="view">
+      <div class="two-column">
+        <article class="card">
+          <h2>Log Follow-Up / Referral</h2>
+          <form id="activityForm" class="form-grid">
+            <label class="wide">
+              Contact
+              <select id="activityContactId"></select>
+            </label>
+            <label>
+              Type
+              <select id="activityType">
+                <option>Note</option>
+                <option>Call</option>
+                <option>Email</option>
+                <option>Text</option>
+                <option>Demo</option>
+                <option>Referral</option>
+                <option>Conference</option>
+                <option>Podcast</option>
+              </select>
+            </label>
+            <label>
+              Date / Time
+              <input type="datetime-local" id="activityDate">
+            </label>
+            <label class="wide">
+              Title
+              <input id="activityTitle" placeholder="Called about FMO demo" required>
+            </label>
+            <label>
+              Outcome
+              <select id="activityOutcome">
+                <option></option>
+                <option>Left Message</option>
+                <option>Connected</option>
+                <option>Interested</option>
+                <option>Demo Scheduled</option>
+                <option>Referral Received</option>
+                <option>Needs Follow-Up</option>
+                <option>Not A Fit</option>
+              </select>
+            </label>
+            <label>
+              Next Follow-Up
+              <input type="date" id="activityNextFollowUp">
+            </label>
+            <label class="wide">
+              Notes
+              <textarea id="activityNotes" rows="4"></textarea>
+            </label>
+            <button class="wide" type="submit">Save Activity</button>
+          </form>
+        </article>
+
+        <article class="card">
+          <h2>Activity Timeline</h2>
+          <div id="activityList" class="list"></div>
+        </article>
+      </div>
+    </section>
+  </section>
+</main>
+
+<div class="modal-overlay" id="contactModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="contactModalTitle">Add Relationship</h2>
+      <button class="close-btn" id="closeContactModal">X</button>
+    </div>
+    <form id="contactForm" class="form-grid">
+      <input type="hidden" id="contactId">
+      <label>
+        Name
+        <input id="contactName" required>
+      </label>
+      <label>
+        Organization
+        <input id="contactOrganization">
+      </label>
+      <label>
+        Type
+        <select id="contactType">
+          <option>Agency Owner</option>
+          <option>FMO</option>
+          <option>Podcast</option>
+          <option>Conference</option>
+          <option>Referral</option>
+          <option>Marketing Partner</option>
+          <option>Carrier Contact</option>
+          <option>Other</option>
+        </select>
+      </label>
+      <label>
+        Stage
+        <select id="contactStage">
+          <option>New</option>
+          <option>Researching</option>
+          <option>Contacted</option>
+          <option>Demo Scheduled</option>
+          <option>Demo Completed</option>
+          <option>Proposal Sent</option>
+          <option>Active Partner</option>
+          <option>Nurture</option>
+          <option>Not A Fit</option>
+        </select>
+      </label>
+      <label>
+        Priority
+        <select id="contactPriority">
+          <option>High</option>
+          <option selected>Medium</option>
+          <option>Low</option>
+        </select>
+      </label>
+      <label>
+        Owner
+        <input id="contactOwner" placeholder="Eric, marketing team, etc.">
+      </label>
+      <label>
+        Phone
+        <input id="contactPhone">
+      </label>
+      <label>
+        Email
+        <input type="email" id="contactEmail">
+      </label>
+      <label>
+        Website
+        <input id="contactWebsite">
+      </label>
+      <label>
+        Source
+        <input id="contactSource" placeholder="LinkedIn, referral, conference...">
+      </label>
+      <label>
+        City
+        <input id="contactCity">
+      </label>
+      <label>
+        State
+        <input id="contactState">
+      </label>
+      <label>
+        Demo Date
+        <input type="datetime-local" id="contactDemoDate">
+      </label>
+      <label>
+        Follow-Up Date
+        <input type="date" id="contactFollowUpDate">
+      </label>
+      <label>
+        Last Contact
+        <input type="date" id="contactLastContactDate">
+      </label>
+      <label>
+        Referral Source
+        <input id="contactReferralSource">
+      </label>
+      <label class="wide">
+        Notes
+        <textarea id="contactNotes" rows="5"></textarea>
+      </label>
+      <button class="wide" type="submit">Save Relationship</button>
+    </form>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
+
