@@ -371,7 +371,7 @@ async function startSelectedCheckout(){
   button.disabled = true;
 
   try{
-    const res = await fetch("https://vitalink-app.netlify.app/.netlify/functions/vl-agent-checkout", {
+    const res = await fetch("/.netlify/functions/vl-agent-checkout", {
       method:"POST",
       headers:{
         "Content-Type":"application/json"
