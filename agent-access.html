@@ -4,16 +4,19 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>VitaLink Agent Access | Founders Pricing</title>
-<meta name="description" content="Start VitaLink Agent Access with founders pricing for the VitaLink app." />
+<meta name="description" content="Choose VitaLink Founders Agent Access or App + CRM Access with monthly or annual billing." />
 <meta name="robots" content="noindex, follow" />
 <link rel="canonical" href="https://myvitalink.app/agent-access">
 <style>
 :root{
 --bg-black:#000000;
---text-primary:#eaeaea;
---text-muted:#b5b5b5;
+--panel:#0b0f14;
+--card:#111821;
+--text-primary:#f4f7fb;
+--text-muted:#b8c2cc;
 --accent-blue:#7cc6e8;
---divider:#1e1e1e;
+--accent-strong:#30b9ff;
+--divider:#223244;
 }
 *{box-sizing:border-box;}
 body{
@@ -24,111 +27,377 @@ color:var(--text-primary);
 line-height:1.6;
 }
 main{
-max-width:760px;
+max-width:1040px;
 margin:0 auto;
-padding:70px 24px;
+padding:54px 24px 70px;
 text-align:center;
 }
 .logo{
-max-width:360px;
+max-width:340px;
 width:100%;
-margin:0 auto 32px auto;
+margin:0 auto 26px;
 display:block;
 filter:
 drop-shadow(0 0 12px rgba(124,198,232,0.35))
 drop-shadow(0 0 30px rgba(124,198,232,0.15));
 }
-.card{
-margin:0 auto;
-padding:32px 24px;
-text-align:center;
-background:linear-gradient(180deg, #111 0%, #0c0c0c 100%);
-border:1px solid var(--divider);
-border-radius:14px;
-box-shadow:0 0 0 1px rgba(124,198,232,0.08), 0 10px 28px rgba(0,0,0,0.65);
+.eyebrow{
+color:var(--accent-blue);
+text-transform:uppercase;
+letter-spacing:.14em;
+font-size:.82rem;
+font-weight:800;
+margin-bottom:10px;
 }
 h1{
-font-size:2rem;
-margin:0 0 12px 0;
+font-size:clamp(2rem,5vw,3.35rem);
+line-height:1.08;
+margin:0 0 14px;
 }
-.price{
-font-size:1.65rem;
-font-weight:700;
-color:#ffffff;
-margin:18px 0 6px 0;
+.intro{
+color:#d6dce3;
+font-size:1.16rem;
+max-width:720px;
+margin:0 auto 34px;
 }
-p{
-color:#d0d0d0;
-font-size:1.08rem;
-margin:0 auto 18px auto;
-max-width:560px;
+.selector-shell{
+background:linear-gradient(180deg,#101820 0%,#080c10 100%);
+border:1px solid var(--divider);
+border-radius:18px;
+padding:24px;
+box-shadow:0 0 0 1px rgba(124,198,232,.08),0 18px 44px rgba(0,0,0,.72);
 }
-button{
-display:inline-block;
-margin:14px auto 0 auto;
-padding:14px 28px;
-font-size:1.1rem;
-font-weight:600;
-background:var(--accent-blue);
-color:#000;
-border-radius:8px;
-border:none;
+.billing-toggle{
+display:inline-grid;
+grid-template-columns:1fr 1fr;
+gap:8px;
+padding:8px;
+border:1px solid var(--divider);
+border-radius:999px;
+background:#05080b;
+margin-bottom:24px;
+}
+.billing-toggle button{
+border:0;
+background:transparent;
+color:var(--text-muted);
+border-radius:999px;
+padding:11px 20px;
+font-weight:800;
 cursor:pointer;
 }
-button:hover{opacity:.9;}
+.billing-toggle button.active{
+background:var(--accent-blue);
+color:#000;
+}
+.plans{
+display:grid;
+grid-template-columns:repeat(2,minmax(0,1fr));
+gap:18px;
+}
+.plan-card{
+position:relative;
+display:flex;
+flex-direction:column;
+gap:16px;
+padding:24px;
+text-align:left;
+background:rgba(17,24,33,.92);
+border:1px solid var(--divider);
+border-radius:16px;
+box-shadow:0 10px 28px rgba(0,0,0,.42);
+cursor:pointer;
+transition:.2s;
+}
+.plan-card:hover,
+.plan-card.selected{
+border-color:var(--accent-blue);
+box-shadow:0 0 0 1px rgba(124,198,232,.4),0 14px 36px rgba(0,0,0,.55);
+transform:translateY(-1px);
+}
+.plan-card.selected::after{
+content:"Selected";
+position:absolute;
+top:18px;
+right:18px;
+background:rgba(124,198,232,.16);
+border:1px solid rgba(124,198,232,.7);
+color:var(--accent-blue);
+font-size:.74rem;
+font-weight:900;
+letter-spacing:.08em;
+text-transform:uppercase;
+padding:5px 9px;
+border-radius:999px;
+}
+.plan-card h2{
+font-size:1.45rem;
+margin:0;
+padding-right:96px;
+}
+.price{
+font-size:2rem;
+line-height:1;
+font-weight:900;
+color:#fff;
+}
+.price span{
+font-size:1rem;
+color:var(--text-muted);
+font-weight:700;
+}
+.save-note{
+display:inline-block;
+width:max-content;
+max-width:100%;
+background:rgba(48,185,255,.12);
+border:1px solid rgba(48,185,255,.48);
+color:var(--accent-blue);
+padding:6px 10px;
+border-radius:999px;
+font-size:.82rem;
+font-weight:800;
+}
+.plan-card p{
+color:#d3d9df;
+margin:0;
+}
+.feature-list{
+display:grid;
+gap:8px;
+padding:0;
+margin:0;
+list-style:none;
+color:#e8edf2;
+}
+.feature-list li::before{
+content:"✓";
+color:var(--accent-blue);
+font-weight:900;
+margin-right:8px;
+}
+.checkout-panel{
+margin-top:22px;
+padding:20px;
+border:1px solid var(--divider);
+border-radius:14px;
+background:#05080b;
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:18px;
+text-align:left;
+}
+.checkout-panel strong,
+.checkout-panel span{
+display:block;
+}
+.checkout-panel span{
+color:var(--text-muted);
+margin-top:4px;
+}
+.checkout-btn{
+min-width:240px;
+border:0;
+background:var(--accent-blue);
+color:#000;
+border-radius:10px;
+padding:14px 22px;
+font-size:1rem;
+font-weight:900;
+cursor:pointer;
+box-shadow:0 8px 22px rgba(124,198,232,.25);
+}
+.checkout-btn:disabled{
+opacity:.65;
+cursor:wait;
+}
 .status{
-color:#a8a8a8;
+min-height:1.4em;
+color:#aeb7c1;
 font-size:.95rem;
-margin-top:18px;
+margin-top:16px;
+}
+.fine-print{
+max-width:780px;
+margin:22px auto 0;
+color:#9aa7b3;
+font-size:.92rem;
+}
+@media(max-width:820px){
+main{
+padding:36px 16px 56px;
+}
+.plans,
+.checkout-panel{
+grid-template-columns:1fr;
+display:grid;
+}
+.checkout-btn{
+width:100%;
+min-width:0;
+}
+.billing-toggle{
+width:100%;
+}
 }
 </style>
 </head>
 <body>
 <main>
   <img src="/images/vitalink-logo.png" alt="VitaLink" class="logo">
-  <section class="card">
-    <h1>VitaLink Agent Access</h1>
-    <div class="price">$10 / Month Founders Agent Access</div>
-    <p>Start app-only agent access for VitaLink. CRM access can be added separately when needed.</p>
-    <button onclick="startAgentAccessCheckout()">Continue to Stripe</button>
-    <div class="status" id="checkoutStatus">Opening secure Stripe checkout...</div>
+  <div class="eyebrow">Founders Agent Access</div>
+  <h1>Choose Your VitaLink Access</h1>
+  <p class="intro">
+    Select app-only access or the full App + CRM workspace, then choose monthly or annual billing before secure Stripe checkout.
+  </p>
+
+  <section class="selector-shell">
+    <div class="billing-toggle" aria-label="Billing frequency">
+      <button type="button" id="monthlyBtn" class="active" onclick="setBilling('monthly')">Monthly</button>
+      <button type="button" id="annualBtn" onclick="setBilling('annual')">Annual</button>
+    </div>
+
+    <div class="plans">
+      <article class="plan-card selected" id="agentPlan" onclick="setPlan('agent')" tabindex="0">
+        <h2>VitaLink Agent Access</h2>
+        <div class="price" data-monthly="$10" data-annual="$100">$10 <span>/ month</span></div>
+        <div class="save-note" data-monthly="Founders monthly access" data-annual="Annual founders access">Founders monthly access</div>
+        <p>App-only agent access for connected client workflows, agent information, referrals, and VitaLink client setup.</p>
+        <ul class="feature-list">
+          <li>Agent app access</li>
+          <li>Client connection tools</li>
+          <li>Referral sharing</li>
+          <li>Agent contact display</li>
+        </ul>
+      </article>
+
+      <article class="plan-card" id="appCrmPlan" onclick="setPlan('app_crm')" tabindex="0">
+        <h2>VitaLink App + CRM Access</h2>
+        <div class="price" data-monthly="$30" data-annual="$300">$30 <span>/ month</span></div>
+        <div class="save-note" data-monthly="Founders monthly access" data-annual="Annual founders access">Founders monthly access</div>
+        <p>The full VitaLink agent workspace: app access plus CRM, tasks, appointments, policy tracking, notes, and follow-up workflows.</p>
+        <ul class="feature-list">
+          <li>Everything in Agent Access</li>
+          <li>VitaLink CRM workspace</li>
+          <li>Tasks and scheduler</li>
+          <li>Business and policy tracking</li>
+        </ul>
+      </article>
+    </div>
+
+    <div class="checkout-panel">
+      <div>
+        <strong id="selectionTitle">VitaLink Agent Access - Monthly</strong>
+        <span id="selectionSummary">$10/month Founders pricing</span>
+      </div>
+      <button class="checkout-btn" id="checkoutBtn" onclick="startSelectedCheckout()">Continue to Secure Checkout</button>
+    </div>
+
+    <div class="status" id="checkoutStatus"></div>
   </section>
+
+  <p class="fine-print">
+    CRM access is bundled with VitaLink app access. Secure payment is handled by Stripe.
+  </p>
 </main>
 
 <script>
-async function startAgentAccessCheckout() {
-  const status = document.getElementById("checkoutStatus");
-  if (status) {
-    status.textContent = "Opening secure Stripe checkout...";
+let selectedPlan = "agent";
+let selectedBilling = "monthly";
+
+const plans = {
+  agent: {
+    title: "VitaLink Agent Access",
+    monthly: "$10/month Founders pricing",
+    annual: "$100/year Founders pricing"
+  },
+  app_crm: {
+    title: "VitaLink App + CRM Access",
+    monthly: "$30/month Founders pricing",
+    annual: "$300/year Founders pricing"
+  }
+};
+
+function setPlan(plan){
+  selectedPlan = plan;
+  document.getElementById("agentPlan").classList.toggle("selected", plan === "agent");
+  document.getElementById("appCrmPlan").classList.toggle("selected", plan === "app_crm");
+  updateSelection();
+}
+
+function setBilling(billing){
+  selectedBilling = billing;
+  document.getElementById("monthlyBtn").classList.toggle("active", billing === "monthly");
+  document.getElementById("annualBtn").classList.toggle("active", billing === "annual");
+
+  document.querySelectorAll(".price").forEach((price) => {
+    const amount = price.dataset[billing];
+    price.innerHTML = `${amount} <span>/ ${billing === "annual" ? "year" : "month"}</span>`;
+  });
+
+  document.querySelectorAll(".save-note").forEach((note) => {
+    note.textContent = note.dataset[billing];
+  });
+
+  updateSelection();
+}
+
+function updateSelection(){
+  const selected = plans[selectedPlan];
+  const label = selectedBilling === "annual" ? "Annual" : "Monthly";
+  document.getElementById("selectionTitle").textContent = `${selected.title} - ${label}`;
+  document.getElementById("selectionSummary").textContent = selected[selectedBilling];
+}
+
+function applyQueryDefaults(){
+  const params = new URLSearchParams(window.location.search);
+  const plan = params.get("plan");
+  const billing = params.get("billing");
+
+  if(["agent","app_crm"].includes(plan)){
+    setPlan(plan);
   }
 
-  try {
+  if(["monthly","annual"].includes(billing)){
+    setBilling(billing);
+  }
+}
+
+async function startSelectedCheckout(){
+  const status = document.getElementById("checkoutStatus");
+  const button = document.getElementById("checkoutBtn");
+  status.textContent = "Opening secure Stripe checkout...";
+  button.disabled = true;
+
+  try{
     const res = await fetch("https://vitalink-app.netlify.app/.netlify/functions/vl-agent-checkout", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
       },
-      body: JSON.stringify({})
+      body:JSON.stringify({
+        plan:selectedPlan,
+        billing:selectedBilling
+      })
     });
 
     const data = await res.json();
 
-    if (data.url) {
+    if(data.url){
       window.location = data.url;
       return;
     }
 
-    if (status) {
-      status.textContent = "Agent checkout failed. Please try again.";
-    }
-  } catch (err) {
-    if (status) {
-      status.textContent = "Error connecting to payment system. Please try again.";
-    }
+    status.textContent = data.error || "Checkout failed. Please try again.";
+  }catch(err){
+    status.textContent = "Error connecting to payment system. Please try again.";
+  }finally{
+    button.disabled = false;
   }
 }
 
-window.addEventListener("DOMContentLoaded", startAgentAccessCheckout);
+window.addEventListener("DOMContentLoaded", applyQueryDefaults);
 </script>
 <script src="/site-traffic.js" defer></script>
 </body>

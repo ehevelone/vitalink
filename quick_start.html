@@ -777,9 +777,9 @@ Yes. VitaLink is designed to help agents stay visible year-round by keeping agen
 Help your clients stay prepared while strengthening long-term retention and household relationships.
 </p>
 
-<button type="button" class="button" onclick="startAgentCheckout()">
+<a href="/agent-access?plan=app_crm" class="button">
 Start App + CRM Access
-</button>
+</a>
 
 </section>
 
@@ -800,33 +800,6 @@ Screenshots shown throughout this page may contain simulated names, contact info
 </footer>
 
 </main>
-
-<script>
-async function startAgentCheckout() {
-  try {
-    const res = await fetch("https://vitalink-app.netlify.app/.netlify/functions/vl-agent-checkout", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        plan: "app_crm"
-      })
-    });
-
-    const data = await res.json();
-
-    if (data.url) {
-      window.location = data.url;
-      return;
-    }
-
-    alert("Agent checkout failed. Please try again.");
-  } catch (err) {
-    alert("Error connecting to payment system.");
-  }
-}
-</script>
 
 <script src="/site-traffic.js" defer></script>
 </body>

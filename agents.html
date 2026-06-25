@@ -496,42 +496,23 @@ max-width:520px;
 </div>
 
 <!-- 🔥 BUTTON -->
-<button onclick="startAgentCheckout()" style="
+<a href="/agent-access?plan=app_crm" style="
+display:inline-block;
+padding:14px 28px;
+background:#7cc6e8;
+color:#000;
+border-radius:8px;
+text-decoration:none;
+font-weight:600;
 margin-top:6px;
 box-shadow:0 6px 20px rgba(124,198,232,0.25);
 ">
 Start App + CRM Access
-</button>
+</a>
 
 </section>
 
 </main>
-
-<script>
-async function startAgentCheckout() {
-  try {
-    const res = await fetch('https://vitalink-app.netlify.app/.netlify/functions/vl-agent-checkout', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        plan: 'app_crm'
-      })
-    });
-
-    const data = await res.json();
-
-    if (data.url) {
-      window.location = data.url;
-    } else {
-      alert("Agent checkout failed.");
-    }
-  } catch (err) {
-    alert("Error connecting to payment system.");
-  }
-}
-</script>
 
 <script src="/site-traffic.js" defer></script>
 </body>
