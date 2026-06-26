@@ -286,6 +286,7 @@ async function loadData(){
 
 async function researchContact(body){
   const query = cleanText(body.query);
+  const offset = Math.max(0, Number.parseInt(body.offset || 0, 10) || 0);
 
   if(!query || query.length < 3){
     throw new Error("Enter a name, agency, website, podcast, FMO, or conference to research.");
@@ -322,6 +323,8 @@ Find likely public matches. Return only JSON in this shape:
 
 Rules:
 - Return up to 5 possible matches.
+- Skip the first ${offset} likely matches if enough alternatives are available.
+- Prefer different people, organizations, or sources than the earlier results when offset is greater than 0.
 - Use only publicly available information.
 - Leave unknown fields blank.
 - Do not invent phone numbers, emails, addresses, or titles.
@@ -372,6 +375,113 @@ Rules:
     confidence: cleanText(item.confidence) || "Low",
     source_links: Array.isArray(item.source_links) ? item.source_links.filter(Boolean).slice(0, 5) : []
   }));
+}
+
+async function deepResearchContact(body){
+  const target = body.target || {};
+  const query = cleanText(body.query);
+  const targetSummary = [
+    target.name,
+    target.organization,
+    target.website,
+    target.city,
+    target.state,
+    target.notes
+  ].filter(Boolean).join(" | ");
+
+  if(!query && !targetSummary){
+    throw new Error("Choose a match to research first.");
+  }
+
+  const prompt = `
+Do a deeper public-source research pass for this CRM prospect.
+
+Original search:
+${query || ""}
+
+Selected match:
+${targetSummary}
+
+Return only JSON in this shape:
+{
+  "match": {
+    "name": "",
+    "organization": "",
+    "contact_type": "FMO | Agency Owner | Podcast | Conference | Referral | Marketing Partner | Carrier Contact | Other",
+    "phone": "",
+    "email": "",
+    "website": "",
+    "city": "",
+    "state": "",
+    "source": "",
+    "notes": "",
+    "confidence": "High | Medium | Low",
+    "source_links": ["https://..."],
+    "research_summary": "",
+    "suggested_outreach": "",
+    "missing_fields": []
+  }
+}
+
+Rules:
+- Focus only on the selected person/organization.
+- Use public information only.
+- Do not invent contact details.
+- If unsure, explain uncertainty in research_summary.
+- suggested_outreach should be short and useful for VitaLink marketing.
+`;
+
+  if(!process.env.OPENAI_API_KEY){
+    throw new Error("OPENAI_API_KEY is not configured for deep research.");
+  }
+
+  const response = await fetch("https://api.openai.com/v1/responses", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
+    },
+    body: JSON.stringify({
+      model: process.env.OPENAI_DEEP_RESEARCH_MODEL || process.env.OPENAI_RESEARCH_MODEL || "gpt-4.1-mini",
+      tools: [
+        {
+          type: process.env.OPENAI_WEB_SEARCH_TOOL || "web_search_preview",
+          search_context_size: "medium"
+        }
+      ],
+      tool_choice: "required",
+      input: prompt
+    })
+  });
+
+  const data = await response.json().catch(() => ({}));
+
+  if(!response.ok){
+    throw new Error(data.error?.message || `Deep research failed with status ${response.status}.`);
+  }
+
+  const parsed = extractJson(responseText(data));
+  const item = parsed.match || {};
+
+  return {
+    name: cleanText(item.name) || cleanText(target.name) || "",
+    organization: cleanText(item.organization) || cleanText(target.organization) || "",
+    contact_type: contactTypes.includes(item.contact_type) ? item.contact_type : (target.contact_type || "Other"),
+    stage: "Researching",
+    priority: "Medium",
+    phone: cleanText(item.phone) || cleanText(target.phone) || "",
+    email: cleanText(item.email) || cleanText(target.email) || "",
+    website: cleanText(item.website) || cleanText(target.website) || "",
+    city: cleanText(item.city) || cleanText(target.city) || "",
+    state: cleanText(item.state) || cleanText(target.state) || "",
+    source: cleanText(item.source) || cleanText(target.source) || "AI Research",
+    notes: cleanText(item.notes) || cleanText(target.notes) || "",
+    confidence: cleanText(item.confidence) || cleanText(target.confidence) || "Low",
+    source_links: Array.isArray(item.source_links) ? item.source_links.filter(Boolean).slice(0, 8) : (target.source_links || []),
+    research_summary: cleanText(item.research_summary) || "",
+    suggested_outreach: cleanText(item.suggested_outreach) || "",
+    missing_fields: Array.isArray(item.missing_fields) ? item.missing_fields.filter(Boolean).slice(0, 8) : []
+  };
 }
 
 async function saveContact(body){
@@ -625,6 +735,13 @@ exports.handler = async (event) => {
       return json(200, {
         success: true,
         matches: await researchContact(body)
+      });
+    }
+
+    if(action === "deep-research-contact"){
+      return json(200, {
+        success: true,
+        match: await deepResearchContact(body)
       });
     }
 

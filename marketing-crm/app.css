@@ -346,6 +346,19 @@ textarea{
   word-break:break-word;
 }
 
+.research-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.research-more{
+  grid-column:1/-1;
+  display:flex;
+  justify-content:center;
+  padding:8px 0;
+}
+
 .table-wrap{
   overflow:auto;
   border:1px solid var(--border);

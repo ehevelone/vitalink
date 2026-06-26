@@ -5,6 +5,8 @@ const state = {
   activities: [],
   appointments: [],
   researchMatches: [],
+  researchQuery: "",
+  researchOffset: 0,
   view: "dashboard"
 };
 
@@ -348,11 +350,23 @@ function renderResearchResults(){
           <span><strong>Location:</strong> ${escapeHtml([item.city, item.state].filter(Boolean).join(", ") || "Unknown")}</span>
         </div>
         ${item.notes ? `<p class="research-notes">${escapeHtml(item.notes)}</p>` : ""}
+        ${item.research_summary ? `<p class="research-notes"><strong>Deep dive:</strong> ${escapeHtml(item.research_summary)}</p>` : ""}
+        ${item.suggested_outreach ? `<p class="research-notes"><strong>Suggested outreach:</strong> ${escapeHtml(item.suggested_outreach)}</p>` : ""}
+        ${(item.missing_fields || []).length ? `<p class="research-notes"><strong>Missing:</strong> ${escapeHtml(item.missing_fields.join(", "))}</p>` : ""}
         ${links ? `<div class="research-links">${links}</div>` : ""}
-        <button class="compact" onclick="useResearchMatch(${index})">Use This Match</button>
+        <div class="research-actions">
+          <button class="secondary compact" onclick="deepResearchMatch(${index})">More Research</button>
+          <button class="compact" onclick="useResearchMatch(${index})">Use This Match</button>
+        </div>
       </article>
     `;
-  }).join("");
+  }).join("") + `
+    <div class="research-more">
+      <button id="findMoreBtn" class="secondary">Find More</button>
+    </div>
+  `;
+
+  $("findMoreBtn").addEventListener("click", () => runResearch(true));
 }
 
 window.useResearchMatch = (index) => {
@@ -376,10 +390,91 @@ window.useResearchMatch = (index) => {
     source: match.source || "AI Research",
     notes: [
       match.notes,
+      match.research_summary ? `Deep research: ${match.research_summary}` : "",
+      match.suggested_outreach ? `Suggested outreach: ${match.suggested_outreach}` : "",
       ...(match.source_links || []).map((link) => `Source: ${link}`)
     ].filter(Boolean).join("\n")
   });
 };
+
+window.deepResearchMatch = async (index) => {
+  const match = state.researchMatches[index];
+
+  if(!match){
+    return;
+  }
+
+  $("researchStatus").textContent = "Running deeper research on that match...";
+
+  try{
+    const data = await api("deep-research-contact", {
+      query: state.researchQuery || $("researchQuery").value.trim(),
+      target: match
+    });
+
+    state.researchMatches[index] = {
+      ...match,
+      ...(data.match || {})
+    };
+    $("researchStatus").textContent = "Deep research added to the selected match.";
+    renderResearchResults();
+  }catch(err){
+    $("researchStatus").textContent = err.message;
+  }
+};
+
+async function runResearch(findMore = false){
+  const query = findMore ? state.researchQuery : $("researchQuery").value.trim();
+
+  if(!query){
+    $("researchStatus").textContent = "Enter something to research first.";
+    return;
+  }
+
+  if(!findMore){
+    state.researchQuery = query;
+    state.researchOffset = 0;
+    state.researchMatches = [];
+    renderResearchResults();
+  }else{
+    state.researchOffset += 5;
+  }
+
+  $("researchStatus").textContent = findMore
+    ? "Looking for more possible matches..."
+    : "Researching public sources...";
+  $("researchBtn").disabled = true;
+
+  const moreBtn = $("findMoreBtn");
+
+  if(moreBtn){
+    moreBtn.disabled = true;
+  }
+
+  try{
+    const data = await api("research-contact", {
+      query,
+      offset: state.researchOffset
+    });
+    const matches = data.matches || [];
+    state.researchMatches = findMore
+      ? [...state.researchMatches, ...matches]
+      : matches;
+    $("researchStatus").textContent = matches.length
+      ? `${matches.length} possible match${matches.length === 1 ? "" : "es"} ${findMore ? "added" : "found"}. Review before adding.`
+      : "No additional strong matches found.";
+    renderResearchResults();
+  }catch(err){
+    $("researchStatus").textContent = err.message;
+  }finally{
+    $("researchBtn").disabled = false;
+    const refreshedMoreBtn = $("findMoreBtn");
+
+    if(refreshedMoreBtn){
+      refreshedMoreBtn.disabled = false;
+    }
+  }
+}
 
 function openContactModal(contact = null){
   $("contactModalTitle").textContent = contact ? "Edit Relationship" : "Add Relationship";
@@ -487,30 +582,7 @@ function wireEvents(){
   $("refreshBtn").addEventListener("click", loadData);
   $("newContactBtn").addEventListener("click", () => openContactModal());
   $("newContactBtn2").addEventListener("click", () => openContactModal());
-  $("researchBtn").addEventListener("click", async () => {
-    const query = $("researchQuery").value.trim();
-
-    if(!query){
-      $("researchStatus").textContent = "Enter something to research first.";
-      return;
-    }
-
-    $("researchStatus").textContent = "Researching public sources...";
-    $("researchBtn").disabled = true;
-
-    try{
-      const data = await api("research-contact", { query });
-      state.researchMatches = data.matches || [];
-      $("researchStatus").textContent = state.researchMatches.length
-        ? `${state.researchMatches.length} possible match${state.researchMatches.length === 1 ? "" : "es"} found. Review before adding.`
-        : "No strong matches found.";
-      renderResearchResults();
-    }catch(err){
-      $("researchStatus").textContent = err.message;
-    }finally{
-      $("researchBtn").disabled = false;
-    }
-  });
+  $("researchBtn").addEventListener("click", () => runResearch(false));
   $("closeContactModal").addEventListener("click", closeContactModal);
   $("searchInput").addEventListener("input", renderContactsTable);
   $("typeFilter").addEventListener("change", renderContactsTable);
