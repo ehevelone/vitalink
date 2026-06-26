@@ -17,7 +17,7 @@
     <div class="nav-title">Growth CRM</div>
     <button class="nav-item active" data-view="dashboard">Dashboard</button>
     <button class="nav-item" data-view="research">Research</button>
-    <button class="nav-item" data-view="contacts">Pipeline</button>
+    <button class="nav-item" data-view="contacts">Contacts</button>
     <button class="nav-item" data-view="schedule">Scheduler</button>
     <button class="nav-item" data-view="activities">Follow-Ups</button>
     <button class="nav-item" data-view="settings">Settings</button>
@@ -59,23 +59,42 @@
   <section id="appShell" class="app-shell" hidden>
     <section id="dashboardView" class="view active">
       <div class="metric-grid">
-        <article class="card metric-card">
+        <article class="card metric-card clickable-card" data-view-jump="contacts">
           <span>Total Relationships</span>
           <strong id="totalContacts">0</strong>
+          <small>Open contacts</small>
         </article>
-        <article class="card metric-card">
+        <article class="card metric-card clickable-card" data-view-jump="schedule">
           <span>Demos Scheduled</span>
           <strong id="demoCount">0</strong>
+          <small>Open scheduler</small>
         </article>
-        <article class="card metric-card">
+        <article class="card metric-card clickable-card" data-view-jump="activities">
           <span>Follow-Ups Due</span>
           <strong id="followUpsDue">0</strong>
+          <small>Open follow-ups</small>
         </article>
-        <article class="card metric-card">
+        <article class="card metric-card clickable-card" data-view-jump="contacts" data-contact-filter="Referral">
           <span>Referral Sources</span>
           <strong id="referralCount">0</strong>
+          <small>Open referrals</small>
         </article>
       </div>
+
+      <article class="card quick-links-card">
+        <div class="card-header">
+          <div>
+            <h2>Quick Links</h2>
+            <p>Jump straight into the areas you use most.</p>
+          </div>
+        </div>
+        <div class="quick-link-grid">
+          <button data-view-jump="contacts">Contacts</button>
+          <button class="secondary" data-view-jump="research">AI Research</button>
+          <button class="secondary" data-view-jump="schedule">Scheduler</button>
+          <button class="secondary" data-view-jump="activities">Follow-Ups</button>
+        </div>
+      </article>
 
       <div class="dashboard-layout">
         <article class="card">
@@ -125,7 +144,7 @@
       <article class="card">
         <div class="card-header">
           <div>
-            <h2>Marketing Pipeline</h2>
+            <h2>Contacts</h2>
             <p>FMOs, agency owners, podcasts, conferences, demo prospects, and referral partners.</p>
           </div>
           <button id="newContactBtn2">Add Relationship</button>

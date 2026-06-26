@@ -356,7 +356,7 @@ function renderResearchResults(){
         ${links ? `<div class="research-links">${links}</div>` : ""}
         <div class="research-actions">
           <button class="secondary compact" onclick="deepResearchMatch(${index})">More Research</button>
-          <button class="compact" onclick="useResearchMatch(${index})">Use This Match</button>
+          <button class="compact" onclick="useResearchMatch(${index})">Review / Add To Pipeline</button>
         </div>
       </article>
     `;
@@ -568,7 +568,14 @@ function wireEvents(){
   });
 
   document.querySelectorAll("[data-view-jump]").forEach((node) => {
-    node.addEventListener("click", () => setView(node.dataset.viewJump));
+    node.addEventListener("click", () => {
+      setView(node.dataset.viewJump);
+
+      if(node.dataset.contactFilter && $("typeFilter")){
+        $("typeFilter").value = node.dataset.contactFilter;
+        renderContactsTable();
+      }
+    });
   });
 
   document.querySelectorAll(".small-filter").forEach((node) => {
@@ -614,6 +621,7 @@ function wireEvents(){
 
     closeContactModal();
     await loadData();
+    setView("contacts");
     toast("Relationship saved.");
   });
 
