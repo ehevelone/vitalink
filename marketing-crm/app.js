@@ -255,6 +255,7 @@ function renderContactsTable(){
       <td>
         <button class="secondary compact" onclick="editContact('${item.id}')">Edit</button>
         <button class="secondary compact" onclick="quickActivity('${item.id}')">Log</button>
+        <button class="secondary compact danger" onclick="deleteRow('contact','${item.id}')">Delete</button>
       </td>
     </tr>
   `).join("") : `
