@@ -1,5 +1,6 @@
 const state = {
-  adminKey: sessionStorage.getItem("marketingAdminKey") || "",
+  sessionToken: sessionStorage.getItem("marketingCrmSession") || "",
+  currentUser: JSON.parse(sessionStorage.getItem("marketingCrmUser") || "null"),
   contacts: [],
   activities: [],
   appointments: [],
@@ -88,7 +89,29 @@ async function api(action, body = null){
     method: body ? "POST" : "GET",
     headers: {
       "Content-Type": "application/json",
-      "x-admin-key": state.adminKey
+      "x-marketing-session": state.sessionToken
+    }
+  };
+
+  if(body){
+    options.body = JSON.stringify(body);
+  }
+
+  const res = await fetch(`${endpoint}?action=${encodeURIComponent(action)}`, options);
+  const data = await res.json().catch(() => ({}));
+
+  if(!res.ok || data.success === false){
+    throw new Error(data.error || `Request failed with ${res.status}`);
+  }
+
+  return data;
+}
+
+async function publicApi(action, body = null){
+  const options = {
+    method: body ? "POST" : "GET",
+    headers: {
+      "Content-Type": "application/json"
     }
   };
 
@@ -134,6 +157,7 @@ function renderAll(){
   renderContactsTable();
   renderSchedule();
   renderActivities();
+  renderSettings();
   populateContactSelects();
 }
 
@@ -274,6 +298,16 @@ function renderActivities(){
   `).join("") : `<div class="list-row"><small>No activity logged yet.</small></div>`;
 }
 
+function renderSettings(){
+  if($("currentUserName")){
+    $("currentUserName").textContent = state.currentUser?.name || "Admin user";
+  }
+
+  if($("currentUserEmail")){
+    $("currentUserEmail").textContent = state.currentUser?.email || "";
+  }
+}
+
 function openContactModal(contact = null){
   $("contactModalTitle").textContent = contact ? "Edit Relationship" : "Add Relationship";
   $("contactId").value = contact?.id || "";
@@ -327,10 +361,17 @@ window.deleteRow = async (table, id) => {
 
 function wireEvents(){
   $("unlockBtn").addEventListener("click", async () => {
-    state.adminKey = $("adminKeyInput").value.trim();
-    sessionStorage.setItem("marketingAdminKey", state.adminKey);
-
     try{
+      const login = await publicApi("login", {
+        email: $("emailInput").value.trim(),
+        password: $("passwordInput").value
+      });
+
+      state.sessionToken = login.session_token;
+      state.currentUser = login.user;
+      sessionStorage.setItem("marketingCrmSession", state.sessionToken);
+      sessionStorage.setItem("marketingCrmUser", JSON.stringify(state.currentUser));
+
       await loadData();
       $("loginCard").hidden = true;
       $("appShell").hidden = false;
@@ -340,9 +381,18 @@ function wireEvents(){
     }
   });
 
-  if(state.adminKey){
-    $("adminKeyInput").value = state.adminKey;
-    $("unlockBtn").click();
+  if(state.sessionToken){
+    loadData()
+      .then(() => {
+        $("loginCard").hidden = true;
+        $("appShell").hidden = false;
+      })
+      .catch(() => {
+        sessionStorage.removeItem("marketingCrmSession");
+        sessionStorage.removeItem("marketingCrmUser");
+        state.sessionToken = "";
+        state.currentUser = null;
+      });
   }
 
   document.querySelectorAll("[data-view]").forEach((node) => {
@@ -435,7 +485,17 @@ function wireEvents(){
     await loadData();
     toast("Schedule item saved.");
   });
+
+  $("logoutBtn").addEventListener("click", async () => {
+    await api("logout").catch(() => {});
+    sessionStorage.removeItem("marketingCrmSession");
+    sessionStorage.removeItem("marketingCrmUser");
+    state.sessionToken = "";
+    state.currentUser = null;
+    $("appShell").hidden = true;
+    $("loginCard").hidden = false;
+    toast("Signed out.");
+  });
 }
 
 wireEvents();
-

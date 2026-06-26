@@ -19,6 +19,7 @@
     <button class="nav-item" data-view="contacts">Pipeline</button>
     <button class="nav-item" data-view="schedule">Scheduler</button>
     <button class="nav-item" data-view="activities">Follow-Ups</button>
+    <button class="nav-item" data-view="settings">Settings</button>
   </div>
 
   <div class="nav-section">
@@ -45,9 +46,10 @@
 
   <section id="loginCard" class="card login-card">
     <h2>Marketing Team Access</h2>
-    <p>Enter the admin access key to open the growth CRM.</p>
+    <p>Use an agent login that has admin manual access enabled.</p>
     <div class="login-row">
-      <input type="password" id="adminKeyInput" placeholder="Admin key">
+      <input type="email" id="emailInput" placeholder="Admin email">
+      <input type="password" id="passwordInput" placeholder="Marketing CRM password">
       <button id="unlockBtn">Unlock</button>
     </div>
     <div id="loginMessage" class="muted"></div>
@@ -267,6 +269,30 @@
         </article>
       </div>
     </section>
+
+    <section id="settingsView" class="view">
+      <article class="card">
+        <div class="card-header">
+          <div>
+            <h2>Marketing CRM Access</h2>
+            <p>Access is controlled by the agent account's admin manual access flag.</p>
+          </div>
+        </div>
+
+        <div class="metric-grid settings-metrics">
+          <article class="pipeline-card">
+            <span>Signed In As</span>
+            <strong id="currentUserName">Admin user</strong>
+          </article>
+          <article class="pipeline-card">
+            <span>Email</span>
+            <strong id="currentUserEmail"></strong>
+          </article>
+        </div>
+
+        <button id="logoutBtn">Sign Out</button>
+      </article>
+    </section>
   </section>
 </main>
 
@@ -379,4 +405,3 @@
 <script src="app.js"></script>
 </body>
 </html>
-

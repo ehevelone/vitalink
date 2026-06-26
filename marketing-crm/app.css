@@ -160,8 +160,20 @@ button:hover{
 
 .login-row{
   display:grid;
-  grid-template-columns:1fr auto;
+  grid-template-columns:1fr 1fr auto;
   gap:12px;
+}
+
+.initial-password-form{
+  margin-top:18px;
+  padding-top:18px;
+  border-top:1px solid var(--border);
+  display:grid;
+  gap:12px;
+}
+
+.initial-password-form h3{
+  margin:0;
 }
 
 input,
@@ -433,4 +445,3 @@ th{
     grid-column:auto;
   }
 }
-
