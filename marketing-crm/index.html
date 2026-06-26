@@ -16,6 +16,7 @@
   <div class="nav-section">
     <div class="nav-title">Growth CRM</div>
     <button class="nav-item active" data-view="dashboard">Dashboard</button>
+    <button class="nav-item" data-view="research">Research</button>
     <button class="nav-item" data-view="contacts">Pipeline</button>
     <button class="nav-item" data-view="schedule">Scheduler</button>
     <button class="nav-item" data-view="activities">Follow-Ups</button>
@@ -100,6 +101,23 @@
           <button class="secondary compact" data-view-jump="contacts">Open Pipeline</button>
         </div>
         <div id="pipelineSnapshot" class="pipeline-grid"></div>
+      </article>
+    </section>
+
+    <section id="researchView" class="view">
+      <article class="card">
+        <div class="card-header">
+          <div>
+            <h2>AI Research</h2>
+            <p>Search a person, agency, website, podcast, FMO, or conference. Review the matches, then choose what to add.</p>
+          </div>
+        </div>
+        <div class="research-row">
+          <textarea id="researchQuery" rows="3" placeholder="Example: Jane Smith Medicare agency Omaha, or https://exampleagency.com"></textarea>
+          <button id="researchBtn">Research</button>
+        </div>
+        <div id="researchStatus" class="muted"></div>
+        <div id="researchResults" class="research-results"></div>
       </article>
     </section>
 

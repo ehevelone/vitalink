@@ -15,6 +15,17 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS"
 };
 
+const contactTypes = [
+  "FMO",
+  "Agency Owner",
+  "Podcast",
+  "Conference",
+  "Referral",
+  "Marketing Partner",
+  "Carrier Contact",
+  "Other"
+];
+
 function json(statusCode, body){
   return {
     statusCode,
@@ -33,9 +44,45 @@ function cleanDate(value){
   return text || null;
 }
 
+function extractJson(text){
+  const raw = String(text || "").trim();
+
+  if(!raw){
+    throw new Error("AI returned an empty response.");
+  }
+
+  try{
+    return JSON.parse(raw);
+  }catch(_err){
+    const start = raw.indexOf("{");
+    const end = raw.lastIndexOf("}");
+
+    if(start === -1 || end === -1 || end <= start){
+      throw new Error("AI response could not be read.");
+    }
+
+    return JSON.parse(raw.slice(start, end + 1));
+  }
+}
+
+function responseText(response){
+  if(response.output_text){
+    return response.output_text;
+  }
+
+  return (response.output || [])
+    .flatMap((item) => item.content || [])
+    .map((part) => part.text || "")
+    .join("\n")
+    .trim();
+}
+
 async function ensureTables(){
   await pool.query(`
     CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+    ALTER TABLE agents
+    ADD COLUMN IF NOT EXISTS admin_manual_access BOOLEAN DEFAULT false;
 
     CREATE TABLE IF NOT EXISTS marketing_crm_sessions (
       id uuid primary key default gen_random_uuid(),
@@ -235,6 +282,96 @@ async function loadData(){
     activities: activities.rows,
     appointments: appointments.rows
   };
+}
+
+async function researchContact(body){
+  const query = cleanText(body.query);
+
+  if(!query || query.length < 3){
+    throw new Error("Enter a name, agency, website, podcast, FMO, or conference to research.");
+  }
+
+  if(!process.env.OPENAI_API_KEY){
+    throw new Error("OPENAI_API_KEY is not configured.");
+  }
+
+  const prompt = `
+Research this insurance/marketing relationship target for a CRM entry:
+
+${query}
+
+Find likely public matches. Return only JSON in this shape:
+{
+  "matches": [
+    {
+      "name": "",
+      "organization": "",
+      "contact_type": "FMO | Agency Owner | Podcast | Conference | Referral | Marketing Partner | Carrier Contact | Other",
+      "phone": "",
+      "email": "",
+      "website": "",
+      "city": "",
+      "state": "",
+      "source": "",
+      "notes": "",
+      "confidence": "High | Medium | Low",
+      "source_links": ["https://..."]
+    }
+  ]
+}
+
+Rules:
+- Return up to 5 possible matches.
+- Use only publicly available information.
+- Leave unknown fields blank.
+- Do not invent phone numbers, emails, addresses, or titles.
+- Notes should explain why this may be the right match and include relevant context for VitaLink outreach.
+`;
+
+  const response = await fetch("https://api.openai.com/v1/responses", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
+    },
+    body: JSON.stringify({
+      model: process.env.OPENAI_RESEARCH_MODEL || "gpt-4.1-mini",
+      tools: [
+        {
+          type: process.env.OPENAI_WEB_SEARCH_TOOL || "web_search_preview",
+          search_context_size: "low"
+        }
+      ],
+      tool_choice: "required",
+      input: prompt
+    })
+  });
+
+  const data = await response.json().catch(() => ({}));
+
+  if(!response.ok){
+    throw new Error(data.error?.message || `AI research failed with status ${response.status}.`);
+  }
+
+  const parsed = extractJson(responseText(data));
+  const matches = Array.isArray(parsed.matches) ? parsed.matches : [];
+
+  return matches.slice(0, 5).map((item) => ({
+    name: cleanText(item.name) || "",
+    organization: cleanText(item.organization) || "",
+    contact_type: contactTypes.includes(item.contact_type) ? item.contact_type : "Other",
+    stage: "Researching",
+    priority: "Medium",
+    phone: cleanText(item.phone) || "",
+    email: cleanText(item.email) || "",
+    website: cleanText(item.website) || "",
+    city: cleanText(item.city) || "",
+    state: cleanText(item.state) || "",
+    source: cleanText(item.source) || "AI Research",
+    notes: cleanText(item.notes) || "",
+    confidence: cleanText(item.confidence) || "Low",
+    source_links: Array.isArray(item.source_links) ? item.source_links.filter(Boolean).slice(0, 5) : []
+  }));
 }
 
 async function saveContact(body){
@@ -481,6 +618,13 @@ exports.handler = async (event) => {
       return json(200, {
         success: true,
         ...(await loadData())
+      });
+    }
+
+    if(action === "research-contact"){
+      return json(200, {
+        success: true,
+        matches: await researchContact(body)
       });
     }
 

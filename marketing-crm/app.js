@@ -4,6 +4,7 @@ const state = {
   contacts: [],
   activities: [],
   appointments: [],
+  researchMatches: [],
   view: "dashboard"
 };
 
@@ -308,6 +309,78 @@ function renderSettings(){
   }
 }
 
+function escapeHtml(value){
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function renderResearchResults(){
+  const results = $("researchResults");
+
+  if(!state.researchMatches.length){
+    results.innerHTML = "";
+    return;
+  }
+
+  results.innerHTML = state.researchMatches.map((item, index) => {
+    const links = (item.source_links || []).map((link) => `
+      <a href="${escapeHtml(link)}" target="_blank" rel="noopener">${escapeHtml(link)}</a>
+    `).join("");
+
+    return `
+      <article class="research-card">
+        <div class="research-card-header">
+          <div>
+            <h3>${escapeHtml(item.name || item.organization || "Possible Match")}</h3>
+            <p>${escapeHtml(item.organization || "")}</p>
+          </div>
+          <span class="badge">${escapeHtml(item.confidence || "Low")}</span>
+        </div>
+        <div class="research-fields">
+          <span><strong>Type:</strong> ${escapeHtml(item.contact_type || "Other")}</span>
+          <span><strong>Phone:</strong> ${escapeHtml(item.phone || "Unknown")}</span>
+          <span><strong>Email:</strong> ${escapeHtml(item.email || "Unknown")}</span>
+          <span><strong>Website:</strong> ${item.website ? `<a href="${escapeHtml(item.website)}" target="_blank" rel="noopener">${escapeHtml(item.website)}</a>` : "Unknown"}</span>
+          <span><strong>Location:</strong> ${escapeHtml([item.city, item.state].filter(Boolean).join(", ") || "Unknown")}</span>
+        </div>
+        ${item.notes ? `<p class="research-notes">${escapeHtml(item.notes)}</p>` : ""}
+        ${links ? `<div class="research-links">${links}</div>` : ""}
+        <button class="compact" onclick="useResearchMatch(${index})">Use This Match</button>
+      </article>
+    `;
+  }).join("");
+}
+
+window.useResearchMatch = (index) => {
+  const match = state.researchMatches[index];
+
+  if(!match){
+    return;
+  }
+
+  openContactModal({
+    name: match.name || "",
+    organization: match.organization || "",
+    contact_type: match.contact_type || "Other",
+    stage: "Researching",
+    priority: "Medium",
+    phone: match.phone || "",
+    email: match.email || "",
+    website: match.website || "",
+    city: match.city || "",
+    state: match.state || "",
+    source: match.source || "AI Research",
+    notes: [
+      match.notes,
+      ...(match.source_links || []).map((link) => `Source: ${link}`)
+    ].filter(Boolean).join("\n")
+  });
+};
+
 function openContactModal(contact = null){
   $("contactModalTitle").textContent = contact ? "Edit Relationship" : "Add Relationship";
   $("contactId").value = contact?.id || "";
@@ -414,6 +487,30 @@ function wireEvents(){
   $("refreshBtn").addEventListener("click", loadData);
   $("newContactBtn").addEventListener("click", () => openContactModal());
   $("newContactBtn2").addEventListener("click", () => openContactModal());
+  $("researchBtn").addEventListener("click", async () => {
+    const query = $("researchQuery").value.trim();
+
+    if(!query){
+      $("researchStatus").textContent = "Enter something to research first.";
+      return;
+    }
+
+    $("researchStatus").textContent = "Researching public sources...";
+    $("researchBtn").disabled = true;
+
+    try{
+      const data = await api("research-contact", { query });
+      state.researchMatches = data.matches || [];
+      $("researchStatus").textContent = state.researchMatches.length
+        ? `${state.researchMatches.length} possible match${state.researchMatches.length === 1 ? "" : "es"} found. Review before adding.`
+        : "No strong matches found.";
+      renderResearchResults();
+    }catch(err){
+      $("researchStatus").textContent = err.message;
+    }finally{
+      $("researchBtn").disabled = false;
+    }
+  });
   $("closeContactModal").addEventListener("click", closeContactModal);
   $("searchInput").addEventListener("input", renderContactsTable);
   $("typeFilter").addEventListener("change", renderContactsTable);
