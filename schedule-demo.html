@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Schedule a VitaLink Demo | myvitalink.app</title>
+<meta name="description" content="Request a VitaLink demo for insurance agents, agency owners, FMOs, IMOs, and marketing organizations.">
+<link rel="canonical" href="https://myvitalink.app/schedule-demo">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Schedule a VitaLink Demo">
+<meta property="og:description" content="See how VitaLink helps agents stay connected, simplify reviews, and support clients year-round.">
+<meta property="og:url" content="https://myvitalink.app/schedule-demo">
+<meta property="og:image" content="https://myvitalink.app/images/vitalink-logo.png">
+<style>
+:root{
+  --bg:#000;
+  --card:#0d1118;
+  --text:#f8fafc;
+  --muted:#cbd5e1;
+  --accent:#7cc6e8;
+  --border:#1f2937;
+}
+
+*{box-sizing:border-box;}
+
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(124,198,232,.18), transparent 32rem),
+    linear-gradient(180deg,#020305 0%,#000 52%,#020305 100%);
+  color:var(--text);
+  line-height:1.55;
+}
+
+a{color:inherit;text-decoration:none;}
+
+main{
+  max-width:940px;
+  margin:0 auto;
+  padding:38px 24px 80px;
+}
+
+.nav{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:18px;
+  margin-bottom:54px;
+}
+
+.logo{
+  max-width:170px;
+  width:48vw;
+}
+
+.btn,
+button{
+  color:#001018;
+  background:var(--accent);
+  border:1px solid var(--accent);
+  border-radius:10px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:13px 18px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.btn.secondary{
+  color:var(--accent);
+  background:rgba(124,198,232,.04);
+  border-color:rgba(124,198,232,.72);
+}
+
+.hero{
+  text-align:center;
+  margin-bottom:30px;
+}
+
+.eyebrow{
+  color:var(--accent);
+  font-weight:800;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  font-size:.82rem;
+}
+
+h1{
+  font-size:clamp(2.4rem,6vw,4.4rem);
+  line-height:1.05;
+  margin:14px 0 18px;
+}
+
+.hero p{
+  color:var(--muted);
+  font-size:1.15rem;
+  max-width:760px;
+  margin:0 auto;
+}
+
+.card{
+  background:rgba(13,17,24,.92);
+  border:1px solid rgba(124,198,232,.28);
+  border-radius:20px;
+  padding:28px;
+  box-shadow:0 18px 55px rgba(0,0,0,.34);
+}
+
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+
+label{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  color:#e5f6ff;
+  font-weight:800;
+}
+
+input,
+select,
+textarea{
+  width:100%;
+  border:1px solid rgba(124,198,232,.36);
+  background:#020305;
+  color:#fff;
+  border-radius:12px;
+  padding:14px;
+  font:inherit;
+}
+
+textarea{resize:vertical;}
+
+.wide{grid-column:1/3;}
+
+#demoMessage{
+  margin-top:16px;
+  color:var(--accent);
+  font-weight:800;
+}
+
+@media(max-width:760px){
+  .nav{
+    flex-direction:column;
+  }
+
+  .form-grid{
+    grid-template-columns:1fr;
+  }
+
+  .wide{
+    grid-column:auto;
+  }
+}
+</style>
+</head>
+<body>
+<main>
+  <nav class="nav">
+    <a href="/">
+      <img src="images/vitalink-logo.png" class="logo" alt="VitaLink">
+    </a>
+    <a href="/for-insurance-agents" class="btn secondary">Back To Agents</a>
+  </nav>
+
+  <section class="hero">
+    <div class="eyebrow">VitaLink Demo Request</div>
+    <h1>Schedule a VitaLink Demo</h1>
+    <p>Tell us how you would like to be contacted, and we will reach out to schedule a time that works for you.</p>
+  </section>
+
+  <section class="card">
+    <form id="demoForm" class="form-grid">
+      <label>
+        Name
+        <input id="name" autocomplete="name" required>
+      </label>
+      <label>
+        Agency / Organization
+        <input id="organization" autocomplete="organization">
+      </label>
+      <label>
+        Phone
+        <input id="phone" autocomplete="tel">
+      </label>
+      <label>
+        Email
+        <input id="email" type="email" autocomplete="email">
+      </label>
+      <label>
+        Best Way To Reach You
+        <select id="preferredContact">
+          <option>Text Message</option>
+          <option>Phone Call</option>
+          <option>Email</option>
+        </select>
+      </label>
+      <label>
+        I Am A
+        <select id="contactType">
+          <option>Agency Owner</option>
+          <option>Independent Agent</option>
+          <option>FMO</option>
+          <option>IMO</option>
+          <option>Marketing Organization</option>
+          <option>Podcast / Media</option>
+          <option>Other</option>
+        </select>
+      </label>
+      <label class="wide">
+        Notes
+        <textarea id="notes" rows="5" placeholder="Anything you want us to know before reaching out?"></textarea>
+      </label>
+      <button class="wide" type="submit">Submit Demo Request</button>
+    </form>
+    <div id="demoMessage"></div>
+  </section>
+</main>
+
+<script>
+const form = document.getElementById("demoForm");
+const message = document.getElementById("demoMessage");
+
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  message.textContent = "Sending demo request...";
+
+  const body = {
+    name: document.getElementById("name").value,
+    organization: document.getElementById("organization").value,
+    phone: document.getElementById("phone").value,
+    email: document.getElementById("email").value,
+    preferred_contact: document.getElementById("preferredContact").value,
+    contact_type: document.getElementById("contactType").value,
+    notes: document.getElementById("notes").value
+  };
+
+  try{
+    const res = await fetch("/.netlify/functions/schedule-demo", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json().catch(() => ({}));
+
+    if(!res.ok || data.success === false){
+      throw new Error(data.error || "Could not submit demo request.");
+    }
+
+    form.reset();
+    message.textContent = "Demo request sent. We will reach out soon.";
+  }catch(err){
+    message.textContent = err.message;
+  }
+});
+</script>
+</body>
+</html>
