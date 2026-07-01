@@ -330,6 +330,34 @@ button:hover{
   font-weight:500;
 }
 
+.preline{
+  white-space:pre-line;
+  line-height:1.45;
+}
+
+.vitalink-status-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
+  gap:12px;
+  margin:16px 0;
+}
+
+.vitalink-document-actions{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+  margin-top:16px;
+}
+
+.vitalink-document-actions button{
+  width:100%;
+}
+
+.vitalink-document-actions button:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+
 .field-hint{
   color:var(--muted);
   font-size:.78rem;

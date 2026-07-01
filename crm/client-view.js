@@ -9,6 +9,7 @@ const params = new URLSearchParams(window.location.search);
 const clientId = params.get("id");
 let currentClient = null;
 let clientPolicies = [];
+let vitalinkDocuments = {};
 
 console.log("VitaLink client view loaded: notes sync enabled");
 
@@ -204,12 +205,15 @@ async function loadClient(){
   setText("soaSigned", client.soa_signed || "Not Recorded");
   setText("hipaaSigned", client.hipaa_signed || "Not Recorded");
   setText("lastPolicyReview", formatDate(client.last_policy_review) || "Not Recorded");
-  setText("profileLinked", client.profile_linked || "Not Linked");
+  setText("profileLinked", client.vitalink_connected ? "Connected" : (client.profile_linked || "Not Linked"));
   setText("emergencyProfile", client.emergency_profile || "Not Recorded");
   setText("insuranceCardsUploaded", client.insurance_cards_uploaded || "Not Recorded");
   setValue("medicationList", client.medication_list);
   setValue("doctorList", client.doctor_list);
-  setText("lastSync", formatDate(client.last_sync) || "Not Synced");
+  setText("lastSync", formatDate(client.last_vitalink_import_at || client.last_sync) || "Not Imported");
+  setText("lastVitalinkPackage", formatDate(client.last_vitalink_package_at) || "Not Received");
+  setText("vitalinkEmergencyContacts", client.vitalink_emergency_contacts || "Not Received");
+  setText("vitalinkPharmacies", client.vitalink_pharmacy_list || "Not Received");
 
   /* =========================================
      FAMILY
@@ -237,6 +241,7 @@ async function loadClient(){
   }
 
   renderLeadRoi();
+  loadVitalinkStatus();
 
 }
 
@@ -304,6 +309,143 @@ function escapeHtml(value){
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
+
+}
+
+function setButtonEnabled(id, enabled){
+
+  const button =
+    document.getElementById(id);
+
+  if(button){
+    button.disabled = !enabled;
+  }
+
+}
+
+async function loadVitalinkStatus(){
+
+  const agentId =
+    sessionStorage.getItem("crm_uuid");
+
+  try{
+
+    const res = await fetch(
+      `/.netlify/functions/get-crm-vitalink-status?agent_id=${agentId}&client_id=${clientId}`
+    );
+
+    const data = await res.json();
+
+    if(!data.success){
+      return;
+    }
+
+    const client =
+      data.client || {};
+
+    const pkg =
+      data.package || {};
+
+    vitalinkDocuments =
+      data.documents || {};
+
+    setText("profileLinked", client.vitalink_connected ? "Connected" : "Not Linked");
+    setText("lastVitalinkPackage", formatDate(pkg.received_at || client.last_vitalink_package_at) || "Not Received");
+    setText("lastSync", formatDate(pkg.imported_at || client.last_vitalink_import_at) || "Not Imported");
+    setText("hipaaSigned", formatDate(client.hipaa_signed_at || vitalinkDocuments.hipaa?.signed_at) || "Not Recorded");
+    setText("soaSigned", formatDate(client.soa_signed_at || vitalinkDocuments.soa?.signed_at) || "Not Recorded");
+    setText("vitalinkEmergencyContacts", client.vitalink_emergency_contacts || "Not Received");
+    setText("vitalinkPharmacies", client.vitalink_pharmacy_list || "Not Received");
+
+    setButtonEnabled("viewHipaaBtn", Boolean(vitalinkDocuments.hipaa?.id));
+    setButtonEnabled("viewSoaBtn", Boolean(vitalinkDocuments.soa?.id));
+    setButtonEnabled("printHipaaBtn", Boolean(vitalinkDocuments.hipaa?.id));
+    setButtonEnabled("printSoaBtn", Boolean(vitalinkDocuments.soa?.id));
+
+  }catch(err){
+
+    console.warn("Unable to load VitaLink status", err);
+
+  }
+
+}
+
+async function fetchVitalinkDocumentBlob(type){
+
+  const doc =
+    vitalinkDocuments[type];
+
+  if(!doc?.id){
+    alert("No VitaLink document is stored for this client yet.");
+    return null;
+  }
+
+  const agentId =
+    sessionStorage.getItem("crm_uuid");
+
+  const res = await fetch(
+    `/.netlify/functions/get-crm-client-document?agent_id=${agentId}&client_id=${clientId}&document_id=${doc.id}`
+  );
+
+  if(!res.ok){
+    alert("Unable to open this VitaLink document.");
+    return null;
+  }
+
+  return res.blob();
+
+}
+
+async function viewVitalinkDocument(type){
+
+  const blob = await fetchVitalinkDocumentBlob(type);
+
+  if(!blob){
+    return;
+  }
+
+  const url = URL.createObjectURL(blob);
+
+  window.open(url, "_blank", "noopener");
+
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+
+}
+
+async function printVitalinkDocument(type){
+
+  const blob = await fetchVitalinkDocumentBlob(type);
+
+  if(!blob){
+    return;
+  }
+
+  const url = URL.createObjectURL(blob);
+  const frame = document.createElement("iframe");
+
+  frame.style.position = "fixed";
+  frame.style.right = "0";
+  frame.style.bottom = "0";
+  frame.style.width = "0";
+  frame.style.height = "0";
+  frame.style.border = "0";
+  frame.src = url;
+
+  frame.onload = () => {
+    try{
+      frame.contentWindow.focus();
+      frame.contentWindow.print();
+    }catch(err){
+      window.open(url, "_blank", "noopener");
+    }
+
+    setTimeout(() => {
+      frame.remove();
+      URL.revokeObjectURL(url);
+    }, 60000);
+  };
+
+  document.body.appendChild(frame);
 
 }
 

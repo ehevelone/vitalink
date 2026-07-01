@@ -727,66 +727,88 @@
 
   <div class="card-header">
 
-    <h3 class="card-title">
-      VitaLink Status
-    </h3>
+    <div>
+      <h3 class="card-title">
+        VitaLink Status
+      </h3>
 
-  </div>
-
-  <div class="info-row">
-
-    <div class="label">
-      Profile Linked
-    </div>
-
-    <div
-      class="value"
-      id="profileLinked"
-    >
+      <div class="client-sub">
+        Updates only after a client sends an authorized VitaLink package.
+      </div>
     </div>
 
   </div>
 
-  <div class="info-row">
-
-    <div class="label">
-      Emergency Profile
+  <div class="vitalink-status-grid">
+    <div class="billing-summary-card">
+      <div class="label">Connection</div>
+      <div class="value" id="profileLinked"></div>
     </div>
-
-    <div
-      class="value"
-      id="emergencyProfile"
-    >
+    <div class="billing-summary-card">
+      <div class="label">Last Package</div>
+      <div class="value" id="lastVitalinkPackage">Not Received</div>
     </div>
-
+    <div class="billing-summary-card">
+      <div class="label">HIPAA</div>
+      <div class="value" id="hipaaSigned"></div>
+    </div>
+    <div class="billing-summary-card">
+      <div class="label">SOA</div>
+      <div class="value" id="soaSigned"></div>
+    </div>
   </div>
 
   <div class="info-row">
-
-    <div class="label">
-      Insurance Cards Uploaded
-    </div>
-
-    <div
-      class="value"
-      id="insuranceCardsUploaded"
-    >
-    </div>
-
+    <div class="label">Last Import</div>
+    <div class="value" id="lastSync"></div>
   </div>
 
   <div class="info-row">
+    <div class="label">Emergency Contacts</div>
+    <div class="value preline" id="vitalinkEmergencyContacts">Not Received</div>
+  </div>
 
-    <div class="label">
-      Last Sync
-    </div>
+  <div class="info-row">
+    <div class="label">Pharmacies</div>
+    <div class="value preline" id="vitalinkPharmacies">Not Received</div>
+  </div>
 
-    <div
-      class="value"
-      id="lastSync"
+  <div class="vitalink-document-actions">
+    <button
+      class="edit-btn secondary"
+      id="viewHipaaBtn"
+      onclick="viewVitalinkDocument('hipaa')"
+      disabled
     >
-    </div>
+      View HIPAA
+    </button>
 
+    <button
+      class="edit-btn secondary"
+      id="printHipaaBtn"
+      onclick="printVitalinkDocument('hipaa')"
+      disabled
+    >
+      Print HIPAA
+    </button>
+
+    <button
+      class="edit-btn secondary"
+      id="viewSoaBtn"
+      onclick="viewVitalinkDocument('soa')"
+      disabled
+    >
+      View SOA
+    </button>
+
+    <button
+      class="edit-btn secondary"
+      id="printSoaBtn"
+      onclick="printVitalinkDocument('soa')"
+      disabled
+    >
+      Print SOA
+    </button>
   </div>
 
 </div>
@@ -892,7 +914,7 @@
 </div>
 
 <script src="crm.js"></script>
-<script src="client-view.js?v=notes-sync-20260514"></script>
+<script src="client-view.js?v=vitalink-status-20260630"></script>
 
 <script src="../site-traffic.js" defer></script>
 </body>

@@ -21,7 +21,16 @@ exports.handler = async (event) => {
       ADD COLUMN IF NOT EXISTS medication_list TEXT,
       ADD COLUMN IF NOT EXISTS doctor_list TEXT,
       ADD COLUMN IF NOT EXISTS last_sync TIMESTAMPTZ,
-      ADD COLUMN IF NOT EXISTS lead_source_detail TEXT
+      ADD COLUMN IF NOT EXISTS lead_source_detail TEXT,
+      ADD COLUMN IF NOT EXISTS vitalink_connected BOOLEAN NOT NULL DEFAULT false,
+      ADD COLUMN IF NOT EXISTS vitalink_app_user_id TEXT,
+      ADD COLUMN IF NOT EXISTS vitalink_profile_id TEXT,
+      ADD COLUMN IF NOT EXISTS last_vitalink_package_at TIMESTAMPTZ,
+      ADD COLUMN IF NOT EXISTS last_vitalink_import_at TIMESTAMPTZ,
+      ADD COLUMN IF NOT EXISTS hipaa_signed_at TIMESTAMPTZ,
+      ADD COLUMN IF NOT EXISTS soa_signed_at TIMESTAMPTZ,
+      ADD COLUMN IF NOT EXISTS vitalink_emergency_contacts TEXT,
+      ADD COLUMN IF NOT EXISTS vitalink_pharmacy_list TEXT
     `);
 
     const id = event.queryStringParameters.id;
