@@ -22,9 +22,11 @@ height:100vh;
 background:#111;
 padding:40px;
 border-radius:14px;
-width:420px;
+width:min(520px, calc(100vw - 32px));
 text-align:center;
 box-shadow:0 10px 40px rgba(0,0,0,.5);
+border:1px solid rgba(124,198,232,.32);
+box-sizing:border-box;
 }
 
 h1{
@@ -32,14 +34,27 @@ margin-top:0;
 font-size:26px;
 }
 
+.code-row{
+margin-top:18px;
+display:flex;
+gap:12px;
+align-items:center;
+justify-content:center;
+flex-wrap:wrap;
+}
+
 .code{
-margin-top:20px;
-font-size:34px;
+font-size:42px;
 letter-spacing:6px;
 background:#000;
-padding:16px;
+padding:18px 20px;
 border-radius:10px;
 font-weight:bold;
+color:#7cc6e8;
+border:2px solid #7cc6e8;
+box-shadow:0 0 18px rgba(124,198,232,.22);
+user-select:all;
+min-width:250px;
 }
 
 button{
@@ -58,14 +73,18 @@ opacity:.9;
 }
 
 .instructions{
-margin-top:25px;
+margin-top:16px;
 color:#b5b5b5;
-font-size:14px;
-line-height:1.5;
+font-size:15px;
+line-height:1.6;
+}
+
+.instructions strong{
+color:#ffffff;
 }
 
 .store-buttons{
-margin-top:20px;
+margin-top:28px;
 display:flex;
 flex-direction:column;
 gap:12px;
@@ -81,6 +100,27 @@ cursor:pointer;
 opacity:.9;
 }
 
+@media (max-width: 520px){
+body{
+height:auto;
+min-height:100vh;
+padding:24px 0;
+box-sizing:border-box;
+}
+
+.card{
+padding:28px 20px;
+}
+
+.code{
+font-size:34px;
+letter-spacing:4px;
+min-width:0;
+width:100%;
+box-sizing:border-box;
+}
+}
+
 </style>
 </head>
 
@@ -92,12 +132,14 @@ opacity:.9;
 
 <p>Your VitaLink Agent Activation Code</p>
 
+<div class="code-row">
 <div id="code" class="code">Loading...</div>
-
 <button id="copyBtn" onclick="copyCode()">Copy Code</button>
+</div>
 
 <div class="instructions">
-Open the VitaLink app and enter this code to unlock Agent access.
+<strong>Save this code</strong> - you'll need it in the VitaLink app under Register &gt; I Have My Activation Code.<br>
+Write it down or take a screenshot before leaving this page.
 </div>
 
 <div class="store-buttons">
