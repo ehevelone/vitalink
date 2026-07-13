@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -270,6 +270,7 @@ button.btn{
   background:#0d1117;
   border:1px solid var(--border);
   border-radius:18px;
+  color:inherit;
   display:flex;
   flex-direction:column;
   gap:10px;
@@ -277,6 +278,16 @@ button.btn{
   justify-content:center;
   padding:16px 10px;
   text-align:center;
+  text-decoration:none;
+  transition:border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+
+.platform-item:hover,
+.platform-item:focus-visible{
+  border-color:rgba(0,200,255,.62);
+  box-shadow:0 0 24px rgba(0,200,255,.14);
+  outline:0;
+  transform:translateY(-2px);
 }
 
 .platform-item.active{
@@ -361,7 +372,7 @@ button.btn{
 
 .checklist li::before{
   color:var(--success);
-  content:"✓";
+  content:"âœ“";
   font-weight:950;
   left:0;
   position:absolute;
@@ -590,39 +601,39 @@ details p{
     <h2>Part Of The VitaLink Family</h2>
     <p>VitaLink Reach is one tool in a complete ecosystem built for insurance agents. Each app works independently or together as a complete platform.</p>
     <div class="ecosystem" aria-label="VitaLink platform icon family">
-      <div class="platform-item">
+      <a class="platform-item" href="/" aria-label="Open VitaLink client app information">
         <img src="/images/reach-icon.svg" alt="">
         <strong>VITALINK</strong>
         <span>Client App</span>
-      </div>
-      <div class="platform-item active">
+      </a>
+      <a class="platform-item active" href="/reach" aria-current="page" aria-label="Open VitaLink Reach information">
         <img src="/images/reach-icon.svg" alt="">
         <strong>REACH</strong>
         <span>You are here</span>
-      </div>
-      <div class="platform-item">
+      </a>
+      <a class="platform-item" href="/crm-sales" aria-label="Open VitaLink CRM information">
         <img src="/images/reach-icon.svg" alt="">
         <strong>CRM</strong>
         <span>Agent CRM</span>
-      </div>
-      <div class="platform-item">
+      </a>
+      <a class="platform-item" href="/platform-under-development?product=review" aria-label="Open VitaLink Review development status">
         <img src="/images/reach-icon.svg" alt="">
         <strong>REVIEW</strong>
         <span>Annual Reviews</span>
         <em class="dev-note">Still in development</em>
-      </div>
-      <div class="platform-item">
+      </a>
+      <a class="platform-item" href="/platform-under-development?product=ai" aria-label="Open VitaLink AI development status">
         <img src="/images/reach-icon.svg" alt="">
         <strong>AI</strong>
         <span>AI Assistant</span>
         <em class="dev-note">Still in development</em>
-      </div>
-      <div class="platform-item">
+      </a>
+      <a class="platform-item" href="/platform-under-development?product=connect" aria-label="Open VitaLink Connect development status">
         <img src="/images/reach-icon.svg" alt="">
         <strong>CONNECT</strong>
         <span>Integrations</span>
         <em class="dev-note">Still in development</em>
-      </div>
+      </a>
     </div>
     <p style="margin-top:20px;"><a href="/" class="btn secondary">Learn About VitaLink</a></p>
   </section>
@@ -852,3 +863,5 @@ waitlistForm.addEventListener("submit", async (event) => {
 <script src="/site-traffic.js" defer></script>
 </body>
 </html>
+
+

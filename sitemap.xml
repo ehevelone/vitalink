@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://myvitalink.app/</loc>
@@ -39,4 +39,10 @@
   <url>
     <loc>https://myvitalink.app/quick_start</loc>
   </url>
+  <url>
+    <loc>https://myvitalink.app/platform-under-development</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
 </urlset>
+

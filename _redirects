@@ -1,4 +1,4 @@
-/sitemap.xml /sitemap.xml 200
+﻿/sitemap.xml /sitemap.xml 200
 /robots.txt /robots.txt 200
 /privacy /privacy.html 200
 /terms /terms.html 200
@@ -7,6 +7,7 @@
 /agents /agents.html 200
 /agent-access /agent-access.html 200
 /reach /reach.html 200
+/platform-under-development /platform-under-development.html 200
 /agent-promo /agent-promo.html 200
 /agent-resources /agent-resources.html 200
 /agent-portal-activation /agent-portal-activation.html 200
@@ -22,3 +23,5 @@
 /referral/:token /referral.html 200
 /marketing-crm /marketing-crm/index.html 200
 /*                /index.html       200
+
+
