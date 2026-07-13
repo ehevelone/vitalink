@@ -203,6 +203,11 @@ button.btn{
 
 .problem span{color:var(--accent);}
 
+.problem-section p:not(.problem){
+  font-size:clamp(1.08rem,2vw,1.24rem);
+  line-height:1.72;
+}
+
 .muted{color:var(--muted);}
 
 .grid{
@@ -512,7 +517,7 @@ details p{
     <a href="#waitlist" class="btn">Join the Early Access List</a>
   </section>
 
-  <section class="section">
+  <section class="section problem-section">
     <p class="problem">Most insurance agents lose clients not because of price <span>but because they stopped staying in touch.</span></p>
     <p>You know you should follow up. Send birthday messages. Check in before AEP. Ask for referrals.</p>
     <p>But between appointments, paperwork, and actually selling, it never happens consistently.</p>
