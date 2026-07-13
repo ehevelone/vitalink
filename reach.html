@@ -138,10 +138,10 @@ button.btn{
 }
 
 .headline{
-  font-size:clamp(2.15rem,5.8vw,5.35rem);
-  font-weight:950;
-  letter-spacing:-.045em;
-  line-height:1.02;
+  font-size:clamp(2rem,4.6vw,4.35rem);
+  font-weight:900;
+  letter-spacing:-.035em;
+  line-height:1.08;
   margin:0;
   max-width:1050px;
 }
@@ -244,10 +244,12 @@ button.btn{
 
 .feature-icon{
   color:var(--accent);
-  font-size:1.45rem;
+  font-size:1.05rem;
   font-weight:950;
+  letter-spacing:.08em;
   line-height:1;
   margin-bottom:16px;
+  text-transform:uppercase;
 }
 
 .ecosystem{
@@ -280,14 +282,22 @@ button.btn{
 .platform-item img{height:52px;width:52px;}
 .platform-item strong{color:var(--accent);font-size:.9rem;letter-spacing:.06em;}
 .platform-item span{color:#aeb8c4;font-size:.82rem;}
+.dev-note{
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:999px;
+  color:#d7f7ff;
+  font-size:.7rem;
+  font-weight:850;
+  padding:4px 8px;
+}
 
 .quote{
   border-left:4px solid var(--accent);
   color:#fff;
-  font-size:clamp(1.35rem,3vw,2.25rem);
-  font-weight:850;
+  font-size:clamp(1.16rem,2.2vw,1.72rem);
+  font-weight:760;
   letter-spacing:-.02em;
-  line-height:1.22;
+  line-height:1.38;
   margin:0;
   padding-left:22px;
 }
@@ -539,32 +549,32 @@ details p{
     <h2>Everything You Need. Nothing You Don't.</h2>
     <div class="grid three">
       <div class="card">
-        <div class="feature-icon">SMS</div>
+        <div class="feature-icon">Texting</div>
         <h3>Smart SMS Drip</h3>
         <p>10 perfectly timed touches per year. Birthdays, check-ins, referral asks. All automatic. All from your number.</p>
       </div>
       <div class="card">
-        <div class="feature-icon">EMAIL</div>
+        <div class="feature-icon">Email</div>
         <h3>Email Outreach</h3>
         <p>Upload lead lists. Launch campaigns. AI writes the perfect email. CAN-SPAM compliant built in.</p>
       </div>
       <div class="card">
-        <div class="feature-icon">REF</div>
+        <div class="feature-icon">Referrals</div>
         <h3>Referral Detection</h3>
         <p>When clients text you a referral, VitaLink flags it instantly. Save them as a lead in one tap.</p>
       </div>
       <div class="card">
-        <div class="feature-icon">AI</div>
+        <div class="feature-icon">Assistant</div>
         <h3>AI-Powered Replies</h3>
         <p>Unexpected client text? AI suggests a reply. You approve. You send.</p>
       </div>
       <div class="card">
-        <div class="feature-icon">CAL</div>
+        <div class="feature-icon">Calendar</div>
         <h3>Appointment Reminders</h3>
         <p>Confirmation, day-before, and morning reminders send automatically.</p>
       </div>
       <div class="card">
-        <div class="feature-icon">YOU</div>
+        <div class="feature-icon">Voice</div>
         <h3>Your Style, Your Voice</h3>
         <p>Choose your style once. Every message sounds like you.</p>
       </div>
@@ -594,30 +604,46 @@ details p{
         <img src="/images/reach-icon.svg" alt="">
         <strong>REVIEW</strong>
         <span>Annual Reviews</span>
+        <em class="dev-note">Still in development</em>
       </div>
       <div class="platform-item">
         <img src="/images/reach-icon.svg" alt="">
         <strong>AI</strong>
         <span>AI Assistant</span>
+        <em class="dev-note">Still in development</em>
       </div>
       <div class="platform-item">
         <img src="/images/reach-icon.svg" alt="">
         <strong>CONNECT</strong>
         <span>Integrations</span>
+        <em class="dev-note">Still in development</em>
       </div>
     </div>
     <p style="margin-top:20px;"><a href="/" class="btn secondary">Learn About VitaLink</a></p>
   </section>
 
   <section class="section">
-    <blockquote class="quote">"I've been in insurance for 8 years. The hardest part was never the sale &mdash; it was staying connected to 173 clients consistently, every single year. VitaLink Reach does what I always wished I had time to do."</blockquote>
+    <blockquote class="quote">"I've been in insurance for 8 years. The hardest part was never the sale &mdash; it was staying connected to more than 500 clients consistently, every single year. VitaLink Reach does what I always wished I had time to do."</blockquote>
     <div class="quote-credit">Eric Hevelone<br>Licensed Insurance Advisor<br>Marine Veteran, 1990-1994<br>Omaha, Nebraska</div>
   </section>
 
   <section class="section" id="pricing">
     <h2>Simple, Transparent Pricing</h2>
     <p>Pricing shown below is planned pre-release pricing and may be offered to early agents as VitaLink Reach opens in phases.</p>
-    <div class="grid three">
+    <div class="grid four">
+      <div class="card price-card">
+        <span class="badge">Free Tier</span>
+        <h3>STARTER</h3>
+        <div class="price">$0<small>/mo</small></div>
+        <ul class="checklist">
+          <li>20 selected clients</li>
+          <li>Client choices lock once selected</li>
+          <li>Welcome consent text</li>
+          <li>Basic SMS drip testing</li>
+          <li>Upgrade when ready for your full book</li>
+        </ul>
+        <p style="margin-top:18px;"><a href="#waitlist" class="btn secondary">Join Early Access</a></p>
+      </div>
       <div class="card price-card">
         <h3>REACH</h3>
         <div class="price">$25<small>/mo</small></div>
