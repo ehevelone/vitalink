@@ -10,6 +10,10 @@ CREATE TABLE IF NOT EXISTS reach_enrollments (
     CHECK (plan IN ('free', 'reach', 'reach_crm', 'full_suite')),
   client_limit integer NOT NULL DEFAULT 20,
   locked boolean NOT NULL DEFAULT true,
+  admin_override boolean NOT NULL DEFAULT false,
+  admin_override_reason text,
+  admin_override_by text,
+  admin_override_until timestamptz,
   status text NOT NULL DEFAULT 'active'
     CHECK (status IN ('active', 'paused', 'cancelled')),
   source text NOT NULL DEFAULT 'reach_app',
@@ -54,7 +58,8 @@ BEGIN
   WHERE id = NEW.enrollment_id
   FOR UPDATE;
 
-  IF enrollment.plan <> 'free' THEN
+  IF enrollment.plan <> 'free'
+     OR enrollment.admin_override = true THEN
     RETURN NEW;
   END IF;
 
