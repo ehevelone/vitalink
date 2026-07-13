@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VitaLink Reach | Automated Client Communication for Insurance Agents</title>
+<meta name="description" content="VitaLink Reach is the coming SMS and email communication platform for insurance agents. Join the early access list.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://myvitalink.app/reach">
+<link rel="icon" href="/images/reach-icon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:title" content="VitaLink Reach">
+<meta property="og:description" content="Coming soon: automated client communication built exclusively for insurance agents.">
+<meta property="og:url" content="https://myvitalink.app/reach">
+<meta property="og:site_name" content="VitaLink">
+<meta property="og:image" content="https://myvitalink.app/images/reach-og.svg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="VitaLink Reach">
+<meta name="twitter:description" content="Reach out. Stay connected. Join the VitaLink Reach early access list.">
+<meta name="twitter:image" content="https://myvitalink.app/images/reach-og.svg">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://myvitalink.app/#organization","name":"VitaLink","url":"https://myvitalink.app/","logo":"https://myvitalink.app/images/vitalink-logo.png"},{"@type":"SoftwareApplication","name":"VitaLink Reach","applicationCategory":"BusinessApplication","operatingSystem":"Android","description":"Automated client communication platform built for insurance agents."},{"@type":"WebPage","name":"VitaLink Reach","description":"Automated client communication platform built exclusively for insurance agents.","url":"https://myvitalink.app/reach","isPartOf":{"@id":"https://myvitalink.app/#website"}}]}
+</script>
+<style>
+:root{
+  --bg:#0d1117;
+  --text:#ffffff;
+  --accent:#00c8ff;
+  --accent-soft:#7ee7ff;
+  --muted:#8b949e;
+  --card:#161b22;
+  --panel:#0f141c;
+  --border:#21262d;
+  --success:#3ddc84;
+}
+
+*{box-sizing:border-box;}
+
+html{scroll-behavior:smooth;}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.6;
+}
+
+a{color:inherit;text-decoration:none;}
+
+main{
+  max-width:1180px;
+  margin:0 auto;
+  padding:28px 24px 72px;
+}
+
+.nav{
+  align-items:center;
+  display:flex;
+  gap:18px;
+  justify-content:space-between;
+  margin-bottom:54px;
+}
+
+.nav-logo{
+  align-items:center;
+  display:inline-flex;
+}
+
+.nav-logo img{
+  display:block;
+  filter:drop-shadow(0 0 18px rgba(0,200,255,.2));
+  width:min(260px,55vw);
+}
+
+.nav-links{
+  align-items:center;
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  justify-content:flex-end;
+}
+
+.nav-links a{
+  border:1px solid transparent;
+  border-radius:999px;
+  color:#c9d1d9;
+  font-size:.95rem;
+  font-weight:750;
+  padding:10px 14px;
+}
+
+.nav-links a.active{
+  color:var(--accent);
+}
+
+.btn,
+button.btn{
+  align-items:center;
+  background:var(--accent);
+  border:1px solid var(--accent);
+  border-radius:999px;
+  color:#001018;
+  cursor:pointer;
+  display:inline-flex;
+  font:inherit;
+  font-weight:900;
+  justify-content:center;
+  min-height:48px;
+  padding:13px 20px;
+  text-decoration:none;
+  transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.btn:hover{
+  box-shadow:0 0 28px rgba(0,200,255,.28);
+  transform:translateY(-1px);
+}
+
+.btn.secondary{
+  background:transparent;
+  color:var(--accent);
+}
+
+.btn.full{width:100%;}
+
+.hero{
+  display:grid;
+  gap:28px;
+  justify-items:center;
+  padding:26px 0 52px;
+  text-align:center;
+}
+
+.hero-logo{
+  max-width:900px;
+  width:100%;
+}
+
+.headline{
+  font-size:clamp(2.15rem,5.8vw,5.35rem);
+  font-weight:950;
+  letter-spacing:-.045em;
+  line-height:1.02;
+  margin:0;
+  max-width:1050px;
+}
+
+.subhead{
+  color:#d6dde7;
+  font-size:clamp(1.08rem,2.4vw,1.35rem);
+  margin:0;
+  max-width:780px;
+}
+
+.beta-note{
+  background:rgba(0,200,255,.08);
+  border:1px solid rgba(0,200,255,.34);
+  border-radius:999px;
+  color:#dff8ff;
+  font-weight:800;
+  padding:10px 16px;
+}
+
+.section{
+  background:linear-gradient(180deg,rgba(22,27,34,.94),rgba(15,20,28,.94));
+  border:1px solid var(--border);
+  border-radius:24px;
+  margin:22px 0;
+  padding:32px;
+  box-shadow:0 18px 50px rgba(0,0,0,.28);
+}
+
+.section.plain{
+  background:transparent;
+  border:0;
+  box-shadow:none;
+  padding-left:0;
+  padding-right:0;
+}
+
+.section h2{
+  color:var(--accent);
+  font-size:clamp(1.65rem,3.5vw,2.65rem);
+  letter-spacing:-.025em;
+  line-height:1.08;
+  margin:0 0 14px;
+}
+
+.section p{
+  color:#c9d1d9;
+  margin:0 0 16px;
+}
+
+.problem{
+  color:#fff;
+  font-size:clamp(1.35rem,3vw,2.25rem);
+  font-weight:900;
+  letter-spacing:-.02em;
+  line-height:1.18;
+  margin:0;
+}
+
+.problem span{color:var(--accent);}
+
+.muted{color:var(--muted);}
+
+.grid{
+  display:grid;
+  gap:18px;
+}
+
+.grid.two{grid-template-columns:repeat(2,minmax(0,1fr));}
+.grid.three{grid-template-columns:repeat(3,minmax(0,1fr));}
+.grid.four{grid-template-columns:repeat(4,minmax(0,1fr));}
+
+.card{
+  background:rgba(13,17,23,.78);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:22px;
+}
+
+.card h3{
+  font-size:1.15rem;
+  margin:0 0 8px;
+}
+
+.card p{margin:0;color:#b9c3cf;}
+
+.step-num{
+  align-items:center;
+  background:rgba(0,200,255,.1);
+  border:1px solid rgba(0,200,255,.35);
+  border-radius:14px;
+  color:var(--accent);
+  display:inline-flex;
+  font-weight:950;
+  height:42px;
+  justify-content:center;
+  margin-bottom:14px;
+  width:42px;
+}
+
+.feature-icon{
+  color:var(--accent);
+  font-size:1.45rem;
+  font-weight:950;
+  line-height:1;
+  margin-bottom:16px;
+}
+
+.ecosystem{
+  align-items:stretch;
+  display:grid;
+  gap:14px;
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  margin-top:22px;
+}
+
+.platform-item{
+  align-items:center;
+  background:#0d1117;
+  border:1px solid var(--border);
+  border-radius:18px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  min-height:150px;
+  justify-content:center;
+  padding:16px 10px;
+  text-align:center;
+}
+
+.platform-item.active{
+  border-color:rgba(0,200,255,.78);
+  box-shadow:0 0 28px rgba(0,200,255,.18);
+}
+
+.platform-item img{height:52px;width:52px;}
+.platform-item strong{color:var(--accent);font-size:.9rem;letter-spacing:.06em;}
+.platform-item span{color:#aeb8c4;font-size:.82rem;}
+
+.quote{
+  border-left:4px solid var(--accent);
+  color:#fff;
+  font-size:clamp(1.35rem,3vw,2.25rem);
+  font-weight:850;
+  letter-spacing:-.02em;
+  line-height:1.22;
+  margin:0;
+  padding-left:22px;
+}
+
+.quote-credit{
+  color:#c9d1d9;
+  font-weight:750;
+  margin-top:18px;
+}
+
+.price-card{
+  position:relative;
+}
+
+.price-card.highlight{
+  border-color:rgba(0,200,255,.72);
+  box-shadow:0 0 34px rgba(0,200,255,.18);
+}
+
+.badge{
+  background:var(--accent);
+  border-radius:999px;
+  color:#001018;
+  display:inline-flex;
+  font-size:.78rem;
+  font-weight:950;
+  margin-bottom:14px;
+  padding:6px 10px;
+}
+
+.price{
+  color:#fff;
+  font-size:2.35rem;
+  font-weight:950;
+  letter-spacing:-.03em;
+  margin:4px 0 12px;
+}
+
+.price small{
+  color:#9aa6b2;
+  font-size:1rem;
+}
+
+.checklist{
+  list-style:none;
+  margin:18px 0 0;
+  padding:0;
+}
+
+.checklist li{
+  color:#c9d1d9;
+  margin:10px 0;
+  padding-left:24px;
+  position:relative;
+}
+
+.checklist li::before{
+  color:var(--success);
+  content:"✓";
+  font-weight:950;
+  left:0;
+  position:absolute;
+}
+
+.waitlist-wrap{
+  display:grid;
+  gap:24px;
+  grid-template-columns:minmax(0,1fr) minmax(320px,430px);
+}
+
+form{
+  display:grid;
+  gap:14px;
+}
+
+.field-grid{
+  display:grid;
+  gap:14px;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+}
+
+label{
+  color:#c9d1d9;
+  display:grid;
+  font-size:.9rem;
+  font-weight:800;
+  gap:7px;
+}
+
+input,
+select{
+  background:#0d1117;
+  border:1px solid var(--border);
+  border-radius:12px;
+  color:#fff;
+  font:inherit;
+  min-height:48px;
+  padding:12px 13px;
+}
+
+input:focus,
+select:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(0,200,255,.14);
+  outline:0;
+}
+
+.checkbox{
+  align-items:flex-start;
+  display:flex;
+  gap:11px;
+  margin:4px 0;
+}
+
+.checkbox input{
+  min-height:auto;
+  margin-top:5px;
+}
+
+.form-status{
+  color:#c9d1d9;
+  min-height:24px;
+}
+
+.form-status.success{color:var(--success);}
+.form-status.error{color:#ff7b72;}
+
+.faq{
+  display:grid;
+  gap:12px;
+}
+
+details{
+  background:#0d1117;
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:16px 18px;
+}
+
+summary{
+  color:#fff;
+  cursor:pointer;
+  font-weight:900;
+}
+
+details p{
+  margin:12px 0 0;
+}
+
+.final-cta{
+  align-items:center;
+  display:grid;
+  gap:22px;
+  justify-items:center;
+  text-align:center;
+}
+
+.final-cta img{height:86px;width:86px;}
+
+.footer{
+  border-top:1px solid var(--border);
+  color:#c9d1d9;
+  margin-top:42px;
+  padding-top:28px;
+  text-align:center;
+}
+
+.footer-links{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  justify-content:center;
+  margin-bottom:14px;
+}
+
+.footer a{color:var(--accent);}
+
+@media(max-width:900px){
+  main{padding:22px 18px 58px;}
+  .nav{align-items:flex-start;flex-direction:column;}
+  .nav-links{justify-content:flex-start;}
+  .grid.two,.grid.three,.grid.four,.waitlist-wrap{grid-template-columns:1fr;}
+  .ecosystem{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+
+@media(max-width:560px){
+  .section{border-radius:20px;padding:24px 20px;}
+  .field-grid{grid-template-columns:1fr;}
+  .ecosystem{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<main>
+  <header class="nav">
+    <a class="nav-logo" href="/" aria-label="VitaLink home">
+      <img src="/images/reach-logo-secondary.svg" alt="VitaLink Reach">
+    </a>
+    <nav class="nav-links" aria-label="Primary navigation">
+      <a href="/">Home</a>
+      <a href="/for-insurance-agents">For Agents</a>
+      <a href="/reach" class="active">Reach</a>
+      <a href="/agent-access" class="btn">Agent Access</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <img class="hero-logo" src="/images/reach-logo-full.svg" alt="VitaLink Reach - Reach out. Stay connected.">
+    <p class="beta-note">&#9889; Coming soon. Early agent interest list now open.</p>
+    <h1 class="headline">The automated client communication platform built exclusively for insurance agents.</h1>
+    <p class="subhead">Stay visible year-round with consent-based SMS, email outreach, referral nudges, appointment reminders, and client replies that do not fall through the cracks.</p>
+    <a href="#waitlist" class="btn">Join the Early Access List</a>
+  </section>
+
+  <section class="section">
+    <p class="problem">Most insurance agents lose clients not because of price <span>but because they stopped staying in touch.</span></p>
+    <p>You know you should follow up. Send birthday messages. Check in before AEP. Ask for referrals.</p>
+    <p>But between appointments, paperwork, and actually selling, it never happens consistently.</p>
+    <p>VitaLink Reach does it for you. Automatically. Professionally. From your own phone number.</p>
+  </section>
+
+  <section class="section plain" id="how-it-works">
+    <h2>How VitaLink Reach Works</h2>
+    <div class="grid four">
+      <div class="card">
+        <div class="step-num">1</div>
+        <h3>Add your clients</h3>
+        <p>Import from CSV or add manually. Takes minutes.</p>
+      </div>
+      <div class="card">
+        <div class="step-num">2</div>
+        <h3>Send one consent text</h3>
+        <p>Clients reply YES once. You're compliant forever.</p>
+      </div>
+      <div class="card">
+        <div class="step-num">3</div>
+        <h3>Let it run</h3>
+        <p>VitaLink Reach handles check-ins, birthdays, referral asks, and Medicare season alerts from your number.</p>
+      </div>
+      <div class="card">
+        <div class="step-num">4</div>
+        <h3>Watch referrals come in</h3>
+        <p>Clients reply with names and numbers. VitaLink flags them instantly. You follow up. You close.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Everything You Need. Nothing You Don't.</h2>
+    <div class="grid three">
+      <div class="card">
+        <div class="feature-icon">SMS</div>
+        <h3>Smart SMS Drip</h3>
+        <p>10 perfectly timed touches per year. Birthdays, check-ins, referral asks. All automatic. All from your number.</p>
+      </div>
+      <div class="card">
+        <div class="feature-icon">EMAIL</div>
+        <h3>Email Outreach</h3>
+        <p>Upload lead lists. Launch campaigns. AI writes the perfect email. CAN-SPAM compliant built in.</p>
+      </div>
+      <div class="card">
+        <div class="feature-icon">REF</div>
+        <h3>Referral Detection</h3>
+        <p>When clients text you a referral, VitaLink flags it instantly. Save them as a lead in one tap.</p>
+      </div>
+      <div class="card">
+        <div class="feature-icon">AI</div>
+        <h3>AI-Powered Replies</h3>
+        <p>Unexpected client text? AI suggests a reply. You approve. You send.</p>
+      </div>
+      <div class="card">
+        <div class="feature-icon">CAL</div>
+        <h3>Appointment Reminders</h3>
+        <p>Confirmation, day-before, and morning reminders send automatically.</p>
+      </div>
+      <div class="card">
+        <div class="feature-icon">YOU</div>
+        <h3>Your Style, Your Voice</h3>
+        <p>Choose your style once. Every message sounds like you.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Part Of The VitaLink Family</h2>
+    <p>VitaLink Reach is one tool in a complete ecosystem built for insurance agents. Each app works independently or together as a complete platform.</p>
+    <div class="ecosystem" aria-label="VitaLink platform icon family">
+      <div class="platform-item">
+        <img src="/images/reach-icon.svg" alt="">
+        <strong>VITALINK</strong>
+        <span>Client App</span>
+      </div>
+      <div class="platform-item active">
+        <img src="/images/reach-icon.svg" alt="">
+        <strong>REACH</strong>
+        <span>You are here</span>
+      </div>
+      <div class="platform-item">
+        <img src="/images/reach-icon.svg" alt="">
+        <strong>CRM</strong>
+        <span>Agent CRM</span>
+      </div>
+      <div class="platform-item">
+        <img src="/images/reach-icon.svg" alt="">
+        <strong>REVIEW</strong>
+        <span>Annual Reviews</span>
+      </div>
+      <div class="platform-item">
+        <img src="/images/reach-icon.svg" alt="">
+        <strong>AI</strong>
+        <span>AI Assistant</span>
+      </div>
+      <div class="platform-item">
+        <img src="/images/reach-icon.svg" alt="">
+        <strong>CONNECT</strong>
+        <span>Integrations</span>
+      </div>
+    </div>
+    <p style="margin-top:20px;"><a href="/" class="btn secondary">Learn About VitaLink</a></p>
+  </section>
+
+  <section class="section">
+    <blockquote class="quote">"I've been in insurance for 8 years. The hardest part was never the sale &mdash; it was staying connected to 173 clients consistently, every single year. VitaLink Reach does what I always wished I had time to do."</blockquote>
+    <div class="quote-credit">Eric Hevelone<br>Licensed Insurance Advisor<br>Marine Veteran, 1990-1994<br>Omaha, Nebraska</div>
+  </section>
+
+  <section class="section" id="pricing">
+    <h2>Simple, Transparent Pricing</h2>
+    <p>Pricing shown below is planned pre-release pricing and may be offered to early agents as VitaLink Reach opens in phases.</p>
+    <div class="grid three">
+      <div class="card price-card">
+        <h3>REACH</h3>
+        <div class="price">$25<small>/mo</small></div>
+        <ul class="checklist">
+          <li>Unlimited clients</li>
+          <li>Full SMS drip</li>
+          <li>Email campaigns</li>
+          <li>AI with your own key</li>
+        </ul>
+        <p style="margin-top:18px;"><a href="#waitlist" class="btn secondary">Join Early Access</a></p>
+      </div>
+      <div class="card price-card">
+        <h3>REACH + CRM</h3>
+        <div class="price">$45<small>/mo</small></div>
+        <ul class="checklist">
+          <li>Everything in Reach</li>
+          <li>VitaLink CRM</li>
+          <li>Client records</li>
+          <li>Tasks and notes</li>
+          <li>Client history</li>
+        </ul>
+        <p style="margin-top:18px;"><a href="#waitlist" class="btn secondary">Join Early Access</a></p>
+      </div>
+      <div class="card price-card highlight">
+        <span class="badge">Most Popular</span>
+        <h3>FULL SUITE</h3>
+        <div class="price">$99<small>/mo</small></div>
+        <ul class="checklist">
+          <li>Everything included</li>
+          <li>VitaLink + Reach + CRM + AI</li>
+          <li>Review tool</li>
+          <li>White label</li>
+          <li>Priority support</li>
+        </ul>
+        <p style="margin-top:18px;"><a href="#waitlist" class="btn">Join Early Access</a></p>
+      </div>
+    </div>
+    <p style="margin-top:22px;"><strong>Early Agent Pricing:</strong> Early signups may be offered current pricing before public release. Availability will depend on rollout timing, platform readiness, and onboarding fit.</p>
+  </section>
+
+  <section class="section" id="waitlist">
+    <div class="waitlist-wrap">
+      <div>
+        <h2>Join The Early Access List</h2>
+        <p>&#9889; VitaLink Reach is preparing for release. Android is first, with iOS planned.</p>
+        <p>Tell us where you are licensed and how many clients you serve. Eric will review early access requests personally as agents are invited in phases.</p>
+        <p class="muted">Questions before joining? Email <a href="mailto:eric@etretirement.com">eric@etretirement.com</a>.</p>
+      </div>
+      <form id="waitlistForm">
+        <div class="field-grid">
+          <label>First name
+            <input name="first_name" autocomplete="given-name" required>
+          </label>
+          <label>Last name
+            <input name="last_name" autocomplete="family-name" required>
+          </label>
+        </div>
+        <label>Work email
+          <input name="email" type="email" autocomplete="email" required>
+        </label>
+        <label>Phone
+          <input name="phone" type="tel" autocomplete="tel" required>
+        </label>
+        <div class="field-grid">
+          <label>State licensed in
+            <select name="state" autocomplete="address-level1" required>
+              <option value="">Choose state</option>
+              <option>AL</option><option>AK</option><option>AZ</option><option>AR</option>
+              <option>CA</option><option>CO</option><option>CT</option><option>DE</option>
+              <option>FL</option><option>GA</option><option>HI</option><option>ID</option>
+              <option>IL</option><option>IN</option><option>IA</option><option>KS</option>
+              <option>KY</option><option>LA</option><option>ME</option><option>MD</option>
+              <option>MA</option><option>MI</option><option>MN</option><option>MS</option>
+              <option>MO</option><option>MT</option><option>NE</option><option>NV</option>
+              <option>NH</option><option>NJ</option><option>NM</option><option>NY</option>
+              <option>NC</option><option>ND</option><option>OH</option><option>OK</option>
+              <option>OR</option><option>PA</option><option>RI</option><option>SC</option>
+              <option>SD</option><option>TN</option><option>TX</option><option>UT</option>
+              <option>VT</option><option>VA</option><option>WA</option><option>WV</option>
+              <option>WI</option><option>WY</option>
+            </select>
+          </label>
+          <label>Approx. clients
+            <select name="client_count" required>
+              <option value="">Choose one</option>
+              <option>Under 100</option>
+              <option>100-250</option>
+              <option>251-500</option>
+              <option>501-1,000</option>
+              <option>1,000+</option>
+            </select>
+          </label>
+        </div>
+        <label class="checkbox">
+          <input name="founding_agent" type="checkbox" value="yes">
+          <span>I want to be considered for early agent pricing.</span>
+        </label>
+        <button class="btn full" type="submit">Join Early Access</button>
+        <p class="muted" style="font-size:.9rem;margin:0;">No spam. Ever. Unsubscribe anytime.</p>
+        <div class="form-status" id="formStatus" role="status" aria-live="polite"></div>
+      </form>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Frequently Asked Questions</h2>
+    <div class="faq">
+      <details>
+        <summary>Does it text from MY number?</summary>
+        <p>Yes. Every message sends from your personal phone number. Clients know it's you.</p>
+      </details>
+      <details>
+        <summary>Is it built for TCPA compliance?</summary>
+        <p>Yes. VitaLink Reach is built around text opt-in, STOP handling, consent timestamps, and agent responsibility. Agents are still responsible for using it with appropriate client relationships and permission.</p>
+      </details>
+      <details>
+        <summary>What phones does it work on?</summary>
+        <p>Currently Android only. iOS coming soon.</p>
+      </details>
+      <details>
+        <summary>Do my clients need the app?</summary>
+        <p>No. They receive normal text messages on any phone.</p>
+      </details>
+      <details>
+        <summary>Can I use my own email address?</summary>
+        <p>Yes. Connect via Resend and campaigns send from your own address.</p>
+      </details>
+      <details>
+        <summary>When can I get access?</summary>
+        <p>VitaLink Reach is not publicly open yet. Agents will be invited in phases as Android, iOS, onboarding, and support are ready.</p>
+      </details>
+      <details>
+        <summary>Is this part of VitaLink?</summary>
+        <p>Yes. VitaLink Reach is part of the VitaLink platform family. Use it standalone or with other VitaLink tools for a complete agent platform.</p>
+      </details>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Responsible Use</h2>
+    <p>VitaLink Reach is designed for licensed insurance agents communicating with existing clients, warm referrals, and legitimate business relationships. It is not built for blasting cold lists, purchased lead lists, or people who have not given permission to be contacted.</p>
+    <p>The platform is designed with consent capture, opt-out handling, STOP processing, send limits, and audit records, but each agent remains responsible for following TCPA, CAN-SPAM, carrier rules, state insurance rules, and any carrier or agency compliance requirements that apply to their business.</p>
+  </section>
+
+  <section class="section final-cta">
+    <img src="/images/reach-icon.svg" alt="VitaLink Reach app icon">
+    <h2>Ready to build your referral machine?</h2>
+    <p>Join the early access list today. VitaLink Reach is opening to agents in phases.</p>
+    <a href="#waitlist" class="btn">Join Early Access</a>
+    <p>Questions? <a href="mailto:eric@etretirement.com">eric@etretirement.com</a></p>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-links">
+      <a href="/">Home</a>
+      <a href="/reach">VitaLink Reach</a>
+      <a href="#waitlist">Early Access</a>
+      <a href="#pricing">Pricing</a>
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/terms">Terms of Service</a>
+    </div>
+    <div>Prepared &bull; Protected &bull; Connected</div>
+    <div class="muted">&copy; 2026 VitaLink. All rights reserved.</div>
+  </footer>
+</main>
+
+<script>
+const waitlistForm = document.getElementById("waitlistForm");
+const formStatus = document.getElementById("formStatus");
+
+waitlistForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  formStatus.className = "form-status";
+  formStatus.textContent = "Sending...";
+
+  const formData = new FormData(waitlistForm);
+  const payload = Object.fromEntries(formData.entries());
+  payload.founding_agent = formData.has("founding_agent");
+
+  try{
+    const response = await fetch("/.netlify/functions/reach-waitlist", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(payload)
+    });
+    const result = await response.json();
+
+    if(!response.ok || !result.success){
+      throw new Error(result.error || "Something went wrong.");
+    }
+
+    waitlistForm.reset();
+    formStatus.className = "form-status success";
+    formStatus.textContent = "You're on the early access list. Check your email for confirmation.";
+  }catch(error){
+    formStatus.className = "form-status error";
+    formStatus.textContent = error.message || "Could not submit the form. Please email eric@etretirement.com.";
+  }
+});
+</script>
+<script src="/site-traffic.js" defer></script>
+</body>
+</html>

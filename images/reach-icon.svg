@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="VitaLink Reach icon">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f172a"/>
+      <stop offset="1" stop-color="#020617"/>
+    </linearGradient>
+    <linearGradient id="cyan" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#b9f3ff"/>
+      <stop offset="1" stop-color="#00c8ff"/>
+    </linearGradient>
+  </defs>
+  <rect x="28" y="28" width="456" height="456" rx="92" fill="url(#bg)" stroke="#1f3b57" stroke-width="5"/>
+  <path d="M256 413C176 342 95 281 92 190c-2-56 36-99 91-99 34 0 61 16 73 42 12-26 39-42 73-42 55 0 93 43 91 99-3 91-84 152-164 223Z" fill="none" stroke="url(#cyan)" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M219 96c31 36 36 82 8 112-21 22-61 15-61-16 0-35 37-62 90-62" fill="none" stroke="url(#cyan)" stroke-width="17" stroke-linecap="round"/>
+  <path d="M172 215c0-40 36-72 84-72s84 32 84 72-36 72-84 72h-44l-38 32v-44c-20-13-32-35-32-60Z" fill="#0b1220" stroke="url(#cyan)" stroke-width="16" stroke-linejoin="round"/>
+  <circle cx="219" cy="217" r="10" fill="#b9f3ff"/>
+  <circle cx="256" cy="217" r="10" fill="#b9f3ff"/>
+  <circle cx="293" cy="217" r="10" fill="#b9f3ff"/>
+</svg>

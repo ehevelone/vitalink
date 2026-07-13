@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 360" role="img" aria-label="VitaLink Reach - Reach out. Stay connected.">
+  <defs>
+    <linearGradient id="cyan" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#b9f3ff"/>
+      <stop offset="1" stop-color="#00c8ff"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(110 30) scale(.58)">
+    <path d="M256 413C176 342 95 281 92 190c-2-56 36-99 91-99 34 0 61 16 73 42 12-26 39-42 73-42 55 0 93 43 91 99-3 91-84 152-164 223Z" fill="none" stroke="url(#cyan)" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M219 96c31 36 36 82 8 112-21 22-61 15-61-16 0-35 37-62 90-62" fill="none" stroke="url(#cyan)" stroke-width="17" stroke-linecap="round"/>
+    <path d="M172 215c0-40 36-72 84-72s84 32 84 72-36 72-84 72h-44l-38 32v-44c-20-13-32-35-32-60Z" fill="#0d1117" stroke="url(#cyan)" stroke-width="16" stroke-linejoin="round"/>
+    <circle cx="219" cy="217" r="10" fill="#b9f3ff"/>
+    <circle cx="256" cy="217" r="10" fill="#b9f3ff"/>
+    <circle cx="293" cy="217" r="10" fill="#b9f3ff"/>
+  </g>
+  <text x="430" y="148" fill="#fff" font-family="Arial, Helvetica, sans-serif" font-size="106" font-weight="900">Vita<tspan fill="#65d8ff">Link</tspan></text>
+  <line x1="435" y1="207" x2="535" y2="207" stroke="#65d8ff" stroke-width="4"/>
+  <text x="560" y="225" fill="#65d8ff" font-family="Arial, Helvetica, sans-serif" font-size="55" font-weight="800" letter-spacing="30">REACH</text>
+  <line x1="930" y1="207" x2="1030" y2="207" stroke="#65d8ff" stroke-width="4"/>
+  <text x="505" y="284" fill="#b8c0cc" font-family="Arial, Helvetica, sans-serif" font-size="27" font-weight="700" letter-spacing="10">REACH OUT. STAY CONNECTED.</text>
+</svg>
