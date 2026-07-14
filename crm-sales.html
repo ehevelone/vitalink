@@ -157,12 +157,38 @@ p{color:#d6dde7;font-size:1.08rem;margin:0 0 16px;}
 .muted{color:var(--muted);}
 
 .problem-copy{
-  columns:2 320px;
-  column-gap:34px;
-  color:#d6dde7;
-  font-size:1.12rem;
+  display:grid;
+  gap:16px;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  margin-top:22px;
 }
-.problem-copy p{break-inside:avoid;}
+
+.problem-section h2{
+  font-size:clamp(1.72rem,3vw,2.65rem);
+  letter-spacing:-.025em;
+  line-height:1.12;
+  max-width:940px;
+}
+
+.problem-card{
+  background:#0d1117;
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:20px;
+}
+
+.problem-card strong{
+  color:#fff;
+  display:block;
+  font-size:1.08rem;
+  margin-bottom:8px;
+}
+
+.problem-card p{
+  color:#c9d1d9;
+  font-size:1rem;
+  margin:0;
+}
 
 .feature-grid,.pricing-grid,.ecosystem,.spotlight-grid{
   display:grid;
@@ -268,7 +294,7 @@ details p{margin:12px 0 0;}
 
 @media (max-width:900px){
   .hero,.connection{grid-template-columns:1fr;}
-  .feature-grid,.pricing-grid,.spotlight-grid{grid-template-columns:1fr;}
+  .feature-grid,.pricing-grid,.spotlight-grid,.problem-copy{grid-template-columns:1fr;}
   .ecosystem{grid-template-columns:repeat(2,minmax(0,1fr));}
 }
 @media (max-width:640px){
@@ -324,12 +350,21 @@ details p{margin:12px 0 0;}
     </div>
   </section>
 
-  <section class="section">
+  <section class="section problem-section">
     <h2>Most agents manage their book of business across five different places at once.</h2>
     <div class="problem-copy">
-      <p>Spreadsheets for client lists. Calendar apps for appointments. Sticky notes for follow-ups. Email for renewals. Their CRM for... something.</p>
-      <p>Nothing talks to anything else. Things fall through the cracks. Clients feel forgotten. Renewals get missed.</p>
-      <p>VitaLink CRM was built to fix that &mdash; specifically for Medicare agents, not generic salespeople.</p>
+      <div class="problem-card">
+        <strong>The tools are scattered</strong>
+        <p>Spreadsheets for client lists. Calendar apps for appointments. Sticky notes for follow-ups. Email for renewals. Their CRM for... something.</p>
+      </div>
+      <div class="problem-card">
+        <strong>The follow-up gets messy</strong>
+        <p>Nothing talks to anything else. Things fall through the cracks. Clients feel forgotten. Renewals get missed.</p>
+      </div>
+      <div class="problem-card">
+        <strong>VitaLink CRM fixes the workflow</strong>
+        <p>Built specifically for Medicare agents, not generic salespeople, so the work that matters is always visible.</p>
+      </div>
     </div>
   </section>
 
