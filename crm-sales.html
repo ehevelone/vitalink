@@ -1,189 +1,482 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>VitaLink CRM | Agent CRM Platform</title>
-<meta name="description" content="VitaLink CRM is being built as a simple client relationship workspace for insurance agents, tasks, notes, appointments, policies, and connected VitaLink profiles." />
-<meta name="robots" content="index, follow" />
-<link rel="canonical" href="https://myvitalink.app/crm-sales" />
-<meta property="og:title" content="VitaLink CRM | Agent CRM Platform" />
-<meta property="og:description" content="A simple CRM workspace for insurance agents using VitaLink to manage clients, tasks, notes, appointments, policies, and connected profiles." />
-<meta property="og:image" content="https://myvitalink.app/images/vitalink-logo.png" />
-<meta property="og:url" content="https://myvitalink.app/crm-sales" />
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="VitaLink CRM | Agent CRM Platform" />
-<meta name="twitter:description" content="A simple CRM workspace for insurance agents using VitaLink to manage client relationships." />
-<meta name="twitter:image" content="https://myvitalink.app/images/vitalink-logo.png" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VitaLink CRM | Client Management for Medicare Insurance Agents</title>
+<meta name="description" content="Simple CRM built for Medicare agents. Client management, scheduling, task tracking, business snapshot, and direct VitaLink app connection. 14-day free trial.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://myvitalink.app/crm-sales">
+<link rel="icon" href="/images/reach-icon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:title" content="VitaLink CRM | Client Management for Medicare Insurance Agents">
+<meta property="og:description" content="Simple CRM built for Medicare agents. Client management, scheduling, task tracking, business snapshot, and direct VitaLink app connection.">
+<meta property="og:url" content="https://myvitalink.app/crm-sales">
+<meta property="og:site_name" content="VitaLink">
+<meta property="og:image" content="https://myvitalink.app/images/reach-og.svg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="VitaLink CRM">
+<meta name="twitter:description" content="Client management built for Medicare insurance agents.">
+<meta name="twitter:image" content="https://myvitalink.app/images/reach-og.svg">
 <style>
 :root{
-  --bg:#020407;
-  --card:#07101a;
-  --card-strong:#0d1824;
-  --text:#f8fafc;
-  --muted:#c6d3df;
-  --accent:#7cc6e8;
-  --border:rgba(124,198,232,.24);
+  --bg:#0d1117;
+  --text:#ffffff;
+  --accent:#00c8ff;
+  --accent-soft:#7ee7ff;
+  --muted:#8b949e;
+  --muted-strong:#c9d1d9;
+  --card:#161b22;
+  --panel:#0f141c;
+  --border:#21262d;
+  --success:#3ddc84;
+  --warning:#ffc857;
 }
 
-*{box-sizing:border-box}
-
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
 body{
-  background:radial-gradient(circle at top,rgba(124,198,232,.12),transparent 34%),var(--bg);
-  color:var(--text);
-  font-family:Arial,Helvetica,sans-serif;
   margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.6;
 }
 
-main{
-  margin:0 auto;
-  max-width:1120px;
-  padding:42px 22px 64px;
-}
+a{color:inherit;text-decoration:none;}
+main{max-width:1180px;margin:0 auto;padding:28px 24px 72px;}
 
-a{color:inherit}
-
-.top-link{
-  color:var(--accent);
-  display:inline-block;
-  font-weight:800;
-  margin-bottom:34px;
-  text-decoration:none;
-}
-
-.hero,
-.section{
-  background:linear-gradient(180deg,rgba(13,24,36,.82),rgba(5,8,13,.96));
-  border:1px solid var(--border);
-  border-radius:20px;
-  box-shadow:0 24px 60px rgba(0,0,0,.36);
-  margin-bottom:24px;
-  padding:38px;
-}
-
-.eyebrow{
-  color:var(--accent);
-  font-size:.82rem;
-  font-weight:900;
-  letter-spacing:.18em;
-  text-transform:uppercase;
-}
-
-h1{
-  font-size:clamp(2.3rem,6vw,4.7rem);
-  letter-spacing:-.045em;
-  line-height:.98;
-  margin:18px 0;
-}
-
-h2{
-  font-size:clamp(1.6rem,3vw,2.4rem);
-  letter-spacing:-.025em;
-  margin:0 0 18px;
-}
-
-p{
-  color:var(--muted);
-  font-size:1.08rem;
-  line-height:1.65;
-  margin:0 0 18px;
-}
-
-.lead{
-  color:#eef6fb;
-  font-size:clamp(1.2rem,2.2vw,1.55rem);
-  max-width:800px;
-}
-
-.card-grid{
-  display:grid;
-  gap:16px;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  margin-top:24px;
-}
-
-.card{
-  background:rgba(5,8,13,.78);
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:20px;
-}
-
-.card strong{
-  color:#fff;
-  display:block;
-  font-size:1.08rem;
-  margin-bottom:8px;
-}
-
-.cta-row{
+.nav{
+  align-items:center;
   display:flex;
-  flex-wrap:wrap;
-  gap:14px;
-  margin-top:28px;
+  gap:18px;
+  justify-content:space-between;
+  margin-bottom:54px;
 }
+.nav-logo{align-items:center;display:inline-flex;gap:14px;font-weight:950;font-size:1.35rem;letter-spacing:-.03em;}
+.nav-logo img{display:block;filter:drop-shadow(0 0 18px rgba(0,200,255,.2));height:54px;width:54px;}
+.nav-links{align-items:center;display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end;}
+.nav-links a{border:1px solid transparent;border-radius:999px;color:#c9d1d9;font-size:.95rem;font-weight:750;padding:10px 14px;}
+.nav-links a.active{color:var(--accent);}
 
-.btn{
+.btn,button.btn{
+  align-items:center;
   background:var(--accent);
   border:1px solid var(--accent);
-  border-radius:10px;
+  border-radius:999px;
   color:#001018;
+  cursor:pointer;
+  display:inline-flex;
+  font:inherit;
   font-weight:900;
-  padding:14px 22px;
+  justify-content:center;
+  min-height:48px;
+  padding:13px 20px;
+  text-decoration:none;
+  transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.btn:hover{box-shadow:0 0 28px rgba(0,200,255,.28);transform:translateY(-1px);}
+.btn.secondary{background:transparent;color:var(--accent);}
+.btn.full{width:100%;}
+
+.hero{
+  display:grid;
+  gap:28px;
+  grid-template-columns:minmax(0,1.02fr) minmax(320px,.98fr);
+  align-items:center;
+  padding:24px 0 48px;
+}
+.badge{
+  align-items:center;
+  background:rgba(0,200,255,.08);
+  border:1px solid rgba(0,200,255,.34);
+  border-radius:999px;
+  color:#dff8ff;
+  display:inline-flex;
+  gap:10px;
+  font-weight:900;
+  padding:9px 14px;
+}
+.badge img{height:30px;width:30px;}
+.headline{
+  font-size:clamp(2.55rem,5.7vw,5.2rem);
+  font-weight:950;
+  letter-spacing:-.055em;
+  line-height:1;
+  margin:18px 0;
+}
+.subhead{
+  color:#d6dde7;
+  font-size:clamp(1.12rem,2.4vw,1.42rem);
+  margin:0;
+  max-width:760px;
+}
+.cta-row{display:flex;flex-wrap:wrap;gap:14px;margin-top:28px;}
+
+.mockup{
+  background:linear-gradient(180deg,rgba(22,27,34,.98),rgba(15,20,28,.98));
+  border:1px solid var(--border);
+  border-radius:28px;
+  box-shadow:0 24px 70px rgba(0,0,0,.36);
+  padding:18px;
+}
+.mockup-bar{align-items:center;display:flex;gap:8px;margin-bottom:14px;}
+.dot{background:#30363d;border-radius:50%;height:10px;width:10px;}
+.mockup-title{color:#dff8ff;font-weight:850;margin-left:auto;}
+.metric-grid{display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr));}
+.metric{
+  background:#0d1117;
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:16px;
+}
+.metric strong{display:block;font-size:1.75rem;line-height:1;color:#fff;margin-bottom:8px;}
+.metric span{color:var(--accent);display:block;font-size:.78rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;}
+.metric small{color:var(--muted-strong);display:block;margin-top:5px;}
+.metric.wide{grid-column:1/-1;}
+
+.section{
+  background:linear-gradient(180deg,rgba(22,27,34,.94),rgba(15,20,28,.94));
+  border:1px solid var(--border);
+  border-radius:24px;
+  margin:22px 0;
+  padding:32px;
+  box-shadow:0 18px 50px rgba(0,0,0,.28);
+}
+.section.plain{background:transparent;border:0;box-shadow:none;padding-left:0;padding-right:0;}
+.section h2{
+  color:var(--accent);
+  font-size:clamp(2rem,4vw,3.25rem);
+  font-weight:950;
+  letter-spacing:-.04em;
+  line-height:1.05;
+  margin:0 0 14px;
+}
+.section h3{font-size:1.15rem;margin:0 0 8px;}
+p{color:#d6dde7;font-size:1.08rem;margin:0 0 16px;}
+.muted{color:var(--muted);}
+
+.problem-copy{
+  columns:2 320px;
+  column-gap:34px;
+  color:#d6dde7;
+  font-size:1.12rem;
+}
+.problem-copy p{break-inside:avoid;}
+
+.feature-grid,.pricing-grid,.ecosystem,.spotlight-grid{
+  display:grid;
+  gap:18px;
+  margin-top:24px;
+}
+.feature-grid{grid-template-columns:repeat(3,minmax(0,1fr));}
+.spotlight-grid{grid-template-columns:repeat(3,minmax(0,1fr));}
+.pricing-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+.ecosystem{grid-template-columns:repeat(6,minmax(0,1fr));}
+
+.card,.price-card,.platform-item,.connection-card{
+  background:#0d1117;
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:20px;
+}
+.card h3,.connection-card h3{color:#fff;}
+.card-label{
+  color:var(--accent);
+  font-size:.85rem;
+  font-weight:950;
+  letter-spacing:.08em;
+  margin-bottom:10px;
+  text-transform:uppercase;
+}
+.card p,.price-card li,.connection-card p{color:#c9d1d9;}
+
+.connection{
+  display:grid;
+  gap:24px;
+  grid-template-columns:minmax(0,1fr) minmax(280px,.8fr);
+  align-items:start;
+}
+.check-list{display:grid;gap:10px;margin:20px 0;}
+.check{align-items:flex-start;display:flex;gap:10px;color:#d6dde7;}
+.check::before{content:"";background:var(--success);border-radius:50%;flex:0 0 10px;height:10px;margin-top:9px;width:10px;}
+
+.quote{
+  border-left:4px solid var(--accent);
+  color:#fff;
+  font-size:clamp(1.2rem,2.4vw,1.8rem);
+  font-weight:760;
+  letter-spacing:-.015em;
+  line-height:1.42;
+  margin:0;
+  padding-left:24px;
+}
+.quote-credit{color:#d6dde7;font-weight:750;margin:22px 0 0 28px;}
+
+.price-card{position:relative;}
+.price-card.featured{border-color:rgba(0,200,255,.78);box-shadow:0 0 34px rgba(0,200,255,.16);}
+.price-tag{color:#fff;font-size:2.65rem;font-weight:950;letter-spacing:-.04em;line-height:1;margin:12px 0;}
+.price-card ul{list-style:none;margin:18px 0 24px;padding:0;}
+.price-card li{border-top:1px solid var(--border);padding:10px 0;}
+.star{
+  background:rgba(0,200,255,.13);
+  border:1px solid rgba(0,200,255,.38);
+  border-radius:999px;
+  color:#dff8ff;
+  display:inline-flex;
+  font-weight:900;
+  padding:6px 10px;
+}
+
+.faq{display:grid;gap:12px;margin-top:22px;}
+details{
+  background:#0d1117;
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:16px 18px;
+}
+summary{cursor:pointer;font-weight:900;}
+details p{margin:12px 0 0;}
+
+.platform-item{
+  align-items:center;
+  color:inherit;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  justify-content:center;
+  min-height:150px;
+  text-align:center;
   text-decoration:none;
 }
+.platform-item.active{border-color:rgba(0,200,255,.78);box-shadow:0 0 28px rgba(0,200,255,.18);}
+.platform-item img{height:52px;width:52px;}
+.platform-item strong{color:var(--accent);font-size:.9rem;letter-spacing:.06em;}
+.platform-item span{color:#aeb8c4;font-size:.82rem;}
 
-.btn.secondary{
-  background:transparent;
-  color:var(--accent);
-}
-
+.final-cta{text-align:center;padding:46px 32px;}
+.final-cta h2{color:#fff;margin-bottom:16px;}
 .footer{
-  color:#f8fafc;
-  font-size:clamp(1.45rem,3vw,2.4rem);
-  font-weight:950;
-  letter-spacing:.02em;
+  border-top:1px solid var(--border);
+  color:#8b949e;
   margin-top:28px;
+  padding-top:28px;
   text-align:center;
-  text-shadow:0 0 24px rgba(124,198,232,.18);
+}
+.footer-links{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-bottom:14px;}
+.footer-links a{color:#c9d1d9;font-weight:750;}
+
+@media (max-width:900px){
+  .hero,.connection{grid-template-columns:1fr;}
+  .feature-grid,.pricing-grid,.spotlight-grid{grid-template-columns:1fr;}
+  .ecosystem{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+@media (max-width:640px){
+  main{padding:22px 16px 54px;}
+  .nav{align-items:flex-start;flex-direction:column;margin-bottom:34px;}
+  .section,.hero{padding-left:0;padding-right:0;}
+  .section{border-radius:20px;padding:24px 18px;}
+  .hero{display:block;}
+  .mockup{margin-top:26px;}
+  .metric-grid{grid-template-columns:1fr;}
+  .ecosystem{grid-template-columns:1fr;}
 }
 </style>
 </head>
 <body>
 <main>
-  <a class="top-link" href="/for-insurance-agents">&larr; Back To Agent Access</a>
+  <nav class="nav" aria-label="VitaLink navigation">
+    <a class="nav-logo" href="/">
+      <img src="/images/reach-icon.svg" alt="">
+      <span>VitaLink CRM</span>
+    </a>
+    <div class="nav-links">
+      <a href="/reach">Reach</a>
+      <a href="/agent-resources">Resources</a>
+      <a href="#pricing">Pricing</a>
+      <a class="active" href="/crm-sales">CRM</a>
+      <a class="btn" href="/agent-access">Start App + CRM Access</a>
+    </div>
+  </nav>
 
   <section class="hero">
-    <div class="eyebrow">CRM Sales Page Coming Soon</div>
-    <h1>VitaLink CRM</h1>
-    <p class="lead">A simple client relationship workspace for insurance agents who want client profiles, tasks, notes, appointments, policies, and connected VitaLink app data in one place.</p>
-    <div class="cta-row">
-      <a class="btn" href="/activate">Start App + CRM Access</a>
-      <a class="btn secondary" href="/agent-resources">Agent Resources</a>
+    <div>
+      <div class="badge"><img src="/images/reach-icon.svg" alt=""> CRM for Medicare Agents</div>
+      <h1 class="headline">Simple client management built for Medicare insurance agents.</h1>
+      <p class="subhead">Everything you need to manage your book of business &mdash; nothing you do not.</p>
+      <div class="cta-row">
+        <a class="btn" href="/agent-access">Start App + CRM Access</a>
+        <a class="btn secondary" href="/agent-resources">View Agent Resources</a>
+      </div>
+    </div>
+    <div class="mockup" aria-label="VitaLink CRM dashboard preview">
+      <div class="mockup-bar">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span class="mockup-title">Dashboard</span>
+      </div>
+      <div class="metric-grid">
+        <div class="metric"><span>Total Clients</span><strong>500+</strong><small>Connected VitaLink profiles</small></div>
+        <div class="metric"><span>Renewals</span><strong>24</strong><small>Next 60 days</small></div>
+        <div class="metric"><span>Follow-Ups</span><strong>12</strong><small>Need attention</small></div>
+        <div class="metric"><span>Open Tasks</span><strong>31</strong><small>Overdue, today, high priority</small></div>
+        <div class="metric wide"><span>Business Snapshot</span><strong>$18,420</strong><small>Pending, paid 30 days, last month comparison</small></div>
+      </div>
     </div>
   </section>
 
   <section class="section">
-    <h2>Built For The Way Insurance Agents Actually Work</h2>
-    <p>The full VitaLink CRM sales page will explain how the CRM supports client retention, annual reviews, follow-up workflows, policy tracking, notes, tasks, appointments, and connected VitaLink profiles.</p>
-    <div class="card-grid">
-      <div class="card">
-        <strong>Client Workspace</strong>
-        <p>Keep client details, notes, policies, tasks, and appointments organized.</p>
+    <h2>Most agents manage their book of business across five different places at once.</h2>
+    <div class="problem-copy">
+      <p>Spreadsheets for client lists. Calendar apps for appointments. Sticky notes for follow-ups. Email for renewals. Their CRM for... something.</p>
+      <p>Nothing talks to anything else. Things fall through the cracks. Clients feel forgotten. Renewals get missed.</p>
+      <p>VitaLink CRM was built to fix that &mdash; specifically for Medicare agents, not generic salespeople.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Your entire book at a glance.</h2>
+    <p>Open VitaLink CRM and instantly see the clients, appointments, tasks, renewals, and business numbers that need your attention.</p>
+    <div class="spotlight-grid">
+      <div class="card"><div class="card-label">Total Clients</div><h3>Know who is connected</h3><p>See your client count, status, and linked VitaLink profiles from one dashboard.</p></div>
+      <div class="card"><div class="card-label">Upcoming Renewals</div><h3>Next 60 days</h3><p>Annual reviews and renewal windows stay front and center.</p></div>
+      <div class="card"><div class="card-label">Business Snapshot</div><h3>See the money</h3><p>Pending business, paid commissions, and recent trends are visible at login.</p></div>
+    </div>
+    <p style="margin-top:22px;">No digging. No searching. Everything that needs attention is front and center every time you log in.</p>
+  </section>
+
+  <section class="section">
+    <h2>Built for the way agents actually work.</h2>
+    <div class="feature-grid">
+      <div class="card"><div class="card-label">Client Management</div><h3>Every client. One place.</h3><p>Full client list with search, status filters, tags, and schedule. Import from CSV, export anytime, and sync directly with the VitaLink app.</p></div>
+      <div class="card"><div class="card-label">Schedule & Calendar</div><h3>Never miss the next step</h3><p>Daily schedule, weekly overview, and upcoming appointments in one view. Track follow-ups, annual reviews, and client reminders automatically.</p></div>
+      <div class="card"><div class="card-label">Task Management</div><h3>Follow-up that holds you accountable</h3><p>Create tasks tied to specific clients. Set priorities, track overdue work, and filter by status so important follow-up does not disappear.</p></div>
+      <div class="card"><div class="card-label">Business Tracker</div><h3>Know where your money is</h3><p>Track submitted policies, expected commission, paid business, and pending revenue. Upload carrier CSV files to build your product library.</p></div>
+      <div class="card"><div class="card-label">VitaLink Connection</div><h3>Real client updates</h3><p>Link CRM clients directly to VitaLink client profiles. When clients update medications, doctors, or insurance info, you see it in the CRM.</p></div>
+      <div class="card"><div class="card-label">Push Notifications</div><h3>Reminders without texting</h3><p>Send General Info Requests, Enrollment Prep, and AEP Review reminders directly through the VitaLink app with one tap.</p></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="connection">
+      <div>
+        <h2>The only CRM connected to your clients' health data.</h2>
+        <p>Most CRMs store what you know about your clients.</p>
+        <p>VitaLink CRM stores what your clients know about themselves &mdash; and shares it with you.</p>
+        <div class="check-list">
+          <div class="check">New medications added</div>
+          <div class="check">Doctor changes updated</div>
+          <div class="check">Insurance cards scanned</div>
+          <div class="check">Emergency contacts current</div>
+        </div>
+        <p>Annual reviews that used to take an hour now take 10 minutes, because the client already did the paperwork.</p>
+        <a class="btn secondary" href="/">Learn about VitaLink Client App</a>
       </div>
-      <div class="card">
-        <strong>VitaLink App Connection</strong>
-        <p>Connect CRM clients to their VitaLink profiles, tasks, notes, and client updates.</p>
-      </div>
-      <div class="card">
-        <strong>Retention Workflows</strong>
-        <p>Support annual reviews, follow-ups, service calls, and long-term client relationships.</p>
+      <div class="connection-card">
+        <h3>Client updates flow back to you</h3>
+        <p>When a client updates their VitaLink profile, your CRM view stays current. That means better reviews, better service calls, and less scrambling before appointments.</p>
       </div>
     </div>
   </section>
 
-  <div class="footer">Prepared &bull; Protected &bull; Connected</div>
+  <section class="section">
+    <h2>Finally know where your money is at all times.</h2>
+    <div class="spotlight-grid">
+      <div class="card"><div class="card-label">Pending Commission</div><h3>Submitted, not yet paid</h3><p>Track what is still outstanding across policies and carriers.</p></div>
+      <div class="card"><div class="card-label">Paid Last 30 Days</div><h3>What hit your account</h3><p>See recent paid business without hunting through carrier portals.</p></div>
+      <div class="card"><div class="card-label">Last Month Comparison</div><h3>Up or down?</h3><p>Compare current activity to last month so your business picture stays clear.</p></div>
+    </div>
+    <p style="margin-top:22px;">Upload carrier CSV files to build a complete product library. Track every policy across every carrier in one place. No more spreadsheets. No more guessing.</p>
+  </section>
+
+  <section class="section">
+    <blockquote class="quote">"As an insurance agent I was managing clients across MAX, a spreadsheet, my calendar app, and sticky notes on my desk. VitaLink CRM finally puts everything in one place &mdash; and it actually connects to what my clients have in their VitaLink app. No other CRM does that."</blockquote>
+    <div class="quote-credit">Eric Hevelone<br>Licensed Insurance Advisor<br>Marine Veteran, 1990-1994<br>Omaha, Nebraska</div>
+  </section>
+
+  <section class="section" id="pricing">
+    <h2>Simple pricing.</h2>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <h3>VitaLink Only</h3>
+        <div class="price-tag">$10/mo</div>
+        <ul>
+          <li>VitaLink client app</li>
+          <li>Client profiles</li>
+          <li>Agent connection</li>
+          <li>Basic reporting</li>
+        </ul>
+        <a class="btn secondary full" href="/agent-access">Get Started</a>
+      </div>
+      <div class="price-card featured">
+        <span class="star">Founding Agent Pricing</span>
+        <h3>App + CRM</h3>
+        <div class="price-tag">$30/mo</div>
+        <ul>
+          <li>Everything in VitaLink</li>
+          <li>Full CRM dashboard</li>
+          <li>Client management</li>
+          <li>Schedule & calendar</li>
+          <li>Task management</li>
+          <li>Business tracker</li>
+          <li>Push notifications</li>
+          <li>CSV import/export</li>
+          <li>VitaLink sync</li>
+        </ul>
+        <a class="btn full" href="/agent-access">Start App + CRM</a>
+        <p class="muted" style="margin-top:14px;">Lock in $30/mo forever. Increases after the first 1,000 agents. Founding agents never pay more.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Frequently asked questions.</h2>
+    <div class="faq">
+      <details><summary>Do my clients need VitaLink?</summary><p>No. VitaLink CRM works standalone as a complete client management tool. The VitaLink app connection is a powerful bonus when clients use it.</p></details>
+      <details><summary>Can I import my existing clients?</summary><p>Yes. Import from CSV in seconds. Export anytime too &mdash; your data is always yours.</p></details>
+      <details><summary>How is this different from MAX?</summary><p>MAX is your upline's platform. VitaLink CRM is yours &mdash; independent, portable, and connected to the VitaLink client app ecosystem.</p></details>
+      <details><summary>Does it work with VitaLink Reach?</summary><p>Yes. VitaLink CRM and VitaLink Reach share the same client data. Notes and tasks created in Reach sync to the CRM automatically. One ecosystem, one login.</p></details>
+      <details><summary>What happens to my data if I cancel?</summary><p>Export your complete client list anytime via CSV. Your data is always accessible and portable.</p></details>
+      <details><summary>Is there a free trial?</summary><p>Yes &mdash; 14 days full access. No credit card required.</p></details>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Part of the VitaLink family.</h2>
+    <p>VitaLink CRM is one tool in a complete ecosystem built for insurance agents. Use it alone or combine it with VitaLink Reach for automated client communication, or the full suite for everything.</p>
+    <div class="ecosystem" aria-label="VitaLink platform family">
+      <a class="platform-item" href="/"><img src="/images/reach-icon.svg" alt=""><strong>VITALINK</strong><span>Client App</span></a>
+      <a class="platform-item" href="/reach"><img src="/images/reach-icon.svg" alt=""><strong>REACH</strong><span>Text Campaigns</span></a>
+      <a class="platform-item active" href="/crm-sales"><img src="/images/reach-icon.svg" alt=""><strong>CRM</strong><span>You are here</span></a>
+      <a class="platform-item" href="/platform-under-development?product=review"><img src="/images/reach-icon.svg" alt=""><strong>REVIEW</strong><span>Annual Reviews</span></a>
+      <a class="platform-item" href="/platform-under-development?product=ai"><img src="/images/reach-icon.svg" alt=""><strong>AI</strong><span>AI Assistant</span></a>
+      <a class="platform-item" href="/platform-under-development?product=connect"><img src="/images/reach-icon.svg" alt=""><strong>CONNECT</strong><span>Integrations</span></a>
+    </div>
+    <div class="cta-row">
+      <a class="btn" href="/agent-access">See Full Suite Pricing</a>
+      <a class="btn secondary" href="/reach">Learn about VitaLink Reach</a>
+    </div>
+  </section>
+
+  <section class="section final-cta">
+    <h2>Ready to manage your book of business like a pro?</h2>
+    <p>14-day free trial. No credit card required. Founding agent pricing available.</p>
+    <a class="btn" href="/agent-access">Start App + CRM Access</a>
+    <p style="margin-top:18px;">Questions? <a href="mailto:eric@etretirement.com">eric@etretirement.com</a></p>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-links">
+      <a href="/">Home</a>
+      <a href="/reach">VitaLink Reach</a>
+      <a href="/crm-sales">VitaLink CRM</a>
+      <a href="/agent-resources">Agent Resources</a>
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/terms">Terms of Service</a>
+    </div>
+    <div>Prepared &middot; Protected &middot; Connected</div>
+    <div class="muted">&copy; 2026 VitaLink. All rights reserved.</div>
+  </footer>
 </main>
-<script src="/site-traffic.js"></script>
+<script src="/site-traffic.js" defer></script>
 </body>
 </html>
