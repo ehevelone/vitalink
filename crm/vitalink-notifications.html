@@ -9,7 +9,7 @@
 <body>
 
 <div class="sidebar">
-  <a href="index.html"><img src="../images/vitalink-logo.png" class="logo"></a>
+  <a href="index.html"><img src="../images/vitalink-logo.png" class="logo" alt="VitaLink"></a>
   <div class="nav-section">
     <div class="nav-title">CRM</div>
     <a href="index.html"><div class="nav-item">Dashboard</div></a>
@@ -27,7 +27,10 @@
   <div class="nav-section">
     <div class="nav-title">Account</div>
     <a href="settings.html"><div class="nav-item">Settings</div></a>
-    <div class="nav-item disabled" aria-disabled="true">Logout</div>
+    <a href="billing.html"><div class="nav-item">Billing</div></a>
+  </div>
+  <div style="position:absolute;bottom:24px;left:18px;right:18px;">
+    <button onclick="logout()">Logout</button>
   </div>
 </div>
 
@@ -35,7 +38,38 @@
   <div class="topbar">
     <div>
       <h1>Notifications</h1>
-      <div style="color:#6b7280;">Send VitaLink app reminders to your connected clients.</div>
+      <div class="client-sub">Send app reminders to connected VitaLink client profiles.</div>
+    </div>
+    <div class="top-actions">
+      <a href="vitalink-profiles.html"><button class="secondary">View Linked Profiles</button></a>
+      <a href="clients.html"><button class="secondary">Back to Clients</button></a>
+    </div>
+  </div>
+
+  <div class="notification-hero">
+    <div>
+      <div class="label">Current Agent</div>
+      <h2 id="agentEmailValue">Loading...</h2>
+      <p>Notifications go only to clients who have installed VitaLink and connected their profile to you.</p>
+    </div>
+    <div class="notification-status-pill" id="notificationStatusPill">Ready</div>
+  </div>
+
+  <div class="notification-stats">
+    <div class="notification-stat">
+      <span>Delivery</span>
+      <strong id="statDelivered">0</strong>
+      <small>Last sent</small>
+    </div>
+    <div class="notification-stat">
+      <span>Failed</span>
+      <strong id="statFailed">0</strong>
+      <small>Last sent</small>
+    </div>
+    <div class="notification-stat">
+      <span>Targeted</span>
+      <strong id="statTargeted">0</strong>
+      <small>Devices</small>
     </div>
   </div>
 
@@ -44,34 +78,66 @@
       <div class="card-header">
         <h3 class="card-title">Send Client Reminder</h3>
       </div>
+      <p class="client-sub">Choose the kind of reminder to send through the VitaLink client app.</p>
 
-      <div class="info-row">
-        <div class="label">Campaign</div>
-        <select id="campaign">
-          <option value="GENERAL">General Info Request</option>
-          <option value="PREP">Enrollment Prep</option>
-          <option value="AEP">AEP Review</option>
-          <option value="OEP">OEP Review</option>
-          <option value="UPDATE">App Update</option>
-        </select>
+      <div class="notification-options" role="radiogroup" aria-label="Notification campaign">
+        <label class="notification-option active">
+          <input type="radio" name="campaignChoice" value="GENERAL" checked>
+          <strong>General Info Request</strong>
+          <span>Ask clients to update missing or outdated information.</span>
+        </label>
+        <label class="notification-option">
+          <input type="radio" name="campaignChoice" value="PREP">
+          <strong>Enrollment Prep</strong>
+          <span>Remind clients to gather medication, provider, and card details.</span>
+        </label>
+        <label class="notification-option">
+          <input type="radio" name="campaignChoice" value="AEP">
+          <strong>AEP Review</strong>
+          <span>Prompt clients to review plan options during annual enrollment.</span>
+        </label>
+        <label class="notification-option">
+          <input type="radio" name="campaignChoice" value="OEP">
+          <strong>OEP Review</strong>
+          <span>Follow up during open enrollment when a second look may matter.</span>
+        </label>
+        <label class="notification-option">
+          <input type="radio" name="campaignChoice" value="UPDATE">
+          <strong>App Update</strong>
+          <span>Let clients know there is something new or helpful in VitaLink.</span>
+        </label>
       </div>
 
       <button id="sendNotificationBtn" onclick="sendNotification()">Send Notification</button>
-
-      <div class="client-sub" id="notificationResult" style="margin-top:16px;"></div>
+      <div class="notification-result" id="notificationResult" aria-live="polite"></div>
     </div>
 
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Linked Profile Status</h3>
+        <h3 class="card-title">Before You Send</h3>
       </div>
-      <div class="info-row">
-        <div class="label">Agent Email</div>
-        <div class="value" id="agentEmailValue"></div>
+      <div class="notification-checklist">
+        <div>
+          <strong>Connected clients only</strong>
+          <span>Clients must have VitaLink installed and linked to your agent account.</span>
+        </div>
+        <div>
+          <strong>App notification, not SMS</strong>
+          <span>This page sends push notifications inside the VitaLink client app.</span>
+        </div>
+        <div>
+          <strong>No cold outreach</strong>
+          <span>Use this only for existing clients or people who already have a business relationship with you.</span>
+        </div>
       </div>
-      <div class="info-row">
-        <div class="label">Tip</div>
-        <div class="value">Clients need the app installed and registered on a device before notifications can be delivered.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Recent Send Status</h3>
+      </div>
+      <div class="notification-log" id="notificationLog">
+        <div class="empty-state">No notification has been sent from this session yet.</div>
       </div>
     </div>
   </div>

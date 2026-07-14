@@ -22,6 +22,7 @@
 /schedule-demo /schedule-demo.html 200
 /referral/:token /referral.html 200
 /marketing-crm /marketing-crm/index.html 200
+/crm/vitalink-notifications /crm/vitalink-notifications.html 200
 /*                /index.html       200
 
 
