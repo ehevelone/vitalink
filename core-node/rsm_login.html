@@ -173,6 +173,36 @@
         <button id="verifyBtn" onclick="verifyCode()">Verify Code</button>
       </div>
 
+      <div id="resetStep" class="hidden">
+        <div class="field">
+          <label>Email</label>
+          <input type="email" id="resetEmail" autocomplete="email" />
+        </div>
+
+        <button id="sendResetBtn" onclick="sendRsmResetCode()">Send Reset Code</button>
+
+        <div class="field" style="margin-top:18px;">
+          <label>Reset Code</label>
+          <input type="text" id="resetCode" inputmode="numeric" autocomplete="one-time-code" />
+        </div>
+
+        <div class="field">
+          <label>New Password</label>
+          <input type="password" id="resetPassword" autocomplete="new-password" />
+        </div>
+
+        <div class="field">
+          <label>Confirm New Password</label>
+          <input type="password" id="resetConfirmPassword" autocomplete="new-password" />
+        </div>
+
+        <button id="confirmResetBtn" onclick="confirmRsmReset()">Reset Password</button>
+
+        <div class="forgot" onclick="showLogin()">
+          Back to login
+        </div>
+      </div>
+
       <div class="result" id="result"></div>
       <div id="recaptcha-container"></div>
 
@@ -336,8 +366,121 @@
       input.type = input.type === "password" ? "text" : "password";
     }
 
+    function setResult(message, isError) {
+      const resultDiv = document.getElementById("result");
+      resultDiv.className = "result";
+      if (isError) resultDiv.classList.add("error");
+      resultDiv.textContent = message || "";
+    }
+
     function forgotPassword() {
-      window.location.href = "/core-node/admin.html";
+      const email = document.getElementById("email").value.trim();
+      document.getElementById("resetEmail").value = email;
+      document.getElementById("step1").classList.add("hidden");
+      document.getElementById("step2").classList.add("hidden");
+      document.getElementById("resetStep").classList.remove("hidden");
+      setResult("Enter your email to receive a reset code.", false);
+    }
+
+    function showLogin() {
+      document.getElementById("resetStep").classList.add("hidden");
+      document.getElementById("step2").classList.add("hidden");
+      document.getElementById("step1").classList.remove("hidden");
+      setResult("", false);
+    }
+
+    async function sendRsmResetCode() {
+      const email = document.getElementById("resetEmail").value.trim();
+      const btn = document.getElementById("sendResetBtn");
+
+      if (!email) {
+        setResult("Email required.", true);
+        return;
+      }
+
+      btn.disabled = true;
+      setResult("Sending reset code...", false);
+
+      try {
+        const res = await fetch(`${API}/request_reset`, {
+          method: "POST",
+          credentials: "omit",
+          cache: "no-store",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            emailOrPhone: email,
+            role: "rsms"
+          })
+        });
+
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok || data.success !== true) {
+          setResult(data.error || "Unable to send reset code.", true);
+          return;
+        }
+
+        setResult("Reset code sent. Check your email.", false);
+      } catch {
+        setResult("Server error.", true);
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function confirmRsmReset() {
+      const email = document.getElementById("resetEmail").value.trim();
+      const code = document.getElementById("resetCode").value.trim();
+      const password = document.getElementById("resetPassword").value;
+      const confirmPassword = document.getElementById("resetConfirmPassword").value;
+      const btn = document.getElementById("confirmResetBtn");
+
+      if (!email || !code || !password || !confirmPassword) {
+        setResult("All reset fields are required.", true);
+        return;
+      }
+
+      if (password.length < 8) {
+        setResult("Password must be at least 8 characters.", true);
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        setResult("Passwords do not match.", true);
+        return;
+      }
+
+      btn.disabled = true;
+      setResult("Resetting password...", false);
+
+      try {
+        const res = await fetch(`${API}/reset_password`, {
+          method: "POST",
+          credentials: "omit",
+          cache: "no-store",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            emailOrPhone: email,
+            code,
+            newPassword: password,
+            role: "rsms"
+          })
+        });
+
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok || data.success !== true) {
+          setResult(data.error || "Password reset failed.", true);
+          return;
+        }
+
+        setResult("Password reset. You can log in now.", false);
+        setTimeout(showLogin, 1500);
+      } catch {
+        setResult("Server error.", true);
+      } finally {
+        btn.disabled = false;
+      }
     }
   </script>
 
