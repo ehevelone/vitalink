@@ -669,12 +669,11 @@ document.getElementById("createMessage").innerText="RSM Created";
 const qrContainer=document.getElementById("qrContainer");
 qrContainer.innerHTML="";
 
-const onboardingUrl=
-"https://vitalink-app.netlify.app/.netlify/functions/rsm-onboard?token="+
-data.onboard_token;
+const onboardingUrl=data.onboard_url;
 
 qrContainer.innerHTML=
-`<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(onboardingUrl)}" />`;
+`<p><a href="${onboardingUrl}" target="_blank" rel="noopener">Open RSM registration</a></p>
+<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(onboardingUrl)}" />`;
 
 loadStats();
 
