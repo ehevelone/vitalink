@@ -179,6 +179,54 @@ input{
   margin-top:20px;
 }
 
+.static-rsm-card{
+  margin-top:18px;
+  max-width:720px;
+  padding:18px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:var(--card);
+}
+
+.static-rsm-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 180px;
+  gap:18px;
+  align-items:start;
+}
+
+.code-box{
+  display:inline-block;
+  margin:8px 0;
+  padding:10px 14px;
+  border:1px solid #7cc6e8;
+  border-radius:8px;
+  color:#7cc6e8;
+  font-size:1.25rem;
+  font-weight:800;
+  letter-spacing:.08em;
+  background:rgba(124,198,232,.08);
+}
+
+.link-box{
+  word-break:break-all;
+  margin:8px 0 12px;
+}
+
+.qr-box img{
+  width:180px;
+  height:180px;
+  border-radius:8px;
+  background:#fff;
+  padding:8px;
+}
+
+@media(max-width:700px){
+  .static-rsm-grid{
+    grid-template-columns:1fr;
+  }
+}
+
 table{
   width:100%;
   border-collapse:collapse;
@@ -360,6 +408,26 @@ tr:nth-child(even){
 <div id="createMessage"></div>
 
 <div id="qrContainer"></div>
+
+</div>
+
+<div class="section">
+
+<h2>Permanent RSM Registration QR</h2>
+
+<div class="static-rsm-card">
+<div class="static-rsm-grid">
+<div>
+<div class="muted">Use this for the printed RSM creation cards. The QR opens the static registration page, and the private creation code authorizes the account creation.</div>
+<div id="staticRsmStatus" class="muted">Loading RSM registration settings...</div>
+<div id="staticRsmCode" class="code-box">Not configured</div>
+<div id="staticRsmLink" class="link-box muted"></div>
+<button class="primary" id="copyRsmCodeBtn" type="button">Copy Code</button>
+<button class="primary" id="copyRsmLinkBtn" type="button">Copy Link</button>
+</div>
+<div class="qr-box" id="staticRsmQr"></div>
+</div>
+</div>
 
 </div>
 
@@ -633,6 +701,53 @@ tbody.innerHTML=`
 
 renderRsmList(data.rsms || []);
 
+}
+
+async function loadStaticRsmRegistration(){
+const status=document.getElementById("staticRsmStatus");
+const codeEl=document.getElementById("staticRsmCode");
+const linkEl=document.getElementById("staticRsmLink");
+const qrEl=document.getElementById("staticRsmQr");
+const copyCodeBtn=document.getElementById("copyRsmCodeBtn");
+const copyLinkBtn=document.getElementById("copyRsmLinkBtn");
+
+try{
+const res=await fetch(BACKEND+"/get-rsm-registration-settings",{
+headers:{ "x-admin-session":token }
+});
+
+if(!res.ok){
+status.textContent="Unable to load permanent RSM registration settings.";
+copyCodeBtn.disabled=true;
+copyLinkBtn.disabled=true;
+return;
+}
+
+const data=await res.json();
+const registrationUrl=data.registration_url||"";
+const creationCode=data.creation_code||"";
+
+status.textContent=data.configured
+? "Configured. Keep this code private."
+: "RSM_CREATION_CODE is not configured in the app backend.";
+codeEl.textContent=creationCode||"Not configured";
+linkEl.innerHTML=registrationUrl
+? `<a href="${safeText(registrationUrl)}" target="_blank" rel="noopener">${safeText(registrationUrl)}</a>`
+: "";
+qrEl.innerHTML=registrationUrl
+? `<img alt="Permanent RSM registration QR" src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(registrationUrl)}" />`
+: "";
+
+copyCodeBtn.disabled=!creationCode;
+copyLinkBtn.disabled=!registrationUrl;
+
+copyCodeBtn.onclick=()=>navigator.clipboard.writeText(creationCode);
+copyLinkBtn.onclick=()=>navigator.clipboard.writeText(registrationUrl);
+}catch(err){
+status.textContent="Server error loading permanent RSM registration settings.";
+copyCodeBtn.disabled=true;
+copyLinkBtn.disabled=true;
+}
 }
 
 /* CREATE RSM */
@@ -1053,6 +1168,7 @@ document.getElementById("importCmsFileBtn").onclick=()=>runCmsImport({ useFile:t
 /* INIT */
 
 loadStats();
+loadStaticRsmRegistration();
 
 </script>
 
