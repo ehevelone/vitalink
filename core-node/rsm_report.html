@@ -142,6 +142,53 @@ tr:nth-child(even){
   background:rgba(255,255,255,.03);
 }
 
+.modal-backdrop{
+  position:fixed;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  background:rgba(0,0,0,.72);
+  z-index:20;
+}
+
+.modal{
+  width:100%;
+  max-width:760px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:26px;
+}
+
+.billing-options{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+  margin-top:20px;
+}
+
+.billing-option{
+  padding:18px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:rgba(124,198,232,.08);
+}
+
+.billing-option h3{
+  margin:0 0 8px;
+}
+
+.billing-option p{
+  color:#999;
+  line-height:1.45;
+}
+
+@media(max-width:700px){
+  .billing-options{ grid-template-columns:1fr; }
+}
+
 </style>
 </head>
 
@@ -157,7 +204,7 @@ onclick="window.location.href='rsm_enroll.html'">
 Enroll Agent
 </button>
 
-<button class="primary" onclick="openBillingPortal()">
+<button class="primary" onclick="openBillingChoice()">
 Manage Billing
 </button>
 
@@ -184,11 +231,13 @@ Manage Billing
 
 <p>$10 per active agent per month</p>
 
-<button class="primary" onclick="openBillingPortal()">
+<button class="primary" onclick="openBillingChoice()">
 Activate / Update Billing
 </button>
 
 </div>
+
+<div id="billingModeLine" class="card" style="display:none"></div>
 
 <div id="dashboardContent">
 
@@ -254,6 +303,43 @@ Activate / Update Billing
 
 </div>
 
+<div id="billingChoiceModal" class="modal-backdrop">
+<div class="modal">
+<h2>Who Will Manage Billing For This Office?</h2>
+<p style="color:#999;line-height:1.45;">
+Choose how this RSM office should be billed before continuing to Stripe.
+</p>
+
+<div class="billing-options">
+<div class="billing-option">
+<h3>Office Billing</h3>
+<p>
+One subscription covers the RSM and active agents connected to this office.
+Best for agencies that want centralized billing and a single monthly or annual payment.
+</p>
+<button class="primary" onclick="openBillingPortal('office_paid')">
+Office Pays For Team
+</button>
+</div>
+
+<div class="billing-option">
+<h3>Individual Agent Billing</h3>
+<p>
+The RSM keeps management and reporting access. Each agent maintains their own
+VitaLink subscription directly.
+</p>
+<button class="primary" onclick="openBillingPortal('agent_paid')">
+Agents Pay Individually
+</button>
+</div>
+</div>
+
+<button class="primary" style="background:#333;color:#fff;margin-top:18px" onclick="closeBillingChoice()">
+Cancel
+</button>
+</div>
+</div>
+
 <script>
 
 const BACKEND="https://vitalink-app.netlify.app/.netlify/functions";
@@ -282,15 +368,25 @@ window.location.href="admin.html";
 
 /* BILLING PORTAL */
 
-async function openBillingPortal(){
+function openBillingChoice(){
+document.getElementById("billingChoiceModal").style.display="flex";
+}
+
+function closeBillingChoice(){
+document.getElementById("billingChoiceModal").style.display="none";
+}
+
+async function openBillingPortal(billingMode){
 
 const res = await fetch(
 `${BACKEND}/create-billing-portal`,
 {
 method:"POST",
 headers:{
-"x-admin-session":token
-}
+"x-admin-session":token,
+"Content-Type":"application/json"
+},
+body:JSON.stringify({ billingMode })
 }
 );
 
@@ -373,6 +469,15 @@ document.getElementById("billingBlock").style.display="none";
 document.getElementById("dashboardContent").style.display="block";
 document.getElementById("enrollBtn").disabled=false;
 
+const billingModeLabel = data.billing_mode === "agent_paid"
+? "Agents Pay Individually"
+: "Office Pays For Team";
+
+document.getElementById("billingModeLine").style.display="block";
+document.getElementById("billingModeLine").innerHTML =
+`<strong>Billing Mode:</strong> ${billingModeLabel}<br>
+<span style="color:#999">Billable seats: ${data.billable_seats || 1}</span>`;
+
 /* STATS */
 
 document.getElementById("activeAgents").innerText=data.active_agents;
@@ -384,7 +489,7 @@ document.getElementById("inactiveAgents").innerText=inactive;
 document.getElementById("totalAgents").innerText=data.agents.length;
 
 document.getElementById("billingEstimate").innerText =
-"$" + (data.active_agents * 10);
+"$" + (data.billing_estimate || 10);
 
 /* TABLE */
 
