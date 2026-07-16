@@ -80,6 +80,29 @@ input {
   font-size: 1rem;
 }
 
+.password-row {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.password-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+.toggle-password {
+  width: auto;
+  min-width: 76px;
+  margin-top: 0;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #081d2e;
+  color: var(--blue);
+  font-size: .9rem;
+}
+
 button {
   width: 100%;
   margin-top: 22px;
@@ -136,10 +159,16 @@ button:disabled {
     <input id="region" autocomplete="organization" required />
 
     <label for="password">Create Password</label>
-    <input id="password" type="password" autocomplete="new-password" required />
+    <div class="password-row">
+      <input id="password" type="password" autocomplete="new-password" required />
+      <button class="toggle-password" type="button" data-target="password">Show</button>
+    </div>
 
     <label for="confirmPassword">Confirm Password</label>
-    <input id="confirmPassword" type="password" autocomplete="new-password" required />
+    <div class="password-row">
+      <input id="confirmPassword" type="password" autocomplete="new-password" required />
+      <button class="toggle-password" type="button" data-target="confirmPassword">Show</button>
+    </div>
 
     <button id="submitBtn" type="submit">Create RSM Account</button>
   </form>
@@ -158,6 +187,16 @@ function setMessage(text, type) {
   message.className = "message";
   if (type) message.classList.add(type);
 }
+
+document.querySelectorAll(".toggle-password").forEach(function (toggle) {
+  toggle.addEventListener("click", function () {
+    const input = document.getElementById(toggle.dataset.target);
+    const showing = input.type === "text";
+
+    input.type = showing ? "password" : "text";
+    toggle.textContent = showing ? "Show" : "Hide";
+  });
+});
 
 form.addEventListener("submit", async function (event) {
   event.preventDefault();
