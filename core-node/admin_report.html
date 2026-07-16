@@ -181,11 +181,17 @@ input{
 
 .static-rsm-card{
   margin-top:18px;
-  max-width:720px;
   padding:18px;
   border:1px solid var(--border);
   border-radius:12px;
   background:var(--card);
+}
+
+.static-rsm-cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+  gap:18px;
+  max-width:1120px;
 }
 
 .static-rsm-grid{
@@ -414,18 +420,35 @@ tr:nth-child(even){
 <div class="section">
 
 <h2>Permanent RSM Registration QR</h2>
+<div class="muted">Use these for printed RSM creation cards. Both use the same private creation code, but the QR controls whether the RSM is assigned founders or regular pricing.</div>
+
+<div id="staticRsmStatus" class="muted">Loading RSM registration settings...</div>
+<div id="staticRsmCode" class="code-box">Not configured</div>
+<button class="primary" id="copyRsmCodeBtn" type="button">Copy Code</button>
+
+<div class="static-rsm-cards">
+<div class="static-rsm-card">
+<div class="static-rsm-grid">
+<div>
+<h3>Founders Pricing</h3>
+<div class="muted">$10 per active seat monthly or $120 annually.</div>
+<div id="staticRsmFoundersLink" class="link-box muted"></div>
+<button class="primary" id="copyRsmFoundersLinkBtn" type="button">Copy Founders Link</button>
+</div>
+<div class="qr-box" id="staticRsmFoundersQr"></div>
+</div>
+</div>
 
 <div class="static-rsm-card">
 <div class="static-rsm-grid">
 <div>
-<div class="muted">Use this for the printed RSM creation cards. The QR opens the static registration page, and the private creation code authorizes the account creation.</div>
-<div id="staticRsmStatus" class="muted">Loading RSM registration settings...</div>
-<div id="staticRsmCode" class="code-box">Not configured</div>
-<div id="staticRsmLink" class="link-box muted"></div>
-<button class="primary" id="copyRsmCodeBtn" type="button">Copy Code</button>
-<button class="primary" id="copyRsmLinkBtn" type="button">Copy Link</button>
+<h3>Regular Pricing</h3>
+<div class="muted">$20 per active seat monthly or $240 annually.</div>
+<div id="staticRsmRegularLink" class="link-box muted"></div>
+<button class="primary" id="copyRsmRegularLinkBtn" type="button">Copy Regular Link</button>
 </div>
-<div class="qr-box" id="staticRsmQr"></div>
+<div class="qr-box" id="staticRsmRegularQr"></div>
+</div>
 </div>
 </div>
 
@@ -706,10 +729,13 @@ renderRsmList(data.rsms || []);
 async function loadStaticRsmRegistration(){
 const status=document.getElementById("staticRsmStatus");
 const codeEl=document.getElementById("staticRsmCode");
-const linkEl=document.getElementById("staticRsmLink");
-const qrEl=document.getElementById("staticRsmQr");
+const foundersLinkEl=document.getElementById("staticRsmFoundersLink");
+const regularLinkEl=document.getElementById("staticRsmRegularLink");
+const foundersQrEl=document.getElementById("staticRsmFoundersQr");
+const regularQrEl=document.getElementById("staticRsmRegularQr");
 const copyCodeBtn=document.getElementById("copyRsmCodeBtn");
-const copyLinkBtn=document.getElementById("copyRsmLinkBtn");
+const copyFoundersLinkBtn=document.getElementById("copyRsmFoundersLinkBtn");
+const copyRegularLinkBtn=document.getElementById("copyRsmRegularLinkBtn");
 
 try{
 const res=await fetch(BACKEND+"/get-rsm-registration-settings",{
@@ -719,34 +745,45 @@ headers:{ "x-admin-session":token }
 if(!res.ok){
 status.textContent="Unable to load permanent RSM registration settings.";
 copyCodeBtn.disabled=true;
-copyLinkBtn.disabled=true;
+copyFoundersLinkBtn.disabled=true;
+copyRegularLinkBtn.disabled=true;
 return;
 }
 
 const data=await res.json();
-const registrationUrl=data.registration_url||"";
+const foundersRegistrationUrl=data.founders_registration_url||data.registration_url||"";
+const regularRegistrationUrl=data.regular_registration_url||"";
 const creationCode=data.creation_code||"";
 
 status.textContent=data.configured
 ? "Configured. Keep this code private."
 : "RSM_CREATION_CODE is not configured in the app backend.";
 codeEl.textContent=creationCode||"Not configured";
-linkEl.innerHTML=registrationUrl
-? `<a href="${safeText(registrationUrl)}" target="_blank" rel="noopener">${safeText(registrationUrl)}</a>`
+foundersLinkEl.innerHTML=foundersRegistrationUrl
+? `<a href="${safeText(foundersRegistrationUrl)}" target="_blank" rel="noopener">${safeText(foundersRegistrationUrl)}</a>`
 : "";
-qrEl.innerHTML=registrationUrl
-? `<img alt="Permanent RSM registration QR" src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(registrationUrl)}" />`
+regularLinkEl.innerHTML=regularRegistrationUrl
+? `<a href="${safeText(regularRegistrationUrl)}" target="_blank" rel="noopener">${safeText(regularRegistrationUrl)}</a>`
+: "";
+foundersQrEl.innerHTML=foundersRegistrationUrl
+? `<img alt="Founders RSM registration QR" src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(foundersRegistrationUrl)}" />`
+ : "";
+regularQrEl.innerHTML=regularRegistrationUrl
+? `<img alt="Regular RSM registration QR" src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(regularRegistrationUrl)}" />`
 : "";
 
 copyCodeBtn.disabled=!creationCode;
-copyLinkBtn.disabled=!registrationUrl;
+copyFoundersLinkBtn.disabled=!foundersRegistrationUrl;
+copyRegularLinkBtn.disabled=!regularRegistrationUrl;
 
 copyCodeBtn.onclick=()=>navigator.clipboard.writeText(creationCode);
-copyLinkBtn.onclick=()=>navigator.clipboard.writeText(registrationUrl);
+copyFoundersLinkBtn.onclick=()=>navigator.clipboard.writeText(foundersRegistrationUrl);
+copyRegularLinkBtn.onclick=()=>navigator.clipboard.writeText(regularRegistrationUrl);
 }catch(err){
 status.textContent="Server error loading permanent RSM registration settings.";
 copyCodeBtn.disabled=true;
-copyLinkBtn.disabled=true;
+copyFoundersLinkBtn.disabled=true;
+copyRegularLinkBtn.disabled=true;
 }
 }
 

@@ -185,6 +185,12 @@ tr:nth-child(even){
   line-height:1.45;
 }
 
+.billing-actions{
+  display:grid;
+  gap:10px;
+  margin-top:14px;
+}
+
 @media(max-width:700px){
   .billing-options{ grid-template-columns:1fr; }
 }
@@ -317,9 +323,14 @@ Choose how this RSM office should be billed before continuing to Stripe.
 One subscription covers the RSM and active agents connected to this office.
 Best for agencies that want centralized billing and a single monthly or annual payment.
 </p>
-<button class="primary" onclick="openBillingPortal('office_paid')">
-Office Pays For Team
+<div class="billing-actions">
+<button class="primary" onclick="openBillingPortal('office_paid','monthly')">
+Office Pays Monthly
 </button>
+<button class="primary" onclick="openBillingPortal('office_paid','annual')">
+Office Pays Annually
+</button>
+</div>
 </div>
 
 <div class="billing-option">
@@ -328,9 +339,14 @@ Office Pays For Team
 The RSM keeps management and reporting access. Each agent maintains their own
 VitaLink subscription directly.
 </p>
-<button class="primary" onclick="openBillingPortal('agent_paid')">
-Agents Pay Individually
+<div class="billing-actions">
+<button class="primary" onclick="openBillingPortal('agent_paid','monthly')">
+RSM Pays Monthly
 </button>
+<button class="primary" onclick="openBillingPortal('agent_paid','annual')">
+RSM Pays Annually
+</button>
+</div>
 </div>
 </div>
 
@@ -376,7 +392,7 @@ function closeBillingChoice(){
 document.getElementById("billingChoiceModal").style.display="none";
 }
 
-async function openBillingPortal(billingMode){
+async function openBillingPortal(billingMode,billingInterval){
 
 const res = await fetch(
 `${BACKEND}/create-billing-portal`,
@@ -386,7 +402,7 @@ headers:{
 "x-admin-session":token,
 "Content-Type":"application/json"
 },
-body:JSON.stringify({ billingMode })
+body:JSON.stringify({ billingMode, billingInterval })
 }
 );
 
@@ -470,12 +486,20 @@ document.getElementById("dashboardContent").style.display="block";
 document.getElementById("enrollBtn").disabled=false;
 
 const billingModeLabel = data.billing_mode === "agent_paid"
-? "Agents Pay Individually"
-: "Office Pays For Team";
+  ? "Agents Pay Individually"
+  : "Office Pays For Team";
+const billingIntervalLabel = data.billing_interval === "annual"
+  ? "Annual"
+  : "Monthly";
+const pricingTierLabel = data.pricing_tier === "regular"
+  ? "Regular"
+  : "Founders";
 
 document.getElementById("billingModeLine").style.display="block";
 document.getElementById("billingModeLine").innerHTML =
-`<strong>Billing Mode:</strong> ${billingModeLabel}<br>
+`<strong>Pricing:</strong> ${pricingTierLabel}<br>
+<strong>Billing Mode:</strong> ${billingModeLabel}<br>
+<strong>Frequency:</strong> ${billingIntervalLabel}<br>
 <span style="color:#999">Billable seats: ${data.billable_seats || 1}</span>`;
 
 /* STATS */

@@ -131,6 +131,15 @@ button:disabled {
 .error { color: var(--danger); }
 .success { color: var(--success); }
 .hidden { display: none; }
+.pricing-note {
+  margin: -10px 0 18px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--muted);
+  background: rgba(124,198,232,.08);
+  line-height: 1.35;
+}
 </style>
 </head>
 
@@ -141,6 +150,7 @@ button:disabled {
   <p class="sub">
     Enter the RSM creation code from your VitaLink card to create an RSM account.
   </p>
+  <div id="pricingNote" class="pricing-note hidden"></div>
 
   <form id="rsmForm">
     <label for="creationCode">RSM Creation Code</label>
@@ -181,6 +191,15 @@ const BACKEND = "https://vitalink-app.netlify.app/.netlify/functions";
 const form = document.getElementById("rsmForm");
 const button = document.getElementById("submitBtn");
 const message = document.getElementById("message");
+const pricingTier = new URLSearchParams(window.location.search).get("pricing") === "regular"
+  ? "regular"
+  : "founders";
+const pricingNote = document.getElementById("pricingNote");
+
+pricingNote.textContent = pricingTier === "regular"
+  ? "Regular office pricing will apply when billing is activated."
+  : "Founders office pricing will apply when billing is activated.";
+pricingNote.classList.remove("hidden");
 
 function setMessage(text, type) {
   message.textContent = text || "";
@@ -208,6 +227,7 @@ form.addEventListener("submit", async function (event) {
     phone: document.getElementById("phone").value.trim(),
     region: document.getElementById("region").value.trim(),
     password: document.getElementById("password").value,
+    pricingTier,
   };
 
   const confirmPassword = document.getElementById("confirmPassword").value;
