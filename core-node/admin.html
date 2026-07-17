@@ -231,7 +231,7 @@ document.addEventListener("keydown", (event) => {
   if (event.key !== "Enter") return;
 
   const active = document.activeElement;
-  if (active && ["TEXTAREA", "BUTTON", "A"].includes(active.tagName)) return;
+  if (active && ["TEXTAREA", "A"].includes(active.tagName)) return;
 
   event.preventDefault();
 
@@ -325,28 +325,48 @@ async function login() {
 async function verifyCode() {
 
   const code = document.getElementById("smsCode").value.trim();
-  if (!code) return;
+  const btn = document.getElementById("verifyBtn");
 
-  const result = await confirmationResult.confirm(code);
-  const idToken = await result.user.getIdToken();
+  if (!code || !confirmationResult || !currentEmail) {
+    showError("Verification code required.");
+    return;
+  }
 
-  const res = await fetch(`${API}/admin-verify`, {
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({ idToken, email: currentEmail })
-  });
+  btn.disabled = true;
+  showError("Verifying...");
 
-  if (!res.ok) return;
+  try {
+    const result = await confirmationResult.confirm(code);
+    const idToken = await result.user.getIdToken();
 
-  const data = await res.json();
+    const res = await fetch(`${API}/admin-verify`, {
+      method:"POST",
+      credentials: "omit",
+      cache: "no-store",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ idToken, email: currentEmail })
+    });
 
-  sessionStorage.setItem("adminSessionToken", data.token);
-  sessionStorage.setItem("userRole", data.role);
+    const data = await res.json().catch(() => ({}));
 
-  if (data.role === "admin") {
-    window.location.href = "admin_report.html";
-  } else {
-    window.location.href = "rsm_report.html";
+    if (!res.ok || !data.token) {
+      showError(data.error || "Verification failed.");
+      return;
+    }
+
+    sessionStorage.setItem("adminSessionToken", data.token);
+    sessionStorage.setItem("userRole", data.role);
+
+    if (data.role === "admin") {
+      window.location.href = "admin_report.html";
+    } else {
+      window.location.href = "rsm_report.html";
+    }
+  } catch (err) {
+    console.error("Admin verification error:", err);
+    showError("Verification failed.");
+  } finally {
+    btn.disabled = false;
   }
 }
 
