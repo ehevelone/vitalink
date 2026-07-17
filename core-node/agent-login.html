@@ -236,11 +236,34 @@ window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("verifyBtn").addEventListener("click", verifyCode);
 });
 
-// 🔥 NEW FUNCTION (ONLY ADDITION)
 function togglePassword() {
   const input = document.getElementById("password");
   input.type = input.type === "password" ? "text" : "password";
 }
+
+document.addEventListener("keydown", (event) => {
+  if (event.key !== "Enter") return;
+
+  const active = document.activeElement;
+  if (active && ["TEXTAREA", "BUTTON", "A"].includes(active.tagName)) return;
+
+  event.preventDefault();
+
+  if (document.getElementById("resetModal").classList.contains("active")) {
+    const hasResetCode = document.getElementById("resetCode").value.trim();
+    const hasPassword = document.getElementById("resetPassword").value;
+
+    if (hasResetCode || hasPassword) {
+      submitReset();
+    } else {
+      requestReset();
+    }
+  } else if (!document.getElementById("step1").classList.contains("hidden")) {
+    login();
+  } else if (!document.getElementById("step2").classList.contains("hidden")) {
+    verifyCode();
+  }
+});
 
 function showError(msg){
   const el = document.getElementById("error");

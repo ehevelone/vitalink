@@ -200,6 +200,16 @@ function togglePassword(){
   }
 }
 
+document.addEventListener("keydown", (event) => {
+  if (event.key !== "Enter") return;
+
+  const active = document.activeElement;
+  if (active && ["TEXTAREA", "BUTTON", "A"].includes(active.tagName)) return;
+
+  event.preventDefault();
+  login();
+});
+
 async function login(){
 
   const email = document.getElementById("email").value.trim();

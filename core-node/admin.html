@@ -222,11 +222,29 @@ let currentEmail = null;
 document.getElementById("loginBtn").addEventListener("click", login);
 document.getElementById("verifyBtn").addEventListener("click", verifyCode);
 
-// 🔥 NEW (ONLY ADDITION)
 function togglePassword(id) {
   const input = document.getElementById(id);
   input.type = input.type === "password" ? "text" : "password";
 }
+
+document.addEventListener("keydown", (event) => {
+  if (event.key !== "Enter") return;
+
+  const active = document.activeElement;
+  if (active && ["TEXTAREA", "BUTTON", "A"].includes(active.tagName)) return;
+
+  event.preventDefault();
+
+  if (!document.getElementById("step1").classList.contains("hidden")) {
+    login();
+  } else if (!document.getElementById("step2").classList.contains("hidden")) {
+    verifyCode();
+  } else if (!document.getElementById("reset1").classList.contains("hidden")) {
+    sendReset();
+  } else if (!document.getElementById("reset2").classList.contains("hidden")) {
+    confirmReset();
+  }
+});
 
 function showError(msg){
   const el = document.getElementById("error");

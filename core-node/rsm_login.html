@@ -366,6 +366,31 @@
       input.type = input.type === "password" ? "text" : "password";
     }
 
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter") return;
+
+      const active = document.activeElement;
+      if (active && ["TEXTAREA", "BUTTON", "A"].includes(active.tagName)) return;
+
+      event.preventDefault();
+
+      if (!document.getElementById("step1").classList.contains("hidden")) {
+        loginRSM();
+      } else if (!document.getElementById("step2").classList.contains("hidden")) {
+        verifyCode();
+      } else if (!document.getElementById("resetStep").classList.contains("hidden")) {
+        const hasResetCode = document.getElementById("resetCode").value.trim();
+        const hasPassword = document.getElementById("resetPassword").value;
+        const hasConfirmPassword = document.getElementById("resetConfirmPassword").value;
+
+        if (hasResetCode || hasPassword || hasConfirmPassword) {
+          confirmRsmReset();
+        } else {
+          sendRsmResetCode();
+        }
+      }
+    });
+
     function setResult(message, isError) {
       const resultDiv = document.getElementById("result");
       resultDiv.className = "result";

@@ -528,26 +528,38 @@ window.deleteRow = async (table, id) => {
   toast("Deleted.");
 };
 
+async function unlockMarketingCrm(){
+  try{
+    const login = await publicApi("login", {
+      email: $("emailInput").value.trim(),
+      password: $("passwordInput").value
+    });
+
+    state.sessionToken = login.session_token;
+    state.currentUser = login.user;
+    sessionStorage.setItem("marketingCrmSession", state.sessionToken);
+    sessionStorage.setItem("marketingCrmUser", JSON.stringify(state.currentUser));
+
+    await loadData();
+    $("loginCard").hidden = true;
+    $("appShell").hidden = false;
+    toast("Growth CRM unlocked.");
+  }catch(err){
+    $("loginMessage").textContent = err.message;
+  }
+}
+
 function wireEvents(){
-  $("unlockBtn").addEventListener("click", async () => {
-    try{
-      const login = await publicApi("login", {
-        email: $("emailInput").value.trim(),
-        password: $("passwordInput").value
-      });
+  $("unlockBtn").addEventListener("click", unlockMarketingCrm);
 
-      state.sessionToken = login.session_token;
-      state.currentUser = login.user;
-      sessionStorage.setItem("marketingCrmSession", state.sessionToken);
-      sessionStorage.setItem("marketingCrmUser", JSON.stringify(state.currentUser));
+  $("loginCard").addEventListener("keydown", (event) => {
+    if (event.key !== "Enter") return;
 
-      await loadData();
-      $("loginCard").hidden = true;
-      $("appShell").hidden = false;
-      toast("Growth CRM unlocked.");
-    }catch(err){
-      $("loginMessage").textContent = err.message;
-    }
+    const active = document.activeElement;
+    if (active && ["TEXTAREA", "BUTTON", "A"].includes(active.tagName)) return;
+
+    event.preventDefault();
+    unlockMarketingCrm();
   });
 
   if(state.sessionToken){
