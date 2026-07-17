@@ -280,7 +280,7 @@ async function login() {
       );
     } catch (err) {
       console.error("2FA send error:", err);
-      showError("Could not send verification code. Complete the security check and try again.");
+      showError(`Could not send verification code${err && err.code ? ` (${err.code})` : ""}. Complete the security check and try again.`);
       return;
     }
 
