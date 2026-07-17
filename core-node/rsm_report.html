@@ -191,8 +191,66 @@ tr:nth-child(even){
   margin-top:14px;
 }
 
+.invite-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 220px;
+  gap:24px;
+  align-items:center;
+}
+
+.muted{
+  color:#999;
+  line-height:1.45;
+}
+
+.code-box{
+  display:inline-block;
+  margin:16px 0 12px;
+  padding:12px 18px;
+  border:1px solid #7cc6e8;
+  border-radius:10px;
+  background:rgba(124,198,232,.1);
+  color:#7cc6e8;
+  font-size:24px;
+  font-weight:800;
+  letter-spacing:1px;
+}
+
+.link-box{
+  margin:8px 0 14px;
+  color:#7cc6e8;
+  font-size:14px;
+  word-break:break-all;
+}
+
+.link-box a{
+  color:#7cc6e8;
+  text-decoration:none;
+}
+
+.qr-box{
+  display:flex;
+  justify-content:center;
+}
+
+.qr-box img{
+  width:220px;
+  height:220px;
+  padding:10px;
+  border-radius:8px;
+  background:#fff;
+}
+
+.invite-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
 @media(max-width:700px){
   .billing-options{ grid-template-columns:1fr; }
+  .invite-grid{ grid-template-columns:1fr; }
+  .qr-box{ justify-content:flex-start; }
 }
 
 </style>
@@ -225,9 +283,23 @@ Manage Billing
 
 <div class="card">
 
-<h2>Agent Invite Link</h2>
+<h2>Agent Enrollment QR</h2>
+<div class="muted">
+Use this permanent QR/code for agents connected to your office. Agents scan the QR,
+complete setup, and stay tied to your RSM account.
+</div>
 
-<div id="inviteLink" style="margin-top:12px;font-size:14px;color:#7cc6e8;word-break:break-all;"></div>
+<div class="invite-grid">
+<div>
+<div id="inviteCode" class="code-box">Loading...</div>
+<div id="inviteLink" class="link-box"></div>
+<div class="invite-actions">
+<button class="primary" id="copyInviteCodeBtn" type="button">Copy Code</button>
+<button class="primary" id="copyInviteLinkBtn" type="button">Copy Link</button>
+</div>
+</div>
+<div id="inviteQr" class="qr-box"></div>
+</div>
 
 </div>
 
@@ -361,6 +433,8 @@ Cancel
 const BACKEND="https://vitalink-app.netlify.app/.netlify/functions";
 const token=sessionStorage.getItem("adminSessionToken");
 const role=sessionStorage.getItem("userRole");
+let currentInviteCode="";
+let currentInviteLink="";
 
 if(!token||role!=="rsm"){
 window.location.href="admin.html";
@@ -465,7 +539,18 @@ const data=await res.json();
 
 const invite = `https://vitalink-app.netlify.app/.netlify/functions/agent-enroll-from-invite?rsm=${data.invite_code}`;
 
-document.getElementById("inviteLink").innerText = invite;
+currentInviteCode = data.invite_code || "";
+currentInviteLink = currentInviteCode ? invite : "";
+
+document.getElementById("inviteCode").innerText = currentInviteCode || "Not configured";
+document.getElementById("inviteLink").innerHTML = currentInviteLink
+  ? `<a href="${currentInviteLink}" target="_blank" rel="noopener">${currentInviteLink}</a>`
+  : "No RSM enrollment code is configured.";
+document.getElementById("inviteQr").innerHTML = currentInviteLink
+  ? `<img alt="Agent enrollment QR" src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(currentInviteLink)}" />`
+  : "";
+document.getElementById("copyInviteCodeBtn").disabled = !currentInviteCode;
+document.getElementById("copyInviteLinkBtn").disabled = !currentInviteLink;
 
 /* BILLING LOCK */
 
@@ -654,6 +739,14 @@ load();
 
 /* retry once after Stripe webhook finishes */
 setTimeout(load,2000);
+
+document.getElementById("copyInviteCodeBtn").onclick=()=>{
+  if(currentInviteCode) navigator.clipboard.writeText(currentInviteCode);
+};
+
+document.getElementById("copyInviteLinkBtn").onclick=()=>{
+  if(currentInviteLink) navigator.clipboard.writeText(currentInviteLink);
+};
 
 </script>
 
