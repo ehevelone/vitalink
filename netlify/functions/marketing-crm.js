@@ -1,6 +1,7 @@
 const { Pool } = require("pg");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
+const { findAdminByEmail } = require("./services/admins");
 
 const pool = new Pool({
   connectionString: process.env.SUPABASE_URL,
@@ -86,11 +87,18 @@ async function ensureTables(){
 
     CREATE TABLE IF NOT EXISTS marketing_crm_sessions (
       id uuid primary key default gen_random_uuid(),
-      agent_id integer not null,
+      agent_id integer,
+      admin_id uuid,
       session_token text not null unique,
       session_expires timestamptz not null,
       created_at timestamptz not null default now()
     );
+
+    ALTER TABLE marketing_crm_sessions
+    ADD COLUMN IF NOT EXISTS admin_id uuid;
+
+    ALTER TABLE marketing_crm_sessions
+    ALTER COLUMN agent_id DROP NOT NULL;
 
     CREATE TABLE IF NOT EXISTS marketing_contacts (
       id uuid primary key default gen_random_uuid(),
@@ -149,6 +157,48 @@ async function login(body){
 
   if(!email || !password){
     throw new Error("Email and password are required.");
+  }
+
+  const adminUser = await findAdminByEmail(pool, email);
+
+  if(adminUser){
+    if(adminUser.active !== true || adminUser.full_access !== true){
+      throw new Error("This login is not authorized for Marketing CRM access.");
+    }
+
+    if(!adminUser.password_hash){
+      throw new Error("Admin password is not set.");
+    }
+
+    let ok = await bcrypt.compare(password, adminUser.password_hash);
+    const trimmedPassword = password.trim();
+
+    if(!ok && trimmedPassword && trimmedPassword !== password){
+      ok = await bcrypt.compare(trimmedPassword, adminUser.password_hash);
+    }
+
+    if(!ok){
+      throw new Error("Invalid credentials.");
+    }
+
+    const token = crypto.randomBytes(32).toString("hex");
+    const expires = new Date(Date.now() + 12 * 60 * 60 * 1000);
+
+    await pool.query(`
+      INSERT INTO marketing_crm_sessions (admin_id, session_token, session_expires)
+      VALUES ($1, $2, $3)
+    `, [adminUser.id, token, expires.toISOString()]);
+
+    return {
+      session_token: token,
+      session_expires: expires.toISOString(),
+      user: {
+        id: adminUser.id,
+        email: adminUser.email,
+        name: adminUser.name,
+        role: "admin"
+      }
+    };
   }
 
   const result = await pool.query(`
@@ -216,13 +266,23 @@ async function requireMarketingAdmin(event){
   }
 
   const result = await pool.query(`
-    SELECT s.agent_id, s.session_expires, a.email, a.name
+    SELECT
+      s.agent_id,
+      s.admin_id,
+      s.session_expires,
+      COALESCE(a.email, ad.email) AS email,
+      COALESCE(a.name, ad.name) AS name,
+      CASE WHEN ad.id IS NOT NULL THEN 'admin' ELSE 'agent' END AS role
     FROM marketing_crm_sessions s
-    JOIN agents a ON a.id = s.agent_id
+    LEFT JOIN agents a ON a.id = s.agent_id
+    LEFT JOIN admins ad ON ad.id = s.admin_id
     WHERE s.session_token = $1
       AND s.session_expires > NOW()
-      AND a.active = TRUE
-      AND a.admin_manual_access = TRUE
+      AND (
+        (a.active = TRUE AND a.admin_manual_access = TRUE)
+        OR
+        (ad.active = TRUE AND ad.full_access = TRUE)
+      )
     LIMIT 1
   `, [token]);
 

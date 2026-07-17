@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { Pool } = require("pg");
+const { findAdminBySession } = require("./services/admins");
 
 const pool = new Pool({
   connectionString:process.env.SUPABASE_URL,
@@ -32,6 +33,13 @@ async function requireAdmin(event){
       ok:false,
       error:"Missing admin session"
     };
+  }
+
+  const adminSession =
+    await findAdminBySession(pool, token);
+
+  if(adminSession){
+    return { ok:true };
   }
 
   const result =

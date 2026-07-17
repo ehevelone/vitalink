@@ -262,6 +262,8 @@ async function login() {
 
   if (data.step === "firebase_2fa") {
 
+    showError("Sending verification code...");
+
     document.getElementById("recaptcha-container").innerHTML = "";
 
     const verifier = new firebase.auth.RecaptchaVerifier(
@@ -271,11 +273,18 @@ async function login() {
 
     await verifier.render();
 
-    confirmationResult = await firebase.auth().signInWithPhoneNumber(
-      data.phone,
-      verifier
-    );
+    try {
+      confirmationResult = await firebase.auth().signInWithPhoneNumber(
+        data.phone,
+        verifier
+      );
+    } catch (err) {
+      console.error("2FA send error:", err);
+      showError("Could not send verification code. Complete the security check and try again.");
+      return;
+    }
 
+    document.getElementById("error").classList.add("hidden");
     document.getElementById("step1").classList.add("hidden");
     document.getElementById("step2").classList.remove("hidden");
     return;

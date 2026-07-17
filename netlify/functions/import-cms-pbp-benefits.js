@@ -4,6 +4,7 @@ const { Pool } = require("pg");
 const {
   normalizePlanRecord
 } = require("./cms-pbp-utils");
+const { findAdminBySession } = require("./services/admins");
 
 const DEFAULT_CMS_URL =
   "https://www.cms.gov/files/zip/pbp-benefits-2026-json.zip";
@@ -52,6 +53,13 @@ async function requireAdmin(event){
       ok:false,
       error:"Missing admin session"
     };
+  }
+
+  const adminSession =
+    await findAdminBySession(pool, token);
+
+  if(adminSession){
+    return { ok:true };
   }
 
   const result =
