@@ -45,6 +45,12 @@ function cleanDate(value){
   return text || null;
 }
 
+function isAdminOverride(...values){
+  return values.some((value) =>
+    String(value || "").trim().toLowerCase() === "admin_override"
+  );
+}
+
 function extractJson(text){
   const raw = String(text || "").trim();
 
@@ -202,7 +208,16 @@ async function login(body){
   }
 
   const result = await pool.query(`
-    SELECT id, email, name, password_hash, active, admin_manual_access
+    SELECT
+      id,
+      email,
+      name,
+      password_hash,
+      active,
+      admin_manual_access,
+      crm_subscription_status,
+      crm_stripe_customer_id,
+      crm_stripe_subscription_id
     FROM agents
     WHERE LOWER(email) = LOWER($1)
     LIMIT 1
@@ -213,8 +228,15 @@ async function login(body){
   }
 
   const agent = result.rows[0];
+  const hasManualAccess =
+    agent.admin_manual_access === true ||
+    isAdminOverride(
+      agent.crm_subscription_status,
+      agent.crm_stripe_customer_id,
+      agent.crm_stripe_subscription_id
+    );
 
-  if(!agent.active || !agent.admin_manual_access){
+  if(!agent.active || !hasManualAccess){
     throw new Error("This login is not authorized for Marketing CRM access.");
   }
 
@@ -279,7 +301,15 @@ async function requireMarketingAdmin(event){
     WHERE s.session_token = $1
       AND s.session_expires > NOW()
       AND (
-        (a.active = TRUE AND a.admin_manual_access = TRUE)
+        (
+          a.active = TRUE
+          AND (
+            a.admin_manual_access = TRUE
+            OR a.crm_subscription_status = 'admin_override'
+            OR a.crm_stripe_customer_id = 'admin_override'
+            OR a.crm_stripe_subscription_id = 'admin_override'
+          )
+        )
         OR
         (ad.active = TRUE AND ad.full_access = TRUE)
       )

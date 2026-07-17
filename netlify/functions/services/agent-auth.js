@@ -39,7 +39,7 @@ async function verifyAgentSession({ agentId, agentEmail, token }) {
   const filters = [
     "session_token = $1",
     "session_expires > NOW()",
-    "(active = TRUE OR (billing_owner IS NOT NULL AND subscription_status = 'active'))",
+    "(active = TRUE OR (billing_owner IS NOT NULL AND subscription_status IN ('active', 'admin_override')))",
   ];
 
   if (agentId) {

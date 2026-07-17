@@ -40,10 +40,10 @@ async function requireCrmAgent(event, requestedAgentId) {
     WHERE crm_uuid = $1
       AND session_token = $2
       AND session_expires > NOW()
-      AND (active = TRUE OR (billing_owner IS NOT NULL AND subscription_status = 'active'))
+      AND (active = TRUE OR (billing_owner IS NOT NULL AND subscription_status IN ('active', 'admin_override')))
       AND (
         crm_subscription_valid = TRUE
-        OR crm_subscription_status IN ('active', 'trialing')
+        OR crm_subscription_status IN ('active', 'trialing', 'admin_override', 'admin_manual_access')
       )
     LIMIT 1
     `,
