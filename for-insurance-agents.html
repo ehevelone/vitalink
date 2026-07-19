@@ -784,6 +784,61 @@ p{
   margin:10px 0 14px;
 }
 
+.founders-label{
+  display:inline-flex;
+  align-items:center;
+  width:max-content;
+  margin-bottom:10px;
+  padding:6px 10px;
+  border:1px solid rgba(124,198,232,.55);
+  border-radius:999px;
+  color:var(--blue);
+  font-size:.78rem;
+  font-weight:900;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  background:rgba(124,198,232,.1);
+}
+
+.regular-price{
+  color:var(--soft);
+  font-size:.95rem;
+  margin:-4px 0 14px;
+}
+
+.regular-price span{
+  color:#fff;
+  font-weight:800;
+}
+
+.billing-options{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+  margin:18px 0;
+}
+
+.billing-option{
+  padding:14px;
+  border:1px solid rgba(124,198,232,.28);
+  border-radius:14px;
+  background:rgba(14,24,36,.74);
+}
+
+.billing-option strong{
+  display:block;
+  color:#fff;
+  font-size:.95rem;
+  margin-bottom:6px;
+}
+
+.billing-option span{
+  display:block;
+  color:var(--blue);
+  font-size:1.35rem;
+  font-weight:900;
+}
+
 .note{
   color:var(--soft);
   font-size:.96rem;
@@ -1063,21 +1118,47 @@ p{
     <p>Current founders pricing is available while VitaLink continues expanding its agent network.</p>
     <div class="pricing-grid">
       <div class="price-card">
+        <div class="founders-label">Founders Pricing</div>
         <strong>App Access</strong>
         <div class="price">$10 / month</div>
+        <p class="regular-price">Regular price: <span>$20 / month</span> or <span>$240 / year</span></p>
         <p>Agent access for the VitaLink app and connected client workflows.</p>
         <p class="note">Best for agents who want app-only access first.</p>
+        <div class="billing-options">
+          <div class="billing-option">
+            <strong>Monthly</strong>
+            <span>$10</span>
+          </div>
+          <div class="billing-option">
+            <strong>Annual</strong>
+            <span>$120</span>
+          </div>
+        </div>
         <div class="cta-row">
-          <a href="agent-access.html" class="btn">Start Agent Access</a>
+          <a href="agent-access.html?plan=app&billing=monthly" class="btn">Monthly</a>
+          <a href="agent-access.html?plan=app&billing=annual" class="btn secondary">Annual</a>
         </div>
       </div>
       <div class="price-card">
+        <div class="founders-label">Founders Pricing</div>
         <strong>App + CRM Access</strong>
         <div class="price">$30 / month</div>
+        <p class="regular-price">Regular price: <span>$40 / month</span> or <span>$480 / year</span></p>
         <p>Agent app access plus the VitaLink CRM workspace for clients, tasks, notes, appointments, and follow-up.</p>
         <p class="note">Best for agents who want the full daily workspace.</p>
+        <div class="billing-options">
+          <div class="billing-option">
+            <strong>Monthly</strong>
+            <span>$30</span>
+          </div>
+          <div class="billing-option">
+            <strong>Annual</strong>
+            <span>$360</span>
+          </div>
+        </div>
         <div class="cta-row">
-          <a href="agent-access.html?plan=app_crm" class="btn">Start App + CRM</a>
+          <a href="agent-access.html?plan=app_crm&billing=monthly" class="btn">Monthly</a>
+          <a href="agent-access.html?plan=app_crm&billing=annual" class="btn secondary">Annual</a>
         </div>
       </div>
     </div>
