@@ -10,6 +10,7 @@ const clientId = params.get("id");
 let currentClient = null;
 let clientPolicies = [];
 let vitalinkDocuments = {};
+let vitalinkPackageReadyForDestination = false;
 
 console.log("VitaLink client view loaded: notes sync enabled");
 
@@ -323,6 +324,12 @@ function setButtonEnabled(id, enabled){
 
 }
 
+function setDestinationPrepStatus(message){
+
+  setText("destinationPrepStatus", message);
+
+}
+
 async function loadVitalinkStatus(){
 
   const agentId =
@@ -362,9 +369,29 @@ async function loadVitalinkStatus(){
     setButtonEnabled("printHipaaBtn", Boolean(vitalinkDocuments.hipaa?.id));
     setButtonEnabled("printSoaBtn", Boolean(vitalinkDocuments.soa?.id));
 
+    vitalinkPackageReadyForDestination =
+      Boolean(client.vitalink_connected) &&
+      Boolean(pkg.id || client.last_vitalink_package_at) &&
+      Boolean(pkg.imported_at || client.last_vitalink_import_at) &&
+      Boolean(vitalinkDocuments.hipaa?.id) &&
+      Boolean(vitalinkDocuments.soa?.id) &&
+      Boolean(client.hipaa_signed_at || vitalinkDocuments.hipaa?.signed_at) &&
+      Boolean(client.soa_signed_at || vitalinkDocuments.soa?.signed_at);
+
+    setButtonEnabled("prepareSunfireBtn", vitalinkPackageReadyForDestination);
+    setButtonEnabled("prepareDrxBtn", vitalinkPackageReadyForDestination);
+    setDestinationPrepStatus(
+      vitalinkPackageReadyForDestination
+        ? "Ready. Agent must review and initiate each destination handoff."
+        : "Requires signed HIPAA/SOA and an imported VitaLink package."
+    );
+
   }catch(err){
 
     console.warn("Unable to load VitaLink status", err);
+    setButtonEnabled("prepareSunfireBtn", false);
+    setButtonEnabled("prepareDrxBtn", false);
+    setDestinationPrepStatus("Unable to verify VitaLink authorization status.");
 
   }
 
@@ -446,6 +473,103 @@ async function printVitalinkDocument(type){
   };
 
   document.body.appendChild(frame);
+
+}
+
+async function copyTextToClipboard(text){
+
+  if(navigator.clipboard && window.isSecureContext){
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.left = "-9999px";
+  textarea.style.top = "0";
+
+  document.body.appendChild(textarea);
+  textarea.focus();
+  textarea.select();
+
+  const copied = document.execCommand("copy");
+  textarea.remove();
+
+  if(!copied){
+    throw new Error("Unable to copy destination package");
+  }
+
+}
+
+async function prepareDestinationPackage(destination){
+
+  const destinationLabel =
+    destination === "sunfire"
+      ? "SunFire"
+      : "DRX";
+
+  if(!vitalinkPackageReadyForDestination){
+    alert("This client needs a signed HIPAA/SOA and an imported VitaLink package before destination prep.");
+    return;
+  }
+
+  setDestinationPrepStatus(`Preparing ${destinationLabel} package...`);
+
+  try{
+
+    const agentId =
+      sessionStorage.getItem("crm_uuid");
+
+    const res = await fetch(
+      "/.netlify/functions/prepare-crm-destination-package",
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          client_id:clientId,
+          agent_id:agentId,
+          destination
+        })
+      }
+    );
+
+    const data = await res.json();
+
+    if(!res.ok || !data.success){
+      const message =
+        data.error ||
+        `Unable to prepare ${destinationLabel} package.`;
+
+      setDestinationPrepStatus(message);
+      alert(message);
+      return;
+    }
+
+    await copyTextToClipboard(
+      JSON.stringify(data.profilePackage, null, 2)
+    );
+
+    const loginUrl =
+      data.destination && data.destination.loginUrl;
+
+    if(loginUrl){
+      window.open(loginUrl, "_blank", "noopener");
+      setDestinationPrepStatus(`${destinationLabel} package copied. Destination login opened.`);
+    }else{
+      setDestinationPrepStatus(`${destinationLabel} package copied. Login URL is not configured yet.`);
+    }
+
+    alert(`${destinationLabel} package prepared and copied. Review it before entering it into the destination system.`);
+
+  }catch(err){
+    console.error(err);
+    setDestinationPrepStatus(`Unable to prepare ${destinationLabel} package.`);
+    alert(`Unable to prepare ${destinationLabel} package.`);
+  }
 
 }
 

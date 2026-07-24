@@ -358,6 +358,36 @@ button:hover{
   cursor:not-allowed;
 }
 
+.destination-prep-panel{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:16px;
+  align-items:end;
+  margin-top:16px;
+  padding:14px;
+  border:1px solid #e5e7eb;
+  border-radius:14px;
+  background:#f8fafc;
+}
+
+.destination-prep-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+.destination-prep-actions button:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+
+.destination-prep-status{
+  margin-top:8px;
+  font-size:.85rem;
+  color:#475569;
+}
+
 .notification-hero{
   display:flex;
   justify-content:space-between;
@@ -1018,6 +1048,18 @@ button:hover{
     width:auto;
     background:#0f172a;
     color:#fff;
+  }
+
+  .destination-prep-panel{
+    grid-template-columns:1fr;
+  }
+
+  .destination-prep-actions{
+    justify-content:flex-start;
+  }
+
+  .destination-prep-actions button{
+    width:100%;
   }
 
 }

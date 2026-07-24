@@ -811,6 +811,38 @@
     </button>
   </div>
 
+  <div class="destination-prep-panel">
+    <div>
+      <div class="label">Destination Prep</div>
+      <div class="client-sub">
+        Prepare this authorized VitaLink profile for a destination system. Nothing is pushed automatically.
+      </div>
+      <div class="destination-prep-status" id="destinationPrepStatus">
+        Requires signed HIPAA/SOA and an imported VitaLink package.
+      </div>
+    </div>
+
+    <div class="destination-prep-actions">
+      <button
+        class="edit-btn secondary"
+        id="prepareSunfireBtn"
+        onclick="prepareDestinationPackage('sunfire')"
+        disabled
+      >
+        Prepare SunFire
+      </button>
+
+      <button
+        class="edit-btn secondary"
+        id="prepareDrxBtn"
+        onclick="prepareDestinationPackage('drx')"
+        disabled
+      >
+        Prepare DRX
+      </button>
+    </div>
+  </div>
+
 </div>
 
 <!-- MEDICATIONS & DOCTORS -->
