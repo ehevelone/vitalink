@@ -224,6 +224,90 @@ margin:22px auto 0;
 color:#9aa7b3;
 font-size:.92rem;
 }
+.agent-tools{
+display:none;
+margin:0 auto 28px;
+padding:22px;
+background:linear-gradient(180deg,#101820 0%,#080c10 100%);
+border:1px solid var(--divider);
+border-radius:18px;
+box-shadow:0 0 0 1px rgba(124,198,232,.08),0 18px 44px rgba(0,0,0,.72);
+text-align:left;
+}
+.agent-tools-header{
+display:flex;
+justify-content:space-between;
+gap:16px;
+align-items:flex-start;
+margin-bottom:16px;
+}
+.agent-tools h2{
+margin:0 0 6px;
+font-size:1.45rem;
+}
+.agent-tools p{
+margin:0;
+color:var(--text-muted);
+}
+.onboard-grid{
+display:grid;
+grid-template-columns:repeat(2,minmax(0,1fr));
+gap:12px;
+}
+.onboard-grid input{
+width:100%;
+border:1px solid var(--divider);
+background:#05080b;
+color:#fff;
+border-radius:10px;
+padding:12px 14px;
+font-size:1rem;
+}
+.wide{
+grid-column:1/3;
+}
+.onboard-section-title{
+margin:18px 0 10px;
+font-weight:900;
+color:#fff;
+}
+.checkbox-row{
+display:flex;
+align-items:center;
+gap:10px;
+margin-top:14px;
+color:#d6dce3;
+font-weight:700;
+}
+.onboard-actions{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+margin-top:18px;
+}
+.onboard-result{
+display:none;
+margin-top:16px;
+padding:14px;
+border:1px solid rgba(124,198,232,.5);
+border-radius:12px;
+background:rgba(124,198,232,.10);
+color:#e8edf2;
+word-break:break-word;
+}
+.onboard-result strong{
+display:block;
+margin-bottom:6px;
+}
+.secondary-action{
+border:1px solid var(--divider);
+background:#111821;
+color:#fff;
+border-radius:10px;
+padding:12px 16px;
+font-weight:900;
+cursor:pointer;
+}
 @media(max-width:820px){
 main{
 padding:36px 16px 56px;
@@ -240,6 +324,14 @@ min-width:0;
 .billing-toggle{
 width:100%;
 }
+.agent-tools-header,
+.onboard-grid{
+display:grid;
+grid-template-columns:1fr;
+}
+.wide{
+grid-column:auto;
+}
 }
 </style>
 </head>
@@ -251,6 +343,60 @@ width:100%;
   <p class="intro">
     Select app-only access or the full App + CRM workspace, then choose monthly or annual billing before secure Stripe checkout.
   </p>
+
+  <section class="agent-tools" id="agentTools">
+    <div class="agent-tools-header">
+      <div>
+        <h2>In-Person Client Onboarding</h2>
+        <p>Create a 2-hour setup link while sitting with the client. If it expires, start over.</p>
+      </div>
+      <button class="secondary-action" type="button" onclick="clearOnboardingForm()">Clear</button>
+    </div>
+
+    <div class="onboard-grid">
+      <input id="onboardFullName" type="text" placeholder="Full Name">
+      <input id="onboardDob" type="date">
+      <input id="onboardPhone" type="text" placeholder="Phone">
+      <input id="onboardEmail" type="email" placeholder="Email">
+      <input id="onboardAddress" type="text" placeholder="Address" class="wide">
+      <input id="onboardCity" type="text" placeholder="City">
+      <input id="onboardState" type="text" placeholder="State">
+      <input id="onboardZip" type="text" placeholder="ZIP">
+    </div>
+
+    <div class="onboard-section-title">Emergency Information</div>
+
+    <div class="onboard-grid">
+      <input id="onboardEmergencyName1" type="text" placeholder="Emergency Contact 1">
+      <input id="onboardEmergencyPhone1" type="text" placeholder="Emergency Phone 1">
+      <input id="onboardEmergencyName2" type="text" placeholder="Emergency Contact 2">
+      <input id="onboardEmergencyPhone2" type="text" placeholder="Emergency Phone 2">
+      <input id="onboardEmergencyName3" type="text" placeholder="Emergency Contact 3">
+      <input id="onboardEmergencyPhone3" type="text" placeholder="Emergency Phone 3">
+      <input id="onboardBloodType" type="text" placeholder="Blood Type">
+      <label class="checkbox-row">
+        <input id="onboardOrganDonor" type="checkbox">
+        <span>Organ Donor</span>
+      </label>
+      <input id="onboardAllergies" type="text" placeholder="Allergies" class="wide">
+      <input id="onboardConditions" type="text" placeholder="Conditions" class="wide">
+      <input id="onboardImplants" type="text" placeholder="Implanted Devices" class="wide">
+      <input id="onboardProcedures" type="text" placeholder="Major Procedures" class="wide">
+    </div>
+
+    <label class="checkbox-row" id="saveToCrmRow">
+      <input id="onboardSaveToCrm" type="checkbox">
+      <span>Save this client to my CRM record if CRM access is active</span>
+    </label>
+
+    <div class="onboard-actions">
+      <button class="checkout-btn" id="createOnboardBtn" type="button" onclick="createAssistedOnboardingFromAccess()">
+        Create 2-Hour Onboarding Link
+      </button>
+    </div>
+
+    <div class="onboard-result" id="onboardResult"></div>
+  </section>
 
   <section class="selector-shell">
     <div class="billing-toggle" aria-label="Billing frequency">
@@ -364,6 +510,206 @@ function applyQueryDefaults(){
   }
 }
 
+function getAgentAccessSession(){
+  return {
+    crmAgentId:sessionStorage.getItem("crm_uuid") || "",
+    appAgentId:sessionStorage.getItem("agentId") || "",
+    agentEmail:sessionStorage.getItem("agentEmail") || "",
+    token:sessionStorage.getItem("agentSessionToken") || ""
+  };
+}
+
+function initAgentAccessTools(){
+  const tools = document.getElementById("agentTools");
+  const saveToCrm = document.getElementById("onboardSaveToCrm");
+  const saveToCrmRow = document.getElementById("saveToCrmRow");
+  const session = getAgentAccessSession();
+  const hasAgentSession = Boolean(session.token && (session.crmAgentId || session.appAgentId || session.agentEmail));
+
+  if(!hasAgentSession){
+    tools.style.display = "none";
+    return;
+  }
+
+  tools.style.display = "block";
+
+  if(session.crmAgentId){
+    saveToCrm.checked = true;
+    saveToCrm.disabled = false;
+    saveToCrmRow.style.opacity = "1";
+  }else{
+    saveToCrm.checked = false;
+    saveToCrm.disabled = true;
+    saveToCrmRow.style.opacity = ".7";
+  }
+}
+
+function onboardValue(id){
+  const field = document.getElementById(id);
+  return field ? field.value.trim() : "";
+}
+
+function normalizePhoneForStorage(phone){
+  const digits = String(phone || "").replace(/\D/g, "");
+
+  if(digits.length === 10){
+    return `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`;
+  }
+
+  return String(phone || "").trim();
+}
+
+function collectAccessEmergencyContacts(){
+  const contacts = [];
+
+  for(let index = 1; index <= 3; index += 1){
+    const name = onboardValue(`onboardEmergencyName${index}`);
+    const phone = onboardValue(`onboardEmergencyPhone${index}`);
+
+    if(name || phone){
+      contacts.push({
+        name,
+        phone:normalizePhoneForStorage(phone)
+      });
+    }
+  }
+
+  return contacts;
+}
+
+function clearOnboardingForm(){
+  [
+    "onboardFullName",
+    "onboardDob",
+    "onboardPhone",
+    "onboardEmail",
+    "onboardAddress",
+    "onboardCity",
+    "onboardState",
+    "onboardZip",
+    "onboardEmergencyName1",
+    "onboardEmergencyPhone1",
+    "onboardEmergencyName2",
+    "onboardEmergencyPhone2",
+    "onboardEmergencyName3",
+    "onboardEmergencyPhone3",
+    "onboardBloodType",
+    "onboardAllergies",
+    "onboardConditions",
+    "onboardImplants",
+    "onboardProcedures"
+  ].forEach((id) => {
+    const field = document.getElementById(id);
+    if(field){
+      field.value = "";
+    }
+  });
+
+  document.getElementById("onboardOrganDonor").checked = false;
+  document.getElementById("onboardResult").style.display = "none";
+}
+
+async function copyAccessOnboardingLink(link){
+  if(navigator.clipboard){
+    await navigator.clipboard.writeText(link);
+    return;
+  }
+
+  const input = document.createElement("input");
+  input.value = link;
+  document.body.appendChild(input);
+  input.select();
+  document.execCommand("copy");
+  document.body.removeChild(input);
+}
+
+async function createAssistedOnboardingFromAccess(){
+  const result = document.getElementById("onboardResult");
+  const button = document.getElementById("createOnboardBtn");
+  const session = getAgentAccessSession();
+
+  if(!session.token || (!session.crmAgentId && !session.appAgentId && !session.agentEmail)){
+    result.style.display = "block";
+    result.innerHTML = "<strong>Agent session required</strong>Please log in as an agent before creating an onboarding link.";
+    return;
+  }
+
+  const fullName = onboardValue("onboardFullName");
+  const phone = onboardValue("onboardPhone");
+  const email = onboardValue("onboardEmail");
+
+  if(!fullName || (!phone && !email)){
+    result.style.display = "block";
+    result.innerHTML = "<strong>Missing client information</strong>Enter the client's name and at least one contact method.";
+    return;
+  }
+
+  result.style.display = "block";
+  result.innerHTML = "<strong>Creating onboarding link...</strong>Please keep this page open.";
+  button.disabled = true;
+
+  try{
+    const res = await fetch("/.netlify/functions/create-assisted-client-onboarding", {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "x-agent-session":session.token,
+        "x-crm-agent-id":session.crmAgentId
+      },
+      body:JSON.stringify({
+        agent_id:session.crmAgentId,
+        crmAgentId:session.crmAgentId,
+        appAgentId:session.appAgentId,
+        agentEmail:session.agentEmail,
+        agentSessionToken:session.token,
+        saveToCrm:document.getElementById("onboardSaveToCrm").checked,
+        status:"Prospect",
+        profile:{
+          fullName,
+          dob:onboardValue("onboardDob"),
+          userPhone:normalizePhoneForStorage(phone),
+          email,
+          address:onboardValue("onboardAddress"),
+          city:onboardValue("onboardCity"),
+          state:onboardValue("onboardState"),
+          zip:onboardValue("onboardZip")
+        },
+        emergency:{
+          contacts:collectAccessEmergencyContacts(),
+          allergies:onboardValue("onboardAllergies"),
+          conditions:onboardValue("onboardConditions"),
+          bloodType:onboardValue("onboardBloodType"),
+          implants:onboardValue("onboardImplants"),
+          procedures:onboardValue("onboardProcedures"),
+          organDonor:document.getElementById("onboardOrganDonor").checked
+        }
+      })
+    });
+
+    const data = await res.json();
+
+    if(!res.ok || !data.success){
+      throw new Error(data.error || "Unable to create onboarding link.");
+    }
+
+    const expiresAt = data.expiresAt ? new Date(data.expiresAt).toLocaleString() : "2 hours";
+
+    result.innerHTML = `
+      <strong>Onboarding link created</strong>
+      <div>${data.onboardingUrl}</div>
+      <div style="margin-top:8px;color:#b8c2cc;">Expires: ${expiresAt}</div>
+      <div class="onboard-actions">
+        <button class="secondary-action" type="button" onclick="copyAccessOnboardingLink('${data.onboardingUrl}')">Copy Link</button>
+        <button class="secondary-action" type="button" onclick="window.location.href='${data.onboardingUrl}'">Open Link</button>
+      </div>
+    `;
+  }catch(err){
+    result.innerHTML = `<strong>Could not create onboarding link</strong>${err.message || "Please try again."}`;
+  }finally{
+    button.disabled = false;
+  }
+}
+
 async function startSelectedCheckout(){
   const status = document.getElementById("checkoutStatus");
   const button = document.getElementById("checkoutBtn");
@@ -397,7 +743,10 @@ async function startSelectedCheckout(){
   }
 }
 
-window.addEventListener("DOMContentLoaded", applyQueryDefaults);
+window.addEventListener("DOMContentLoaded", () => {
+  applyQueryDefaults();
+  initAgentAccessTools();
+});
 </script>
 <script src="/site-traffic.js" defer></script>
 </body>

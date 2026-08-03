@@ -25,6 +25,21 @@ function formatPhone(phone){
 
 }
 
+function normalizePhoneForStorage(phone){
+
+  if(!phone) return "";
+
+  let digits =
+    String(phone).replace(/\D/g,"");
+
+  if(digits.length === 11 && digits.startsWith("1")){
+    digits = digits.slice(1);
+  }
+
+  return digits.length === 10 ? digits : phone;
+
+}
+
 function moneyValue(value){
 
   const number =
@@ -471,6 +486,201 @@ function renderDashboardTasks(tasks){
 function viewClient(id){
 
   window.location.href = `client-view.html?id=${id}`;
+
+}
+
+function getValue(id){
+
+  return document.getElementById(id)?.value.trim() || "";
+
+}
+
+function openOnboardClientModal(){
+
+  document.getElementById("onboardClientModal").style.display = "flex";
+
+}
+
+function closeOnboardClientModal(){
+
+  document.getElementById("onboardClientModal").style.display = "none";
+
+}
+
+function resetOnboardClientForm(){
+
+  [
+    "onboardFullName",
+    "onboardDob",
+    "onboardPhone",
+    "onboardEmail",
+    "onboardAddress",
+    "onboardCity",
+    "onboardState",
+    "onboardZip",
+    "onboardEmergencyName1",
+    "onboardEmergencyPhone1",
+    "onboardEmergencyName2",
+    "onboardEmergencyPhone2",
+    "onboardEmergencyName3",
+    "onboardEmergencyPhone3",
+    "onboardBloodType",
+    "onboardAllergies",
+    "onboardConditions",
+    "onboardImplants",
+    "onboardProcedures"
+  ].forEach(id => {
+    const input = document.getElementById(id);
+    if(input) input.value = "";
+  });
+
+  document.getElementById("onboardOrganDonor").checked = false;
+  document.getElementById("onboardSaveToCrm").checked = true;
+
+}
+
+function collectEmergencyContacts(){
+
+  return [1,2,3]
+    .map(index => ({
+      name:getValue(`onboardEmergencyName${index}`),
+      phone:normalizePhoneForStorage(getValue(`onboardEmergencyPhone${index}`))
+    }))
+    .filter(contact => contact.name || contact.phone);
+
+}
+
+async function copyOnboardingLink(link){
+
+  if(navigator.clipboard && window.isSecureContext){
+    await navigator.clipboard.writeText(link);
+    return;
+  }
+
+  const textarea = document.createElement("textarea");
+  textarea.value = link;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.left = "-9999px";
+  document.body.appendChild(textarea);
+  textarea.select();
+
+  const copied = document.execCommand("copy");
+  textarea.remove();
+
+  if(!copied){
+    throw new Error("Unable to copy onboarding link");
+  }
+
+}
+
+async function createAssistedOnboarding(){
+
+  const button =
+    document.getElementById("createOnboardingBtn");
+
+  const resultBox =
+    document.getElementById("onboardResult");
+
+  const fullName =
+    getValue("onboardFullName");
+
+  const phone =
+    normalizePhoneForStorage(getValue("onboardPhone"));
+
+  if(!fullName || !phone){
+    alert("Client name and phone are required.");
+    return;
+  }
+
+  button.disabled = true;
+  button.innerText = "Creating Onboarding Link...";
+  resultBox.style.display = "none";
+  resultBox.innerHTML = "";
+
+  try{
+
+    const body = {
+      agent_id:sessionStorage.getItem("crm_uuid"),
+      crmAgentId:sessionStorage.getItem("crm_uuid"),
+      appAgentId:sessionStorage.getItem("agentId"),
+      agentEmail:sessionStorage.getItem("agentEmail"),
+      agentSessionToken:sessionStorage.getItem("agentSessionToken"),
+      saveToCrm:document.getElementById("onboardSaveToCrm").checked,
+      status:"Prospect",
+      profile:{
+        fullName,
+        dob:getValue("onboardDob"),
+        userPhone:phone,
+        email:getValue("onboardEmail"),
+        address:getValue("onboardAddress"),
+        city:getValue("onboardCity"),
+        state:getValue("onboardState"),
+        zip:getValue("onboardZip")
+      },
+      emergency:{
+        contacts:collectEmergencyContacts(),
+        allergies:getValue("onboardAllergies"),
+        conditions:getValue("onboardConditions"),
+        bloodType:getValue("onboardBloodType"),
+        implants:getValue("onboardImplants"),
+        procedures:getValue("onboardProcedures"),
+        organDonor:document.getElementById("onboardOrganDonor").checked
+      }
+    };
+
+    const res = await fetch(
+      "/.netlify/functions/create-assisted-client-onboarding",
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "x-agent-session":sessionStorage.getItem("agentSessionToken") || "",
+          "x-crm-agent-id":sessionStorage.getItem("crm_uuid") || ""
+        },
+        body:JSON.stringify(body)
+      }
+    );
+
+    const data = await res.json();
+
+    if(!res.ok || !data.success){
+      throw new Error(data.error || "Unable to create onboarding link.");
+    }
+
+    const expiresAt =
+      data.expiresAt ? new Date(data.expiresAt) : null;
+
+    resultBox.style.display = "block";
+    resultBox.innerHTML = `
+      <strong>Onboarding link created.</strong>
+      <div>${data.onboardingUrl}</div>
+      <div class="client-sub">
+        Expires ${expiresAt ? expiresAt.toLocaleString() : "in 2 hours"}.
+        If it expires, this onboarding session cannot be reopened.
+      </div>
+      <div class="onboard-link-actions">
+        <button class="secondary compact-btn" onclick="copyOnboardingLink('${data.onboardingUrl}')">
+          Copy Link
+        </button>
+        <button class="secondary compact-btn" onclick="window.open('${data.onboardingUrl}', '_blank', 'noopener')">
+          Open Link
+        </button>
+      </div>
+    `;
+
+    if(data.crmClient?.id){
+      loadRecentClients();
+    }
+
+    resetOnboardClientForm();
+
+  }catch(err){
+    alert(err.message || "Unable to create onboarding link.");
+  }finally{
+    button.disabled = false;
+    button.innerText = "Create 2-Hour Onboarding Link";
+  }
 
 }
 
