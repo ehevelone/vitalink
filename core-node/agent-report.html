@@ -103,6 +103,59 @@ button.primary{
   cursor:pointer;
 }
 
+.onboard-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin-top:12px;
+}
+
+.onboard-grid input{
+  width:100%;
+  padding:10px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  background:#000;
+  color:#fff;
+}
+
+.wide{ grid-column:1/3; }
+
+.section-title{
+  margin:16px 0 6px;
+  font-weight:700;
+}
+
+.checkbox-row{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  margin-top:10px;
+}
+
+.onboard-result{
+  display:none;
+  margin-top:12px;
+  padding:12px;
+  border:1px solid #28475c;
+  border-radius:8px;
+  background:#07131b;
+  word-break:break-word;
+}
+
+.modal-card.large{
+  width:min(760px,92vw);
+  max-height:88vh;
+  overflow:auto;
+}
+
+.modal-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:14px;
+}
+
 /* MODAL */
 .modal{
   position:fixed;
@@ -156,6 +209,7 @@ button.primary{
   <button class="primary" onclick="window.print()">Print</button>
   <input id="inviteEmail" placeholder="Client email..." style="max-width:220px;" />
   <button class="primary" onclick="sendInvite()">Send Invite</button>
+  <button class="primary" onclick="openOnboardClientModal()">Onboard Client</button>
 </div>
 
 <table>
@@ -186,6 +240,55 @@ button.primary{
     <p id="modalEmail"></p>
     <p id="modalStatus"></p>
     <button onclick="closeModal()">Close</button>
+  </div>
+</div>
+
+<!-- ASSISTED CLIENT ONBOARDING MODAL -->
+<div id="onboardClientModal" class="modal">
+  <div class="modal-card large">
+    <h3>Onboard Client</h3>
+    <p style="color:#aaa;margin-top:0;">
+      Create a 2-hour setup link while sitting with the client. If it expires, start over.
+    </p>
+
+    <div class="onboard-grid">
+      <input id="onboardFullName" type="text" placeholder="Full Name">
+      <input id="onboardDob" type="date">
+      <input id="onboardPhone" type="text" placeholder="Phone">
+      <input id="onboardEmail" type="email" placeholder="Email">
+      <input id="onboardAddress" type="text" placeholder="Address" class="wide">
+      <input id="onboardCity" type="text" placeholder="City">
+      <input id="onboardState" type="text" placeholder="State">
+      <input id="onboardZip" type="text" placeholder="ZIP">
+    </div>
+
+    <div class="section-title">Emergency Information</div>
+
+    <div class="onboard-grid">
+      <input id="onboardEmergencyName1" type="text" placeholder="Emergency Contact 1">
+      <input id="onboardEmergencyPhone1" type="text" placeholder="Emergency Phone 1">
+      <input id="onboardEmergencyName2" type="text" placeholder="Emergency Contact 2">
+      <input id="onboardEmergencyPhone2" type="text" placeholder="Emergency Phone 2">
+      <input id="onboardEmergencyName3" type="text" placeholder="Emergency Contact 3">
+      <input id="onboardEmergencyPhone3" type="text" placeholder="Emergency Phone 3">
+      <input id="onboardBloodType" type="text" placeholder="Blood Type">
+      <label class="checkbox-row">
+        <input id="onboardOrganDonor" type="checkbox">
+        <span>Organ Donor</span>
+      </label>
+      <input id="onboardAllergies" type="text" placeholder="Allergies" class="wide">
+      <input id="onboardConditions" type="text" placeholder="Conditions" class="wide">
+      <input id="onboardImplants" type="text" placeholder="Implanted Devices" class="wide">
+      <input id="onboardProcedures" type="text" placeholder="Major Procedures" class="wide">
+    </div>
+
+    <div class="modal-actions">
+      <button class="primary" id="createOnboardBtn" onclick="createAssistedOnboarding()">Create 2-Hour Onboarding Link</button>
+      <button onclick="clearOnboardingForm()">Clear</button>
+      <button onclick="closeOnboardClientModal()">Close</button>
+    </div>
+
+    <div class="onboard-result" id="onboardResult"></div>
   </div>
 </div>
 
@@ -367,6 +470,171 @@ function openClient(id){
 
 function closeModal(){
   document.getElementById("clientModal").classList.remove("active");
+}
+
+function openOnboardClientModal(){
+  document.getElementById("onboardClientModal").classList.add("active");
+}
+
+function closeOnboardClientModal(){
+  document.getElementById("onboardClientModal").classList.remove("active");
+}
+
+function onboardValue(id){
+  const field=document.getElementById(id);
+  return field ? field.value.trim() : "";
+}
+
+function normalizePhoneForStorage(phone){
+  const digits=String(phone||"").replace(/\D/g,"");
+
+  if(digits.length===10){
+    return `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`;
+  }
+
+  return String(phone||"").trim();
+}
+
+function collectOnboardEmergencyContacts(){
+  const contacts=[];
+
+  for(let index=1;index<=3;index+=1){
+    const name=onboardValue(`onboardEmergencyName${index}`);
+    const phone=onboardValue(`onboardEmergencyPhone${index}`);
+
+    if(name||phone){
+      contacts.push({
+        name,
+        phone:normalizePhoneForStorage(phone)
+      });
+    }
+  }
+
+  return contacts;
+}
+
+function clearOnboardingForm(){
+  [
+    "onboardFullName",
+    "onboardDob",
+    "onboardPhone",
+    "onboardEmail",
+    "onboardAddress",
+    "onboardCity",
+    "onboardState",
+    "onboardZip",
+    "onboardEmergencyName1",
+    "onboardEmergencyPhone1",
+    "onboardEmergencyName2",
+    "onboardEmergencyPhone2",
+    "onboardEmergencyName3",
+    "onboardEmergencyPhone3",
+    "onboardBloodType",
+    "onboardAllergies",
+    "onboardConditions",
+    "onboardImplants",
+    "onboardProcedures"
+  ].forEach((id)=>{
+    const field=document.getElementById(id);
+    if(field){
+      field.value="";
+    }
+  });
+
+  document.getElementById("onboardOrganDonor").checked=false;
+  document.getElementById("onboardResult").style.display="none";
+}
+
+async function copyOnboardingLink(link){
+  if(navigator.clipboard){
+    await navigator.clipboard.writeText(link);
+    alert("Onboarding link copied.");
+    return;
+  }
+
+  const input=document.createElement("input");
+  input.value=link;
+  document.body.appendChild(input);
+  input.select();
+  document.execCommand("copy");
+  document.body.removeChild(input);
+  alert("Onboarding link copied.");
+}
+
+async function createAssistedOnboarding(){
+  const result=document.getElementById("onboardResult");
+  const button=document.getElementById("createOnboardBtn");
+  const fullName=onboardValue("onboardFullName");
+  const phone=normalizePhoneForStorage(onboardValue("onboardPhone"));
+  const email=onboardValue("onboardEmail");
+
+  if(!fullName||(!phone&&!email)){
+    alert("Client name and at least one contact method are required.");
+    return;
+  }
+
+  button.disabled=true;
+  button.innerText="Creating Onboarding Link...";
+  result.style.display="block";
+  result.innerHTML="<strong>Creating onboarding link...</strong>";
+
+  try{
+    const res=await fetch("/.netlify/functions/create-assisted-client-onboarding",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "x-agent-session":token
+      },
+      body:JSON.stringify({
+        appAgentId:agentId,
+        agentSessionToken:token,
+        saveToCrm:false,
+        profile:{
+          fullName,
+          dob:onboardValue("onboardDob"),
+          userPhone:phone,
+          email,
+          address:onboardValue("onboardAddress"),
+          city:onboardValue("onboardCity"),
+          state:onboardValue("onboardState"),
+          zip:onboardValue("onboardZip")
+        },
+        emergency:{
+          contacts:collectOnboardEmergencyContacts(),
+          allergies:onboardValue("onboardAllergies"),
+          conditions:onboardValue("onboardConditions"),
+          bloodType:onboardValue("onboardBloodType"),
+          implants:onboardValue("onboardImplants"),
+          procedures:onboardValue("onboardProcedures"),
+          organDonor:document.getElementById("onboardOrganDonor").checked
+        }
+      })
+    });
+
+    const data=await res.json();
+
+    if(!res.ok||!data.success){
+      throw new Error(data.error||"Unable to create onboarding link.");
+    }
+
+    const expiresAt=data.expiresAt ? new Date(data.expiresAt).toLocaleString() : "2 hours";
+
+    result.innerHTML=`
+      <strong>Onboarding link created.</strong>
+      <div>${data.onboardingUrl}</div>
+      <div style="color:#aaa;margin-top:6px;">Expires: ${expiresAt}</div>
+      <div class="modal-actions">
+        <button class="primary" onclick="copyOnboardingLink('${data.onboardingUrl}')">Copy Link</button>
+        <button class="primary" onclick="window.location.href='${data.onboardingUrl}'">Open Link</button>
+      </div>
+    `;
+  }catch(e){
+    console.error(e);
+    result.innerHTML=`<strong>Could not create onboarding link.</strong><br>${e.message||"Please try again."}`;
+  }finally{
+    button.disabled=false;
+    button.innerText="Create 2-Hour Onboarding Link";
+  }
 }
 
 // 🔥 SEND INVITE (ADDED)
