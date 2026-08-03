@@ -348,9 +348,19 @@ async function verifyCode() {
     return;
   }
 
+  let result;
+
   try {
 
-    const result = await confirmationResult.confirm(code);
+    result = await confirmationResult.confirm(code);
+
+  } catch (err) {
+    console.error("Firebase 2FA verification error:", err);
+    showError("Invalid verification code. Please check the code and try again.");
+    return;
+  }
+
+  try {
 
     const res = await fetch(`${API}/agent-login`, {
       method: "POST",
@@ -362,10 +372,19 @@ async function verifyCode() {
       })
     });
 
-    const data = await res.json();
+    const text = await res.text();
+    let data = {};
 
-    if (data.step !== "login_success"){
-      showError("Verification failed");
+    try {
+      data = JSON.parse(text || "{}");
+    } catch {
+      console.error("Agent login verify returned non-JSON:", text);
+      showError("Verification passed, but the server did not return a valid login response.");
+      return;
+    }
+
+    if (!res.ok || data.step !== "login_success"){
+      showError(data.error || "Verification passed, but login session creation failed.");
       return;
     }
 
@@ -381,8 +400,8 @@ async function verifyCode() {
     window.location.href = "agent-report.html";
 
   } catch (err) {
-    console.error(err);
-    showError("Invalid code");
+    console.error("Agent login session error:", err);
+    showError("Verification passed, but the login server could not be reached.");
   }
 }
 
