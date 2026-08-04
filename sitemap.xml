@@ -91,11 +91,6 @@
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://myvitalink.app/delete-account</loc>
-    <lastmod>2026-08-04</lastmod>
-    <priority>0.5</priority>
-  </url>
-  <url>
     <loc>https://myvitalink.app/platform-under-development</loc>
     <lastmod>2026-08-04</lastmod>
     <changefreq>monthly</changefreq>
