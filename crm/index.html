@@ -226,9 +226,9 @@
      ASSISTED CLIENT ONBOARDING MODAL
 ========================================= -->
 
-<div id="onboardClientModal" class="modal-overlay">
+<div id="onboardClientModal" class="modal-overlay" onclick="closeOnboardClientModal()">
 
-  <div class="modal">
+  <div class="modal" onclick="event.stopPropagation()">
 
     <div class="modal-header">
       <h2>Onboard Client</h2>
@@ -284,6 +284,14 @@
     </button>
 
     <div id="onboardResult" class="onboard-result" style="display:none;"></div>
+
+    <button
+      class="secondary compact-btn"
+      onclick="closeOnboardClientModal()"
+      style="margin-top:14px; width:100%;"
+    >
+      Close
+    </button>
 
   </div>
 

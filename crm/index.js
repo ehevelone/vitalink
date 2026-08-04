@@ -503,7 +503,10 @@ function openOnboardClientModal(){
 
 function closeOnboardClientModal(){
 
-  document.getElementById("onboardClientModal").style.display = "none";
+  const modal = document.getElementById("onboardClientModal");
+  if(modal){
+    modal.style.display = "none";
+  }
 
 }
 
@@ -700,6 +703,14 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   loadRecentClients();
+
+});
+
+document.addEventListener("keydown", (event) => {
+
+  if(event.key === "Escape"){
+    closeOnboardClientModal();
+  }
 
 });
 
