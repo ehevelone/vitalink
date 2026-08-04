@@ -1,51 +1,104 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://myvitalink.app/</loc>
+    <lastmod>2026-08-04</lastmod>
+    <priority>1.0</priority>
   </url>
   <url>
     <loc>https://myvitalink.app/what-is-vitalink</loc>
-  </url>
-  <url>
-    <loc>https://myvitalink.app/emergency-qr-access</loc>
-  </url>
-  <url>
-    <loc>https://myvitalink.app/medication-organization</loc>
-  </url>
-  <url>
-    <loc>https://myvitalink.app/health-information-management</loc>
+    <lastmod>2026-08-04</lastmod>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://myvitalink.app/for-insurance-agents</loc>
-  </url>
-  <url>
-    <loc>https://myvitalink.app/reach</loc>
-  </url>
-  <url>
-    <loc>https://myvitalink.app/crm-sales</loc>
-  </url>
-  <url>
-    <loc>https://myvitalink.app/schedule-demo</loc>
+    <lastmod>2026-08-04</lastmod>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://myvitalink.app/for-individuals</loc>
+    <lastmod>2026-08-04</lastmod>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://myvitalink.app/emergency-qr-access</loc>
+    <lastmod>2026-08-04</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://myvitalink.app/medication-organization</loc>
+    <lastmod>2026-08-04</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://myvitalink.app/health-information-management</loc>
+    <lastmod>2026-08-04</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://myvitalink.app/reach</loc>
+    <lastmod>2026-08-04</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://myvitalink.app/crm-sales</loc>
+    <lastmod>2026-08-04</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://myvitalink.app/agent-resources</loc>
+    <lastmod>2026-08-04</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://myvitalink.app/crm-converter</loc>
+    <lastmod>2026-08-04</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://myvitalink.app/schedule-demo</loc>
+    <lastmod>2026-08-04</lastmod>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://myvitalink.app/agents</loc>
+    <lastmod>2026-08-04</lastmod>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://myvitalink.app/agent-promo</loc>
+    <lastmod>2026-08-04</lastmod>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://myvitalink.app/activate</loc>
+    <lastmod>2026-08-04</lastmod>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://myvitalink.app/quick_start</loc>
+    <lastmod>2026-08-04</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://myvitalink.app/privacy</loc>
+    <lastmod>2026-08-04</lastmod>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://myvitalink.app/terms</loc>
+    <lastmod>2026-08-04</lastmod>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://myvitalink.app/delete-account</loc>
+    <lastmod>2026-08-04</lastmod>
+    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://myvitalink.app/platform-under-development</loc>
+    <lastmod>2026-08-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
 </urlset>
-

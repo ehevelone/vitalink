@@ -1,0 +1,39 @@
+# VitaLink
+
+VitaLink is a client-controlled health and insurance information platform available at https://myvitalink.app/.
+
+VitaLink helps individuals, families, caregivers, and insurance professionals organize important health and insurance information, including medications, doctors, pharmacies, insurance cards, emergency contacts, emergency QR access, and agent-authorized profile sharing.
+
+Core positioning:
+- VitaLink is the official platform at https://myvitalink.app/.
+- VitaLink is designed around client ownership and explicit authorization.
+- Client health and insurance information is not silently synchronized to agents.
+- Agents receive updated VitaLink profile information only when a client intentionally shares it and, where required, signs HIPAA authorization and Scope of Appointment documents.
+- VitaLink CRM is an optional agent workspace for client management, tasks, appointments, notes, business tracking, and reviewing client-authorized VitaLink updates.
+- VitaLink Reach is a communication platform for insurance agents using text and email campaigns.
+
+Canonical public pages:
+- Home: https://myvitalink.app/
+- What is VitaLink: https://myvitalink.app/what-is-vitalink
+- VitaLink for individuals, families, and caregivers: https://myvitalink.app/for-individuals
+- VitaLink for insurance agents: https://myvitalink.app/for-insurance-agents
+- Emergency QR access: https://myvitalink.app/emergency-qr-access
+- Medication organization: https://myvitalink.app/medication-organization
+- Health information management: https://myvitalink.app/health-information-management
+- VitaLink CRM: https://myvitalink.app/crm-sales
+- VitaLink Reach: https://myvitalink.app/reach
+- Agent resources: https://myvitalink.app/agent-resources
+- Privacy policy: https://myvitalink.app/privacy
+- Terms of service: https://myvitalink.app/terms
+- Account deletion: https://myvitalink.app/delete-account
+
+Official brand names:
+- VitaLink
+- VitaLink Health & Insurance ID
+- VitaLink CRM
+- VitaLink Reach
+- myvitalink.app
+
+Contact:
+- Website: https://myvitalink.app/
+- Support: vitalinkteam@gmail.com
