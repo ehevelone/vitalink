@@ -1,0 +1,90 @@
+/* VitaLink shared body copy scale.
+   Keep headings/layout local; this file normalizes readable paragraph text only. */
+:root{
+  --vl-body-copy-size:clamp(1.125rem, 1.02rem + .28vw, 1.25rem);
+  --vl-prominent-copy-size:clamp(1.2rem, 1.06rem + .36vw, 1.375rem);
+  --vl-small-copy-size:clamp(1.0625rem, 1rem + .16vw, 1.125rem);
+  --vl-body-copy-width:920px;
+  --vl-prominent-copy-width:950px;
+  --vl-narrow-copy-width:850px;
+}
+
+p,
+li,
+.direct-answer,
+.tagline,
+.lead,
+.intro,
+.subhead,
+.section-note{
+  font-size:var(--vl-body-copy-size) !important;
+  line-height:1.68 !important;
+}
+
+p,
+.direct-answer,
+.tagline,
+.lead,
+.intro,
+.subhead,
+.section-note{
+  max-width:var(--vl-body-copy-width) !important;
+}
+
+.direct-answer,
+.tagline,
+.lead,
+.intro,
+.subhead,
+.hero p{
+  font-size:var(--vl-prominent-copy-size) !important;
+  max-width:var(--vl-prominent-copy-width) !important;
+}
+
+.fine-print,
+.note,
+.footer,
+footer,
+small,
+.eyebrow,
+.card-label,
+.product-card span,
+.related a span{
+  font-size:var(--vl-small-copy-size) !important;
+}
+
+.card p,
+.feature p,
+.step p,
+.faq-item p,
+.metric span,
+.product-card span,
+.related a span{
+  max-width:100% !important;
+}
+
+@media (max-width:720px){
+  p,
+  li,
+  .direct-answer,
+  .tagline,
+  .lead,
+  .intro,
+  .subhead,
+  .section-note{
+    font-size:1.0625rem !important;
+    max-width:100% !important;
+  }
+
+  .fine-print,
+  .note,
+  .footer,
+  footer,
+  small,
+  .eyebrow,
+  .card-label,
+  .product-card span,
+  .related a span{
+    font-size:1rem !important;
+  }
+}
