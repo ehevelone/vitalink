@@ -7,6 +7,40 @@
   --vl-body-copy-width:920px;
   --vl-prominent-copy-width:950px;
   --vl-narrow-copy-width:850px;
+  --vl-section-copy-width:1000px;
+  --vl-page-content-width:1120px;
+}
+
+main,
+.page,
+.wrap{
+  max-width:min(var(--vl-page-content-width), calc(100vw - 48px)) !important;
+}
+
+main > section:not(.grid):not(.features):not(.steps):not(.selector-shell),
+.hero,
+.section,
+.band,
+.faq,
+.related,
+.story-copy,
+.story-body,
+.hero-copy,
+.hero-panel,
+.problem-copy,
+.connection,
+.ecosystem,
+.pricing,
+.faq,
+.cta,
+.agent-access,
+.agent-tools,
+.final-cta,
+.problem-section,
+.plain{
+  max-width:min(var(--vl-section-copy-width), calc(100vw - 48px)) !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
 }
 
 p,
@@ -63,7 +97,35 @@ small,
   max-width:100% !important;
 }
 
+#why-vitalink{
+  max-width:min(var(--vl-section-copy-width), calc(100vw - 48px)) !important;
+}
+
+#why-vitalink p br{
+  display:none;
+}
+
 @media (max-width:720px){
+  main,
+  .page,
+  .wrap,
+  main > section:not(.grid):not(.features):not(.steps):not(.selector-shell),
+  .hero,
+  .section,
+  .band,
+  .faq,
+  .related,
+  .story-copy,
+  .story-body,
+  .cta,
+  .agent-access,
+  .agent-tools,
+  .final-cta,
+  .problem-section,
+  .plain{
+    max-width:100% !important;
+  }
+
   p,
   li,
   .direct-answer,
