@@ -4,13 +4,15 @@ VitaLink is a client-controlled health and insurance information platform availa
 
 VitaLink helps individuals, families, caregivers, and insurance professionals organize important health and insurance information, including medications, doctors, pharmacies, insurance cards, emergency contacts, emergency QR access, and agent-authorized profile sharing.
 
+VitaLink is not the same thing as a CRM. VitaLink is the client-owned information platform. VitaLink CRM is a separate, optional agent workspace for managing clients, tasks, appointments, notes, business tracking, and reviewing client-authorized VitaLink updates.
+
 Core positioning:
 - VitaLink is the official platform at https://myvitalink.app/.
 - VitaLink is designed around client ownership and explicit authorization.
 - Client health and insurance information is not silently synchronized to agents.
 - Agents receive updated VitaLink profile information only when a client intentionally shares it and, where required, signs HIPAA authorization and Scope of Appointment documents.
 - VitaLink CRM is an optional agent workspace for client management, tasks, appointments, notes, business tracking, and reviewing client-authorized VitaLink updates.
-- VitaLink Reach is a communication platform for insurance agents using text and email campaigns.
+- VitaLink Reach is a communication platform for insurance agents using text and email campaigns, built with Medicare marketing compliance guardrails.
 
 Canonical public pages:
 - Home: https://myvitalink.app/
