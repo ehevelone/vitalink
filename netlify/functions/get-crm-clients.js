@@ -1,5 +1,6 @@
 const { Pool } = require("pg");
 const { requireCrmAgent } = require("./crm-auth");
+const { ensureVitalinkImportSchema, DOCUMENT_TYPES } = require("./services/crm-vitalink-import");
 
 const pool = new Pool({
   connectionString: process.env.SUPABASE_URL,
@@ -11,6 +12,8 @@ const pool = new Pool({
 exports.handler = async (event) => {
 
   try{
+
+    await ensureVitalinkImportSchema();
 
     await pool.query(`
       ALTER TABLE crm_clients
@@ -51,6 +54,11 @@ exports.handler = async (event) => {
       `
       SELECT
         c.*,
+        COALESCE(doc_counts.insurance_card_count, 0) AS insurance_card_count,
+        COALESCE(doc_counts.soa_document_count, 0) AS soa_document_count,
+        COALESCE(doc_counts.hipaa_document_count, 0) AS hipaa_document_count,
+        doc_counts.latest_soa_signed_at,
+        doc_counts.latest_hipaa_signed_at,
         ud.push_status,
         ud.last_push_at,
         ud.last_push_success_at,
@@ -72,6 +80,29 @@ exports.handler = async (event) => {
           ELSE 'Registered'
         END AS push_health
       FROM crm_clients c
+      LEFT JOIN (
+        SELECT
+          crm_client_id,
+          COUNT(*) FILTER (
+            WHERE document_type IN ('insurance_card', 'insurance_cards', 'insurance')
+          ) AS insurance_card_count,
+          COUNT(*) FILTER (
+            WHERE document_type = $2
+          ) AS soa_document_count,
+          COUNT(*) FILTER (
+            WHERE document_type = $3
+          ) AS hipaa_document_count,
+          MAX(signed_at) FILTER (
+            WHERE document_type = $2
+          ) AS latest_soa_signed_at,
+          MAX(signed_at) FILTER (
+            WHERE document_type = $3
+          ) AS latest_hipaa_signed_at
+        FROM crm_client_documents
+        WHERE crm_agent_id = $1
+        GROUP BY crm_client_id
+      ) doc_counts
+        ON doc_counts.crm_client_id = c.id::TEXT
       LEFT JOIN users u
         ON (
           c.linked_app_client_id IS NOT NULL
@@ -88,7 +119,7 @@ exports.handler = async (event) => {
       ORDER BY c.created_at DESC
       `,
 
-      [agent_id]
+      [agent_id, DOCUMENT_TYPES.SOA, DOCUMENT_TYPES.HIPAA]
 
     );
 

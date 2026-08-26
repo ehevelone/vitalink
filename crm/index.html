@@ -13,7 +13,7 @@
 <body>
 
 <script src="crm.js"></script>
-<script src="index.js?v=assisted-onboarding-20260802"></script>
+<script src="index.js?v=aep-readiness-20260825"></script>
 
 <!-- =========================================
      SIDEBAR
@@ -189,6 +189,57 @@
         </button>
       </div>
       <div id="dashboardBusinessSummary" class="dashboard-business-summary"></div>
+    </div>
+
+  </div>
+
+  <!-- AEP READINESS -->
+
+  <div class="section-title">
+    AEP Readiness
+  </div>
+
+  <div class="table-card aep-readiness-card">
+
+    <div class="aep-readiness-toolbar">
+      <div>
+        <strong>Client Readiness Score</strong>
+        <div class="muted">
+          Lowest scores appear first so agents can see who needs attention.
+        </div>
+      </div>
+      <div class="aep-sort-control">
+        <label for="aepSort">Sort</label>
+        <select id="aepSort" onchange="renderAepReadinessTable()">
+          <option value="score_asc">Lowest Score</option>
+          <option value="score_desc">Highest Score</option>
+          <option value="stale_first">Stale First</option>
+          <option value="name_asc">Client Name</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="aep-readiness-summary" id="aepReadinessSummary"></div>
+
+    <div class="aep-table-wrap">
+      <table>
+
+        <thead>
+          <tr>
+            <th>Client</th>
+            <th>Score</th>
+            <th>Meds Reviewed</th>
+            <th>Doctors Reviewed</th>
+            <th>Last App Check</th>
+            <th>Contact</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody id="aepReadinessTable">
+        </tbody>
+
+      </table>
     </div>
 
   </div>

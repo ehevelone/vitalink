@@ -6,6 +6,8 @@ if(!sessionStorage.getItem("crm_uuid")){
 
 }
 
+let dashboardClients = [];
+
 function formatPhone(phone){
 
   if(!phone) return "";
@@ -63,6 +65,8 @@ async function loadRecentClients(){
   const agent_id =
     sessionStorage.getItem("crm_uuid");
 
+  await generateTurning65Tasks(agent_id);
+
   const [
     clientsRes,
     tasksRes,
@@ -97,6 +101,8 @@ async function loadRecentClients(){
   const clients =
     data.clients || [];
 
+  dashboardClients = clients;
+
   const tasks =
     tasksData.success ? tasksData.tasks || [] : [];
 
@@ -114,6 +120,7 @@ async function loadRecentClients(){
 
   renderDashboardTasks(tasks);
   renderDashboardBusiness(policies);
+  renderAepReadinessTable();
 
   const table = document.getElementById("recentClientsTable");
 
@@ -153,6 +160,375 @@ async function loadRecentClients(){
 
     `;
 
+  });
+
+}
+
+async function generateTurning65Tasks(agent_id){
+
+  if(!agent_id){
+    return;
+  }
+
+  try{
+
+    await fetch(
+      "/.netlify/functions/generate-crm-agent-alerts",
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          agent_id
+        })
+      }
+    );
+
+  }catch(err){
+    console.warn("Unable to generate turning-65 tasks", err);
+  }
+
+}
+
+function escapeHtml(value){
+
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+function parseDashboardDate(value){
+
+  if(!value){
+    return null;
+  }
+
+  const date =
+    new Date(value);
+
+  if(Number.isNaN(date.getTime())){
+    return null;
+  }
+
+  date.setHours(0,0,0,0);
+  return date;
+
+}
+
+function monthsAgo(months){
+
+  const date =
+    new Date();
+
+  date.setHours(0,0,0,0);
+  date.setMonth(date.getMonth() - months);
+
+  return date;
+
+}
+
+function isWithinMonths(value, months){
+
+  const date =
+    parseDashboardDate(value);
+
+  return Boolean(date && date >= monthsAgo(months));
+
+}
+
+function hasText(value){
+
+  return String(value ?? "").trim().length > 0;
+
+}
+
+function clientDisplayName(client){
+
+  return `${client.first_name || ""} ${client.last_name || ""}`.trim() ||
+    "Unnamed Client";
+
+}
+
+function readinessForClient(client){
+
+  const lastReviewDate =
+    client.last_vitalink_import_at ||
+    client.last_sync ||
+    client.last_vitalink_package_at;
+
+  const medsReviewedAt =
+    client.meds_reviewed_at ||
+    client.medications_reviewed_at ||
+    lastReviewDate;
+
+  const doctorsReviewedAt =
+    client.doctors_reviewed_at ||
+    client.providers_reviewed_at ||
+    lastReviewDate;
+
+  const appCheckedAt =
+    client.last_app_opened_at ||
+    client.last_seen_at ||
+    client.device_updated_at ||
+    lastReviewDate;
+
+  const medsReviewed =
+    isWithinMonths(medsReviewedAt, 6);
+
+  const doctorsReviewed =
+    isWithinMonths(doctorsReviewedAt, 6);
+
+  const appChecked =
+    isWithinMonths(appCheckedAt, 6);
+
+  const contactConfirmed =
+    hasText(client.email) ||
+    hasText(client.mobile_phone) ||
+    hasText(client.landline_phone);
+
+  const indicators = [
+    {
+      key:"meds",
+      label:"Meds reviewed",
+      ready:medsReviewed,
+      date:medsReviewedAt
+    },
+    {
+      key:"doctors",
+      label:"Doctors reviewed",
+      ready:doctorsReviewed,
+      date:doctorsReviewedAt
+    },
+    {
+      key:"app",
+      label:"App checked",
+      ready:appChecked,
+      date:appCheckedAt
+    },
+    {
+      key:"contact",
+      label:"Contact method confirmed",
+      ready:contactConfirmed
+    }
+  ];
+
+  const readyCount =
+    indicators.filter(indicator => indicator.ready).length;
+
+  const score =
+    Math.round((readyCount / indicators.length) * 100);
+
+  return{
+    score,
+    readyCount,
+    totalCount:indicators.length,
+    indicators,
+    isStale:!medsReviewed || !doctorsReviewed,
+    lastReviewDate,
+    medsReviewedAt,
+    doctorsReviewedAt,
+    appCheckedAt
+  };
+
+}
+
+function scoreClass(score){
+
+  if(score >= 80){
+    return "ready";
+  }
+
+  if(score >= 50){
+    return "watch";
+  }
+
+  return "needs-work";
+
+}
+
+function readinessIndicator(indicator){
+
+  const readyClass =
+    indicator.ready ? "good" : "bad";
+
+  const label =
+    indicator.ready ? "Y" : "N";
+
+  return `
+    <span
+      class="readiness-indicator ${readyClass}"
+      title="${escapeHtml(indicator.label)}"
+    >
+      ${label}
+    </span>
+  `;
+
+}
+
+function reviewDateCell(indicator){
+
+  const badgeClass =
+    indicator.date
+      ? indicator.ready ? "fresh" : "stale"
+      : "missing";
+
+  const label =
+    indicator.date
+      ? indicator.ready ? "Current" : "Review"
+      : "No date";
+
+  return `
+    <span class="freshness-badge ${badgeClass}">
+      ${label}
+    </span>
+    <div class="muted">
+      ${escapeHtml(formatDate(indicator.date) || "")}
+    </div>
+  `;
+
+}
+
+function sortedAepClients(){
+
+  const sort =
+    document.getElementById("aepSort")?.value || "score_asc";
+
+  return dashboardClients
+    .map(client => ({
+      client,
+      readiness:readinessForClient(client)
+    }))
+    .sort((a,b) => {
+      if(sort === "score_desc"){
+        return b.readiness.score - a.readiness.score ||
+          clientDisplayName(a.client).localeCompare(clientDisplayName(b.client));
+      }
+
+      if(sort === "stale_first"){
+        return Number(b.readiness.isStale) - Number(a.readiness.isStale) ||
+          a.readiness.score - b.readiness.score ||
+          clientDisplayName(a.client).localeCompare(clientDisplayName(b.client));
+      }
+
+      if(sort === "name_asc"){
+        return clientDisplayName(a.client).localeCompare(clientDisplayName(b.client));
+      }
+
+      return a.readiness.score - b.readiness.score ||
+        clientDisplayName(a.client).localeCompare(clientDisplayName(b.client));
+    });
+
+}
+
+function renderAepReadinessSummary(items){
+
+  const summary =
+    document.getElementById("aepReadinessSummary");
+
+  if(!summary){
+    return;
+  }
+
+  const average =
+    items.length
+      ? Math.round(
+          items.reduce((sum, item) => sum + item.readiness.score, 0) /
+          items.length
+        )
+      : 0;
+
+  const staleCount =
+    items.filter(item => item.readiness.isStale).length;
+
+  const readyCount =
+    items.filter(item => item.readiness.score >= 80).length;
+
+  const needsWorkCount =
+    items.filter(item => item.readiness.score < 50).length;
+
+  summary.innerHTML = `
+    <div>
+      <strong>${average}%</strong>
+      <span>Average Score</span>
+    </div>
+    <div>
+      <strong>${readyCount}</strong>
+      <span>Ready Clients</span>
+    </div>
+    <div>
+      <strong>${staleCount}</strong>
+      <span>Needs Med/Doctor Review</span>
+    </div>
+    <div>
+      <strong>${needsWorkCount}</strong>
+      <span>Needs Attention</span>
+    </div>
+  `;
+
+}
+
+function renderAepReadinessTable(){
+
+  const table =
+    document.getElementById("aepReadinessTable");
+
+  if(!table){
+    return;
+  }
+
+  const items =
+    sortedAepClients();
+
+  renderAepReadinessSummary(items);
+
+  table.innerHTML = "";
+
+  if(items.length === 0){
+    table.innerHTML = `
+      <tr>
+        <td colspan="7">
+          <div class="empty-state">
+            No clients found.
+          </div>
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  items.forEach(({ client, readiness }) => {
+    const indicatorsByKey =
+      Object.fromEntries(
+        readiness.indicators.map(indicator => [indicator.key, indicator])
+      );
+
+    table.innerHTML += `
+      <tr>
+        <td>
+          <strong>${escapeHtml(clientDisplayName(client))}</strong>
+          <div class="muted">${escapeHtml(formatPhone(client.mobile_phone) || client.email || "")}</div>
+        </td>
+        <td>
+          <span class="readiness-score ${scoreClass(readiness.score)}">
+            ${readiness.score}%
+          </span>
+        </td>
+        <td>${reviewDateCell(indicatorsByKey.meds)}</td>
+        <td>${reviewDateCell(indicatorsByKey.doctors)}</td>
+        <td>${reviewDateCell(indicatorsByKey.app)}</td>
+        <td>${readinessIndicator(indicatorsByKey.contact)}</td>
+        <td>
+          <button class="secondary compact-btn" onclick="viewClient('${client.id}')">
+            View
+          </button>
+        </td>
+      </tr>
+    `;
   });
 
 }
