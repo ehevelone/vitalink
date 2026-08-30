@@ -191,6 +191,28 @@ small,
   display:none;
 }
 
+.industry-page main{
+  max-width:none !important;
+  width:min(1760px, calc(100vw - 48px)) !important;
+}
+
+.industry-page .hero,
+.industry-page .section,
+.industry-page .statement,
+.industry-page .final-cta{
+  max-width:min(1760px, calc(100vw - 48px)) !important;
+}
+
+.industry-page .integration-opportunity-panel{
+  max-width:none !important;
+  width:96vw !important;
+}
+
+.industry-page .integration-opportunity-panel .integration-graphic-frame{
+  max-width:min(1680px, calc(100vw - 80px)) !important;
+  width:96% !important;
+}
+
 @media (max-width:720px){
   main,
   .page,
