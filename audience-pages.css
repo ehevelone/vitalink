@@ -34,7 +34,8 @@ main{
 }
 
 .industry-page main{
-  max-width:1520px;
+  max-width:none;
+  width:min(1760px, calc(100vw - 48px));
 }
 
 .nav{
@@ -226,9 +227,9 @@ p{
 
 .integration-opportunity-panel{
   display:block;
-  margin-left:calc(50% - 47vw);
-  margin-right:calc(50% - 47vw);
-  width:94vw;
+  margin-left:calc(50% - 48vw);
+  margin-right:calc(50% - 48vw);
+  width:96vw;
 }
 
 .integration-opportunity-panel .integration-heading,
@@ -240,9 +241,9 @@ p{
 
 .integration-opportunity-panel .integration-graphic-frame{
   margin:34px auto;
-  max-width:min(1540px, calc(100vw - 112px));
+  max-width:min(1680px, calc(100vw - 80px));
   padding:14px;
-  width:94%;
+  width:96%;
 }
 
 .integration-opportunity-panel .integration-graphic-frame img{
@@ -1087,6 +1088,11 @@ p{
   .integration-opportunity-panel{
     margin-left:0;
     margin-right:0;
+    width:auto;
+  }
+
+  .industry-page main{
+    max-width:none;
     width:auto;
   }
 
