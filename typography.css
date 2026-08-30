@@ -7,8 +7,8 @@
   --vl-body-copy-width:920px;
   --vl-prominent-copy-width:950px;
   --vl-narrow-copy-width:850px;
-  --vl-section-copy-width:1000px;
-  --vl-page-content-width:1120px;
+  --vl-section-copy-width:1760px;
+  --vl-page-content-width:1760px;
 }
 
 main,
@@ -20,6 +20,7 @@ main.content,
 .site-container,
 .page-shell{
   max-width:min(var(--vl-page-content-width), calc(100vw - 48px)) !important;
+  width:100% !important;
 }
 
 img{
@@ -117,6 +118,7 @@ main > section:not(.grid):not(.features):not(.steps):not(.selector-shell),
   max-width:min(var(--vl-section-copy-width), calc(100vw - 48px)) !important;
   margin-left:auto !important;
   margin-right:auto !important;
+  width:100% !important;
 }
 
 body > .container,
@@ -127,6 +129,7 @@ main > .panel{
   max-width:min(var(--vl-section-copy-width), calc(100vw - 48px)) !important;
   margin-left:auto !important;
   margin-right:auto !important;
+  width:100% !important;
 }
 
 p,
@@ -185,6 +188,7 @@ small,
 
 #why-vitalink{
   max-width:min(var(--vl-section-copy-width), calc(100vw - 48px)) !important;
+  width:100% !important;
 }
 
 #why-vitalink p br{
