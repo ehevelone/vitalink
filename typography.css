@@ -218,6 +218,19 @@ body.industry-page main > section.integration-opportunity-panel:not(.grid):not(.
   width:96% !important;
 }
 
+.individuals-page main,
+.individuals-page main > section:not(.grid):not(.features):not(.steps):not(.selector-shell),
+.individuals-page .hero,
+.individuals-page .band,
+.individuals-page .related{
+  max-width:min(1080px, calc(100vw - 48px)) !important;
+}
+
+.individuals-page .screenshot-row{
+  max-width:min(1080px, calc(100vw - 48px)) !important;
+  width:100% !important;
+}
+
 @media (max-width:720px){
   main,
   .page,
