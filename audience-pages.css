@@ -894,35 +894,6 @@ p{
   padding-left:28px;
 }
 
-.agency-page .pricing-section{
-  background:rgba(7,10,15,.82);
-  border:1px solid rgba(124,198,232,.2);
-  padding:54px 40px;
-}
-
-.agency-page .pricing-section h2{
-  max-width:820px;
-}
-
-.agency-page .price-card{
-  background:#112255;
-  display:flex;
-  flex-direction:column;
-  min-height:238px;
-}
-
-.agency-page .price-card p{
-  margin-top:auto;
-}
-
-.agency-page .featured-price{
-  background:linear-gradient(180deg,rgba(74,222,128,.18),#112255);
-}
-
-.agency-page .standard-price{
-  opacity:.78;
-}
-
 .advantage-badge{
   background:rgba(60,196,124,.18);
   border:1px solid #3CC47C;
@@ -937,66 +908,93 @@ p{
   text-transform:uppercase;
 }
 
-.agency-page .advantage-card{
-  background:#0A1F0A;
-  border:2px solid #3CC47C;
-  border-radius:14px;
-  box-shadow:0 20px 60px rgba(0,0,0,.38);
-  padding:42px;
+.agency-owner-pricing{
+  align-items:stretch;
+  background:#071407;
+  border-color:#3CC47C;
+  display:grid;
+  gap:26px;
+  grid-template-columns:minmax(280px,.95fr) minmax(0,2.05fr);
 }
 
-.founder-math{
-  align-items:center;
+.owner-pricing-intro{
+  align-self:center;
+}
+
+.owner-pricing-intro h2{
+  font-size:clamp(1.9rem,3.2vw,3rem);
+  margin-bottom:14px;
+}
+
+.owner-pricing-intro p{
+  color:#eafff1;
+  font-weight:760;
+  margin:0;
+}
+
+.owner-pricing-grid{
   display:grid;
-  grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
-  gap:28px;
-  margin-top:34px;
+  gap:12px;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+}
+
+.owner-price-card{
+  background:#112255;
+  border:1px solid rgba(124,198,232,.38);
+  border-radius:10px;
+  display:flex;
+  flex-direction:column;
+  min-height:212px;
+  padding:22px;
   text-align:center;
 }
 
-.math-side{
-  background:rgba(0,0,0,.2);
-  border:1px solid rgba(60,196,124,.35);
-  border-radius:12px;
-  padding:24px;
+.owner-price-featured{
+  background:linear-gradient(180deg,#1f9be4,#1173bd);
+  border-color:#7cc6e8;
 }
 
-.math-side span{
-  color:#c9f8d9;
+.owner-price-card span{
+  color:#b9ddff;
   display:block;
   font-size:.9rem;
-  font-weight:850;
-  margin-bottom:12px;
+  font-weight:950;
+  line-height:1.15;
+  margin-bottom:10px;
 }
 
-.math-side strong{
+.owner-price-featured span{
+  color:#d9f6ff;
+}
+
+.owner-price-card strong{
   color:#fff;
   display:block;
-  font-size:clamp(2.4rem,5vw,4.2rem);
-  line-height:1;
+  font-size:clamp(2.4rem,4vw,3.5rem);
+  line-height:.95;
+  margin-bottom:18px;
 }
 
-.math-side em{
-  color:#bdeccd;
-  display:block;
+.owner-price-card strong em{
+  color:#d6e8ff;
+  font-size:1rem;
   font-style:normal;
-  font-weight:850;
-  margin-top:6px;
+  margin-left:3px;
 }
 
-.math-vs{
+.owner-price-card p{
+  color:#dbeafe;
+  font-size:.98rem;
+  margin:0 0 8px;
+}
+
+.owner-price-card b{
   color:#7cf0ad;
-  font-weight:950;
+  display:block;
+  font-size:.82rem;
+  letter-spacing:.06em;
+  margin-top:auto;
   text-transform:uppercase;
-}
-
-.math-difference{
-  color:#F5C842;
-  font-size:clamp(1.5rem,3vw,2.45rem);
-  font-weight:950;
-  grid-column:1 / -1;
-  line-height:1.1;
-  margin-top:6px;
 }
 
 .agency-final{
@@ -1130,6 +1128,8 @@ p{
 
   .comparison-grid,
   .outcome-strip,
+  .agency-owner-pricing,
+  .owner-pricing-grid,
   .process-flow,
   .value-layout{
     grid-template-columns:1fr;
@@ -1182,11 +1182,7 @@ p{
     padding-top:42px;
   }
 
-  .founder-math{
-    grid-template-columns:1fr;
-  }
-
-  .math-difference{
-    grid-column:auto;
+  .owner-price-card{
+    min-height:auto;
   }
 }
