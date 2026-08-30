@@ -22,11 +22,14 @@
 /medication-organization /medication-organization.html 200
 /health-information-management /health-information-management.html 200
 /for-insurance-agents /for-insurance-agents.html 200
+/for-agencies /for-agencies.html 200
+/for-organizations /for-organizations.html 200
+/industry-partners /industry-partners.html 200
 /for-individuals /for-individuals.html 200
 /schedule-demo /schedule-demo.html 200
 /referral/:token /referral.html 200
 /marketing-crm /marketing-crm/index.html 200
 /crm/vitalink-notifications /crm/vitalink-notifications.html 200
-/*                /index.html       200
+/*                /404.html         404
 
 

@@ -5,6 +5,8 @@
 <meta charset="UTF-8" />
 <title>Emergency Info | VitaLink</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, follow" />
+<meta name="description" content="Private VitaLink emergency information display for authorized QR access." />
 
 <style>
 :root{
@@ -148,6 +150,7 @@ font-size:12px;
 cursor:pointer;
 }
 </style>
+<link rel="stylesheet" href="typography.css">
 </head>
 
 <body>
@@ -160,7 +163,7 @@ cursor:pointer;
 </div>
 
 <div class="logo">
-<img src="/images/vitalink-logo.png" />
+<img src="images/vitalink-logo.png" />
 </div>
 
 <h1>Loading Emergency Info...</h1>
@@ -200,7 +203,7 @@ app.innerHTML = `
 </div>
 
 <div class="logo">
-<img src="/images/vitalink-logo.png" />
+<img src="images/vitalink-logo.png" />
 </div>
 
 <h1>Unable to Load Emergency Info</h1>
@@ -229,7 +232,7 @@ app.innerHTML = `
 </div>
 
 <div class="logo">
-<img src="/images/vitalink-logo.png" />
+<img src="images/vitalink-logo.png" />
 </div>
 
 <h1>Emergency Information</h1>
@@ -421,6 +424,6 @@ showError(err.message || "Unable to load emergency data.");
 })();
 </script>
 
-<script src="/site-traffic.js" defer></script>
+<script src="site-traffic.js" defer></script>
 </body>
 </html>
