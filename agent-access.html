@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>VitaLink Agent Access | Founders Pricing</title>
-<meta name="description" content="Choose VitaLink Founders Agent Access or App + CRM Access with monthly or annual billing." />
+<title>VitaLink Agent Access | Founding Agent Pricing</title>
+<meta name="description" content="Choose VitaLink Founding Agent Access or App + CRM Access with monthly or annual billing." />
 <meta name="robots" content="noindex, follow" />
 <link rel="canonical" href="https://myvitalink.app/agent-access">
 <style>
@@ -334,11 +334,12 @@ grid-column:auto;
 }
 }
 </style>
+<link rel="stylesheet" href="typography.css">
 </head>
 <body>
 <main>
-  <img src="/images/vitalink-logo.png" alt="VitaLink" class="logo">
-  <div class="eyebrow">Founders Agent Access</div>
+  <img src="images/vitalink-logo.png" alt="VitaLink" class="logo">
+  <div class="eyebrow">Founding Agent Access</div>
   <h1>Choose Your VitaLink Access</h1>
   <p class="intro">
     Select app-only access or the full App + CRM workspace, then choose monthly or annual billing before secure Stripe checkout.
@@ -408,7 +409,7 @@ grid-column:auto;
       <article class="plan-card selected" id="agentPlan" onclick="setPlan('agent')" tabindex="0">
         <h2>VitaLink Agent Access</h2>
         <div class="price" data-monthly="$10" data-annual="$120">$10 <span>/ month</span></div>
-        <div class="save-note" data-monthly="Founders monthly access" data-annual="Annual founders access">Founders monthly access</div>
+        <div class="save-note" data-monthly="Founding Agent monthly access" data-annual="Annual Founding Agent access">Founding Agent monthly access</div>
         <p>App-only agent access for connected client workflows, agent information, referrals, and VitaLink client setup.</p>
         <ul class="feature-list">
           <li>Agent app access</li>
@@ -421,7 +422,7 @@ grid-column:auto;
       <article class="plan-card" id="appCrmPlan" onclick="setPlan('app_crm')" tabindex="0">
         <h2>VitaLink App + CRM Access</h2>
         <div class="price" data-monthly="$30" data-annual="$360">$30 <span>/ month</span></div>
-        <div class="save-note" data-monthly="Founders monthly access" data-annual="Annual founders access">Founders monthly access</div>
+        <div class="save-note" data-monthly="Founding Agent + CRM monthly access" data-annual="Annual Founding Agent + CRM access">Founding Agent + CRM monthly access</div>
         <p>The full VitaLink agent workspace: app access plus CRM, tasks, appointments, policy tracking, notes, and follow-up workflows.</p>
         <ul class="feature-list">
           <li>Everything in Agent Access</li>
@@ -435,7 +436,7 @@ grid-column:auto;
     <div class="checkout-panel">
       <div>
         <strong id="selectionTitle">VitaLink Agent Access - Monthly</strong>
-        <span id="selectionSummary">$10/month Founders pricing</span>
+        <span id="selectionSummary">$10/month Founding Agent pricing</span>
       </div>
       <button class="checkout-btn" id="checkoutBtn" onclick="startSelectedCheckout()">Continue to Secure Checkout</button>
     </div>
@@ -455,13 +456,13 @@ let selectedBilling = "monthly";
 const plans = {
   agent: {
     title: "VitaLink Agent Access",
-    monthly: "$10/month Founders pricing",
-    annual: "$120/year Founders pricing"
+    monthly: "$10/month Founding Agent pricing",
+    annual: "$120/year Founding Agent pricing"
   },
   app_crm: {
     title: "VitaLink App + CRM Access",
-    monthly: "$30/month Founders pricing",
-    annual: "$360/year Founders pricing"
+    monthly: "$30/month Founding Agent + CRM pricing",
+    annual: "$360/year Founding Agent + CRM pricing"
   }
 };
 
@@ -748,6 +749,6 @@ window.addEventListener("DOMContentLoaded", () => {
   initAgentAccessTools();
 });
 </script>
-<script src="/site-traffic.js" defer></script>
+<script src="site-traffic.js" defer></script>
 </body>
 </html>

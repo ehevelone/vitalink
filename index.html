@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta name="google-site-verification" content="h33VUkYD4QIC5aAJ-uJatlkk7zAZ-QZ-wRR00Q0Fte8" />
+<meta name="google-site-verification" content="h33VUkYD4QIC5aAJ-uJatIkk7zAZ-QZ-wRR00Q" />
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>VitaLink App | Personal Health Organization Platform | myvitalink.app</title>
@@ -22,9 +22,8 @@
 <meta name="twitter:description" content="Organize critical health and insurance information in one secure place.">
 <meta name="twitter:image" content="https://myvitalink.app/images/vitalink-logo.png">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://myvitalink.app/#organization","name":"VitaLink","alternateName":["myVitaLink","VitaLink Health & Insurance ID","VitaLink App"],"url":"https://myvitalink.app/","logo":"https://myvitalink.app/images/vitalink-logo.png","description":"VitaLink is a client-controlled health and insurance information platform that helps people organize critical health, insurance, emergency, and agent-authorized information.","founder":{"@type":"Person","name":"Eric Hevelone"},"contactPoint":{"@type":"ContactPoint","email":"vitalinkteam@gmail.com","contactType":"customer support","areaServed":"US","availableLanguage":["English","Spanish"]}},{"@type":"WebSite","@id":"https://myvitalink.app/#website","name":"VitaLink","alternateName":"myvitalink.app","url":"https://myvitalink.app/","publisher":{"@id":"https://myvitalink.app/#organization"}},{"@type":"SoftwareApplication","name":"VitaLink","applicationCategory":"HealthApplication","operatingSystem":["Android","iOS"],"description":"VitaLink helps users organize medications, doctors, insurance cards, emergency contacts, emergency QR access, and client-authorized agent sharing.","url":"https://myvitalink.app/"},{"@type":"WebPage","name":"VitaLink Health & Insurance ID","description":"VitaLink keeps critical health and insurance information organized, secure, and accessible when it matters most.","url":"https://myvitalink.app/","isPartOf":{"@id":"https://myvitalink.app/#website"}}]}
+{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://myvitalink.app/#organization","name":"VitaLink","alternateName":["myVitaLink","VitaLink Health & Insurance ID","VitaLink App"],"url":"https://myvitalink.app/","logo":"https://myvitalink.app/images/vitalink-logo.png","description":"VitaLink is a client-controlled health and insurance information platform that helps people organize critical health, insurance, emergency, and agent-authorized information.","founder":{"@type":"Person","name":"Eric Hevelone"},"sameAs":[],"contactPoint":{"@type":"ContactPoint","email":"vitalinkteam@gmail.com","contactType":"customer support","areaServed":"US","availableLanguage":["English","Spanish"]}},{"@type":"WebSite","@id":"https://myvitalink.app/#website","name":"VitaLink","alternateName":"myvitalink.app","url":"https://myvitalink.app/","publisher":{"@id":"https://myvitalink.app/#organization"}},{"@type":"SoftwareApplication","name":"VitaLink","applicationCategory":"HealthApplication","operatingSystem":["Android","iOS"],"description":"VitaLink helps users organize medications, doctors, insurance cards, emergency contacts, emergency QR access, and client-authorized agent sharing.","url":"https://myvitalink.app/"},{"@type":"WebPage","name":"VitaLink Health & Insurance ID","description":"VitaLink keeps critical health and insurance information organized, secure, and accessible when it matters most.","url":"https://myvitalink.app/","isPartOf":{"@id":"https://myvitalink.app/#website"}}]}
 </script>
-
 <style>
 
 :root{
@@ -51,6 +50,56 @@ margin:0 auto;
 padding:60px 24px;
 }
 
+.site-header{
+position:sticky;
+top:0;
+z-index:1000;
+background:rgba(0,0,0,.94);
+border-bottom:1px solid var(--divider);
+backdrop-filter:blur(10px);
+}
+
+.site-header-inner{
+max-width:1100px;
+margin:0 auto;
+padding:10px 24px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:18px;
+}
+
+.site-header-logo{
+display:block;
+line-height:0;
+}
+
+.site-header-logo img{
+width:118px;
+height:auto;
+display:block;
+filter:drop-shadow(0 0 8px rgba(124,198,232,.22));
+}
+
+.site-header-links{
+display:flex;
+align-items:center;
+gap:14px;
+}
+
+.site-header-links a{
+color:var(--accent-blue);
+text-decoration:none;
+font-weight:600;
+font-size:.92rem;
+padding:7px 10px;
+border-radius:999px;
+}
+
+.site-header-links a:hover{
+background:rgba(124,198,232,.12);
+}
+
 .hero{
 display:grid;
 grid-template-columns:1fr;
@@ -60,6 +109,16 @@ margin-bottom:80px;
 
 .hero-text{
 text-align:center;
+}
+
+.direct-answer{
+font-size:1.08rem;
+font-weight:600;
+color:#e8f6fc;
+text-align:center;
+max-width:780px;
+margin:0 auto 18px auto;
+line-height:1.65;
 }
 
 .logo{
@@ -135,6 +194,66 @@ display:block;
 font-size:1.1rem;
 color:#8f8f8f;
 margin-top:8px;
+}
+
+.hero-product{
+display:flex;
+justify-content:center;
+margin:22px auto 8px;
+}
+
+.phone-frame{
+width:min(260px,72vw);
+padding:10px;
+border:1px solid rgba(124,198,232,.35);
+border-radius:28px;
+background:linear-gradient(180deg,#151515 0%,#050505 100%);
+box-shadow:0 18px 45px rgba(0,0,0,.72),0 0 0 1px rgba(124,198,232,.1);
+}
+
+.phone-frame img{
+width:100%;
+display:block;
+border-radius:20px;
+}
+
+.audience-routing-grid{
+display:grid;
+grid-template-columns:repeat(2,minmax(0,1fr));
+gap:22px;
+margin:0 auto;
+}
+
+@media (max-width:640px){
+main{
+padding:40px 18px;
+}
+
+.site-header-inner{
+padding:8px 14px;
+gap:10px;
+}
+
+.site-header-logo img{
+width:96px;
+}
+
+.site-header-links{
+gap:6px;
+}
+
+.site-header-links a{
+font-size:.82rem;
+padding:6px 8px;
+}
+
+.audience-routing-grid{
+grid-template-columns:1fr;
+}
+
+.phone-frame{
+width:min(230px,76vw);
+}
 }
 
 /* FEATURES */
@@ -337,9 +456,24 @@ font-size:0.8rem;
 }
 
 </style>
+<link rel="stylesheet" href="typography.css">
 </head>
 
 <body>
+
+<header class="site-header" aria-label="VitaLink audience navigation">
+  <div class="site-header-inner">
+    <a class="site-header-logo" href="index.html" aria-label="VitaLink home">
+      <img src="images/vitalink-logo.png" alt="VitaLink">
+    </a>
+    <nav class="site-header-links" aria-label="Audience navigation">
+      <a href="for-individuals.html">Individuals</a>
+      <a href="for-insurance-agents.html">Agents</a>
+      <a href="for-agencies.html">Agencies</a>
+      <a href="industry-partners.html">Partners</a>
+    </nav>
+  </div>
+</header>
 
 <main>
 
@@ -382,6 +516,10 @@ class="ekg-line"
   Prepared. <span class="highlight" style="color:#7cc6e8; font-weight:600;">Protected.</span> Connected.
 </h1>
 
+<p class="direct-answer">
+VitaLink is a client-controlled health and insurance information platform. Clients keep their own medications, doctors, insurance cards, and emergency information current in one place, and choose when to share updates with their insurance agent - nothing syncs automatically.
+</p>
+
 <p class="tagline" style="
   font-size:1.2rem;
   color:#d0d0d0;
@@ -397,10 +535,16 @@ Be ready before an emergency happens — with your health, medications, insuranc
   font-size:1.05rem;
   color:#cfcfcf;
   text-align:center;
-  margin-bottom:40px;
+  margin-bottom:18px;
 ">
 Private. Secure. Always under your control.
 </p>
+
+<div class="hero-product" aria-label="VitaLink app emergency profile preview">
+  <div class="phone-frame">
+    <img src="images/emergency-screen.png" alt="VitaLink emergency information screen">
+  </div>
+</div>
 
 </div>
 
@@ -432,15 +576,10 @@ Private. Secure. Always under your control.
   max-width:760px;
   margin:0 auto 28px auto;
 ">
-  VitaLink helps individuals stay organized and prepared while helping insurance agents stay connected to their clients.
+  VitaLink helps individuals stay organized and prepared while giving agents, agencies, FMOs, and industry partners a better starting point for health and insurance conversations.
 </p>
 
-<div style="
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:22px;
-  margin:0 auto;
-">
+<div class="audience-routing-grid">
 
   <div style="
     background:linear-gradient(180deg,#111 0%,#0c0c0c 100%);
@@ -451,40 +590,12 @@ Private. Secure. Always under your control.
     box-shadow:0 0 0 1px rgba(124,198,232,0.08), 0 10px 28px rgba(0,0,0,0.65);
   ">
     <h3 style="color:#ffffff; font-size:1.35rem; margin:0 0 10px 0;">
-      Insurance Agents
-    </h3>
-    <p style="color:#d0d0d0; font-size:1.02rem; line-height:1.55; margin:0 0 22px 0;">
-      Helping agents improve retention, simplify annual reviews, and stay connected to clients.
-    </p>
-    <a href="for-insurance-agents.html" style="
-      display:inline-block;
-      padding:12px 24px;
-      border-radius:999px;
-      background:#7cc6e8;
-      color:#000;
-      text-decoration:none;
-      font-weight:700;
-      font-size:0.95rem;
-    ">
-      For Agents
-    </a>
-  </div>
-
-  <div style="
-    background:linear-gradient(180deg,#111 0%,#0c0c0c 100%);
-    border:1px solid var(--divider);
-    border-radius:14px;
-    padding:26px 24px;
-    text-align:left;
-    box-shadow:0 0 0 1px rgba(124,198,232,0.08), 0 10px 28px rgba(0,0,0,0.65);
-  ">
-    <h3 style="color:#ffffff; font-size:1.35rem; margin:0 0 10px 0;">
-      Individuals, Families &amp; Caregivers
+      Individuals &amp; Families
     </h3>
     <p style="color:#d0d0d0; font-size:1.02rem; line-height:1.55; margin:0 0 22px 0;">
       Keep medications, insurance information, doctors, emergency contacts, and important health records organized and accessible.
     </p>
-    <a href="#why-vitalink" style="
+    <a href="for-individuals.html" style="
       display:inline-block;
       padding:12px 24px;
       border-radius:999px;
@@ -498,11 +609,92 @@ Private. Secure. Always under your control.
     </a>
   </div>
 
+  <div style="
+    background:linear-gradient(180deg,#111 0%,#0c0c0c 100%);
+    border:1px solid var(--divider);
+    border-radius:14px;
+    padding:26px 24px;
+    text-align:left;
+    box-shadow:0 0 0 1px rgba(124,198,232,0.08), 0 10px 28px rgba(0,0,0,0.65);
+  ">
+    <h3 style="color:#ffffff; font-size:1.35rem; margin:0 0 10px 0;">
+      Insurance Agents
+    </h3>
+    <p style="color:#d0d0d0; font-size:1.02rem; line-height:1.55; margin:0 0 22px 0;">
+      Improve retention, simplify Medicare and health insurance annual reviews, and stay connected to clients with the right agent access path.
+    </p>
+    <a href="for-insurance-agents.html" style="
+      display:inline-block;
+      padding:12px 24px;
+      border-radius:999px;
+      background:#7cc6e8;
+      color:#000;
+      text-decoration:none;
+      font-weight:700;
+      font-size:0.95rem;
+    ">
+      For Insurance Agents
+    </a>
+  </div>
+
 </div>
 
-<p style="margin:18px auto 0 auto; color:#8f8f8f; font-size:0.92rem;">
-  For Organizations coming soon.
-</p>
+<div class="audience-routing-grid" style="margin-top:22px;">
+  <div style="
+    background:linear-gradient(180deg,#111 0%,#0c0c0c 100%);
+    border:1px solid var(--divider);
+    border-radius:14px;
+    padding:26px 24px;
+    text-align:left;
+    box-shadow:0 0 0 1px rgba(124,198,232,0.08), 0 10px 28px rgba(0,0,0,0.65);
+  ">
+    <h3 style="color:#ffffff; font-size:1.35rem; margin:0 0 10px 0;">
+      Agencies &amp; FMOs
+    </h3>
+    <p style="color:#d0d0d0; font-size:1.02rem; line-height:1.55; margin:0 0 22px 0;">
+      Deploy a consistent annual-review workflow across an agency, FMO, IMO, RSM team, or multi-agent organization.
+    </p>
+    <a href="for-agencies.html" style="
+      display:inline-block;
+      padding:12px 24px;
+      border-radius:999px;
+      background:#7cc6e8;
+      color:#000;
+      text-decoration:none;
+      font-weight:700;
+      font-size:0.95rem;
+    ">
+      For Agencies &amp; FMOs
+    </a>
+  </div>
+  <div style="
+    background:linear-gradient(180deg,#111 0%,#0c0c0c 100%);
+    border:1px solid var(--divider);
+    border-radius:14px;
+    padding:26px 24px;
+    text-align:left;
+    box-shadow:0 0 0 1px rgba(124,198,232,0.08), 0 10px 28px rgba(0,0,0,0.65);
+  ">
+    <h3 style="color:#ffffff; font-size:1.35rem; margin:0 0 10px 0;">
+      Industry Partners
+    </h3>
+    <p style="color:#d0d0d0; font-size:1.02rem; line-height:1.55; margin:0 0 22px 0;">
+      See how VitaLink complements quoting, enrollment, carrier, and distribution platforms with client-authorized information.
+    </p>
+    <a href="industry-partners.html" style="
+      display:inline-block;
+      padding:12px 24px;
+      border-radius:999px;
+      background:#7cc6e8;
+      color:#000;
+      text-decoration:none;
+      font-weight:700;
+      font-size:0.95rem;
+    ">
+      For Industry Partners
+    </a>
+  </div>
+</div>
 
 </section>
 
@@ -899,7 +1091,7 @@ Emergency responders can instantly access critical information when every second
 </section>
 
 
-<section class="cta">
+<section class="cta" id="individual-activation">
 
 <!-- 👇 ADD IT RIGHT HERE -->
 <p style="
@@ -987,7 +1179,7 @@ Secure your critical health and insurance information in one place — ready ins
 
 </div>
 
-<a href='/activate' style='
+<a href='activate.html' style='
   display:inline-block;
   margin:10px auto 0 auto;
   padding:14px 28px;
@@ -1004,7 +1196,7 @@ Get VitaLink Now
 </section>
 
 
-<section class="agent-access">
+<section class="agent-access" id="agent-access">
 
 <h3 style="
   font-size:1.5rem;
@@ -1032,7 +1224,7 @@ Client reporting and management tools for licensed agents and agency owners.
     font-weight:700;
     margin-bottom:6px;
   ">
-    $10 / Month Founders Agent Access
+    $10 / Month Founding Agent Access
   </div>
 
   <div style="
@@ -1045,7 +1237,7 @@ Client reporting and management tools for licensed agents and agency owners.
 
 </div>
 
-<a href="/agent-access" style="
+<a href="agent-access.html" style="
   display:inline-block;
   margin:10px auto 0 auto;
   padding:14px 28px;
@@ -1063,11 +1255,15 @@ Agent Access
 
 <a href="for-insurance-agents.html">For Agents</a>
 
-<a href="#why-vitalink">For Individuals &amp; Families</a>
+<a href="for-individuals.html">For Individuals &amp; Families</a>
 
-<span class="recover-btn" style="color:#8f8f8f; border-color:#333; background:transparent !important;">
-For Organizations
-</span>
+<a href="for-agencies.html" class="recover-btn">
+For Agencies
+</a>
+
+<a href="industry-partners.html" class="recover-btn">
+Industry Partners
+</a>
 
 <a href='agent-resources.html'>Agent Portal</a>
 
@@ -1107,59 +1303,59 @@ VitaLink Resources
   justify-content:center;
 ">
 
-<a class='recover-btn' href='/'>
+<a class='recover-btn' href='index.html'>
 Home
 </a>
 
-<a class='recover-btn' href='/activate'>
+<a class='recover-btn' href='activate.html'>
 Activate VitaLink
 </a>
 
-<a href="/for-individuals" class="recover-btn">
+<a href="for-individuals.html" class="recover-btn">
 For Individuals &amp; Families
 </a>
 
-<span class="recover-btn" style="color:#8f8f8f; border-color:#333; background:transparent !important;">
-For Organizations
-</span>
+<a href="for-agencies.html" class="recover-btn">
+For Agencies &amp; FMOs
+</a>
 
-<a href="/what-is-vitalink" class="recover-btn">
+<a href="industry-partners.html" class="recover-btn">
+Industry Partners
+</a>
+
+<a href="what-is-vitalink.html" class="recover-btn">
 What is VitaLink?
 </a>
 
-<a href="/emergency-qr-access" class="recover-btn">
+<a href="emergency-qr-access.html" class="recover-btn">
 Emergency QR Access
 </a>
 
-<a href="/medication-organization" class="recover-btn">
+<a href="medication-organization.html" class="recover-btn">
 Medication Organization
 </a>
 
-<a href="/health-information-management" class="recover-btn">
+<a href="health-information-management.html" class="recover-btn">
 Health Information
 </a>
 
-<a class='recover-btn' href='/for-insurance-agents'>
+<a class='recover-btn' href='for-insurance-agents.html'>
 For Agents
-</a>
-
-<a href="/for-insurance-agents" class="recover-btn">
-VitaLink for Agents
 </a>
 
 <a class='recover-btn' href='agent-resources.html'>
 Agent Resources
 </a>
 
-<a class='recover-btn' href='/quick_start'>
+<a class='recover-btn' href='quick_start.html'>
 Agent Quick Start
 </a>
 
-<a class='recover-btn' href='/crm-converter'>
+<a class='recover-btn' href='crm-converter.html'>
 CRM CSV Converter
 </a>
 
-<a class='recover-btn' href='/terms'>
+<a class='recover-btn' href='terms.html'>
 Terms & Privacy
 </a>
 
@@ -1177,7 +1373,7 @@ VitaLink™ Health & Insurance ID is a secure platform for your critical informa
 
 </main>
 
-<script src="/site-traffic.js" defer></script>
+<script src="site-traffic.js" defer></script>
 </body>
 </html>
 

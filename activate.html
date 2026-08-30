@@ -50,6 +50,30 @@ main{
   margin-bottom:30px;
 }
 
+.nav-links{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  justify-content:center;
+  margin:0 auto 34px;
+}
+
+.nav-links a{
+  border:1px solid var(--divider);
+  border-radius:999px;
+  color:#eaeaea;
+  display:inline-block;
+  font-weight:700;
+  padding:10px 14px;
+  text-decoration:none;
+}
+
+.nav-links a.primary{
+  background:var(--accent-blue);
+  border-color:var(--accent-blue);
+  color:#001018;
+}
+
 h1{
   font-size:2.4rem;
   margin-bottom:16px;
@@ -66,6 +90,18 @@ p{
   border-bottom:1px solid var(--divider);
   margin:60px 0;
   padding:40px 0;
+}
+
+.agent-paths{
+  border:1px solid var(--divider);
+  border-radius:14px;
+  margin:40px auto 0;
+  max-width:760px;
+  padding:24px;
+}
+
+.agent-paths p{
+  margin-bottom:18px;
 }
 
 .price{
@@ -103,6 +139,7 @@ footer{
   font-size:.8rem;
 }
 </style>
+<link rel="stylesheet" href="typography.css">
 </head>
 
 <body>
@@ -111,51 +148,37 @@ footer{
 
 <img src="images/vitalink-logo-1.png" class="logo">
 
+<nav class="nav-links" aria-label="VitaLink audience navigation">
+  <a href="for-individuals.html">Individuals</a>
+  <a href="for-insurance-agents.html">Agents</a>
+  <a href="for-agencies.html">Agencies &amp; FMOs</a>
+  <a href="industry-partners.html">Industry Partners</a>
+  <a href="activate.html" class="primary">Activate</a>
+</nav>
+
 <h1>Get Your VitaLink Activation Code</h1>
 
 <p>
-VitaLink requires an activation code to use the mobile app.
-Clients of participating insurance agents receive a code from their agent.
+VitaLink requires an activation code to use the mobile app. Clients of participating insurance agents may receive a code from their agent, and individuals can also purchase personal activation directly.
 </p>
 
 <!-- PERSONAL ACTIVATION -->
 <div class="activate-box">
-  <div class="price">$49.95 Personal Activation</div>
+  <div class="price">$49.95 One-Time Personal Activation</div>
   <button onclick="startCheckout()">
     Get Activation Code
   </button>
 </div>
 
-<!-- AGENT ACCESS -->
-<div class="activate-box">
-  <div class="price">$10 / Month Founders Agent Access</div>
-  <a href="/agent-access" style="
-    display:inline-block;
-    padding:14px 28px;
-    background:#7cc6e8;
-    color:#000;
-    border-radius:8px;
-    text-decoration:none;
-    font-weight:600;
-  ">
-    Start Agent Access
-  </a>
-</div>
-
-<div class="activate-box">
-  <div class="price">$30 / Month App + CRM Founders Access</div>
-  <a href="/agent-access?plan=app_crm" style="
-    display:inline-block;
-    padding:14px 28px;
-    background:#7cc6e8;
-    color:#000;
-    border-radius:8px;
-    text-decoration:none;
-    font-weight:600;
-  ">
-    Start App + CRM Access
-  </a>
-</div>
+<section class="agent-paths">
+  <h2>Agent or agency?</h2>
+  <p>Agent access and agency/FMO conversations use a different path than personal activation.</p>
+  <div class="nav-links" style="margin-bottom:0;">
+    <a href="agent-access.html" class="primary">$10/mo Founding Agent</a>
+    <a href="agent-access.html?plan=app_crm">$30/mo Founding Agent + CRM</a>
+    <a href="for-agencies.html">Agency/FMO Demo</a>
+  </div>
+</section>
 
 <div class="instructions">
 
@@ -212,6 +235,6 @@ async function startCheckout() {
 
 </script>
 
-<script src="/site-traffic.js" defer></script>
+<script src="site-traffic.js" defer></script>
 </body>
 </html>

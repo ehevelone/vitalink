@@ -39,6 +39,8 @@ p{color:var(--muted);font-size:1.08rem;margin:0 0 18px;}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin:34px 0 52px;}
 .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;}
 .card strong{display:block;color:var(--text);font-size:1.05rem;margin-bottom:8px;}
+.screenshot-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:0 0 52px;}
+.screenshot-row img{background:#050505;border:1px solid var(--border);border-radius:16px;box-shadow:0 18px 42px rgba(0,0,0,.42);padding:8px;width:100%;}
 .band{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:42px 0;margin:48px 0;}
 .cta-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:26px;}
 .cta.secondary{background:transparent;color:var(--accent);border:1px solid var(--accent);}
@@ -49,15 +51,18 @@ p{color:var(--muted);font-size:1.08rem;margin:0 0 18px;}
 .footer{margin-top:58px;padding-top:24px;border-top:1px solid var(--border);color:#94a3b8;font-size:.92rem;}
 @media(max-width:720px){.nav{align-items:flex-start;flex-direction:column;}.nav-links{justify-content:flex-start;}}
 </style>
+<link rel="stylesheet" href="typography.css">
 </head>
 <body>
 <main>
   <div class="nav">
-    <a href="/" style="background:none;padding:0;"><img src="/images/vitalink-logo.png" class="logo" alt="VitaLink"></a>
+    <a href="index.html" style="background:none;padding:0;"><img src="images/vitalink-logo.png" class="logo" alt="VitaLink"></a>
     <div class="nav-links">
-      <a href="/for-insurance-agents">For Agents</a>
-      <a href="/for-individuals">For Individuals</a>
-      <span>For Organizations</span>
+      <a href="for-individuals.html">Individuals</a>
+      <a href="for-insurance-agents.html">Agents</a>
+      <a href="for-agencies.html">Agencies &amp; FMOs</a>
+      <a href="industry-partners.html">Industry Partners</a>
+      <a href="activate.html">Activate</a>
     </div>
   </div>
 
@@ -67,9 +72,15 @@ p{color:var(--muted);font-size:1.08rem;margin:0 0 18px;}
     <p>VitaLink helps organize medications, doctors, insurance information, emergency contacts, and important health details so they are easier to access when life gets busy, confusing, or urgent.</p>
     <p>Whether you are managing your own information, helping a spouse, caring for a parent, or keeping multiple household profiles organized, VitaLink gives you one connected place to prepare before the moment arrives.</p>
     <div class="cta-row">
-      <a href="/activate.html" class="cta">Download VitaLink</a>
-      <a href="/emergency-qr-access" class="cta secondary">Emergency QR Access</a>
+      <a href="activate.html" class="cta">Activate VitaLink</a>
+      <a href="emergency-qr-access.html" class="cta secondary">Emergency QR Access</a>
     </div>
+  </section>
+
+  <section class="screenshot-row" aria-label="VitaLink app screenshots">
+    <img src="images/landing.png" alt="VitaLink app landing screen">
+    <img src="images/emergency-screen.png" alt="VitaLink emergency information screen">
+    <img src="images/ins-cards-screen.png" alt="VitaLink insurance cards screen">
   </section>
 
   <section class="grid">
@@ -92,21 +103,22 @@ p{color:var(--muted);font-size:1.08rem;margin:0 0 18px;}
   <section>
     <h2>Start with the information you already have.</h2>
     <p>Medication labels, insurance cards, doctors, emergency contacts, and important records can all become part of a more organized VitaLink profile.</p>
-    <a href="/activate.html" class="cta">Download VitaLink</a>
+    <a href="activate.html" class="cta">Activate VitaLink</a>
   </section>
 
   <section class="related">
     <h2>Related Pages</h2>
     <div class="related-links">
-      <a href="/what-is-vitalink">What is VitaLink?<span>See how VitaLink helps people stay organized and prepared.</span></a>
-      <a href="/emergency-qr-access">Emergency QR Access<span>Critical information when seconds matter.</span></a>
-      <a href="/medication-organization">Medication Organization<span>Keep prescriptions and medication details easier to manage.</span></a>
-      <a href="/health-information-management">Health Information Management<span>Bring scattered health and insurance details together.</span></a>
+      <a href="what-is-vitalink.html">What is VitaLink?<span>See how VitaLink helps people stay organized and prepared.</span></a>
+      <a href="emergency-qr-access.html">Emergency QR Access<span>Critical information when seconds matter.</span></a>
+      <a href="medication-organization.html">Medication Organization<span>Keep prescriptions and medication details easier to manage.</span></a>
+      <a href="health-information-management.html">Health Information Management<span>Bring scattered health and insurance details together.</span></a>
+      <a href="for-insurance-agents.html">For Insurance Agents<span>Help clients stay organized and begin reviews prepared.</span></a>
     </div>
   </section>
 
   <div class="footer">VitaLink helps individuals, families, and caregivers stay organized, prepared, and connected.</div>
 </main>
-<script src="/site-traffic.js" defer></script>
+<script src="site-traffic.js" defer></script>
 </body>
 </html>
