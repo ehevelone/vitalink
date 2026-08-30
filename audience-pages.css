@@ -220,6 +220,25 @@ p{
   align-items:start;
 }
 
+.integration-opportunity-panel{
+  display:block;
+}
+
+.integration-opportunity-panel .integration-copy{
+  max-width:900px;
+}
+
+.integration-opportunity-panel .integration-graphic-frame{
+  margin:32px auto 0;
+  max-width:980px;
+  width:88%;
+}
+
+.integration-opportunity-panel .integration-graphic-frame img{
+  height:auto;
+  width:100%;
+}
+
 .statement{
   border-color:rgba(124,198,232,.42);
   color:#fff;
@@ -1038,6 +1057,11 @@ p{
 
   .hero .media-frame{
     transform:none;
+  }
+
+  .integration-opportunity-panel .integration-graphic-frame{
+    margin-top:24px;
+    width:100%;
   }
 
   .section,
