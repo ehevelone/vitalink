@@ -325,6 +325,17 @@ p{
   width:25px;
 }
 
+.workflow-showcase .workflow-today h3,
+.workflow-showcase .workflow-today li{
+  color:#0a1722;
+}
+
+.workflow-showcase .workflow-today li::before{
+  background:#d7e3ec;
+  border-color:#8ec8ea;
+  color:#0a1722;
+}
+
 .card-grid,
 .asset-grid,
 .partner-grid,
