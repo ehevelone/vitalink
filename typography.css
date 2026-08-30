@@ -196,14 +196,15 @@ small,
   width:min(1760px, calc(100vw - 48px)) !important;
 }
 
-.industry-page .hero,
-.industry-page .section,
-.industry-page .statement,
-.industry-page .final-cta{
+body.industry-page main > section.hero:not(.grid):not(.features):not(.steps):not(.selector-shell),
+body.industry-page main > section.section:not(.grid):not(.features):not(.steps):not(.selector-shell),
+body.industry-page main > section.statement:not(.grid):not(.features):not(.steps):not(.selector-shell),
+body.industry-page main > section.final-cta:not(.grid):not(.features):not(.steps):not(.selector-shell){
   max-width:min(1760px, calc(100vw - 48px)) !important;
+  width:100% !important;
 }
 
-.industry-page .integration-opportunity-panel{
+body.industry-page main > section.integration-opportunity-panel:not(.grid):not(.features):not(.steps):not(.selector-shell){
   max-width:none !important;
   width:96vw !important;
 }
