@@ -231,6 +231,13 @@ body.industry-page main > section.integration-opportunity-panel:not(.grid):not(.
   width:100% !important;
 }
 
+.agency-page main,
+body.agency-page main > section.hero:not(.grid):not(.features):not(.steps):not(.selector-shell),
+body.agency-page main > section.section:not(.grid):not(.features):not(.steps):not(.selector-shell),
+body.agency-page main > section.final-cta:not(.grid):not(.features):not(.steps):not(.selector-shell){
+  max-width:min(1520px, calc(100vw - 48px)) !important;
+}
+
 @media (max-width:720px){
   main,
   .page,

@@ -545,23 +545,25 @@ p{
 .final-cta .cta-row{justify-content:center;}
 
 .agency-page main{
-  max-width:1220px;
+  max-width:none;
+  width:min(1520px, calc(100vw - 48px));
 }
 
 .agency-page .hero,
 .agency-page .section,
 .agency-page .final-cta{
-  background:transparent;
-  border:0;
-  border-radius:0;
-  box-shadow:none;
-  padding-left:0;
-  padding-right:0;
+  background:rgba(7,10,15,.82);
+  border:1px solid var(--border);
+  border-radius:18px;
+  box-shadow:0 20px 52px rgba(0,0,0,.42);
+  padding-left:40px;
+  padding-right:40px;
 }
 
 .agency-page .section{
-  padding-bottom:80px;
-  padding-top:80px;
+  margin-top:80px;
+  padding-bottom:54px;
+  padding-top:54px;
 }
 
 .agency-page .nav{
@@ -572,26 +574,20 @@ p{
   grid-template-columns:minmax(0,1.02fr) minmax(380px,.98fr);
   gap:56px;
   margin-bottom:0;
-  padding-bottom:84px;
-  padding-top:18px;
+  padding-bottom:42px;
+  padding-top:42px;
   position:relative;
 }
 
 .agency-page .agency-hero::before{
-  background:linear-gradient(90deg,transparent,rgba(124,198,232,.8),transparent);
-  content:"";
-  height:1px;
-  left:0;
-  position:absolute;
-  top:-24px;
-  width:min(430px,44vw);
+  display:none;
 }
 
 .agency-page .agency-hero-copy h1{
-  font-size:clamp(3rem,6vw,5.7rem);
+  font-size:clamp(2.6rem,4.8vw,5rem);
   letter-spacing:0;
-  line-height:.98;
-  max-width:760px;
+  line-height:1.02;
+  max-width:900px;
 }
 
 .agency-page .agency-hero-copy .lead{
@@ -599,11 +595,11 @@ p{
 }
 
 .agency-page .agency-hero-art{
-  background:transparent;
-  border:0;
-  border-radius:0;
+  background:linear-gradient(180deg,#101820 0%,#05080b 100%);
+  border:1px solid rgba(124,198,232,.26);
+  border-radius:16px;
   box-shadow:0 26px 80px rgba(0,0,0,.55);
-  padding:0;
+  padding:12px;
   transform:none;
 }
 
@@ -613,7 +609,7 @@ p{
 }
 
 .agency-comparison{
-  border-top:1px solid rgba(124,198,232,.24);
+  border-color:rgba(124,198,232,.24);
 }
 
 .agency-comparison h2{
@@ -696,7 +692,7 @@ p{
 }
 
 .agency-page .agency-outcomes{
-  border-top:1px solid rgba(124,198,232,.18);
+  border-color:rgba(124,198,232,.24);
 }
 
 .agency-page .agency-outcomes h2{
@@ -706,17 +702,21 @@ p{
 .outcome-strip{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:18px;
   margin-top:42px;
 }
 
 .outcome-item{
-  border-left:1px solid rgba(124,198,232,.24);
-  padding:6px 26px 8px;
+  background:linear-gradient(180deg,var(--card-strong),var(--card));
+  border:1px solid rgba(124,198,232,.22);
+  border-radius:14px;
+  min-height:178px;
+  padding:24px;
 }
 
 .outcome-item:first-child{
-  border-left:0;
-  padding-left:0;
+  border-left:1px solid rgba(124,198,232,.22);
+  padding-left:24px;
 }
 
 .outcome-item strong{
@@ -747,9 +747,8 @@ p{
 .agency-flow-section{
   background:
     linear-gradient(180deg,rgba(124,198,232,.05),transparent 72%),
-    transparent;
-  border-top:1px solid rgba(124,198,232,.18);
-  border-bottom:1px solid rgba(124,198,232,.18);
+    rgba(7,10,15,.82);
+  border:1px solid rgba(124,198,232,.18);
 }
 
 .section-intro{
@@ -764,7 +763,11 @@ p{
 }
 
 .process-step{
+  background:linear-gradient(180deg,var(--card-strong),var(--card));
+  border:1px solid rgba(124,198,232,.22);
+  border-radius:14px;
   min-height:122px;
+  padding:22px;
   position:relative;
 }
 
@@ -803,14 +806,13 @@ p{
 .relationship-moment{
   align-items:center;
   background:#14100A;
-  border-bottom:2px solid #F5C842;
-  border-top:2px solid #F5C842;
+  border:1px solid rgba(245,200,66,.65);
   gap:64px;
   grid-template-columns:minmax(0,1.02fr) minmax(360px,.98fr);
-  padding-bottom:80px;
-  padding-left:34px;
-  padding-right:34px;
-  padding-top:80px;
+  padding-bottom:54px;
+  padding-left:40px;
+  padding-right:40px;
+  padding-top:54px;
 }
 
 .relationship-copy{
@@ -837,14 +839,14 @@ p{
 }
 
 .relationship-art{
-  background:transparent;
-  border:0;
+  background:linear-gradient(180deg,#101820 0%,#05080b 100%);
+  border:1px solid rgba(245,200,66,.34);
   box-shadow:0 24px 70px rgba(0,0,0,.58);
-  padding:0;
+  padding:12px;
 }
 
 .agency-value{
-  border-top:1px solid rgba(124,198,232,.18);
+  border-color:rgba(124,198,232,.24);
 }
 
 .value-layout{
@@ -893,10 +895,9 @@ p{
 }
 
 .agency-page .pricing-section{
-  background:rgba(7,10,15,.52);
-  border-top:1px solid rgba(124,198,232,.2);
-  border-bottom:1px solid rgba(124,198,232,.2);
-  padding:80px 0;
+  background:rgba(7,10,15,.82);
+  border:1px solid rgba(124,198,232,.2);
+  padding:54px 40px;
 }
 
 .agency-page .pricing-section h2{
@@ -999,10 +1000,10 @@ p{
 }
 
 .agency-final{
-  border-top:1px solid rgba(124,198,232,.2);
-  margin-top:40px;
-  padding-bottom:70px;
-  padding-top:68px;
+  border:1px solid rgba(124,198,232,.24);
+  margin-top:80px;
+  padding-bottom:54px;
+  padding-top:54px;
   position:relative;
 }
 
@@ -1114,6 +1115,15 @@ p{
     gap:34px;
   }
 
+  .agency-page .hero,
+  .agency-page .section,
+  .agency-page .final-cta,
+  .relationship-moment,
+  .agency-page .pricing-section{
+    padding-left:24px;
+    padding-right:24px;
+  }
+
   .agency-page .agency-hero-copy h1{
     font-size:clamp(2.55rem,12vw,4rem);
   }
@@ -1131,14 +1141,11 @@ p{
   }
 
   .outcome-item{
-    border-left:0;
-    border-top:1px solid rgba(124,198,232,.22);
-    padding:22px 0 0;
+    padding:22px;
   }
 
   .outcome-item:first-child{
-    border-top:0;
-    padding-top:0;
+    padding-left:22px;
   }
 
   .process-flow{
