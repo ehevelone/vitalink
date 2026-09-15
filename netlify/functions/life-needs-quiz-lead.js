@@ -1,3 +1,5 @@
+const nodemailer = require("nodemailer");
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "Content-Type",
@@ -34,6 +36,14 @@ function money(value) {
     currency: "USD",
     maximumFractionDigits: 0,
   });
+}
+
+function getRequiredEnv(name) {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`${name} is not configured.`);
+  }
+  return String(value).trim();
 }
 
 function estimateLines(result) {
@@ -136,37 +146,54 @@ function emailHtml({ leadId, lead, answers, result, consent }) {
   `;
 }
 
-async function sendEmail({ to, subject, text, html }) {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
-    throw new Error("RESEND_API_KEY is not configured.");
-  }
+function createMailer() {
+  const host = getRequiredEnv("SMTP_HOST");
+  const port = parseInt(process.env.SMTP_PORT || "587", 10);
+  const secure = port === 465;
+  const isGmail = /gmail/i.test(host) || /gmail/i.test(process.env.SMTP_USER || "");
 
-  const from =
-    process.env.LIFE_LEAD_FROM_EMAIL ||
-    "VitaLink <onboarding@resend.dev>";
-
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
+  return nodemailer.createTransport({
+    host,
+    port,
+    secure,
+    requireTLS: !secure || isGmail,
+    auth: {
+      user: getRequiredEnv("SMTP_USER"),
+      pass: getRequiredEnv("SMTP_PASS"),
     },
-    body: JSON.stringify({
-      from,
-      to: Array.isArray(to) ? to : [to],
-      subject,
-      text,
-      html,
-    }),
+    authMethod: isGmail ? "LOGIN" : undefined,
+    connectionTimeout: 15000,
+    greetingTimeout: 15000,
+    socketTimeout: 20000,
+    tls: {
+      minVersion: "TLSv1.2",
+      servername: host,
+    },
   });
+}
 
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    throw new Error(payload.message || payload.error || "Resend email failed.");
+function fromAddress(label = "VitaLink Life") {
+  const from = String(
+    process.env.LIFE_LEAD_FROM_EMAIL ||
+    process.env.SMTP_FROM ||
+    process.env.SMTP_USER ||
+    "ehevelone@gmail.com"
+  ).trim();
+  if (!from) {
+    throw new Error("LIFE_LEAD_FROM_EMAIL, SMTP_FROM, or SMTP_USER is not configured.");
   }
+  return `"${label}" <${from}>`;
+}
 
-  return payload;
+async function sendEmail({ to, subject, text, html }) {
+  const transporter = createMailer();
+  return transporter.sendMail({
+    from: fromAddress("VitaLink Life"),
+    to,
+    subject,
+    text,
+    html,
+  });
 }
 
 exports.handler = async (event) => {
