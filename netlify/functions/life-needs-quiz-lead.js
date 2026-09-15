@@ -191,8 +191,7 @@ async function sendEmail({ to, subject, text, html }) {
 
   const from =
     process.env.LIFE_LEAD_FROM_EMAIL ||
-    process.env.REACH_WAITLIST_FROM_EMAIL ||
-    "VitaLink <myvitalink@outreach.etretirement.com>";
+    "VitaLink <onboarding@resend.dev>";
 
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -321,28 +320,45 @@ exports.handler = async (event) => {
     leadId = inserted.rows[0].id;
 
     const notification = { leadId, lead, answers, result, consent };
-    await sendEmail({
-      to: process.env.LIFE_LEAD_TO_EMAIL || "ehevelone@asb.insure",
-      subject: `New life insurance quiz lead: ${lead.name}`,
-      text: emailText(notification),
-      html: emailHtml(notification),
-    });
+    let notificationStatus = "email_sent";
 
-    await pool.query(
-      `
-        UPDATE life_needs_quiz_leads
-        SET notification_status = 'sent',
-            notification_error = null,
-            email_sent_at = now()
-        WHERE id = $1
-      `,
-      [leadId]
-    );
+    try {
+      await sendEmail({
+        to: process.env.LIFE_LEAD_TO_EMAIL || "ehevelone@asb.insure",
+        subject: `New life insurance quiz lead: ${lead.name}`,
+        text: emailText(notification),
+        html: emailHtml(notification),
+      });
+
+      await pool.query(
+        `
+          UPDATE life_needs_quiz_leads
+          SET notification_status = 'sent',
+              notification_error = null,
+              email_sent_at = now()
+          WHERE id = $1
+        `,
+        [leadId]
+      );
+    } catch (notificationError) {
+      notificationStatus = "email_failed";
+      console.error("life-needs-quiz notification error:", notificationError);
+
+      await pool.query(
+        `
+          UPDATE life_needs_quiz_leads
+          SET notification_status = 'failed',
+              notification_error = $2
+          WHERE id = $1
+        `,
+        [leadId, notificationError.message]
+      ).catch(console.error);
+    }
 
     return reply(200, {
       success: true,
       leadId,
-      notification: "email_sent",
+      notification: notificationStatus,
     });
   } catch (error) {
     console.error("life-needs-quiz-lead error:", error);
