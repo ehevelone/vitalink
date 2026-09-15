@@ -131,7 +131,7 @@ document.getElementById("leadForm").addEventListener("submit", async (event) => 
 
   const submitButton = form.querySelector("button");
   submitButton.disabled = true;
-  submitButton.textContent = "Saving...";
+  submitButton.textContent = "Sending...";
 
   try {
     const payload = {
@@ -154,15 +154,15 @@ document.getElementById("leadForm").addEventListener("submit", async (event) => 
 
     const data = await response.json();
     if (!response.ok || data.success !== true) {
-      throw new Error(data.error || "Unable to save your result.");
+      throw new Error(data.error || "Unable to send your result.");
     }
 
     leadError.style.color = "#4ade80";
-    leadError.textContent = "Got it. Eric has your quiz result and can follow up for a real conversation.";
+    leadError.textContent = "Got it. Your quiz result has been sent to Eric for a real conversation.";
     submitButton.textContent = "Submitted";
   } catch (error) {
     leadError.style.color = "";
-    leadError.textContent = error.message || "Unable to save your result.";
+    leadError.textContent = error.message || "Unable to send your result.";
     submitButton.disabled = false;
     submitButton.textContent = "Talk Through My Results";
   }

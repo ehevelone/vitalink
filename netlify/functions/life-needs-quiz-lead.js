@@ -1,10 +1,3 @@
-const { Pool } = require("pg");
-
-const pool = new Pool({
-  connectionString: process.env.SUPABASE_URL,
-  ssl: { rejectUnauthorized: false },
-});
-
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "Content-Type",
@@ -41,46 +34,6 @@ function money(value) {
     currency: "USD",
     maximumFractionDigits: 0,
   });
-}
-
-async function ensureTables() {
-  await pool.query(`
-    CREATE EXTENSION IF NOT EXISTS pgcrypto;
-
-    CREATE TABLE IF NOT EXISTS life_needs_quiz_leads (
-      id uuid primary key default gen_random_uuid(),
-      name text not null,
-      email text not null,
-      phone text,
-      contact_preference text,
-      answers jsonb not null default '{}'::jsonb,
-      result jsonb not null default '{}'::jsonb,
-      consent_accepted boolean not null default false,
-      consent_language text not null,
-      consent_page text not null,
-      consent_captured_at timestamptz not null,
-      ip_address text,
-      user_agent text,
-      notification_status text not null default 'pending',
-      notification_error text,
-      email_sent_at timestamptz,
-      source text not null default 'life_needs_quiz',
-      created_at timestamptz not null default now()
-    );
-
-    ALTER TABLE life_needs_quiz_leads
-      DROP COLUMN IF EXISTS marketing_contact_id,
-      ADD COLUMN IF NOT EXISTS contact_preference text,
-      ADD COLUMN IF NOT EXISTS notification_status text not null default 'pending',
-      ADD COLUMN IF NOT EXISTS notification_error text,
-      ADD COLUMN IF NOT EXISTS email_sent_at timestamptz;
-
-    CREATE INDEX IF NOT EXISTS idx_life_needs_quiz_leads_email
-      ON life_needs_quiz_leads (email);
-
-    CREATE INDEX IF NOT EXISTS idx_life_needs_quiz_leads_created
-      ON life_needs_quiz_leads (created_at);
-  `);
 }
 
 function estimateLines(result) {
@@ -225,11 +178,7 @@ exports.handler = async (event) => {
     return reply(405, { success: false, error: "Method not allowed." });
   }
 
-  let leadId = null;
-
   try {
-    await ensureTables();
-
     const body = event.body ? JSON.parse(event.body) : {};
     const rawLead = body.lead || {};
     const rawConsent = body.consent || {};
@@ -276,108 +225,27 @@ exports.handler = async (event) => {
 
     const answers = body.answers || {};
     const result = body.result || {};
-    const ipAddress =
-      clean(event.headers["x-nf-client-connection-ip"]) ||
-      clean(event.headers["client-ip"]) ||
-      clean(event.headers["x-forwarded-for"]);
-    const userAgent = clean(event.headers["user-agent"]);
-
-    const inserted = await pool.query(
-      `
-        INSERT INTO life_needs_quiz_leads (
-          name,
-          email,
-          phone,
-          contact_preference,
-          answers,
-          result,
-          consent_accepted,
-          consent_language,
-          consent_page,
-          consent_captured_at,
-          ip_address,
-          user_agent
-        )
-        VALUES ($1,$2,$3,$4,$5::jsonb,$6::jsonb,$7,$8,$9,$10::timestamptz,$11,$12)
-        RETURNING id
-      `,
-      [
-        lead.name,
-        lead.email,
-        lead.phone,
-        lead.contactPreference,
-        JSON.stringify(answers),
-        JSON.stringify(result),
-        true,
-        consent.language,
-        consent.page,
-        consent.capturedAt,
-        ipAddress,
-        userAgent,
-      ]
-    );
-
-    leadId = inserted.rows[0].id;
+    const leadId = `life-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
     const notification = { leadId, lead, answers, result, consent };
-    let notificationStatus = "email_sent";
-
-    try {
-      await sendEmail({
-        to: process.env.LIFE_LEAD_TO_EMAIL || "ehevelone@asb.insure",
-        subject: `New life insurance quiz lead: ${lead.name}`,
-        text: emailText(notification),
-        html: emailHtml(notification),
-      });
-
-      await pool.query(
-        `
-          UPDATE life_needs_quiz_leads
-          SET notification_status = 'sent',
-              notification_error = null,
-              email_sent_at = now()
-          WHERE id = $1
-        `,
-        [leadId]
-      );
-    } catch (notificationError) {
-      notificationStatus = "email_failed";
-      console.error("life-needs-quiz notification error:", notificationError);
-
-      await pool.query(
-        `
-          UPDATE life_needs_quiz_leads
-          SET notification_status = 'failed',
-              notification_error = $2
-          WHERE id = $1
-        `,
-        [leadId, notificationError.message]
-      ).catch(console.error);
-    }
+    await sendEmail({
+      to: process.env.LIFE_LEAD_TO_EMAIL || "ehevelone@asb.insure",
+      subject: `New life insurance quiz lead: ${lead.name}`,
+      text: emailText(notification),
+      html: emailHtml(notification),
+    });
 
     return reply(200, {
       success: true,
       leadId,
-      notification: notificationStatus,
+      notification: "email_sent",
     });
   } catch (error) {
     console.error("life-needs-quiz-lead error:", error);
 
-    if (leadId) {
-      await pool.query(
-        `
-          UPDATE life_needs_quiz_leads
-          SET notification_status = 'failed',
-              notification_error = $2
-          WHERE id = $1
-        `,
-        [leadId, error.message]
-      ).catch(console.error);
-    }
-
     return reply(500, {
       success: false,
-      error: "Unable to save this result right now.",
+      error: "Unable to send this result right now.",
     });
   }
 };
