@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Do You Have Enough? Life Insurance Needs Quiz | VitaLink</title>
+<meta name="description" content="A simple educational life insurance needs quiz for families who want a clearer starting point.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://myvitalink.app/life-needs-quiz">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Do You Have Enough? Life Insurance Needs Quiz">
+<meta property="og:description" content="Answer a few questions and see an educational estimate of how much protection your household may need.">
+<meta property="og:url" content="https://myvitalink.app/life-needs-quiz">
+<meta property="og:site_name" content="VitaLink">
+<meta property="og:image" content="https://myvitalink.app/images/life-needs-quiz-og.svg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Do You Have Enough? Life Insurance Needs Quiz">
+<meta name="twitter:description" content="A simple educational life insurance needs estimate for families.">
+<meta name="twitter:image" content="https://myvitalink.app/images/life-needs-quiz-og.svg">
+<link rel="stylesheet" href="life-needs-quiz.css?v=20260915a">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","name":"Do You Have Enough? Life Insurance Needs Quiz","description":"A simple educational life insurance needs quiz for families who want a clearer starting point.","url":"https://myvitalink.app/life-needs-quiz","isPartOf":{"@type":"WebSite","name":"VitaLink","url":"https://myvitalink.app/"}}
+</script>
+</head>
+<body>
+<main class="quiz-shell">
+  <header class="quiz-header">
+    <a href="/" class="brand" aria-label="VitaLink home">
+      <img src="images/vitalink-logo.png" alt="VitaLink">
+    </a>
+    <span class="header-note">Educational estimate</span>
+  </header>
+
+  <section class="story-panel" id="storyPanel">
+    <p class="eyebrow">Why I built this quiz</p>
+    <h2>The cost of waiting is not always the monthly payment.</h2>
+    <div class="story-copy">
+      <p>I am a licensed Life and Health insurance producer.</p>
+      <p>We had a life insurance carrier come in and show us their options. The part that caught my attention was coverage for grandchildren. I was impressed, and I planned to get it for our grandkids.</p>
+      <p>I procrastinated. A couple weeks later, we lost our grandson, Cameryn.</p>
+      <p>We now have life insurance on our other two grandkids. I cannot go back and change what I waited on, but I can be honest about why this conversation matters.</p>
+      <p>I'm an insurance agent. I knew exactly what a policy would cost me - that's actually why I put it off. I told myself I'd commit to it once I worked it into the budget.</p>
+      <p>Then I was diagnosed with cancer. Now I'm not insurable for years, and when I am again, it'll cost a lot more than it would have.</p>
+      <p>Knowing the numbers didn't protect me. Now I'm paying for the delay, not the policy.</p>
+      <p class="story-bridge">Let's start with where you actually stand: a few quick questions, then a real number.</p>
+    </div>
+    <button class="ghost-btn" id="storyStartQuiz" type="button">Start the quiz</button>
+  </section>
+
+  <section class="hero-panel" id="introPanel">
+    <div class="hero-copy">
+      <p class="eyebrow">Do You Have Enough?</p>
+      <h1>A quick life insurance needs check for your family.</h1>
+      <p>This quiz gives you a practical starting point based on income, debt, dependents, and years until retirement.</p>
+      <p class="plain-note">A private starting point for a bigger family conversation.</p>
+      <button class="primary-btn" id="startQuiz" type="button">Start the quiz</button>
+    </div>
+    <div class="hero-visual" aria-hidden="true">
+      <div class="curve-card">
+        <div class="curve-title">Coverage need over time</div>
+        <svg viewBox="0 0 320 190" role="img" aria-label="">
+          <path d="M22 152 C68 74 128 50 176 72 C222 92 260 124 300 146" fill="none" stroke="#7cc6e8" stroke-width="7" stroke-linecap="round"/>
+          <path d="M22 152 C74 116 133 91 187 101 C234 109 266 131 300 146" fill="none" stroke="#4ade80" stroke-width="4" stroke-linecap="round" opacity=".78"/>
+          <circle cx="112" cy="62" r="9" fill="#f5c85c"/>
+          <line x1="112" y1="62" x2="112" y2="160" stroke="#f5c85c" stroke-width="2" stroke-dasharray="6 6"/>
+          <text x="22" y="178">Today</text>
+          <text x="246" y="178">Retirement</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <section class="quiz-card hidden" id="quizPanel" aria-live="polite">
+    <div class="progress-wrap">
+      <div class="progress-meta">
+        <span id="stepLabel">Question 1 of 6</span>
+        <span id="progressPercent">17%</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+
+    <form id="quizForm" novalidate>
+      <div class="question-step active" data-step="age">
+        <p class="eyebrow">Question 1</p>
+        <h2>What is your current age?</h2>
+        <label class="field-label" for="age">Age</label>
+        <input id="age" name="age" inputmode="numeric" autocomplete="off" min="18" max="85" type="number" placeholder="Example: 42" required>
+      </div>
+
+      <div class="question-step" data-step="coverage">
+        <p class="eyebrow">Question 3</p>
+        <h2>Do you have any life insurance today?</h2>
+        <div class="option-grid">
+          <label class="choice"><input type="radio" name="hasCoverage" value="yes"> <span>Yes</span></label>
+          <label class="choice"><input type="radio" name="hasCoverage" value="no"> <span>No</span></label>
+        </div>
+        <div class="coverage-amount hidden" id="coverageAmountWrap">
+          <label class="field-label" for="coverageAmount">About how much coverage do you have?</label>
+          <input id="coverageAmount" name="coverageAmount" inputmode="numeric" type="number" min="0" step="1000" placeholder="Example: 250000">
+        </div>
+      </div>
+
+      <div class="question-step" data-step="dependents">
+        <p class="eyebrow">Question 4</p>
+        <h2>How many dependents or kids are at home?</h2>
+        <div class="option-grid compact">
+          <label class="choice"><input type="radio" name="dependents" value="0"> <span>0</span></label>
+          <label class="choice"><input type="radio" name="dependents" value="1"> <span>1</span></label>
+          <label class="choice"><input type="radio" name="dependents" value="2"> <span>2</span></label>
+          <label class="choice"><input type="radio" name="dependents" value="3"> <span>3+</span></label>
+        </div>
+      </div>
+
+      <div class="question-step" data-step="debt">
+        <p class="eyebrow">Question 5</p>
+        <h2>What is your total outstanding debt?</h2>
+        <p class="helper">Use rough numbers for anything your household would still owe: mortgage, loans, credit cards, student loans, and anything else outstanding.</p>
+        <div class="field-grid">
+          <div>
+            <label class="field-label" for="mortgageBalance">Mortgage balance</label>
+            <input id="mortgageBalance" name="mortgageBalance" inputmode="numeric" type="number" min="0" step="1000" placeholder="Example: 240000">
+          </div>
+          <div>
+            <label class="field-label" for="personalDebt">Credit cards / personal debt</label>
+            <input id="personalDebt" name="personalDebt" inputmode="numeric" type="number" min="0" step="1000" placeholder="Example: 15000">
+          </div>
+          <div>
+            <label class="field-label" for="otherLoans">Auto / personal / other loans</label>
+            <input id="otherLoans" name="otherLoans" inputmode="numeric" type="number" min="0" step="1000" placeholder="Example: 22000">
+          </div>
+          <div>
+            <label class="field-label" for="studentLoans">Student loans / anything else</label>
+            <input id="studentLoans" name="studentLoans" inputmode="numeric" type="number" min="0" step="1000" placeholder="Example: 18000">
+          </div>
+        </div>
+      </div>
+
+      <div class="question-step" data-step="finalExpenses">
+        <p class="eyebrow">Question 6</p>
+        <h2>What funeral wishes should this estimate plan for?</h2>
+        <p class="helper">This uses a simple planning estimate behind the scenes: cremation $15,000, full funeral/burial $30,000.</p>
+        <div class="funeral-grid">
+          <div class="funeral-person">
+            <strong>For you</strong>
+            <label class="choice"><input type="radio" name="finalPlan" value="cremation"> <span>Cremation / simple services</span></label>
+            <label class="choice"><input type="radio" name="finalPlan" value="burial"> <span>Full funeral / burial</span></label>
+          </div>
+          <div class="funeral-person hidden" id="spouseFinalPlanWrap">
+            <strong>For your spouse or partner</strong>
+            <label class="choice"><input type="radio" name="spouseFinalPlan" value="cremation"> <span>Cremation / simple services</span></label>
+            <label class="choice"><input type="radio" name="spouseFinalPlan" value="burial"> <span>Full funeral / burial</span></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="question-step" data-step="college">
+        <p class="eyebrow">Question 7</p>
+        <h2>Do you want to include college planning for kids?</h2>
+        <p class="helper">Optional. Enter a total household goal, or leave blank.</p>
+        <label class="field-label" for="collegeGoal">College planning goal</label>
+        <input id="collegeGoal" name="collegeGoal" inputmode="numeric" type="number" min="0" step="1000" placeholder="Example: 80000">
+      </div>
+
+      <div class="question-step" data-step="earners">
+        <p class="eyebrow">Question 2</p>
+        <h2>Are you single or married/partnered?</h2>
+        <p class="helper">This lets the quiz build either a single-person estimate or a joint household estimate.</p>
+        <div class="option-stack">
+          <label class="choice"><input type="radio" name="earners" value="single"> <span>Single</span></label>
+          <label class="choice"><input type="radio" name="earners" value="two"> <span>Married / partnered</span></label>
+        </div>
+      </div>
+
+      <div class="question-step" data-step="spouseAge">
+        <p class="eyebrow">Question 2b</p>
+        <h2>What is your spouse or partner's current age?</h2>
+        <label class="field-label" for="spouseAge">Spouse / partner age</label>
+        <input id="spouseAge" name="spouseAge" inputmode="numeric" autocomplete="off" min="18" max="85" type="number" placeholder="Example: 42">
+      </div>
+
+      <div class="question-step" data-step="income">
+        <p class="eyebrow">Question 8</p>
+        <h2>What is your annual income?</h2>
+        <div class="option-stack">
+          <label class="choice"><input type="radio" name="income" value="lt50"> <span>Less than $50k</span></label>
+          <label class="choice"><input type="radio" name="income" value="50-75"> <span>$50k-$75k</span></label>
+          <label class="choice"><input type="radio" name="income" value="75-100"> <span>$75k-$100k</span></label>
+          <label class="choice"><input type="radio" name="income" value="100-125"> <span>$100k-$125k</span></label>
+          <label class="choice"><input type="radio" name="income" value="125-150"> <span>$125k-$150k</span></label>
+          <label class="choice"><input type="radio" name="income" value="150-200"> <span>$150k-$200k</span></label>
+          <label class="choice"><input type="radio" name="income" value="200plus"> <span>$200k+</span></label>
+        </div>
+      </div>
+
+      <div class="question-step" data-step="spouseIncome">
+        <p class="eyebrow">Question 8b</p>
+        <h2>What is your spouse or partner's annual income?</h2>
+        <div class="option-stack">
+          <label class="choice"><input type="radio" name="spouseIncome" value="none"> <span>No income</span></label>
+          <label class="choice"><input type="radio" name="spouseIncome" value="lt50"> <span>Less than $50k</span></label>
+          <label class="choice"><input type="radio" name="spouseIncome" value="50-75"> <span>$50k-$75k</span></label>
+          <label class="choice"><input type="radio" name="spouseIncome" value="75-100"> <span>$75k-$100k</span></label>
+          <label class="choice"><input type="radio" name="spouseIncome" value="100-125"> <span>$100k-$125k</span></label>
+          <label class="choice"><input type="radio" name="spouseIncome" value="125-150"> <span>$125k-$150k</span></label>
+          <label class="choice"><input type="radio" name="spouseIncome" value="150-200"> <span>$150k-$200k</span></label>
+          <label class="choice"><input type="radio" name="spouseIncome" value="200plus"> <span>$200k+</span></label>
+        </div>
+      </div>
+
+      <div class="question-step" data-step="incomeYears">
+        <p class="eyebrow">Final question</p>
+        <h2>How many years of income replacement should this estimate consider?</h2>
+        <p class="helper">If you are not sure, leave it blank and we will use 5 years as a starting point.</p>
+        <label class="field-label" for="incomeYears">Years</label>
+        <input id="incomeYears" name="incomeYears" inputmode="numeric" type="number" min="5" max="40" placeholder="Default: 5">
+      </div>
+
+      <p class="form-error" id="formError" role="alert"></p>
+      <div class="button-row">
+        <button class="ghost-btn" id="backBtn" type="button">Back</button>
+        <button class="primary-btn" id="nextBtn" type="button">Next</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="results-gate hidden" id="gatePanel">
+    <div>
+      <p class="eyebrow">What Now?</p>
+      <h2>What Now?</h2>
+      <p>You just spent five minutes giving me real numbers - your debt, your income, your family, even how you'd want things handled at the end. That's more thought than most people ever put into this.</p>
+      <p>But a quiz can't ask about your health, and it can't tell you what you can actually fit in your budget. That's the conversation. I'll use everything you just told me to walk in prepared - not to sell you something on a screen.</p>
+    </div>
+    <form id="leadForm" class="lead-form" novalidate>
+      <label class="field-label" for="leadName">Name</label>
+      <input id="leadName" name="name" autocomplete="name" required>
+
+      <label class="field-label" for="leadEmail">Email</label>
+      <input id="leadEmail" name="email" type="email" autocomplete="email" required>
+
+      <label class="field-label" for="leadPhone">Phone <span id="phoneRequirement">(optional)</span></label>
+      <input id="leadPhone" name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="(402) 555-1234">
+
+      <fieldset class="contact-preference">
+        <legend>How would you like Eric to contact you?</legend>
+        <label class="choice"><input type="radio" name="contactPreference" value="email"> <span>Email</span></label>
+        <label class="choice"><input type="radio" name="contactPreference" value="text"> <span>Text</span></label>
+        <label class="choice"><input type="radio" name="contactPreference" value="call"> <span>Call</span></label>
+      </fieldset>
+
+      <label class="consent-row">
+        <input id="consent" name="consent" type="checkbox" required>
+        <span id="consentText">By submitting, you agree to receive email/text/call from Eric Hevelone about your life insurance needs quiz result, insurability, and scheduling a conversation.</span>
+      </label>
+
+      <p class="form-error" id="leadError" role="alert"></p>
+      <button class="primary-btn wide" type="submit">Talk Through My Results</button>
+    </form>
+  </section>
+
+  <section class="results-panel hidden" id="resultsPanel" aria-live="polite">
+    <div class="result-heading">
+      <p class="eyebrow">Educational estimate</p>
+      <h2>Your household coverage need</h2>
+      <p>This is an educational estimate, not a quote.</p>
+    </div>
+    <div class="estimate-grid" id="estimateGrid"></div>
+    <div class="breakdown-grid" id="breakdownGrid"></div>
+    <div class="chart-card">
+      <div class="chart-topline">
+        <strong>Lifetime coverage-needs graph</strong>
+        <span>Need often rises during debt and child-rearing years, then tapers toward retirement.</span>
+      </div>
+      <canvas id="needsChart" width="920" height="420"></canvas>
+    </div>
+    <div class="education-grid">
+      <article class="education-card">
+        <strong>What this may point toward</strong>
+        <p>Temporary needs like mortgage payoff, kids at home, and income replacement often point toward coverage built around a specific time period.</p>
+        <p>Longer-term needs like final expenses or legacy goals may need a different conversation.</p>
+        <p>Many households end up discussing a blended approach. This is educational, not a recommendation.</p>
+      </article>
+      <article class="education-card warning-card">
+        <strong>Need is not the same as insurability.</strong>
+        <p>This estimate shows what your household may need. Your health, medications, medical history, tobacco use, and underwriting profile can affect what coverage is actually available and what it may cost.</p>
+        <p>That is one of the main reasons to sit down with a licensed producer instead of relying on an online calculator.</p>
+      </article>
+    </div>
+    <div class="result-notes" id="resultNotes"></div>
+    <div class="button-row">
+      <button class="ghost-btn" id="restartBtn" type="button">Start over</button>
+      <a class="primary-btn" href="mailto:ehevelone@asb.insure?subject=Life%20insurance%20needs%20quiz">Ask a question</a>
+    </div>
+  </section>
+
+  <footer class="quiz-footer">
+    <p><strong>Eric Hevelone</strong> | Licensed Insurance Producer, NE</p>
+    <p>10505 Cuming St, Omaha, NE 68114-2021</p>
+    <p>This page provides an educational estimate only and does not provide a quote or recommendation.</p>
+  </footer>
+</main>
+<script src="life-needs-quiz.js?v=20260914b"></script>
+</body>
+</html>
