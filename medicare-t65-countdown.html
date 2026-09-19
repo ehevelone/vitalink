@@ -45,6 +45,7 @@ body{
   margin:0 auto;
   min-height:76px;
   display:flex;
+  flex-wrap:wrap;
   align-items:center;
   justify-content:space-between;
   gap:18px;
@@ -81,7 +82,6 @@ main{
 
 .hero{
   position:relative;
-  overflow:hidden;
   padding-top:28px;
 }
 
@@ -174,6 +174,7 @@ input[type="date"]:focus{
 
 button,
 .call-link,
+.text-link,
 .site-link{
   min-height:56px;
   display:inline-flex;
@@ -183,6 +184,9 @@ button,
   border:1px solid var(--accent);
   font-size:1.08rem;
   font-weight:900;
+  line-height:1.3;
+  padding:.75em 1em;
+  text-align:center;
   text-decoration:none;
   cursor:pointer;
 }
@@ -196,18 +200,73 @@ button{
 
 button:hover,.call-link:hover{background:#9ad9f3;}
 
+.hidden{display:none!important;}
+
 .privacy-note{
   margin:10px 0 0;
   color:#aec2dc;
   font-size:.98rem;
 }
 
-.results{
+.follow-up,
+.results-flow{
   display:none;
 }
 
-.results.active{
+.follow-up.active,
+.results-flow.active{
   display:block;
+}
+
+.follow-up fieldset{
+  border:0;
+  padding:0;
+  margin:22px 0 0;
+}
+
+.follow-up legend{
+  color:var(--text);
+  font-size:1.35rem;
+  font-weight:900;
+  line-height:1.3;
+  margin-bottom:14px;
+}
+
+.choice-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+}
+
+.choice-button{
+  width:auto;
+  min-width:9rem;
+  padding:12px 24px;
+}
+
+.result-lead-grid{
+  display:grid;
+  gap:16px;
+}
+
+.top-contact{
+  border:1px solid rgba(124,198,232,.42);
+  border-radius:12px;
+  background:var(--panel-strong);
+  padding:20px;
+}
+
+.top-contact h3{font-size:1.35rem;}
+.top-contact p{margin-bottom:12px;}
+
+.top-contact-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+.top-contact-actions a{
+  flex:1 1 10rem;
 }
 
 .countdown-box{
@@ -235,6 +294,21 @@ button:hover,.call-link:hover{background:#9ad9f3;}
   font-weight:950;
 }
 
+.countdown-value-row{
+  align-items:baseline;
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px 18px;
+}
+
+.countdown-secondary{
+  color:var(--accent);
+  font-size:1.15rem;
+  font-weight:900;
+  line-height:1.35;
+  margin:0;
+}
+
 .countdown-detail{
   margin:10px 0 0;
   color:var(--text);
@@ -244,6 +318,12 @@ button:hover,.call-link:hover{background:#9ad9f3;}
 .status-open .countdown-status{color:var(--good);}
 .status-future .countdown-status{color:var(--warn);}
 .status-closed .countdown-status{color:var(--closed);}
+
+.result-framing{
+  margin:16px 0 0;
+  color:#e8f6fc;
+  font-weight:800;
+}
 
 .date-grid{
   display:grid;
@@ -289,6 +369,77 @@ button:hover,.call-link:hover{background:#9ad9f3;}
   margin-bottom:0;
 }
 
+.penalty-close{
+  margin:18px 0 0;
+  color:var(--text);
+  font-weight:900;
+}
+
+.result-action{
+  margin-top:18px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:var(--panel-strong);
+  padding:20px;
+}
+
+.path-answer{
+  border-left:4px solid var(--accent);
+  color:#e8f6fc;
+  font-size:1.05rem;
+  font-weight:900;
+  line-height:1.5;
+  margin:0 0 18px;
+  padding:10px 12px;
+}
+
+.walkthrough-content{
+  border-top:1px solid var(--line);
+  margin-top:14px;
+  padding:18px 0 0;
+}
+
+.walkthrough-content ol{
+  margin:0;
+  padding-left:1.4em;
+}
+
+.walkthrough-content li{
+  color:var(--muted);
+  font-size:1.08rem;
+  line-height:1.6;
+  margin-bottom:14px;
+}
+
+.walkthrough-content a{
+  color:var(--accent);
+  overflow-wrap:anywhere;
+}
+
+.ssa-account-prompt{
+  border-top:1px solid var(--line);
+  margin-top:20px;
+  padding-top:20px;
+}
+
+.ssa-account-prompt h4{
+  color:var(--text);
+  font-size:1.15rem;
+  line-height:1.4;
+  margin:0 0 12px;
+}
+
+.ssa-account-outcome{
+  background:#03070b;
+  border:1px solid rgba(124,198,232,.35);
+  border-radius:10px;
+  margin-top:14px;
+  padding:16px;
+}
+
+.ssa-account-outcome p:last-child{margin-bottom:0;}
+.ssa-account-outcome .site-link{width:100%;margin-top:6px;}
+
 .contact-actions{
   display:grid;
   gap:12px;
@@ -301,6 +452,14 @@ button:hover,.call-link:hover{background:#9ad9f3;}
 }
 
 .site-link{
+  color:var(--accent);
+  background:transparent;
+  max-width:100%;
+  overflow-wrap:anywhere;
+  white-space:normal;
+}
+
+.text-link{
   color:var(--accent);
   background:transparent;
 }
@@ -356,6 +515,11 @@ footer p{
     grid-template-columns:repeat(3, minmax(0,1fr));
   }
 
+  .result-lead-grid{
+    grid-template-columns:minmax(0,1.5fr) minmax(17rem,.5fr);
+    align-items:stretch;
+  }
+
   .contact-actions{
     grid-template-columns:1fr 1fr;
   }
@@ -391,70 +555,117 @@ footer p{
     <p class="privacy-note">This calculator runs only on this page. Your date of birth is not sent, saved, or stored.</p>
   </section>
 
-  <section class="card results" id="resultsCard" aria-live="polite">
-    <p class="eyebrow">Your Medicare Window</p>
-    <h2 id="resultHeadline">Your Initial Enrollment Period</h2>
-
-    <div class="countdown-box" id="countdownBox">
-      <p class="countdown-status" id="countdownStatus">Window status</p>
-      <p class="countdown-number" id="countdownNumber">--</p>
-      <p class="countdown-detail" id="countdownDetail">Enter your date of birth above.</p>
-    </div>
-
-    <div class="date-grid">
-      <div class="date-tile">
-        <span>65th birthday</span>
-        <strong id="birthday65">--/--/----</strong>
+  <section class="card follow-up" id="socialSecurityQuestion">
+    <p class="eyebrow">One Quick Question</p>
+    <fieldset>
+      <legend>Are you already collecting Social Security retirement benefits?</legend>
+      <div class="choice-row">
+        <button class="choice-button" type="button" data-ss="yes">Yes</button>
+        <button class="choice-button" type="button" data-ss="no">No</button>
       </div>
-      <div class="date-tile">
-        <span>IEP starts</span>
-        <strong id="iepStart">--/--/----</strong>
-      </div>
-      <div class="date-tile">
-        <span>IEP ends</span>
-        <strong id="iepEnd">--/--/----</strong>
-      </div>
-    </div>
+    </fieldset>
   </section>
+
+  <div class="results-flow" id="resultsFlow" aria-live="polite">
+    <section class="card" id="resultsCard" tabindex="-1">
+      <div class="result-lead-grid">
+        <div>
+          <p class="eyebrow">Your Medicare Window</p>
+          <h2 id="resultHeadline">Your Initial Enrollment Period</h2>
+
+          <div class="countdown-box" id="countdownBox">
+            <p class="countdown-status" id="countdownStatus">Window status</p>
+            <div class="countdown-value-row">
+              <p class="countdown-number" id="countdownNumber">--</p>
+              <p class="countdown-secondary hidden" id="countdownSecondary"></p>
+            </div>
+            <p class="countdown-detail" id="countdownDetail">Enter your date of birth above.</p>
+          </div>
+          <p class="result-framing" id="resultFraming"></p>
+        </div>
+
+        <aside class="top-contact">
+          <p class="eyebrow">Questions?</p>
+          <h3>Call or text Eric.</h3>
+          <p>I can help you understand what these dates mean for your situation.</p>
+          <div class="top-contact-actions">
+            <a class="call-link" href="tel:14028066331">Call Eric</a>
+            <a class="text-link" href="sms:14028066331">Text Eric</a>
+          </div>
+          <p><strong>(402) 806-6331</strong></p>
+        </aside>
+      </div>
+
+      <div class="date-grid">
+        <div class="date-tile">
+          <span>65th birthday</span>
+          <strong id="birthday65">--/--/----</strong>
+        </div>
+        <div class="date-tile">
+          <span>IEP starts</span>
+          <strong id="iepStart">--/--/----</strong>
+        </div>
+        <div class="date-tile">
+          <span>IEP ends</span>
+          <strong id="iepEnd">--/--/----</strong>
+        </div>
+      </div>
+
+      <div class="result-action" id="resultAction">
+        <p class="eyebrow">What You Do Next</p>
+        <p class="path-answer" id="pathAnswer"></p>
+        <h3 id="walkthroughHeadline">Know what to do next.</h3>
+        <div class="walkthrough-content" id="walkthroughContent"></div>
+        <div class="ssa-account-prompt hidden" id="ssaAccountPrompt">
+          <h4>Do you already have a personal my Social Security account?</h4>
+          <div class="choice-row">
+            <button class="choice-button" type="button" data-ssa-account="yes">Yes, I have one</button>
+            <button class="choice-button" type="button" data-ssa-account="no">No, create one</button>
+          </div>
+          <div class="ssa-account-outcome hidden" id="ssaAccountOutcome" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+  </div>
 
   <section class="card" id="penaltiesCard">
-    <p class="eyebrow">Why The Window Matters</p>
-    <h2>Missing it can cost you later.</h2>
-    <p>These are general Medicare rules, not a personalized quote or cost calculation. Exact timing and penalties depend on your individual circumstances, including whether you have creditable coverage such as an active employer plan.</p>
+      <p class="eyebrow">Why The Window Matters</p>
+      <h2>Missing it can cost you later.</h2>
 
-    <div class="penalty-list">
-      <article class="info-tile">
-        <h3>Part B penalty</h3>
-        <p>Medicare Part B may carry a permanent premium penalty of about 10% for each full 12-month period you go without Part B after becoming eligible, unless you qualify for a Special Enrollment Period or have other creditable coverage.</p>
-      </article>
+      <div class="penalty-list">
+        <article class="info-tile">
+          <h3>Part B</h3>
+          <p>Delaying enrollment without other creditable coverage can mean a permanent monthly premium increase - roughly 10% for each full 12-month period you wait.</p>
+        </article>
 
-      <article class="info-tile">
-        <h3>Part D penalty</h3>
-        <p>Part D prescription drug coverage has a similar lifetime penalty. It is generally calculated at roughly 1% of the national base premium for each month you go without creditable drug coverage.</p>
-      </article>
-    </div>
+        <article class="info-tile">
+          <h3>Part D</h3>
+          <p>A similar permanent late-enrollment penalty can be added to your monthly premium, based on how long you went without creditable drug coverage.</p>
+        </article>
+      </div>
+      <p class="penalty-close">This is why timing your enrollment matters - even if you're not ready to pick a plan yet.</p>
+      <p>These are general Medicare rules, not a personalized quote or cost calculation. Exact timing and penalties depend on your circumstances, including whether you have creditable coverage such as an active employer plan.</p>
   </section>
 
   <section class="card">
-    <p class="eyebrow">Questions?</p>
-    <h2>Call and ask before the window closes.</h2>
-    <p class="contact-name">Eric Hevelone</p>
-    <p>If you are turning 65 and want help understanding what applies to you, call with your questions.</p>
-
-    <div class="contact-actions">
-      <!-- PHONE SWAP: update this tel: link and visible number if the postcard phone number changes. -->
-      <a class="call-link" href="tel:14028066331">Call (402) 806-6331</a>
-      <!-- VITALINK URL SWAP: replace this URL if final VitaLink/app store links change. -->
-      <a class="site-link" href="https://myvitalink.app" target="_blank" rel="noopener">Visit myvitalink.app</a>
-    </div>
+      <p class="eyebrow">Free Organizer</p>
+      <h2>Keep your information ready with VitaLink.</h2>
+      <p>VitaLink is a free tool for organizing medications, doctors, insurance cards, and important health information so it is easier to find when you need it.</p>
+      <!-- VITALINK URL SWAP: use the final public VitaLink app/page URL here if it changes. -->
+      <p><a class="site-link" href="https://myvitalink.app" target="_blank" rel="noopener">Learn more about VitaLink</a></p>
   </section>
 
   <section class="card">
-    <p class="eyebrow">Free Organizer</p>
-    <h2>Keep your information ready with VitaLink.</h2>
-    <p>VitaLink is a free tool for organizing medications, doctors, insurance cards, and important health information so it is easier to find when you need it.</p>
-    <!-- VITALINK URL SWAP: use the final public VitaLink app/page URL here if it changes. -->
-    <p><a class="site-link" href="https://myvitalink.app" target="_blank" rel="noopener">Learn more about VitaLink</a></p>
+      <p class="eyebrow">Still Have Questions?</p>
+      <h2>Call or text Eric before you guess.</h2>
+      <p class="contact-name">Eric Hevelone</p>
+      <p>Your enrollment path can change based on Social Security, employer coverage, and timing. I can help you sort out what applies before you take the next step.</p>
+
+      <div class="contact-actions">
+        <!-- PHONE SWAP: update these links and the visible number if the postcard phone number changes. -->
+        <a class="call-link" href="tel:14028066331">Call (402) 806-6331</a>
+        <a class="text-link" href="sms:14028066331">Text (402) 806-6331</a>
+      </div>
   </section>
 
   <footer>
@@ -471,16 +682,28 @@ footer p{
   const form = document.getElementById("calculatorForm");
   const dobInput = document.getElementById("dob");
   const errorMessage = document.getElementById("errorMessage");
+  const socialSecurityQuestion = document.getElementById("socialSecurityQuestion");
+  const socialSecurityButtons = document.querySelectorAll("[data-ss]");
+  const resultsFlow = document.getElementById("resultsFlow");
   const resultsCard = document.getElementById("resultsCard");
   const countdownBox = document.getElementById("countdownBox");
   const countdownStatus = document.getElementById("countdownStatus");
   const countdownNumber = document.getElementById("countdownNumber");
+  const countdownSecondary = document.getElementById("countdownSecondary");
   const countdownDetail = document.getElementById("countdownDetail");
   const resultHeadline = document.getElementById("resultHeadline");
+  const resultFraming = document.getElementById("resultFraming");
   const birthday65 = document.getElementById("birthday65");
   const iepStart = document.getElementById("iepStart");
   const iepEnd = document.getElementById("iepEnd");
+  const pathAnswer = document.getElementById("pathAnswer");
+  const walkthroughHeadline = document.getElementById("walkthroughHeadline");
+  const walkthroughContent = document.getElementById("walkthroughContent");
+  const ssaAccountPrompt = document.getElementById("ssaAccountPrompt");
+  const ssaAccountOutcome = document.getElementById("ssaAccountOutcome");
+  const ssaAccountButtons = document.querySelectorAll("[data-ssa-account]");
   let activeWindow = null;
+  let activeBranch = null;
 
   form.addEventListener("submit", function(event){
     event.preventDefault();
@@ -493,14 +716,65 @@ footer p{
 
     hideError();
     activeWindow = calculateWindow(dob);
-    renderWindow(activeWindow);
-    resultsCard.classList.add("active");
-    resultsCard.scrollIntoView({ behavior: "smooth", block: "start" });
+    activeBranch = null;
+    resultsFlow.classList.remove("active");
+    socialSecurityQuestion.classList.remove("active");
+    setBaseDates(activeWindow);
+
+    if (today() < activeWindow.start && calculateAge(dob, today()) < 62) {
+      activeBranch = "future";
+      renderBranch(activeBranch);
+      showResults();
+      return;
+    }
+
+    socialSecurityQuestion.classList.add("active");
+    socialSecurityQuestion.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  socialSecurityButtons.forEach(function(button){
+    button.addEventListener("click", function(){
+      if (!activeWindow) return;
+
+      const collectingSocialSecurity = button.dataset.ss === "yes";
+      if (today() < activeWindow.start) {
+        activeBranch = collectingSocialSecurity ? "futureAutomatic" : "futureActive";
+      } else if (collectingSocialSecurity) {
+        activeBranch = "automatic";
+      } else if (today() <= activeWindow.end) {
+        activeBranch = "active";
+      } else {
+        activeBranch = "past";
+      }
+
+      renderBranch(activeBranch);
+      showResults();
+    });
+  });
+
+  ssaAccountButtons.forEach(function(button){
+    button.addEventListener("click", function(){
+      const hasAccount = button.dataset.ssaAccount === "yes";
+
+      if (hasAccount) {
+        ssaAccountOutcome.innerHTML = `
+          <p><strong>Good. Log in around your enrollment window.</strong></p>
+          <p>Review your online notices, contact information, benefit information, and Medicare coverage shown in your benefit verification information.</p>
+          <a class="site-link" href="https://www.ssa.gov/myaccount/" target="_blank" rel="noopener">Sign in to my Social Security</a>`;
+      } else {
+        ssaAccountOutcome.innerHTML = `
+          <p><strong>Create your free personal account now.</strong></p>
+          <p>It gives you direct access to your Social Security record, application status, benefit information, and available online notices.</p>
+          <a class="site-link" href="https://www.ssa.gov/myaccount/" target="_blank" rel="noopener">Create my Social Security account</a>`;
+      }
+
+      ssaAccountOutcome.classList.remove("hidden");
+    });
   });
 
   setInterval(function(){
-    if (activeWindow) {
-      renderWindow(activeWindow);
+    if (activeWindow && activeBranch) {
+      renderBranch(activeBranch);
     }
   }, 60000);
 
@@ -531,43 +805,196 @@ footer p{
     };
   }
 
-  function renderWindow(windowData){
-    const now = today();
-    const daysToStart = diffDays(now, windowData.start);
-    const daysToEnd = diffDays(now, windowData.end);
-
+  function setBaseDates(windowData){
     birthday65.textContent = formatDate(windowData.birthday);
     iepStart.textContent = formatDate(windowData.start);
     iepEnd.textContent = formatDate(windowData.end);
-    resultHeadline.textContent = "Your Initial Enrollment Period";
+  }
+
+  function renderBranch(branch){
+    if (!activeWindow) return;
 
     countdownBox.classList.remove("status-open", "status-future", "status-closed");
+    countdownSecondary.classList.add("hidden");
+    countdownSecondary.textContent = "";
+    ssaAccountPrompt.classList.add("hidden");
+    ssaAccountOutcome.classList.add("hidden");
+    ssaAccountOutcome.innerHTML = "";
 
-    if (now < windowData.start) {
-      countdownBox.classList.add("status-future");
-      countdownStatus.textContent = "Your window has not opened yet";
-      countdownNumber.textContent = daysToStart === 1 ? "1 day" : `${daysToStart} days`;
-      countdownDetail.textContent = `Your Initial Enrollment Period opens on ${formatDate(windowData.start)}.`;
+    if (branch === "future") {
+      renderFuture(activeWindow);
+    } else if (branch === "futureAutomatic") {
+      renderFuturePath(activeWindow, true);
+    } else if (branch === "futureActive") {
+      renderFuturePath(activeWindow, false);
+    } else if (branch === "automatic") {
+      renderAutomatic(activeWindow);
+    } else if (branch === "active") {
+      renderActiveEnrollment(activeWindow);
+    } else {
+      renderPastWindow(activeWindow);
+    }
+  }
+
+  function renderFuture(windowData){
+    const now = today();
+    const daysToStart = diffDays(now, windowData.start);
+    const daysToBirthday = diffDays(now, windowData.birthday);
+    countdownBox.classList.add("status-future");
+    resultHeadline.textContent = "Your enrollment window is ahead.";
+    countdownStatus.textContent = "Until your 65th birthday";
+    countdownNumber.textContent = daysToBirthday === 1 ? "1 day" : `${daysToBirthday} days`;
+    countdownSecondary.textContent = formatYearsMonths(now, windowData.birthday);
+    countdownSecondary.classList.remove("hidden");
+    countdownDetail.textContent = `Your Initial Enrollment Period opens in ${daysToStart === 1 ? "1 day" : `${daysToStart} days`}, on ${formatDate(windowData.start)}.`;
+    resultFraming.textContent = "You have time. Use these dates to know what is coming and when you will need to act.";
+    pathAnswer.textContent = "No Social Security answer is needed yet. Your enrollment path will be confirmed when your window gets closer.";
+    walkthroughHeadline.textContent = "What to expect as you get closer.";
+    walkthroughContent.innerHTML = `
+      <ol>
+        <li>Keep the start date above where you can find it. Your seven-month Initial Enrollment Period begins three months before your 65th-birthday month.</li>
+        <li>If you are already collecting Social Security retirement benefits when you get closer, Medicare enrollment is generally automatic.</li>
+        <li>If you are not collecting Social Security, you will need to actively enroll when your window opens.</li>
+        <li>Call or text Eric before the window opens if employer coverage or retirement timing could affect your enrollment path.</li>
+      </ol>`;
+  }
+
+  function renderFuturePath(windowData, collectingSocialSecurity){
+    const now = today();
+    const daysToStart = diffDays(today(), windowData.start);
+    const daysToBirthday = diffDays(now, windowData.birthday);
+    countdownBox.classList.add("status-future");
+    countdownStatus.textContent = "Until your 65th birthday";
+    countdownNumber.textContent = daysToBirthday === 1 ? "1 day" : `${daysToBirthday} days`;
+    countdownSecondary.textContent = formatYearsMonths(now, windowData.birthday);
+    countdownSecondary.classList.remove("hidden");
+    countdownDetail.textContent = `Your Initial Enrollment Period opens in ${daysToStart === 1 ? "1 day" : `${daysToStart} days`}, on ${formatDate(windowData.start)}.`;
+
+    if (collectingSocialSecurity) {
+      resultHeadline.textContent = "Your window is ahead. Enrollment should be automatic.";
+      resultFraming.textContent = "Because you are already collecting Social Security retirement benefits, enrollment in Medicare Parts A and B should generally happen automatically when you become eligible.";
+      pathAnswer.textContent = "You answered Yes: plan to confirm your automatic Medicare enrollment as your window approaches.";
+      walkthroughHeadline.textContent = "What to do before your window opens.";
+      walkthroughContent.innerHTML = `
+        <ol>
+          <li>Keep the dates above where you can find them.</li>
+          <li>Watch for Medicare information in the months before your 65th birthday.</li>
+          <li>Confirm your Part A and Part B effective dates when your Medicare card arrives.</li>
+          <li>Call or text Eric if you have active employer coverage or anything does not match the dates shown here.</li>
+        </ol>`;
+      ssaAccountPrompt.classList.remove("hidden");
       return;
     }
 
-    if (now <= windowData.end) {
-      countdownBox.classList.add("status-open");
-      countdownStatus.textContent = "Your window is open now";
-      countdownNumber.textContent = daysToEnd === 1 ? "1 day" : `${daysToEnd} days`;
-      countdownDetail.textContent = `Your Initial Enrollment Period ends on ${formatDate(windowData.end)}.`;
-      return;
-    }
+    resultHeadline.textContent = "Your window is ahead. Plan to enroll actively.";
+    resultFraming.textContent = "Because you are not collecting Social Security retirement benefits, Medicare enrollment will not be automatic. You should plan to apply when your enrollment window opens.";
+    pathAnswer.textContent = "You answered No: active Medicare enrollment will be required when your window opens.";
+    walkthroughHeadline.textContent = "What to do before your window opens.";
+    walkthroughContent.innerHTML = `
+      <ol>
+        <li>Create or sign in to your <a href="https://www.ssa.gov/myaccount/" target="_blank" rel="noopener">my Social Security account at SSA.gov</a>.</li>
+        <li>Keep the enrollment-window dates above where you can find them.</li>
+        <li>When the window opens, use Social Security's separate Medicare enrollment application.</li>
+        <li>Call or text Eric beforehand if employer coverage or retirement timing could affect when you should enroll.</li>
+      </ol>`;
+  }
 
+  function renderActiveEnrollment(windowData){
+    const daysToEnd = diffDays(today(), windowData.end);
+    countdownBox.classList.add("status-open");
+    resultHeadline.textContent = "Your window is open. You need to enroll.";
+    countdownStatus.textContent = "Time remaining in your window";
+    countdownNumber.textContent = daysToEnd === 1 ? "1 day" : `${daysToEnd} days`;
+    countdownDetail.textContent = `Your Initial Enrollment Period ends on ${formatDate(windowData.end)}.`;
+    resultFraming.textContent = "Because you are not collecting Social Security retirement benefits, Medicare enrollment is not automatic. You need to take action.";
+    pathAnswer.textContent = "You answered No: active Medicare enrollment is required.";
+    walkthroughHeadline.textContent = "Your active-enrollment steps.";
+    walkthroughContent.innerHTML = `
+      <ol>
+        <li>Create or sign in to your <a href="https://www.ssa.gov/myaccount/" target="_blank" rel="noopener">my Social Security account at SSA.gov</a>.</li>
+        <li>Use Social Security's separate <a href="https://www.ssa.gov/medicare/sign-up" target="_blank" rel="noopener">Medicare enrollment application</a>. Enrolling in Medicare does not require you to start Social Security retirement benefits.</li>
+        <li>Save your confirmation information and watch for your Medicare card and effective dates.</li>
+        <li>Call or text Eric if you have active employer coverage or are unsure whether enrolling now is the right path.</li>
+      </ol>`;
+  }
+
+  function renderAutomatic(windowData){
+    const now = today();
+    const isPast = now > windowData.end;
+    const daysToEnd = diffDays(now, windowData.end);
+
+    countdownBox.classList.add(isPast ? "status-closed" : "status-open");
+    resultHeadline.textContent = "Your Medicare enrollment should be automatic.";
+    countdownStatus.textContent = isPast ? "Confirm your coverage now" : "Your window is open";
+    countdownNumber.textContent = isPast
+      ? "Check now"
+      : (daysToEnd === 1 ? "1 day" : `${daysToEnd} days`);
+    countdownDetail.textContent = isPast
+      ? `Your Initial Enrollment Period ended on ${formatDate(windowData.end)}.`
+      : `Your Initial Enrollment Period ends on ${formatDate(windowData.end)}.`;
+    resultFraming.textContent = "Because you are already collecting Social Security retirement benefits, enrollment in Medicare Parts A and B is generally automatic.";
+    pathAnswer.textContent = "You answered Yes: your Medicare enrollment should be automatic.";
+    walkthroughHeadline.textContent = "What to confirm and expect.";
+    walkthroughContent.innerHTML = `
+      <ol>
+        <li>Your Medicare card is generally mailed about three months before your 65th birthday.</li>
+        <li>Check the card for your Part A and Part B effective dates and confirm that your name and information are correct.</li>
+        <li>If your card has not arrived, your effective dates look wrong, or you have active employer coverage, call or text Eric before making changes.</li>
+      </ol>`;
+    ssaAccountPrompt.classList.remove("hidden");
+  }
+
+  function renderPastWindow(windowData){
     countdownBox.classList.add("status-closed");
-    countdownStatus.textContent = "Your window has closed";
-    countdownNumber.textContent = "Closed";
-    countdownDetail.textContent = `Your Initial Enrollment Period ended on ${formatDate(windowData.end)}. Call to talk through what options may still apply.`;
+    resultHeadline.textContent = "Action is needed now.";
+    countdownStatus.textContent = "Your initial window has closed";
+    countdownNumber.textContent = "Call now";
+    countdownDetail.textContent = `Your Initial Enrollment Period ended on ${formatDate(windowData.end)}.`;
+    resultFraming.textContent = "A Special Enrollment Period or the General Enrollment Period may apply, depending on whether you had employer coverage and when that coverage ended. This is the branch with the most ways to get it wrong.";
+    pathAnswer.textContent = "You answered No: do not submit a new application until your coverage history and available enrollment period are reviewed.";
+    walkthroughHeadline.textContent = "Do not guess at the next enrollment step.";
+    walkthroughContent.innerHTML = `
+      <p>Your next step depends on your coverage history and timing. Call or text Eric at <a href="tel:14028066331">(402) 806-6331</a> before submitting an enrollment application so you can identify which enrollment period may apply.</p>`;
+  }
+
+  function showResults(){
+    socialSecurityQuestion.classList.remove("active");
+    resultsFlow.classList.add("active");
+    resultsCard.scrollIntoView({ behavior: "smooth", block: "start" });
+    resultsCard.focus({ preventScroll: true });
   }
 
   function today(){
     const now = new Date();
     return new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0, 0, 0);
+  }
+
+  function calculateAge(dob, asOf){
+    let age = asOf.getFullYear() - dob.getFullYear();
+    const birthdayHasPassed =
+      asOf.getMonth() > dob.getMonth() ||
+      (asOf.getMonth() === dob.getMonth() && asOf.getDate() >= dob.getDate());
+
+    if (!birthdayHasPassed) age -= 1;
+    return age;
+  }
+
+  function formatYearsMonths(from, to){
+    let totalMonths =
+      (to.getFullYear() - from.getFullYear()) * 12 +
+      (to.getMonth() - from.getMonth());
+
+    if (to.getDate() < from.getDate()) totalMonths -= 1;
+    totalMonths = Math.max(0, totalMonths);
+
+    const years = Math.floor(totalMonths / 12);
+    const months = totalMonths % 12;
+    const parts = [];
+
+    if (years > 0) parts.push(`${years} ${years === 1 ? "year" : "years"}`);
+    if (months > 0) parts.push(`${months} ${months === 1 ? "month" : "months"}`);
+
+    return parts.length > 0 ? `(${parts.join(", ")})` : "(less than 1 month)";
   }
 
   function diffDays(from, to){
