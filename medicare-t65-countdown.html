@@ -43,6 +43,7 @@ button{color:#001018;background:var(--accent)}button:hover,.call-link:hover{back
 .results-flow{display:none}.results-flow.active{display:block}.results-card{padding-top:1.75rem}.results-intro{max-width:51rem}.path-section{padding:1.5rem 0;border-top:1px solid var(--line)}.path-section:first-of-type{margin-top:1.5rem}.path-section:last-child{padding-bottom:0}
 .now-panel{padding:1.25rem;border-left:.3rem solid var(--good);border-radius:.5rem;background:var(--panel-strong)}.now-panel p:last-child{margin-bottom:0}
 .routing-note{margin-top:1rem;padding:1rem;border:1px solid rgba(124,198,232,.35);border-radius:.65rem;background:#03070b}.routing-note p:last-child{margin-bottom:0}
+.routing-note + h3{margin-top:1.5rem}
 .penalty-list{display:grid;grid-template-columns:1fr;gap:.85rem;margin-top:1rem}.info-tile{padding:1rem;border-left:.25rem solid var(--accent);border-radius:.5rem;background:var(--panel-strong)}.info-tile p:last-child{margin-bottom:0}
 details{border:1px solid var(--line);border-radius:.7rem;background:#03070b}summary{padding:1rem;color:var(--accent);font-size:1.05rem;font-weight:900;line-height:1.4;cursor:pointer}.walkthrough{padding:0 1rem 1rem;border-top:1px solid var(--line)}
 .walkthrough ol{margin:1rem 0 0;padding-left:1.4em}.walkthrough li{margin-bottom:.8rem}.walkthrough a,.inline-link{color:var(--accent);overflow-wrap:anywhere}
@@ -103,19 +104,24 @@ footer{padding:.9rem .25rem 0}footer p{margin-bottom:.5rem;color:var(--soft);fon
   <div class="results-flow" id="resultsFlow" aria-live="polite">
     <section class="card results-card" id="resultsCard" tabindex="-1">
       <p class="eyebrow">Your Path</p><h1 id="resultHeadline">Your Medicare roadmap.</h1><p class="intro results-intro" id="resultIntro"></p>
-      <section class="path-section"><p class="eyebrow">Now</p><div class="now-panel" id="nowPanel"></div><div class="routing-note" id="routingNote"></div></section>
-      <section class="path-section"><p class="eyebrow">Your Dates</p><h2>Your Initial Enrollment Period.</h2>
+      <section class="path-section"><p class="eyebrow">Your Medicare Window</p><h2>Your Initial Enrollment Period.</h2>
         <div class="window-preview" id="resultWindow"><p class="countdown-status" id="resultStatus"></p><div class="countdown-row"><p class="countdown-number" id="resultNumber"></p><p class="countdown-secondary" id="resultSecondary"></p></div><p class="countdown-detail" id="resultDetail"></p></div>
         <div class="date-grid"><div class="date-tile"><span>65th birthday</span><strong id="resultBirthday">--/--/----</strong></div><div class="date-tile"><span>IEP starts</span><strong id="resultStart">--/--/----</strong></div><div class="date-tile"><span>IEP ends</span><strong id="resultEnd">--/--/----</strong></div></div>
       </section>
-      <section class="path-section"><p class="eyebrow">Before Choosing Coverage</p><h2>Get the information your decisions depend on.</h2><p>Organize your medications, doctors, insurance cards, and current coverage information before comparing Medicare options. That gives the conversation a useful starting point and helps prevent important details from being missed.</p></section>
-      <section class="path-section"><p class="eyebrow">Why Timing Matters</p><h2>Waiting can create lasting penalties.</h2>
+      <section class="path-section">
+        <p class="eyebrow">What To Do Now</p>
+        <div class="now-panel" id="nowPanel"></div>
+        <div class="routing-note" id="routingNote"></div>
+        <h3>Before choosing coverage</h3>
+        <p>Organize your medications, doctors, insurance cards, and current coverage information before comparing Medicare options. That gives the conversation a useful starting point and helps prevent important details from being missed.</p>
+      </section>
+      <section class="path-section"><p class="eyebrow">Future Milestones</p><h2>Waiting can create lasting penalties.</h2>
         <div class="penalty-list"><article class="info-tile"><h3>Part B</h3><p>Waiting to enroll in Part B when you're first eligible may result in a late enrollment penalty. Generally, the penalty increases by 10% for each full 12-month period you could have had Part B but didn't. Exceptions may apply, including when you qualify for a Special Enrollment Period.</p></article><article class="info-tile"><h3>Part D</h3><p>Going 63 days or more without Medicare drug coverage or other creditable prescription drug coverage after you're eligible may result in a Part D late enrollment penalty.</p></article></div>
         <p class="helper">These are general Medicare rules, not a personalized quote or cost calculation. Exact timing and penalties depend on your individual circumstances.</p>
+        <details><summary>Show the Social Security enrollment steps</summary><div class="walkthrough" id="walkthrough"></div></details>
       </section>
-      <section class="path-section"><details><summary>Show the Social Security enrollment steps</summary><div class="walkthrough" id="walkthrough"></div></details></section>
-      <section class="path-section"><p class="eyebrow">Questions?</p><h2>Call or text Eric.</h2><p class="contact-name">Eric Hevelone</p><p id="contactCopy">I can help you understand what these dates and answers mean for your situation.</p>
-        <div class="contact-actions"><a class="call-link" href="tel:14028066331">Call (402) 806-6331</a><a class="text-link" href="sms:14028066331">Text (402) 806-6331</a></div>
+      <section class="path-section"><p class="eyebrow">Questions?</p><h2>Have questions about your Medicare timeline?</h2><p>I'm happy to help you understand what these dates mean for your situation.</p>
+        <div class="contact-actions"><a class="call-link" href="tel:14028066331">Call Eric</a><a class="text-link" href="sms:14028066331">Text Eric</a></div>
       </section>
       <!-- Optional contact capture is intentionally held until lead-sharing consent wording is approved. -->
     </section>
@@ -165,27 +171,27 @@ footer{padding:.9rem .25rem 0}footer p{margin-bottom:.5rem;color:var(--soft);fon
   function isStepComplete(){if(state.step===0)return Boolean(state.window);if(state.step===1)return Boolean(state.residentState);if(state.step===2)return Boolean(state.coverage);return Boolean(state.socialSecurity&&state.ssaAccount)}
   function configureSocialSecurityStep(){
     const under62=state.age<62;ssQuestion.textContent=under62?"Are you planning to start Social Security at 62?":"Where are you with Social Security?";ssHelper.textContent=under62?"This keeps your result focused on planning ahead, not enrollment urgency.":"Your answer helps clarify whether Medicare enrollment may be automatic.";
-    const options=under62?[["start62","Yes"],["wait","No"]]:[["collecting","Already collecting"],["start62","Planning to start at 62"],["wait","Planning to wait for full retirement age"],["unsure","Not sure"]];
+    const options=under62?[["start62","Yes"],["wait","No"],["unsure","Not sure"]]:[["collecting","Already collecting"],["start62","Planning to start at 62"],["wait","Planning to wait for full retirement age"],["unsure","Not sure"]];
     ssChoices.innerHTML=options.map(option=>`<label class="choice${state.socialSecurity===option[0]?" selected":""}"><input type="radio" name="socialSecurity" value="${option[0]}"${state.socialSecurity===option[0]?" checked":""}><span>${option[1]}</span></label>`).join("");ssaAccountQuestion.classList.toggle("hidden",!state.socialSecurity);
   }
   function renderResults(){
     const collecting=state.socialSecurity==="collecting",under62=state.age<62,coverageCopy=getCoverageCopy(),stateName=STATE_NAMES[state.residentState]||state.residentState,licensedHere=ERIC_STATES.has(state.residentState);
     document.getElementById("resultHeadline").textContent=under62?"You have time to plan your path.":getWindowHeadline();
-    document.getElementById("resultIntro").textContent=under62?"Your Medicare window is still ahead. Use the dates below as a planning marker while you think through retirement timing, employer coverage, and Social Security.":coverageCopy.intro;
+    document.getElementById("resultIntro").textContent=under62?"Your Medicare window is still ahead. Use the dates below as a planning marker while you think through retirement timing and Social Security.":"Here is your Medicare enrollment timeline and the next action to take based on your answers.";
     const accountAction=state.ssaAccount==="no"?`<p><strong>Create your personal my Social Security account.</strong> This gives you direct access to your Social Security record and the official place to manage future Medicare enrollment steps.</p><p><a class="site-link" href="https://www.ssa.gov/myaccount/" target="_blank" rel="noopener">Create an account at SSA.gov</a></p>`:`<p><strong>Sign in to your my Social Security account and keep it current.</strong> Use the official account to review your record and manage future enrollment steps.</p><p><a class="site-link" href="https://www.ssa.gov/myaccount/" target="_blank" rel="noopener">Sign in at SSA.gov</a></p>`;
     let nowCopy=accountAction;
     if(collecting)nowCopy=`<p><strong>Plan to confirm your Medicare enrollment around ${formatDate(state.window.start)}.</strong> Because you are already collecting Social Security, Medicare enrollment is generally automatic, but you should still verify your Part A and Part B effective dates.</p>${state.ssaAccount==="no"?accountAction:""}`;
     nowCopy+=state.coverage==="unsure"?`<p><strong>Before you enroll, let's make sure you know how your current coverage affects Medicare.</strong> Call or text Eric before making an enrollment decision.</p>`:`<p>${coverageCopy.action}</p>`;
+    if(under62&&state.socialSecurity==="unsure")nowCopy+=`<h3>Not sure when to start Social Security?</h3><p>The age you start can affect your monthly benefit for the rest of your life. It's worth understanding your options before you decide.</p><div class="contact-actions"><a class="call-link" href="tel:14028066331">Call Eric</a><a class="text-link" href="sms:14028066331">Text Eric</a></div>`;
     document.getElementById("nowPanel").innerHTML=nowCopy;
     document.getElementById("routingNote").innerHTML=licensedHere?`<p><strong>Questions in ${stateName}?</strong> Eric is licensed in your state and can help you work through the timing.</p>`:`<p><strong>Questions in ${stateName}?</strong> Eric can help route you to a licensed producer who serves your state.</p>`;
     renderWindow(document.getElementById("resultWindow"),"result");document.getElementById("resultBirthday").textContent=formatDate(state.window.birthday);document.getElementById("resultStart").textContent=formatDate(state.window.start);document.getElementById("resultEnd").textContent=formatDate(state.window.end);document.getElementById("walkthrough").innerHTML=getWalkthrough(collecting,under62);
-    document.getElementById("contactCopy").textContent=state.coverage==="unsure"?"Before you enroll, let's make sure you know how your current coverage affects Medicare.":under62?"I can help you make sense of these dates as part of your broader retirement planning.":"I can help you understand what these dates and answers mean for your situation.";
     quizCard.classList.add("hidden");resultsFlow.classList.add("active");resultsCard.scrollIntoView({behavior:"smooth",block:"start"});resultsCard.focus({preventScroll:true});
   }
   function getCoverageCopy(){
-    if(state.coverage==="yes")return{intro:"Your employer coverage may affect when you should enroll. Do not assume every employer plan creates the same Medicare enrollment path.",action:"Because you have employer coverage, confirm whether it is considered current employment coverage and how it coordinates with Medicare before delaying Part B or Part D."};
-    if(state.coverage==="unsure")return{intro:"Your Medicare dates are clear, but your current coverage needs to be confirmed before you decide when to enroll.",action:"Before you enroll, let's make sure you know how your current coverage affects Medicare - call or text Eric."};
-    return{intro:"With no current employer coverage reported, your Initial Enrollment Period is the key window to prepare for.",action:"Because you reported no current employer health plan, use your Initial Enrollment Period dates as the primary deadline and prepare before the window closes."};
+    if(state.coverage==="yes")return{action:"Because you have employer coverage, confirm whether it is considered current employment coverage and how it coordinates with Medicare before delaying Part B or Part D."};
+    if(state.coverage==="unsure")return{action:""};
+    return{action:"Because you reported no current employer health plan, use your Initial Enrollment Period dates as the primary deadline and prepare before the window closes."};
   }
   function getWindowHeadline(){const now=today();if(now<state.window.start)return"Your Medicare window is ahead.";if(now<=state.window.end)return"Your Medicare window is open.";return"Your initial window has closed."}
   function getWalkthrough(collecting,under62){
