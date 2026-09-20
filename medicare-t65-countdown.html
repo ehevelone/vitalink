@@ -24,8 +24,8 @@ p,li{color:var(--muted);font-size:1.08rem;line-height:1.58}.intro{max-width:48re
 .progress-track{height:.65rem;overflow:hidden;border-radius:999px;background:#111827}.progress-fill{width:20%;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--good));transition:width .2s ease}
 .question-step{display:none}.question-step.active{display:block}
 label,.field-label{display:block;margin:1.25rem 0 .5rem;color:var(--text);font-size:1.05rem;font-weight:700}
-input[type="date"],select{width:100%;min-height:3.75rem;padding:.85rem 1rem;border:1px solid #334155;border-radius:.7rem;color:var(--text);background:var(--field);font:inherit;font-size:1.12rem}
-input[type="date"]:focus,select:focus{outline:.2rem solid rgba(124,198,232,.2);border-color:var(--accent)}
+#dob,select{width:100%;min-height:3.75rem;padding:.85rem 1rem;border:1px solid #334155;border-radius:.7rem;color:var(--text);background:var(--field);font:inherit;font-size:1.12rem}
+#dob:focus,select:focus{outline:.2rem solid rgba(124,198,232,.2);border-color:var(--accent)}
 .choice-grid{display:grid;grid-template-columns:1fr;gap:.75rem;margin-top:1.25rem}
 .choice{display:flex;align-items:center;gap:.75rem;min-height:3.75rem;margin:0;padding:.9rem;border:1px solid var(--line);border-radius:.75rem;color:#e2e8f0;background:var(--field);font-weight:700;cursor:pointer}
 .choice:hover{border-color:#4f7896}.choice.selected,.choice:has(input:checked){border-color:var(--accent);background:rgba(124,198,232,.14);box-shadow:0 0 0 .12rem rgba(124,198,232,.08)}
@@ -61,7 +61,8 @@ footer{padding:.9rem .25rem 0}footer p{margin-bottom:.5rem;color:var(--soft);fon
     <div class="question-step active" data-step="dob">
       <p class="eyebrow">Medicare Turning 65</p><h1>Find out your exact Medicare enrollment window.</h1>
       <p class="intro">Enter your date of birth to see when your Medicare Initial Enrollment Period starts and ends.</p>
-      <label for="dob">Date of birth</label><input id="dob" name="dob" type="date" required>
+      <label for="dob">Date of birth</label><input id="dob" name="dob" type="text" inputmode="numeric" autocomplete="bday" enterkeyhint="done" maxlength="10" placeholder="MM/DD/YYYY" aria-describedby="dobFormat" required>
+      <p class="helper" id="dobFormat">Enter your date of birth as MM/DD/YYYY.</p>
       <p class="error" id="dobError" role="alert">Please enter a valid date of birth.</p>
       <p class="privacy-note">This calculator runs only on this page. Your answers are not sent, saved, or stored.</p>
       <div class="window-preview hidden" id="windowPreview" aria-live="polite">
@@ -139,7 +140,7 @@ footer{padding:.9rem .25rem 0}footer p{margin-bottom:.5rem;color:var(--soft);fon
   <footer>
     <p>Not affiliated with or endorsed by the U.S. government or any government agency.</p>
     <p>Eric Hevelone | Licensed Insurance Producer in Nebraska, Iowa, Kansas, Pennsylvania, and New Jersey.</p>
-    <p>Licensed partner producers are available in Nebraska, Iowa, Colorado, Arizona, Wyoming, and South Dakota.</p>
+    <p>Licensed partner producers are available in Arizona, Colorado, Florida, Iowa, Kansas, Missouri, Nebraska, Nevada, New Mexico, South Dakota, Texas, Virginia, Wisconsin, and Wyoming.</p>
     <p>10505 Cuming St, Omaha, NE 68114-2021</p>
     <p>This page provides general educational information only. It does not provide a personalized recommendation, quote, or guarantee of Medicare eligibility or costs.</p>
   </footer>
@@ -151,7 +152,7 @@ footer{padding:.9rem .25rem 0}footer p{margin-bottom:.5rem;color:var(--soft);fon
   const state={step:0,dob:null,age:null,window:null,residentState:"",coverage:"",militaryVaCoverage:[],socialSecurity:"",ssaAccount:""};
   const steps=Array.from(document.querySelectorAll(".question-step")),quizCard=document.getElementById("quizCard"),stepLabel=document.getElementById("stepLabel"),progressPercent=document.getElementById("progressPercent"),progressFill=document.getElementById("progressFill"),backBtn=document.getElementById("backBtn"),nextBtn=document.getElementById("nextBtn"),dobInput=document.getElementById("dob"),dobError=document.getElementById("dobError"),windowPreview=document.getElementById("windowPreview"),residentState=document.getElementById("residentState"),ssQuestion=document.getElementById("ssQuestion"),ssHelper=document.getElementById("ssHelper"),ssChoices=document.getElementById("ssChoices"),ssaAccountQuestion=document.getElementById("ssaAccountQuestion"),resultsFlow=document.getElementById("resultsFlow"),resultsCard=document.getElementById("resultsCard");
 
-  dobInput.addEventListener("input",handleDob);dobInput.addEventListener("change",handleDob);
+  dobInput.addEventListener("input",()=>{formatDobInput();handleDob(false)});dobInput.addEventListener("change",()=>handleDob(true));dobInput.addEventListener("blur",()=>handleDob(true));
   residentState.addEventListener("change",()=>{state.residentState=residentState.value;updateNavigation()});
   document.addEventListener("change",event=>{
     const target=event.target;if(!(target instanceof HTMLInputElement)||!["radio","checkbox"].includes(target.type))return;
@@ -170,9 +171,9 @@ footer{padding:.9rem .25rem 0}footer p{margin-bottom:.5rem;color:var(--soft);fon
   nextBtn.addEventListener("click",()=>{if(!isStepComplete())return;if(state.step<TOTAL_STEPS-1){state.step+=1;renderStep(true);return}renderResults()});
   renderStep(false);
 
-  function handleDob(){
+  function handleDob(showIncompleteError){
     const dob=parseDateInput(dobInput.value);
-    if(!dob||dob>today()){state.dob=null;state.window=null;state.age=null;windowPreview.classList.add("hidden");dobError.classList.toggle("active",Boolean(dobInput.value));updateNavigation();return}
+    if(!dob||dob>today()){state.dob=null;state.window=null;state.age=null;windowPreview.classList.add("hidden");dobError.classList.toggle("active",Boolean(dobInput.value)&&(showIncompleteError||dobInput.value.length===10));updateNavigation();return}
     const dobChanged=!state.dob||state.dob.getTime()!==dob.getTime();
     dobError.classList.remove("active");state.dob=dob;state.age=calculateAge(dob,today());state.window=calculateWindow(dob);
     if(dobChanged){state.socialSecurity="";state.ssaAccount="";document.querySelectorAll('input[name="socialSecurity"],input[name="ssaAccount"]').forEach(input=>{input.checked=false;input.closest(".choice")?.classList.remove("selected")})}
@@ -230,7 +231,13 @@ footer{padding:.9rem .25rem 0}footer p{margin-bottom:.5rem;color:var(--soft);fon
     else{container.classList.add("status-closed");status.textContent="Action needed now";number.textContent="Window closed";secondary.textContent="";detail.textContent=`Your Initial Enrollment Period ended on ${formatDate(state.window.end)}. Your coverage history must be reviewed before choosing the next enrollment step.`}
     if(prefix==="preview"){document.getElementById("previewBirthday").textContent=formatDate(state.window.birthday);document.getElementById("previewStart").textContent=formatDate(state.window.start);document.getElementById("previewEnd").textContent=formatDate(state.window.end)}
   }
-  function parseDateInput(value){if(!value)return null;const parts=value.split("-").map(Number);if(parts.length!==3)return null;const date=new Date(parts[0],parts[1]-1,parts[2],12,0,0,0);if(date.getFullYear()!==parts[0]||date.getMonth()!==parts[1]-1||date.getDate()!==parts[2])return null;return date}
+  function formatDobInput(){
+    const digits=dobInput.value.replace(/\D/g,"").slice(0,8);
+    if(digits.length<=2){dobInput.value=digits;return}
+    if(digits.length<=4){dobInput.value=`${digits.slice(0,2)}/${digits.slice(2)}`;return}
+    dobInput.value=`${digits.slice(0,2)}/${digits.slice(2,4)}/${digits.slice(4)}`;
+  }
+  function parseDateInput(value){if(!value)return null;const match=value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);if(!match)return null;const month=Number(match[1]),day=Number(match[2]),year=Number(match[3]);const date=new Date(year,month-1,day,12,0,0,0);if(date.getFullYear()!==year||date.getMonth()!==month-1||date.getDate()!==day)return null;return date}
   function calculateWindow(dob){const birthday=new Date(dob.getFullYear()+65,dob.getMonth(),dob.getDate(),12,0,0,0),first=birthday.getDate()===1;return{birthday,start:new Date(birthday.getFullYear(),birthday.getMonth()+(first?-4:-3),1,12,0,0,0),end:new Date(birthday.getFullYear(),birthday.getMonth()+(first?3:4),0,12,0,0,0)}}
   function today(){const now=new Date();return new Date(now.getFullYear(),now.getMonth(),now.getDate(),12,0,0,0)}
   function calculateAge(dob,asOf){let age=asOf.getFullYear()-dob.getFullYear();if(asOf.getMonth()<dob.getMonth()||(asOf.getMonth()===dob.getMonth()&&asOf.getDate()<dob.getDate()))age-=1;return age}
