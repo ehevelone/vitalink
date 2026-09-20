@@ -21,7 +21,7 @@ h1,h2,h3,h4,p{margin-top:0}h1{max-width:52rem;margin-bottom:1rem;font-size:2.4re
 h2{max-width:50rem;margin-bottom:.75rem;font-size:2rem;line-height:1.1;letter-spacing:0}h3{margin-bottom:.5rem;font-size:1.3rem;line-height:1.3}h4{margin-bottom:.5rem;font-size:1.08rem;line-height:1.4}
 p,li{color:var(--muted);font-size:1.08rem;line-height:1.58}.intro{max-width:48rem;color:#e8f6fc;font-size:1.16rem;font-weight:650}.helper{margin:.65rem 0 1.25rem;color:var(--soft);font-size:1rem}.hidden{display:none!important}
 .progress-wrap{margin-bottom:1.75rem}.progress-meta{display:flex;justify-content:space-between;gap:1rem;margin-bottom:.5rem;color:#b9cbe0;font-size:.95rem;font-weight:850}
-.progress-track{height:.65rem;overflow:hidden;border-radius:999px;background:#111827}.progress-fill{width:25%;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--good));transition:width .2s ease}
+.progress-track{height:.65rem;overflow:hidden;border-radius:999px;background:#111827}.progress-fill{width:20%;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--good));transition:width .2s ease}
 .question-step{display:none}.question-step.active{display:block}
 label,.field-label{display:block;margin:1.25rem 0 .5rem;color:var(--text);font-size:1.05rem;font-weight:900}
 input[type="date"],select{width:100%;min-height:3.75rem;padding:.85rem 1rem;border:1px solid #334155;border-radius:.7rem;color:var(--text);background:var(--field);font:inherit;font-size:1.12rem}
@@ -57,7 +57,7 @@ footer{padding:.9rem .25rem 0}footer p{margin-bottom:.5rem;color:var(--soft);fon
 <header class="site-header"><div class="site-header-inner"><a class="brand" href="https://myvitalink.app" aria-label="VitaLink home"><img src="images/vitalink-logo.png" alt="VitaLink"></a><span class="header-note">A simple turning-65 planning tool</span></div></header>
 <main>
   <section class="card quiz-card" id="quizCard">
-    <div class="progress-wrap" aria-label="Quiz progress"><div class="progress-meta"><span id="stepLabel">Question 1 of 4</span><span id="progressPercent">25%</span></div><div class="progress-track"><div class="progress-fill" id="progressFill"></div></div></div>
+    <div class="progress-wrap" aria-label="Quiz progress"><div class="progress-meta"><span id="stepLabel">Question 1 of 5</span><span id="progressPercent">20%</span></div><div class="progress-track"><div class="progress-fill" id="progressFill"></div></div></div>
     <div class="question-step active" data-step="dob">
       <p class="eyebrow">Medicare Turning 65</p><h1>Find out your exact Medicare enrollment window.</h1>
       <p class="intro">Enter your date of birth to see when your Medicare Initial Enrollment Period starts and ends.</p>
@@ -84,15 +84,24 @@ footer{padding:.9rem .25rem 0}footer p{margin-bottom:.5rem;color:var(--soft);fon
       </select>
     </div>
     <div class="question-step" data-step="coverage">
-      <p class="eyebrow">Question 3</p><h2>Are you currently working, or covered by an employer health plan?</h2><p class="intro">This can be your own employer plan or a spouse's employer plan.</p>
+      <p class="eyebrow">Question 3</p><h2>Do you currently have health insurance through your job or your spouse's job?</h2><p class="intro">This means coverage through a current employer or union. COBRA, retiree coverage, and Marketplace plans don't count.</p>
       <div class="choice-grid three">
         <label class="choice"><input type="radio" name="coverage" value="yes"><span>Yes</span></label>
         <label class="choice"><input type="radio" name="coverage" value="no"><span>No</span></label>
         <label class="choice"><input type="radio" name="coverage" value="unsure"><span>Not sure</span></label>
       </div>
     </div>
+    <div class="question-step" data-step="militaryVaCoverage">
+      <p class="eyebrow">Question 4</p><h2>Do you currently have any of these types of coverage?</h2><p class="intro">Select all that apply.</p>
+      <div class="choice-grid">
+        <label class="choice"><input type="checkbox" name="militaryVaCoverage" value="va"><span>VA health care</span></label>
+        <label class="choice"><input type="checkbox" name="militaryVaCoverage" value="tricare"><span>TRICARE</span></label>
+        <label class="choice"><input type="checkbox" name="militaryVaCoverage" value="champva"><span>CHAMPVA</span></label>
+        <label class="choice"><input type="checkbox" name="militaryVaCoverage" value="none"><span>None of these</span></label>
+      </div>
+    </div>
     <div class="question-step" data-step="socialSecurity">
-      <p class="eyebrow">Question 4</p><h2 id="ssQuestion">Where are you with Social Security?</h2><p class="intro" id="ssHelper">Your answer helps clarify whether Medicare enrollment may be automatic.</p>
+      <p class="eyebrow">Question 5</p><h2 id="ssQuestion">Where are you with Social Security?</h2><p class="intro" id="ssHelper">Your answer helps clarify whether Medicare enrollment may be automatic.</p>
       <div class="choice-grid" id="ssChoices"></div>
       <fieldset class="subquestion hidden" id="ssaAccountQuestion"><legend>Do you already have a personal my Social Security account?</legend><p class="helper">This is the official account at SSA.gov.</p>
         <div class="choice-grid"><label class="choice"><input type="radio" name="ssaAccount" value="yes"><span>Yes, I have one</span></label><label class="choice"><input type="radio" name="ssaAccount" value="no"><span>No, not yet</span></label></div>
@@ -137,15 +146,21 @@ footer{padding:.9rem .25rem 0}footer p{margin-bottom:.5rem;color:var(--soft);fon
 </main>
 <script>
 (function(){
-  const TOTAL_STEPS=4,ERIC_STATES=new Set(["NE","IA","KS","PA","NJ"]);
+  const TOTAL_STEPS=5,ERIC_STATES=new Set(["NE","IA","KS","PA","NJ"]);
   const STATE_NAMES=Object.fromEntries(Array.from(document.querySelectorAll("#residentState option")).filter(o=>o.value).map(o=>[o.value,o.textContent]));
-  const state={step:0,dob:null,age:null,window:null,residentState:"",coverage:"",socialSecurity:"",ssaAccount:""};
+  const state={step:0,dob:null,age:null,window:null,residentState:"",coverage:"",militaryVaCoverage:[],socialSecurity:"",ssaAccount:""};
   const steps=Array.from(document.querySelectorAll(".question-step")),quizCard=document.getElementById("quizCard"),stepLabel=document.getElementById("stepLabel"),progressPercent=document.getElementById("progressPercent"),progressFill=document.getElementById("progressFill"),backBtn=document.getElementById("backBtn"),nextBtn=document.getElementById("nextBtn"),dobInput=document.getElementById("dob"),dobError=document.getElementById("dobError"),windowPreview=document.getElementById("windowPreview"),residentState=document.getElementById("residentState"),ssQuestion=document.getElementById("ssQuestion"),ssHelper=document.getElementById("ssHelper"),ssChoices=document.getElementById("ssChoices"),ssaAccountQuestion=document.getElementById("ssaAccountQuestion"),resultsFlow=document.getElementById("resultsFlow"),resultsCard=document.getElementById("resultsCard");
 
   dobInput.addEventListener("input",handleDob);dobInput.addEventListener("change",handleDob);
   residentState.addEventListener("change",()=>{state.residentState=residentState.value;updateNavigation()});
   document.addEventListener("change",event=>{
-    const target=event.target;if(!(target instanceof HTMLInputElement)||target.type!=="radio")return;
+    const target=event.target;if(!(target instanceof HTMLInputElement)||!["radio","checkbox"].includes(target.type))return;
+    if(target.name==="militaryVaCoverage"){
+      const militaryInputs=Array.from(document.querySelectorAll('input[name="militaryVaCoverage"]'));
+      if(target.value==="none"&&target.checked)militaryInputs.forEach(input=>{if(input.value!=="none")input.checked=false});
+      if(target.value!=="none"&&target.checked)militaryInputs.forEach(input=>{if(input.value==="none")input.checked=false});
+      state.militaryVaCoverage=militaryInputs.filter(input=>input.checked).map(input=>input.value);
+    }
     document.querySelectorAll(`input[name="${target.name}"]`).forEach(input=>input.closest(".choice")?.classList.toggle("selected",input.checked));
     if(target.name==="coverage")state.coverage=target.value;
     if(target.name==="socialSecurity"){state.socialSecurity=target.value;state.ssaAccount="";document.querySelectorAll('input[name="ssaAccount"]').forEach(input=>{input.checked=false;input.closest(".choice")?.classList.remove("selected")});ssaAccountQuestion.classList.remove("hidden");requestAnimationFrame(()=>ssaAccountQuestion.scrollIntoView({behavior:"smooth",block:"nearest"}))}
@@ -165,10 +180,10 @@ footer{padding:.9rem .25rem 0}footer p{margin-bottom:.5rem;color:var(--soft);fon
   }
   function renderStep(scroll){
     steps.forEach((step,index)=>step.classList.toggle("active",index===state.step));const current=state.step+1,percent=Math.round(current/TOTAL_STEPS*100);
-    stepLabel.textContent=`Question ${current} of ${TOTAL_STEPS}`;progressPercent.textContent=`${percent}%`;progressFill.style.width=`${percent}%`;backBtn.classList.toggle("hidden",state.step===0);nextBtn.classList.remove("hidden");nextBtn.textContent=state.step===TOTAL_STEPS-1?"Show My Path":"Continue";if(state.step===3)configureSocialSecurityStep();updateNavigation();if(scroll)quizCard.scrollIntoView({behavior:"smooth",block:"start"});
+    stepLabel.textContent=`Question ${current} of ${TOTAL_STEPS}`;progressPercent.textContent=`${percent}%`;progressFill.style.width=`${percent}%`;backBtn.classList.toggle("hidden",state.step===0);nextBtn.classList.remove("hidden");nextBtn.textContent=state.step===TOTAL_STEPS-1?"Show My Path":"Continue";if(state.step===4)configureSocialSecurityStep();updateNavigation();if(scroll)quizCard.scrollIntoView({behavior:"smooth",block:"start"});
   }
   function updateNavigation(){nextBtn.disabled=!isStepComplete();if(state.step===0)nextBtn.classList.toggle("hidden",!state.window)}
-  function isStepComplete(){if(state.step===0)return Boolean(state.window);if(state.step===1)return Boolean(state.residentState);if(state.step===2)return Boolean(state.coverage);return Boolean(state.socialSecurity&&state.ssaAccount)}
+  function isStepComplete(){if(state.step===0)return Boolean(state.window);if(state.step===1)return Boolean(state.residentState);if(state.step===2)return Boolean(state.coverage);if(state.step===3)return state.militaryVaCoverage.length>0;return Boolean(state.socialSecurity&&state.ssaAccount)}
   function configureSocialSecurityStep(){
     const under62=state.age<62;ssQuestion.textContent=under62?"Are you planning to start Social Security at 62?":"Where are you with Social Security?";ssHelper.textContent=under62?"This keeps your result focused on planning ahead, not enrollment urgency.":"Your answer helps clarify whether Medicare enrollment may be automatic.";
     const options=under62?[["start62","Yes"],["wait","No"],["unsure","Not sure"]]:[["collecting","Already collecting"],["start62","Planning to start at 62"],["wait","Planning to wait for full retirement age"],["unsure","Not sure"]];
@@ -182,6 +197,7 @@ footer{padding:.9rem .25rem 0}footer p{margin-bottom:.5rem;color:var(--soft);fon
     let nowCopy=accountAction;
     if(collecting)nowCopy=`<p><strong>Plan to confirm your Medicare enrollment around ${formatDate(state.window.start)}.</strong> Because you are already collecting Social Security, Medicare enrollment is generally automatic, but you should still verify your Part A and Part B effective dates.</p>${state.ssaAccount==="no"?accountAction:""}`;
     nowCopy+=state.coverage==="unsure"?`<p><strong>Before you enroll, let's make sure you know how your current coverage affects Medicare.</strong> Call or text Eric before making an enrollment decision.</p>`:`<p>${coverageCopy.action}</p>`;
+    nowCopy+=getMilitaryVaCoverageGuidance();
     if(under62&&state.socialSecurity==="unsure")nowCopy+=`<h3>Not sure when to start Social Security?</h3><p>The age you start can affect your monthly benefit for the rest of your life. It's worth understanding your options before you decide.</p><div class="contact-actions"><a class="call-link" href="tel:14028066331">Call Eric</a><a class="text-link" href="sms:14028066331">Text Eric</a></div>`;
     document.getElementById("nowPanel").innerHTML=nowCopy;
     document.getElementById("routingNote").innerHTML=licensedHere?`<p><strong>Questions in ${stateName}?</strong> Eric is licensed in your state and can help you work through the timing.</p>`:`<p><strong>Questions in ${stateName}?</strong> Eric can help route you to a licensed producer who serves your state.</p>`;
@@ -189,9 +205,17 @@ footer{padding:.9rem .25rem 0}footer p{margin-bottom:.5rem;color:var(--soft);fon
     quizCard.classList.add("hidden");resultsFlow.classList.add("active");resultsCard.scrollIntoView({behavior:"smooth",block:"start"});resultsCard.focus({preventScroll:true});
   }
   function getCoverageCopy(){
-    if(state.coverage==="yes")return{action:"Because you have employer coverage, confirm whether it is considered current employment coverage and how it coordinates with Medicare before delaying Part B or Part D."};
+    if(state.coverage==="yes")return{action:"Because you have coverage through current employment, confirm how your employer coverage works with Medicare before deciding whether to delay Part B."};
     if(state.coverage==="unsure")return{action:""};
     return{action:"Because you reported no current employer health plan, use your Initial Enrollment Period dates as the primary deadline and prepare before the window closes."};
+  }
+  function getMilitaryVaCoverageGuidance(){
+    const callText=`<div class="contact-actions"><a class="call-link" href="tel:14028066331">Call Eric</a><a class="text-link" href="sms:14028066331">Text Eric</a></div>`;
+    const blocks=[];
+    if(state.militaryVaCoverage.includes("va"))blocks.push(`<h3>Your VA coverage</h3><p>VA health care doesn't work like current-employer coverage for delaying Medicare Part B. If VA is your only health coverage, don't assume you can delay Part B without consequences. Your VA prescription coverage is generally considered creditable for Part D, so you typically don't need Part D just to avoid a late-enrollment penalty while you maintain that coverage.</p><p>Many veterans choose to have both VA health care and Medicare because Medicare can provide access to non-VA providers.</p>`);
+    if(state.militaryVaCoverage.includes("tricare"))blocks.push(`<h3>Your TRICARE coverage</h3><p>TRICARE and Medicare work together differently once you become Medicare-eligible. For most TRICARE-eligible retirees and family members, once you have Medicare Part A and Part B, your TRICARE coverage becomes TRICARE For Life (TFL) automatically - you don't separately enroll in TFL.</p><p>If you're eligible for Medicare Part A, you'll generally need Medicare Part B to keep TRICARE and transition to TRICARE For Life. Some exceptions apply, including certain active-duty situations, so confirm your TRICARE status before making an enrollment decision.</p><p>TRICARE For Life also includes prescription drug coverage, so you don't need Part D just to maintain prescription coverage.</p>`);
+    if(state.militaryVaCoverage.includes("champva"))blocks.push(`<h3>Your CHAMPVA coverage</h3><p>If you're eligible for Medicare, you'll generally need both Medicare Part A and Part B to keep your CHAMPVA benefits. Medicare typically pays first and CHAMPVA pays second. CHAMPVA prescription coverage is generally considered creditable, so you don't need Part D just to maintain CHAMPVA drug coverage.</p><p>If you're unsure whether an exception applies to you, confirm your CHAMPVA status before making an enrollment decision.</p>`);
+    return blocks.length?blocks.join("")+callText:"";
   }
   function getWindowHeadline(){const now=today();if(now<state.window.start)return"Your Medicare window is ahead.";if(now<=state.window.end)return"Your Medicare window is open.";return"Your initial window has closed."}
   function getWalkthrough(collecting,under62){
