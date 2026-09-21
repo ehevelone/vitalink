@@ -11,7 +11,9 @@
 body{margin:0;min-height:100vh;overflow-x:hidden;color:var(--text);background:linear-gradient(180deg,#020305 0%,#000 42%,#020305 100%);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
 .site-header{border-bottom:1px solid #1e293b;background:rgba(0,0,0,.96)}
 .site-header-inner{width:min(70rem,calc(100% - 1.75rem));min-height:4.75rem;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem}
+.brand-group{display:flex;flex-wrap:wrap;align-items:center;gap:.75rem}
 .brand{line-height:0}.brand img{width:8rem;height:auto;display:block;filter:drop-shadow(0 0 .625rem rgba(124,198,232,.22))}
+.header-vitalink-link{min-height:2.5rem;display:inline-flex;align-items:center;justify-content:center;padding:.45rem .7rem;border:1px solid var(--accent);border-radius:999px;color:var(--accent);background:transparent;font-size:.85rem;font-weight:700;line-height:1.2;text-align:center;text-decoration:none}
 .header-note{color:var(--accent);font-size:.9rem;font-weight:700;text-align:right}
 main{width:min(70rem,calc(100% - 1.75rem));margin:0 auto;padding:1.5rem 0 2.5rem}
 .card{margin:1.125rem 0;padding:1.5rem;border:1px solid var(--line);border-radius:1rem;background:rgba(7,10,15,.9)}
@@ -48,14 +50,33 @@ button{color:#001018;background:var(--accent)}button:hover,.call-link:hover{back
 details{border:1px solid var(--line);border-radius:.7rem;background:#03070b}summary{padding:1rem;color:var(--accent);font-size:1.05rem;font-weight:700;line-height:1.4;cursor:pointer}.walkthrough{padding:0 1rem 1rem;border-top:1px solid var(--line)}
 .walkthrough ol{margin:1rem 0 0;padding-left:1.4em}.walkthrough li{margin-bottom:.8rem}.walkthrough a,.inline-link{color:var(--accent);overflow-wrap:anywhere}
 .contact-actions{display:grid;grid-template-columns:1fr;gap:.75rem;margin-top:1rem}.call-link{color:#001018;background:var(--accent)}.text-link,.site-link{color:var(--accent);background:transparent;white-space:normal;overflow-wrap:anywhere}.contact-name{margin-bottom:.35rem;color:var(--text);font-size:1.3rem;font-weight:700}
-.vitalink-primary{width:100%;max-width:22rem}
+.vitalink-offer{margin:1.5rem 0;padding:1.5rem;border:1px solid rgba(124,198,232,.45);border-radius:1rem;background:rgba(124,198,232,.07)}
+.vitalink-primary{width:100%;max-width:none;min-height:4rem;padding:1rem 1.25rem;font-size:1.12rem}
+.offer-modal{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:1rem;overflow-y:auto;background:rgba(0,0,0,.86)}
+.offer-modal-panel{width:min(34rem,100%);margin:auto;padding:1.5rem;border:1px solid rgba(124,198,232,.45);border-radius:1rem;background:var(--panel)}
+.offer-modal-panel .contact-actions{margin-bottom:.75rem}
+.modal-close{width:100%;color:var(--accent);background:transparent}
+body.modal-open{overflow:hidden}
 footer{padding:.9rem .25rem 0}footer p{margin-bottom:.5rem;color:var(--soft);font-size:.88rem;line-height:1.5}
 @media(min-width:42rem){main{padding:1.75rem 1.4rem 3rem}.card{padding:2rem}h1{font-size:3.5rem}h2{font-size:2.65rem}.choice-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.choice-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.date-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.penalty-list{grid-template-columns:repeat(2,minmax(0,1fr))}.contact-actions{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:30rem){.site-header-inner{padding:.65rem 0}.header-note{width:100%;text-align:left}h1{font-size:2.1rem}h2{font-size:1.75rem}.card{padding:1.2rem}.button-row button{width:100%}.next-btn{margin-left:0}.countdown-number{font-size:2.65rem}}
 </style>
 </head>
 <body>
-<header class="site-header"><div class="site-header-inner"><a class="brand" href="https://myvitalink.app" aria-label="VitaLink home"><img src="images/vitalink-logo.png" alt="VitaLink"></a><span class="header-note">A simple turning-65 planning tool</span></div></header>
+<header class="site-header"><div class="site-header-inner"><div class="brand-group"><a class="brand" href="https://myvitalink.app" aria-label="VitaLink home"><img src="images/vitalink-logo.png" alt="VitaLink"></a><a class="header-vitalink-link" id="headerVitaLinkLink" href="#vitalinkCard">Get VitaLink Free</a></div><span class="header-note">A simple turning-65 planning tool</span></div></header>
+<div class="offer-modal hidden" id="vitalinkOfferModal" role="dialog" aria-modal="true" aria-labelledby="vitalinkModalTitle">
+  <div class="offer-modal-panel">
+    <p class="eyebrow">A $49.95 Value - Available At No Cost</p>
+    <h2 id="vitalinkModalTitle">Get VitaLink Free With a VitaLink Agent</h2>
+    <p>VitaLink normally has a $49.95 activation fee. With a participating VitaLink agent, your activation is available at no cost.</p>
+    <p><a class="call-link vitalink-primary" href="https://myvitalink.app/activate" target="_blank" rel="noopener">Get My Free VitaLink</a></p>
+    <div class="contact-actions">
+      <a class="call-link" href="tel:14028066331">Call Eric</a>
+      <a class="text-link" href="sms:14028066331">Text Eric</a>
+    </div>
+    <button class="modal-close" id="closeVitaLinkModal" type="button">Continue My Medicare Timeline</button>
+  </div>
+</div>
 <main>
   <section class="card quiz-card" id="quizCard">
     <div class="progress-wrap" aria-label="Quiz progress"><div class="progress-meta"><span id="stepLabel">Question 1 of 5</span><span id="progressPercent">20%</span></div><div class="progress-track"><div class="progress-fill" id="progressFill"></div></div></div>
@@ -123,32 +144,35 @@ footer{padding:.9rem .25rem 0}footer p{margin-bottom:.5rem;color:var(--soft);fon
         <p class="eyebrow">What To Do Now</p>
         <div class="now-panel" id="nowPanel"></div>
         <div class="routing-note" id="routingNote"></div>
-        <h3>Before choosing coverage</h3>
-        <p>Organize your medications, doctors, insurance cards, and current coverage information before comparing Medicare options. That gives the conversation a useful starting point and helps prevent important details from being missed.</p>
       </section>
       <section class="path-section"><p class="eyebrow">Future Milestones</p><h2>Waiting can create lasting penalties.</h2>
         <div class="penalty-list"><article class="info-tile"><h3>Part B</h3><p>Waiting to enroll in Part B when you're first eligible may result in a late enrollment penalty. Generally, the penalty increases by 10% for each full 12-month period you could have had Part B but didn't. Exceptions may apply, including when you qualify for a Special Enrollment Period.</p></article><article class="info-tile"><h3>Part D</h3><p>Going 63 days or more without Medicare drug coverage or other creditable prescription drug coverage after you're eligible may result in a Part D late enrollment penalty.</p></article></div>
         <p class="helper">These are general Medicare rules, not a personalized quote or cost calculation. Exact timing and penalties depend on your individual circumstances.</p>
         <details><summary>Show the Social Security enrollment steps</summary><div class="walkthrough" id="walkthrough"></div></details>
       </section>
+      <section class="path-section">
+        <p class="eyebrow">Before Choosing Coverage</p>
+        <h2>Get the information your decisions depend on.</h2>
+        <p>Organize your medications, doctors, insurance cards, and current coverage information before comparing Medicare options. That gives the conversation a useful starting point and helps prevent important details from being missed.</p>
+      </section>
+      <section class="path-section vitalink-offer" id="vitalinkCard">
+        <p class="eyebrow">A $49.95 Value - Available At No Cost</p>
+        <h2>Get VitaLink Free With a VitaLink Agent</h2>
+        <p>When it's time to compare Medicare coverage, your medications, doctors, pharmacies, and current insurance information matter. VitaLink helps you get all of it organized before your appointment.</p>
+        <p>Add your information by taking pictures. Keep it current. And when you're ready, you decide what information to share.</p>
+        <p>VitaLink normally has a $49.95 activation fee. When you're connected with a participating VitaLink agent, your agent can provide your activation at no cost.</p>
+        <p>So when it's time to talk about Medicare, you can spend less time rebuilding your information and more time discussing your options.</p>
+        <p class="helper">VitaLink was built by Eric, a Medicare agent who got tired of watching clients rebuild the same information year after year.</p>
+        <p><a class="call-link vitalink-primary" href="https://myvitalink.app/activate">Get My Free VitaLink</a></p>
+        <div class="contact-actions">
+          <a class="call-link" href="tel:14028066331">Call Eric</a>
+          <a class="text-link" href="sms:14028066331">Text Eric</a>
+        </div>
+      </section>
       <section class="path-section"><p class="eyebrow">Questions?</p><h2>Have questions about your Medicare timeline?</h2><p>I'm happy to help you understand what these dates mean for your situation.</p>
         <div class="contact-actions"><a class="call-link" href="tel:14028066331">Call Eric</a><a class="text-link" href="sms:14028066331">Text Eric</a></div>
       </section>
       <!-- Optional contact capture is intentionally held until lead-sharing consent wording is approved. -->
-    </section>
-    <section class="card" id="vitalinkCard">
-      <p class="eyebrow">A $49.95 Value - Available At No Cost</p>
-      <h2>Get VitaLink Free With a VitaLink Agent</h2>
-      <p>When it's time to compare Medicare coverage, your medications, doctors, pharmacies, and current insurance information matter. VitaLink helps you get all of it organized before your appointment.</p>
-      <p>Add your information by taking pictures. Keep it current. And when you're ready, you decide what information to share.</p>
-      <p>VitaLink normally has a $49.95 activation fee. When you're connected with a participating VitaLink agent, your agent can provide your activation at no cost.</p>
-      <p>So when it's time to talk about Medicare, you can spend less time rebuilding your information and more time discussing your options.</p>
-      <p class="helper">VitaLink was built by Eric, a Medicare agent who got tired of watching clients rebuild the same information year after year.</p>
-      <p><a class="call-link vitalink-primary" href="https://myvitalink.app/activate">Get My Free VitaLink</a></p>
-      <div class="contact-actions">
-        <a class="call-link" href="tel:14028066331">Call Eric</a>
-        <a class="text-link" href="sms:14028066331">Text Eric</a>
-      </div>
     </section>
   </div>
   <footer>
@@ -165,9 +189,19 @@ footer{padding:.9rem .25rem 0}footer p{margin-bottom:.5rem;color:var(--soft);fon
   const STATE_NAMES=Object.fromEntries(Array.from(document.querySelectorAll("#residentState option")).filter(o=>o.value).map(o=>[o.value,o.textContent]));
   const state={step:0,dob:null,age:null,window:null,residentState:"",coverage:"",militaryVaCoverage:[],socialSecurity:"",ssaAccount:""};
   const steps=Array.from(document.querySelectorAll(".question-step")),quizCard=document.getElementById("quizCard"),stepLabel=document.getElementById("stepLabel"),progressPercent=document.getElementById("progressPercent"),progressFill=document.getElementById("progressFill"),backBtn=document.getElementById("backBtn"),nextBtn=document.getElementById("nextBtn"),dobInput=document.getElementById("dob"),dobError=document.getElementById("dobError"),windowPreview=document.getElementById("windowPreview"),residentState=document.getElementById("residentState"),ssQuestion=document.getElementById("ssQuestion"),ssHelper=document.getElementById("ssHelper"),ssChoices=document.getElementById("ssChoices"),ssaAccountQuestion=document.getElementById("ssaAccountQuestion"),resultsFlow=document.getElementById("resultsFlow"),resultsCard=document.getElementById("resultsCard");
+  const headerVitaLinkLink=document.getElementById("headerVitaLinkLink"),vitalinkOfferModal=document.getElementById("vitalinkOfferModal"),closeVitaLinkModal=document.getElementById("closeVitaLinkModal"),vitalinkCard=document.getElementById("vitalinkCard");
+  let modalReturnFocus=null;
 
   dobInput.addEventListener("input",()=>{formatDobInput();handleDob(false)});dobInput.addEventListener("change",()=>handleDob(true));dobInput.addEventListener("blur",()=>handleDob(true));
   residentState.addEventListener("change",()=>{state.residentState=residentState.value;updateNavigation()});
+  headerVitaLinkLink.addEventListener("click",event=>{
+    event.preventDefault();
+    if(resultsFlow.classList.contains("active")){vitalinkCard.scrollIntoView({behavior:"smooth",block:"start"});return}
+    openVitaLinkModal();
+  });
+  closeVitaLinkModal.addEventListener("click",closeVitaLinkOffer);
+  vitalinkOfferModal.addEventListener("click",event=>{if(event.target===vitalinkOfferModal)closeVitaLinkOffer()});
+  document.addEventListener("keydown",event=>{if(event.key==="Escape"&&!vitalinkOfferModal.classList.contains("hidden"))closeVitaLinkOffer()});
   document.addEventListener("change",event=>{
     const target=event.target;if(!(target instanceof HTMLInputElement)||!["radio","checkbox"].includes(target.type))return;
     if(target.name==="militaryVaCoverage"){
@@ -185,6 +219,17 @@ footer{padding:.9rem .25rem 0}footer p{margin-bottom:.5rem;color:var(--soft);fon
   nextBtn.addEventListener("click",()=>{if(!isStepComplete())return;if(state.step<TOTAL_STEPS-1){state.step+=1;renderStep(true);return}renderResults()});
   renderStep(false);
 
+  function openVitaLinkModal(){
+    modalReturnFocus=document.activeElement;
+    vitalinkOfferModal.classList.remove("hidden");
+    document.body.classList.add("modal-open");
+    closeVitaLinkModal.focus();
+  }
+  function closeVitaLinkOffer(){
+    vitalinkOfferModal.classList.add("hidden");
+    document.body.classList.remove("modal-open");
+    if(modalReturnFocus&&typeof modalReturnFocus.focus==="function")modalReturnFocus.focus();
+  }
   function handleDob(showIncompleteError){
     const dob=parseDateInput(dobInput.value);
     if(!dob||dob>today()){state.dob=null;state.window=null;state.age=null;windowPreview.classList.add("hidden");dobError.classList.toggle("active",Boolean(dobInput.value)&&(showIncompleteError||dobInput.value.length===10));updateNavigation();return}
