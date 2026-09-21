@@ -13,7 +13,11 @@ body{margin:0;min-height:100vh;overflow-x:hidden;color:var(--text);background:li
 .site-header-inner{width:min(70rem,calc(100% - 1.75rem));min-height:4.75rem;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem}
 .brand-group{display:flex;flex-wrap:wrap;align-items:center;gap:.75rem}
 .brand{line-height:0}.brand img{width:8rem;height:auto;display:block;filter:drop-shadow(0 0 .625rem rgba(124,198,232,.22))}
-.header-vitalink-link{min-height:2.5rem;display:inline-flex;align-items:center;justify-content:center;padding:.45rem .7rem;border:1px solid var(--accent);border-radius:999px;color:var(--accent);background:transparent;font-size:.85rem;font-weight:700;line-height:1.2;text-align:center;text-decoration:none}
+.header-vitalink-link{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;padding:.55rem .8rem;border:1px solid rgba(124,198,232,.65);border-radius:.65rem;color:var(--text);background:#123543;line-height:1.15;text-align:center;text-decoration:none;animation:header-vitalink-enter .25s ease-out both}
+.header-vitalink-kicker{font-size:.72rem;font-weight:600;white-space:nowrap}
+.header-vitalink-offer{margin-top:.2rem;color:#fff;font-size:.86rem;font-weight:700;white-space:nowrap}
+.header-vitalink-mobile{display:none}
+@keyframes header-vitalink-enter{from{opacity:.97;transform:scale(.985)}to{opacity:1;transform:scale(1)}}
 .header-note{color:var(--accent);font-size:.9rem;font-weight:700;text-align:right}
 main{width:min(70rem,calc(100% - 1.75rem));margin:0 auto;padding:1.5rem 0 2.5rem}
 .card{margin:1.125rem 0;padding:1.5rem;border:1px solid var(--line);border-radius:1rem;background:rgba(7,10,15,.9)}
@@ -59,11 +63,15 @@ details{border:1px solid var(--line);border-radius:.7rem;background:#03070b}summ
 body.modal-open{overflow:hidden}
 footer{padding:.9rem .25rem 0}footer p{margin-bottom:.5rem;color:var(--soft);font-size:.88rem;line-height:1.5}
 @media(min-width:42rem){main{padding:1.75rem 1.4rem 3rem}.card{padding:2rem}h1{font-size:3.5rem}h2{font-size:2.65rem}.choice-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.choice-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.date-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.penalty-list{grid-template-columns:repeat(2,minmax(0,1fr))}.contact-actions{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:30rem){.site-header-inner{padding:.65rem 0}.header-note{width:100%;text-align:left}h1{font-size:2.1rem}h2{font-size:1.75rem}.card{padding:1.2rem}.button-row button{width:100%}.next-btn{margin-left:0}.countdown-number{font-size:2.65rem}}
+@media(max-width:56rem){.header-note{display:none}}
+@media(max-width:40rem){.header-vitalink-desktop{display:none}.header-vitalink-mobile{display:inline}.header-vitalink-kicker{font-size:.7rem}.header-vitalink-offer{font-size:.82rem}}
+@media(max-width:30rem){.site-header-inner{padding:.65rem 0}.brand-group{width:100%;display:grid;grid-template-columns:auto minmax(0,1fr);gap:.5rem}.brand img{width:7rem}.header-vitalink-link{justify-self:stretch;padding:.5rem .65rem}h1{font-size:2.1rem}h2{font-size:1.75rem}.card{padding:1.2rem}.button-row button{width:100%}.next-btn{margin-left:0}.countdown-number{font-size:2.65rem}}
+@media(max-width:22rem){.brand-group{grid-template-columns:1fr}.brand{justify-self:center}.header-vitalink-link{width:100%}}
+@media(prefers-reduced-motion:reduce){.header-vitalink-link{animation:none}}
 </style>
 </head>
 <body>
-<header class="site-header"><div class="site-header-inner"><div class="brand-group"><a class="brand" href="https://myvitalink.app" aria-label="VitaLink home"><img src="images/vitalink-logo.png" alt="VitaLink"></a><a class="header-vitalink-link" id="headerVitaLinkLink" href="#vitalinkCard">Get VitaLink Free</a></div><span class="header-note">A simple turning-65 planning tool</span></div></header>
+<header class="site-header"><div class="site-header-inner"><div class="brand-group"><a class="brand" href="https://myvitalink.app" aria-label="VitaLink home"><img src="images/vitalink-logo.png" alt="VitaLink"></a><a class="header-vitalink-link" id="headerVitaLinkLink" href="#vitalinkCard"><span class="header-vitalink-kicker header-vitalink-desktop">MEDS &bull; DOCTORS &bull; INSURANCE &bull; MORE</span><span class="header-vitalink-offer header-vitalink-desktop">GET VITALINK &mdash; $49.95 VALUE FREE &rarr;</span><span class="header-vitalink-kicker header-vitalink-mobile">MEDS &bull; DOCTORS &bull; INSURANCE</span><span class="header-vitalink-offer header-vitalink-mobile">$49.95 VALUE FREE &rarr;</span></a></div><span class="header-note">A simple turning-65 planning tool</span></div></header>
 <div class="offer-modal hidden" id="vitalinkOfferModal" role="dialog" aria-modal="true" aria-labelledby="vitalinkModalTitle">
   <div class="offer-modal-panel">
     <p class="eyebrow">A $49.95 Value - Available At No Cost</p>
