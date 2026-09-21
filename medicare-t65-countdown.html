@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Medicare T65 Enrollment Window Calculator</title>
 <meta name="description" content="Find your Medicare Initial Enrollment Period and a practical path for what to do next.">
+<link rel="canonical" href="https://myvitalink.app/medicare-t65-countdown">
 <style>
 :root{--bg:#000;--panel:#070a0f;--panel-strong:#0d1118;--field:#050a10;--text:#f8fafc;--muted:#cbd5e1;--soft:#94a3b8;--accent:#7cc6e8;--line:#263549;--good:#4ade80;--warn:#f5c85c;--closed:#fca5a5}
 *{box-sizing:border-box}html{min-height:100%;background:var(--bg)}
@@ -48,13 +49,16 @@ button{color:#001018;background:var(--accent)}button:hover,.call-link:hover{back
 .date-tile span{display:block;margin-bottom:.3rem;color:#aac0db;font-size:.9rem;font-weight:700}.date-tile strong{display:block;color:var(--text);font-size:1.2rem;overflow-wrap:anywhere}
 .results-flow{display:none}.results-flow.active{display:block}.results-card{padding-top:1.75rem}.results-intro{max-width:51rem}.path-section{padding:1.5rem 0;border-top:1px solid var(--line)}.path-section:first-of-type{margin-top:1.5rem}.path-section:last-child{padding-bottom:0}
 .now-panel{padding:1.25rem;border-left:.3rem solid var(--good);border-radius:.5rem;background:var(--panel-strong)}.now-panel p:last-child{margin-bottom:0}
+.game-plan{padding-top:1.75rem;border-top:1px solid var(--line)}.game-plan-header{margin-bottom:.5rem}.game-plan-header .intro{margin-bottom:0}.game-plan-steps{position:relative}.game-step{position:relative;display:grid;grid-template-columns:2.5rem minmax(0,1fr);gap:1rem;padding:1.5rem 0}.game-step:not(:last-child)::after{content:"";position:absolute;z-index:0;top:4rem;bottom:-1.5rem;left:1.22rem;width:1px;background:var(--line)}.game-step-marker{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;width:2.5rem;height:2.5rem;border:1px solid var(--accent);border-radius:50%;color:var(--accent);background:var(--panel);font-size:.82rem;font-weight:700}.game-step-content{min-width:0}.game-step-heading{margin:.55rem 0 1rem;color:var(--accent);font-size:.9rem;font-weight:700;letter-spacing:.1em;line-height:1.3;text-transform:uppercase}
 .penalty-list{display:grid;grid-template-columns:1fr;gap:.85rem;margin-top:1rem}.info-tile{padding:1rem;border-left:.25rem solid var(--accent);border-radius:.5rem;background:var(--panel-strong)}.info-tile p:last-child{margin-bottom:0}
 details{border:1px solid var(--line);border-radius:.7rem;background:#03070b}summary{padding:1rem;color:var(--accent);font-size:1.05rem;font-weight:700;line-height:1.4;cursor:pointer}.walkthrough{padding:0 1rem 1rem;border-top:1px solid var(--line)}
 .walkthrough ol{margin:1rem 0 0;padding-left:1.4em}.walkthrough li{margin-bottom:.8rem}.walkthrough a,.inline-link{color:var(--accent);overflow-wrap:anywhere}
 .contact-actions{display:grid;grid-template-columns:1fr;gap:.75rem;margin-top:1rem}.call-link{color:#001018;background:var(--accent)}.text-link,.site-link{color:var(--accent);background:transparent;white-space:normal;overflow-wrap:anywhere}.contact-name{margin-bottom:.35rem;color:var(--text);font-size:1.3rem;font-weight:700}
-.vitalink-offer{display:grid;grid-template-areas:"eyebrow" "title" "visual" "body" "action" "founder";margin:0;padding:1.5rem 0;border-radius:0;background:transparent}
+.vitalink-lead-in{margin-bottom:1.25rem}.vitalink-lead-in h2{margin-bottom:.5rem}.vitalink-lead-in p{margin-bottom:0}.vitalink-offer{display:grid;grid-template-areas:"eyebrow" "title" "visual" "body" "action" "founder";margin:0;padding:0;border-radius:0;background:transparent}
 .vitalink-offer>.eyebrow{grid-area:eyebrow}.vitalink-offer>h2{grid-area:title}.vitalink-visual{grid-area:visual;width:min(20rem,100%);margin:1rem auto 1.5rem}.vitalink-visual img{display:block;width:100%;height:auto;border-radius:.65rem}.vitalink-body{grid-area:body}.vitalink-action{grid-area:action;margin-bottom:0}.vitalink-founder{grid-area:founder;margin-top:1rem}
 .vitalink-primary{width:100%;max-width:none;min-height:4rem;padding:1rem 1.25rem;font-size:1.12rem}
+.medicare-timeline{position:relative;min-height:9.5rem;margin:1.25rem 0 1.75rem;padding:0 1rem}.timeline-track{position:absolute;top:4.8rem;right:1rem;left:1rem;height:2px;background:var(--line)}.timeline-point{position:absolute;top:0;left:var(--timeline-position);width:9.5rem;transform:translateX(-50%);text-align:center}.timeline-label{display:block;min-height:2.35rem;color:var(--text);font-size:.8rem;font-weight:700;letter-spacing:.06em;line-height:1.3}.timeline-date{display:block;margin-top:.2rem;color:var(--soft);font-size:.82rem;font-weight:600}.timeline-dot{display:block;width:1rem;height:1rem;margin:.75rem auto 0;border:.2rem solid var(--panel);border-radius:50%;background:var(--accent);box-shadow:0 0 0 1px var(--accent)}.timeline-point.is-current .timeline-label,.timeline-point.is-current .timeline-date{color:var(--warn)}.timeline-point.is-current .timeline-dot{background:var(--warn);box-shadow:0 0 0 1px var(--warn)}
+.game-plan-contact-actions{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1rem}.game-plan-contact-actions .call-link,.game-plan-contact-actions .text-link{flex:0 0 9.5rem;width:9.5rem;min-height:3.25rem}.share-endcap{margin-top:1.5rem;padding-top:1.75rem;border-top:1px solid var(--line)}.share-endcap h2{margin-bottom:.5rem}.share-endcap>p:not(.eyebrow):not(.share-status){margin-bottom:1rem}.share-button{width:auto;min-width:11rem}.share-status{min-height:1.5rem;margin:.75rem 0 0;color:var(--good);font-size:.98rem;font-weight:700;overflow-wrap:anywhere}
 .offer-modal{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:1rem;overflow-y:auto;background:rgba(0,0,0,.86)}
 .offer-modal-panel{width:min(34rem,100%);margin:auto;padding:1.5rem;border:1px solid rgba(124,198,232,.45);border-radius:1rem;background:var(--panel)}
 .offer-modal-panel .contact-actions{margin-bottom:.75rem}
@@ -72,7 +76,7 @@ body.modal-open{overflow:hidden}
 footer{padding:.9rem .25rem 0}footer p{margin-bottom:.5rem;color:var(--soft);font-size:.88rem;line-height:1.5}
 @media(min-width:42rem){main{padding:1.75rem 1.4rem 3rem}.card{padding:2rem}h1{font-size:3.5rem}h2{font-size:2.65rem}.choice-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.choice-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.date-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.penalty-list{grid-template-columns:repeat(2,minmax(0,1fr))}.contact-actions{grid-template-columns:repeat(2,minmax(0,1fr))}.vitalink-offer{grid-template-columns:minmax(0,3fr) minmax(14rem,2fr);grid-template-areas:"eyebrow visual" "title visual" "body visual" "action visual" "founder founder";column-gap:2.5rem;align-items:start}.vitalink-visual{width:100%;max-width:20rem;margin:0;justify-self:center}}
 @media(max-width:56rem){.header-note{display:none}}
-@media(max-width:40rem){.header-vitalink-desktop{display:none}.header-vitalink-mobile{display:inline}.header-vitalink-kicker{font-size:.7rem}.header-vitalink-offer{font-size:.82rem}}
+@media(max-width:40rem){.header-vitalink-desktop{display:none}.header-vitalink-mobile{display:inline}.header-vitalink-kicker{font-size:.7rem}.header-vitalink-offer{font-size:.82rem}.medicare-timeline{min-height:0;padding:.25rem 0 .25rem 2rem}.timeline-track{top:.8rem;right:auto;bottom:.8rem;left:.55rem;width:2px;height:auto}.timeline-point{position:relative;top:auto;left:auto!important;width:auto;min-height:4.5rem;padding:0 0 1rem 1rem;transform:none;text-align:left}.timeline-label{min-height:0}.timeline-date{margin-top:.15rem}.timeline-dot{position:absolute;top:.15rem;left:-1.95rem;margin:0}.game-step{grid-template-columns:2rem minmax(0,1fr);gap:.75rem}.game-step-marker{width:2rem;height:2rem}.game-step:not(:last-child)::after{top:3.5rem;left:.97rem}.game-step-heading{margin:.35rem 0 1rem}}
 @media(max-width:30rem){.site-header-inner{padding:.65rem 0}.brand-group{width:100%;display:grid;grid-template-columns:auto minmax(0,1fr);gap:.5rem}.brand img{width:7rem}.header-vitalink-link{justify-self:stretch;padding:.5rem .65rem}h1{font-size:2.1rem}h2{font-size:1.75rem}.card{padding:1.2rem}.button-row button{width:100%}.next-btn{margin-left:0}.countdown-number{font-size:2.65rem}}
 @media(max-width:22rem){.brand-group{grid-template-columns:1fr}.brand{justify-self:center}.header-vitalink-link{width:100%}}
 @media(prefers-reduced-motion:reduce){.header-vitalink-link{animation:none}}
@@ -174,42 +178,75 @@ footer{padding:.9rem .25rem 0}footer p{margin-bottom:.5rem;color:var(--soft);fon
         <div class="window-preview" id="resultWindow"><p class="countdown-status" id="resultStatus"></p><div class="countdown-row"><p class="countdown-number" id="resultNumber"></p><p class="countdown-secondary" id="resultSecondary"></p></div><p class="countdown-detail" id="resultDetail"></p></div>
         <div class="date-grid"><div class="date-tile"><span>65th birthday</span><strong id="resultBirthday">--/--/----</strong></div><div class="date-tile"><span>IEP starts</span><strong id="resultStart">--/--/----</strong></div><div class="date-tile"><span>IEP ends</span><strong id="resultEnd">--/--/----</strong></div></div>
       </section>
-      <section class="path-section">
-        <p class="eyebrow">What To Do Now</p>
-        <div class="now-panel" id="nowPanel"></div>
-        <div class="contact-actions">
-          <a class="call-link" href="tel:14028066331">Call Eric</a>
-          <a class="text-link" href="sms:14028066331">Text Eric</a>
+      <section class="game-plan" id="gamePlan" aria-labelledby="gamePlanTitle">
+        <div class="game-plan-header">
+          <p class="eyebrow" id="gamePlanTitle">Your Medicare Game Plan</p>
+          <p class="intro">Based on the answers you just gave us.</p>
+        </div>
+        <div class="game-plan-steps">
+          <section class="game-step" data-game-step="01">
+            <div class="game-step-marker" aria-hidden="true">01</div>
+            <div class="game-step-content">
+              <h2 class="game-step-heading">What To Do Now</h2>
+              <div class="now-panel" id="nowPanel"></div>
+            </div>
+          </section>
+          <section class="game-step" data-game-step="02">
+            <div class="game-step-marker" aria-hidden="true">02</div>
+            <div class="game-step-content">
+              <h2 class="game-step-heading">Get Organized</h2>
+              <div class="vitalink-lead-in">
+                <h2>Want your medications, doctors, and insurance information all in one place?</h2>
+                <p>That's what VitaLink is for.</p>
+              </div>
+              <div class="vitalink-offer" id="vitalinkCard">
+                <p class="eyebrow">A $49.95 Value - Available At No Cost</p>
+                <h2>Get VitaLink Free With a VitaLink Agent</h2>
+                <figure class="vitalink-visual">
+                  <img src="images/user-menu.png" alt="Consumer VitaLink menu showing medications, doctors, appointments, insurance cards, insurance policies, and emergency information" width="852" height="1846">
+                </figure>
+                <div class="vitalink-body">
+                  <p>When it's time to compare Medicare coverage, your medications, doctors, pharmacies, and current insurance information matter. VitaLink helps you get all of it organized before your appointment.</p>
+                  <p>Add your information by taking pictures. Keep it current. And when you're ready, you decide what information to share.</p>
+                  <p>VitaLink normally has a $49.95 activation fee. When you're connected with a participating VitaLink agent, your agent can provide your activation at no cost.</p>
+                  <p>So when it's time to talk about Medicare, you can spend less time rebuilding your information and more time discussing your options.</p>
+                </div>
+                <p class="vitalink-action"><button class="call-link vitalink-primary" id="resultsVitaLinkRequest" type="button">Get My Free VitaLink</button></p>
+                <p class="helper vitalink-founder">VitaLink was built by Eric, a Medicare agent who got tired of watching clients rebuild the same information year after year.</p>
+              </div>
+            </div>
+          </section>
+          <section class="game-step" data-game-step="03">
+            <div class="game-step-marker" aria-hidden="true">03</div>
+            <div class="game-step-content">
+              <h2 class="game-step-heading">Protect Your Timing</h2>
+              <div class="medicare-timeline" id="medicareTimeline" role="group" aria-label="Your Medicare timeline">
+                <div class="timeline-track" aria-hidden="true"></div>
+                <div id="timelinePoints"></div>
+              </div>
+              <h2>Waiting can create lasting penalties.</h2>
+              <div class="penalty-list"><article class="info-tile"><h3>Part B</h3><p>Waiting to enroll in Part B when you're first eligible may result in a late enrollment penalty. Generally, the penalty increases by 10% for each full 12-month period you could have had Part B but didn't. Exceptions may apply, including when you qualify for a Special Enrollment Period.</p></article><article class="info-tile"><h3>Part D</h3><p>Going 63 days or more without Medicare drug coverage or other creditable prescription drug coverage after you're eligible may result in a Part D late enrollment penalty.</p></article></div>
+              <p class="helper">These are general Medicare rules, not a personalized quote or cost calculation. Exact timing and penalties depend on your individual circumstances.</p>
+              <details><summary>Show the Social Security enrollment steps</summary><div class="walkthrough" id="walkthrough"></div></details>
+            </div>
+          </section>
+          <section class="game-step" data-game-step="04">
+            <div class="game-step-marker" aria-hidden="true">04</div>
+            <div class="game-step-content">
+              <h2 class="game-step-heading">Have Questions?</h2>
+              <h2>Have questions about your Medicare timeline?</h2>
+              <p>I'm happy to help you understand what these dates mean for your situation.</p>
+              <div class="game-plan-contact-actions"><a class="call-link" href="tel:14028066331">Call Eric</a><a class="text-link" href="sms:14028066331">Text Eric</a></div>
+            </div>
+          </section>
         </div>
       </section>
-      <section class="path-section">
-        <h2>Want your medications, doctors, and insurance information all in one place?</h2>
-        <p>That's what VitaLink is for.</p>
+      <section class="share-endcap" aria-labelledby="shareTitle">
+        <p class="eyebrow">Know Someone Else Turning 65?</p>
+        <h2 id="shareTitle">Send them their own Medicare timeline.</h2>
+        <button class="share-button" id="shareT65" type="button">Share This Tool</button>
+        <p class="share-status" id="shareStatus" role="status" aria-live="polite"></p>
       </section>
-      <section class="path-section vitalink-offer" id="vitalinkCard">
-        <p class="eyebrow">A $49.95 Value - Available At No Cost</p>
-        <h2>Get VitaLink Free With a VitaLink Agent</h2>
-        <figure class="vitalink-visual">
-          <img src="images/agent-menu.png" alt="VitaLink menu showing medications, doctors, insurance cards, insurance policies, and emergency information" width="1080" height="2340">
-        </figure>
-        <div class="vitalink-body">
-          <p>When it's time to compare Medicare coverage, your medications, doctors, pharmacies, and current insurance information matter. VitaLink helps you get all of it organized before your appointment.</p>
-          <p>Add your information by taking pictures. Keep it current. And when you're ready, you decide what information to share.</p>
-          <p>VitaLink normally has a $49.95 activation fee. When you're connected with a participating VitaLink agent, your agent can provide your activation at no cost.</p>
-          <p>So when it's time to talk about Medicare, you can spend less time rebuilding your information and more time discussing your options.</p>
-        </div>
-        <p class="vitalink-action"><button class="call-link vitalink-primary" id="resultsVitaLinkRequest" type="button">Get My Free VitaLink</button></p>
-        <p class="helper vitalink-founder">VitaLink was built by Eric, a Medicare agent who got tired of watching clients rebuild the same information year after year.</p>
-      </section>
-      <section class="path-section"><p class="eyebrow">Future Milestones</p><h2>Waiting can create lasting penalties.</h2>
-        <div class="penalty-list"><article class="info-tile"><h3>Part B</h3><p>Waiting to enroll in Part B when you're first eligible may result in a late enrollment penalty. Generally, the penalty increases by 10% for each full 12-month period you could have had Part B but didn't. Exceptions may apply, including when you qualify for a Special Enrollment Period.</p></article><article class="info-tile"><h3>Part D</h3><p>Going 63 days or more without Medicare drug coverage or other creditable prescription drug coverage after you're eligible may result in a Part D late enrollment penalty.</p></article></div>
-        <p class="helper">These are general Medicare rules, not a personalized quote or cost calculation. Exact timing and penalties depend on your individual circumstances.</p>
-        <details><summary>Show the Social Security enrollment steps</summary><div class="walkthrough" id="walkthrough"></div></details>
-      </section>
-      <section class="path-section"><p class="eyebrow">Questions?</p><h2>Have questions about your Medicare timeline?</h2><p>I'm happy to help you understand what these dates mean for your situation.</p>
-        <div class="contact-actions"><a class="call-link" href="tel:14028066331">Call Eric</a><a class="text-link" href="sms:14028066331">Text Eric</a></div>
-      </section>
-      <!-- Optional contact capture is intentionally held until lead-sharing consent wording is approved. -->
     </section>
   </div>
   <footer>
@@ -223,9 +260,12 @@ footer{padding:.9rem .25rem 0}footer p{margin-bottom:.5rem;color:var(--soft);fon
 <script>
 (function(){
   const TOTAL_STEPS=5;
+  const SHARE_URL="https://myvitalink.app/medicare-t65-countdown";
+  const SHARE_TEXT="I'm using this Turning 65 Medicare planner. Put in your birthday and it shows your Medicare enrollment window and what you should be doing to prepare.";
   const state={step:0,dob:null,age:null,window:null,residentState:"",coverage:"",militaryVaCoverage:[],socialSecurity:"",ssaAccount:""};
   const steps=Array.from(document.querySelectorAll(".question-step")),quizCard=document.getElementById("quizCard"),stepLabel=document.getElementById("stepLabel"),progressPercent=document.getElementById("progressPercent"),progressFill=document.getElementById("progressFill"),backBtn=document.getElementById("backBtn"),nextBtn=document.getElementById("nextBtn"),dobInput=document.getElementById("dob"),dobError=document.getElementById("dobError"),windowPreview=document.getElementById("windowPreview"),residentState=document.getElementById("residentState"),ssQuestion=document.getElementById("ssQuestion"),ssHelper=document.getElementById("ssHelper"),ssChoices=document.getElementById("ssChoices"),ssaAccountQuestion=document.getElementById("ssaAccountQuestion"),resultsFlow=document.getElementById("resultsFlow"),resultsCard=document.getElementById("resultsCard");
   const headerVitaLinkLink=document.getElementById("headerVitaLinkLink"),vitalinkOfferModal=document.getElementById("vitalinkOfferModal"),closeVitaLinkModal=document.getElementById("closeVitaLinkModal"),showVitaLinkRequest=document.getElementById("showVitaLinkRequest"),resultsVitaLinkRequest=document.getElementById("resultsVitaLinkRequest"),vitalinkRequestForm=document.getElementById("vitalinkRequestForm"),vitalinkRequestSuccess=document.getElementById("vitalinkRequestSuccess"),vitalinkName=document.getElementById("vitalinkName"),vitalinkPhone=document.getElementById("vitalinkPhone"),vitalinkState=document.getElementById("vitalinkState"),vitalinkConsent=document.getElementById("vitalinkConsent"),vitalinkConsentText=document.getElementById("vitalinkConsentText"),vitalinkFormStatus=document.getElementById("vitalinkFormStatus"),vitalinkSubmit=document.getElementById("vitalinkSubmit"),vitalinkWebsite=document.getElementById("vitalinkWebsite");
+  const medicareTimeline=document.getElementById("medicareTimeline"),timelinePoints=document.getElementById("timelinePoints"),shareT65=document.getElementById("shareT65"),shareStatus=document.getElementById("shareStatus");
   let modalReturnFocus=null,vitalinkRequestSubmitted=false;
   vitalinkState.innerHTML=residentState.innerHTML;
 
@@ -241,6 +281,8 @@ footer{padding:.9rem .25rem 0}footer p{margin-bottom:.5rem;color:var(--soft);fon
   document.addEventListener("keydown",event=>{if(event.key==="Escape"&&!vitalinkOfferModal.classList.contains("hidden"))closeVitaLinkOffer()});
   showVitaLinkRequest.addEventListener("click",showVitaLinkRequestForm);
   resultsVitaLinkRequest.addEventListener("click",()=>{openVitaLinkModal();showVitaLinkRequestForm()});
+  shareT65.addEventListener("click",shareT65Tool);
+  if(typeof navigator.share!=="function")shareT65.textContent="Copy Link";
   vitalinkPhone.addEventListener("input",()=>{vitalinkPhone.value=formatPhone(vitalinkPhone.value)});
   vitalinkRequestForm.addEventListener("submit",submitVitaLinkRequest);
   document.addEventListener("change",event=>{
@@ -336,7 +378,7 @@ footer{padding:.9rem .25rem 0}footer p{margin-bottom:.5rem;color:var(--soft);fon
     nowCopy+=getMilitaryVaCoverageGuidance();
     if(under62&&state.socialSecurity==="unsure")nowCopy+=`<h3>Not sure when to start Social Security?</h3><p>The age you start can affect your monthly benefit for the rest of your life. It's worth understanding your options before you decide.</p>`;
     document.getElementById("nowPanel").innerHTML=nowCopy;
-    renderWindow(document.getElementById("resultWindow"),"result");document.getElementById("resultBirthday").textContent=formatDate(state.window.birthday);document.getElementById("resultStart").textContent=formatDate(state.window.start);document.getElementById("resultEnd").textContent=formatDate(state.window.end);document.getElementById("walkthrough").innerHTML=getWalkthrough(collecting,under62);
+    renderWindow(document.getElementById("resultWindow"),"result");document.getElementById("resultBirthday").textContent=formatDate(state.window.birthday);document.getElementById("resultStart").textContent=formatDate(state.window.start);document.getElementById("resultEnd").textContent=formatDate(state.window.end);renderMedicareTimeline();document.getElementById("walkthrough").innerHTML=getWalkthrough(collecting,under62);
     quizCard.classList.add("hidden");resultsFlow.classList.add("active");resultsCard.scrollIntoView({behavior:"smooth",block:"start"});resultsCard.focus({preventScroll:true});
   }
   function getCoverageCopy(){
@@ -363,6 +405,41 @@ footer{padding:.9rem .25rem 0}footer p{margin-bottom:.5rem;color:var(--soft);fon
     else if(now<=state.window.end){const daysToEnd=diffDays(now,state.window.end);container.classList.add("status-open");status.textContent="Your window is open";number.textContent=daysToEnd===1?"1 day left":`${daysToEnd} days left`;secondary.textContent="";detail.textContent=`Your Initial Enrollment Period ends on ${formatDate(state.window.end)}.`}
     else{container.classList.add("status-closed");status.textContent="Action needed now";number.textContent="Window closed";secondary.textContent="";detail.textContent=`Your Initial Enrollment Period ended on ${formatDate(state.window.end)}. Your coverage history must be reviewed before choosing the next enrollment step.`}
     if(prefix==="preview"){document.getElementById("previewBirthday").textContent=formatDate(state.window.birthday);document.getElementById("previewStart").textContent=formatDate(state.window.start);document.getElementById("previewEnd").textContent=formatDate(state.window.end)}
+  }
+  function renderMedicareTimeline(){
+    const now=today();
+    const points=[
+      {key:"start",date:state.window.start,label:now>=state.window.start?"IEP STARTED":"IEP STARTS",order:0},
+      {key:"birthday",date:state.window.birthday,label:"65TH BIRTHDAY",order:1},
+      {key:"end",date:state.window.end,label:now>state.window.end?"IEP ENDED":"IEP ENDS",order:2},
+      {key:"today",date:now,label:"YOU ARE HERE",order:3,current:true}
+    ].sort((a,b)=>a.date-b.date||a.order-b.order);
+    const first=points[0].date.getTime(),last=points[points.length-1].date.getTime(),range=last-first;
+    const positions=range===0?points.map((point,index)=>index/(points.length-1)*100):points.map(point=>(point.date.getTime()-first)/range*100);
+    const minimumGap=18;
+    for(let index=1;index<positions.length;index+=1)positions[index]=Math.max(positions[index],positions[index-1]+minimumGap);
+    if(positions[positions.length-1]>100){
+      positions[positions.length-1]=100;
+      for(let index=positions.length-2;index>=0;index-=1)positions[index]=Math.min(positions[index],positions[index+1]-minimumGap);
+    }
+    timelinePoints.innerHTML=points.map((point,index)=>`<div class="timeline-point${point.current?" is-current":""}" data-timeline-key="${point.key}" data-timeline-time="${point.date.getTime()}" style="--timeline-position:${positions[index].toFixed(2)}%"><span class="timeline-label">${point.label}</span><span class="timeline-date">${formatDate(point.date)}</span><span class="timeline-dot" aria-hidden="true"></span></div>`).join("");
+    medicareTimeline.setAttribute("aria-label",points.map(point=>`${point.label}: ${formatDate(point.date)}`).join("; "));
+  }
+  async function shareT65Tool(){
+    shareStatus.textContent="";
+    const shareData={title:"Turning 65 Medicare Planner",text:SHARE_TEXT,url:SHARE_URL};
+    if(typeof navigator.share==="function"){
+      try{await navigator.share(shareData);shareStatus.textContent="Share options opened.";return}catch(error){if(error&&error.name==="AbortError")return}
+    }
+    try{await copyShareLink();shareStatus.textContent="Link copied. You can send it to anyone turning 65."}catch(error){shareStatus.textContent=`Copy this link: ${SHARE_URL}`}
+  }
+  async function copyShareLink(){
+    if(navigator.clipboard&&typeof navigator.clipboard.writeText==="function"){
+      try{await navigator.clipboard.writeText(SHARE_URL);return}catch(error){}
+    }
+    const textarea=document.createElement("textarea");
+    textarea.value=SHARE_URL;textarea.setAttribute("readonly","");textarea.style.position="fixed";textarea.style.opacity="0";document.body.appendChild(textarea);textarea.select();
+    const copied=document.execCommand("copy");textarea.remove();if(!copied)throw new Error("Copy failed");
   }
   function formatDobInput(){
     const digits=dobInput.value.replace(/\D/g,"").slice(0,8);
