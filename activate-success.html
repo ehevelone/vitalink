@@ -79,7 +79,7 @@ button{
   border-bottom:1px solid var(--divider);
   margin:40px 0;
   padding:40px 0;
-  display:none;
+  display:block;
 }
 
 .code{
@@ -133,29 +133,18 @@ footer{
 
 <img src="images/vitalink-logo-1.png" class="logo">
 
-<h1>Complete Registration</h1>
+<h1>Payment Complete</h1>
 
 <p>
-Enter your name and email to receive your VitaLink activation code.
+Your VitaLink activation code is being prepared from your verified payment.
 </p>
-
-<div class="form-box" id="formBox">
-
-<input id="name" placeholder="Full Name">
-<input id="email" placeholder="Email Address">
-
-<button onclick="registerPurchase()">
-Get My Activation Code
-</button>
-
-</div>
 
 <div class="code-box" id="codeBox">
 
 <div>Your activation code:</div>
 
 <div id="code" class="code">
-Loading...
+Confirming payment...
 </div>
 
 <button onclick="copyCode()">Copy Code</button>
@@ -216,54 +205,32 @@ After saving your code:
 const params = new URLSearchParams(window.location.search);
 const sessionId = params.get("session_id");
 
-async function registerPurchase(){
+async function loadCode(attempt = 0){
 
-  const name = document.getElementById("name").value.trim();
-  const email = document.getElementById("email").value.trim();
-
-  if(!name || !email){
-    alert("Please enter your name and email.");
+  if(!sessionId){
+    document.getElementById("code").innerText = "Missing payment session";
     return;
   }
 
   try{
 
-    await fetch(
-      "https://vitalink-app.netlify.app/.netlify/functions/vl-register-purchase",
-      {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body:JSON.stringify({
-          name,
-          email,
-          session_id:sessionId
-        })
-      }
-    );
-
-    loadCode();
-
-  }catch(err){
-
-    alert("Registration failed. Please try again.");
-
-  }
-
-}
-
-async function loadCode(){
-
-  document.getElementById("formBox").style.display = "none";
-  document.getElementById("codeBox").style.display = "block";
-
-  try{
-
     const res = await fetch(
-      "https://vitalink-app.netlify.app/.netlify/functions/vl-get-latest-code?session_id=" + sessionId
+      "https://vitalink-app.netlify.app/.netlify/functions/vl-get-latest-code?session_id=" +
+        encodeURIComponent(sessionId)
     );
+
+    if(!res.ok){
+      if(attempt < 15){
+        setTimeout(() => loadCode(attempt + 1), 2000);
+        return;
+      }
+
+      document.getElementById("code").innerText =
+        "Still confirming payment. Please refresh this page shortly.";
+      return;
+    }
 
     const data = await res.json();
-
     const code = data.code || "Code not found";
 
     document.getElementById("code").innerText = code;
@@ -274,11 +241,19 @@ async function loadCode(){
 
   }catch(err){
 
-    document.getElementById("code").innerText = "Error loading code";
+    if(attempt < 15){
+      setTimeout(() => loadCode(attempt + 1), 2000);
+      return;
+    }
+
+    document.getElementById("code").innerText =
+      "Unable to load the code. Please refresh this page.";
 
   }
 
 }
+
+loadCode();
 
 function copyCode(){
 
