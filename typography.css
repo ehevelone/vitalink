@@ -314,3 +314,8 @@ body.agency-page main > section.final-cta:not(.grid):not(.features):not(.steps):
     padding:8px 10px;
   }
 }
+
+body.vl-auth-page main {
+  max-width: 520px !important;
+  width: 100% !important;
+}
