@@ -317,6 +317,22 @@ th{
   font-size:1.4rem;
 }
 
+.taxonomy-summary{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:10px;
+  margin:14px 0;
+}
+
+.taxonomy-review-list{
+  margin:12px 0 0;
+  padding-left:20px;
+}
+
+.taxonomy-review-list li{
+  margin-bottom:8px;
+}
+
 tr:nth-child(even){
   background:rgba(255,255,255,.03);
 }
@@ -462,6 +478,24 @@ tr:nth-child(even){
 <button class="primary" onclick="sendUpdateNotification()">
 Send App Update Notification
 </button>
+
+</div>
+
+<div class="section">
+
+<h2>NPI Taxonomy Validation</h2>
+
+<div class="card">
+<div class="action-row">
+<button class="primary" id="runTaxonomyValidationBtn" type="button">Run Validation Now</button>
+<span id="taxonomyValidationSpinner" class="spinner">Validating NPPES mappings...</span>
+<span id="taxonomyValidationStatus" class="status-pill warn">Loading</span>
+</div>
+<div class="muted" style="margin-top:10px;">
+Runs automatically on January 2 and July 2 and emails the admin report. Validation never changes a taxonomy mapping automatically.
+</div>
+<div id="taxonomyValidationResult" aria-live="polite"></div>
+</div>
 
 </div>
 
@@ -853,6 +887,106 @@ alert("Update notification sent!");
 alert("Failed to send notification");
 }
 
+function taxonomyStatusClass(status){
+return status==="passed" ? "ok" : "warn";
+}
+
+function taxonomyStatusLabel(status){
+if(status==="passed") return "Passed";
+if(status==="review") return "Review Required";
+return "Not Run";
+}
+
+function renderTaxonomyValidation(data){
+const statusEl=document.getElementById("taxonomyValidationStatus");
+const result=document.getElementById("taxonomyValidationResult");
+const latest=data.latest||null;
+const report=latest?.report||null;
+const status=latest?.status||report?.status||"not_run";
+const checkedAt=latest?.checked_at||report?.checkedAt||null;
+const mappingVersion=data.mappingVersion||latest?.mapping_version||report?.mappingVersion||"Unknown";
+const publishedVersion=latest?.published_version||report?.publishedVersion||"Not detected";
+const confirmed=Number(latest?.confirmed_count??report?.confirmedCount??0);
+const review=Number(latest?.review_count??report?.reviewCount??0);
+const reviewItems=Array.isArray(report?.mappings)
+? report.mappings.filter(item=>item.status==="review")
+: [];
+
+statusEl.className=`status-pill ${taxonomyStatusClass(status)}`;
+statusEl.textContent=taxonomyStatusLabel(status);
+
+result.innerHTML=`
+<div class="taxonomy-summary">
+<div class="result-item"><span>VitaLink Mapping</span><strong>${safeText(mappingVersion)}</strong></div>
+<div class="result-item"><span>Published Version</span><strong>${safeText(publishedVersion)}</strong></div>
+<div class="result-item"><span>Confirmed</span><strong>${confirmed}</strong></div>
+<div class="result-item"><span>Needs Review</span><strong>${review}</strong></div>
+</div>
+<div class="muted">Last validation: ${checkedAt ? safeText(new Date(checkedAt).toLocaleString()) : "Never"}</div>
+${reviewItems.length ? `
+<ul class="taxonomy-review-list">
+${reviewItems.map(item=>`<li><strong>${safeText(item.doctorType)}</strong>: ${safeText(item.code)} — ${safeText(item.description)}<div class="muted">${safeText(item.note)}</div></li>`).join("")}
+</ul>` : ""}
+`;
+}
+
+async function loadTaxonomyValidation(){
+const statusEl=document.getElementById("taxonomyValidationStatus");
+
+try{
+const res=await fetch(BACKEND+"/get-npi-taxonomy-validation",{
+headers:{ "x-admin-session":token }
+});
+const data=await res.json().catch(()=>({success:false}));
+
+if(!res.ok||!data.success){
+throw new Error(data.error||"Unable to load taxonomy validation status");
+}
+
+renderTaxonomyValidation(data);
+}catch(err){
+statusEl.className="status-pill bad";
+statusEl.textContent="Unavailable";
+document.getElementById("taxonomyValidationResult").innerHTML=
+`<p class="muted">${safeText(err.message||"Unable to load taxonomy validation status")}</p>`;
+}
+}
+
+async function runTaxonomyValidation(){
+const button=document.getElementById("runTaxonomyValidationBtn");
+const spinner=document.getElementById("taxonomyValidationSpinner");
+
+button.disabled=true;
+spinner.classList.add("active");
+
+try{
+const res=await fetch(BACKEND+"/run-npi-taxonomy-validation",{
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+"x-admin-session":token
+},
+body:"{}"
+});
+const data=await res.json().catch(()=>({success:false}));
+
+if(!res.ok||!data.success){
+throw new Error(data.error||"Taxonomy validation failed");
+}
+
+await loadTaxonomyValidation();
+}catch(err){
+const statusEl=document.getElementById("taxonomyValidationStatus");
+statusEl.className="status-pill bad";
+statusEl.textContent="Failed";
+document.getElementById("taxonomyValidationResult").innerHTML=
+`<p class="muted">${safeText(err.message||"Taxonomy validation failed")}</p>`;
+}finally{
+button.disabled=false;
+spinner.classList.remove("active");
+}
+}
+
 }
 
 function statValue(stats, name){
@@ -1202,11 +1336,13 @@ document.getElementById("cmsPlanYear").value=String(currentCmsPlanYear());
 document.getElementById("cmsZipUrl").value="https://www.cms.gov/files/zip/pbp-benefits-2026-json.zip";
 document.getElementById("importCmsUrlBtn").onclick=()=>runCmsImport({ useFile:false });
 document.getElementById("importCmsFileBtn").onclick=()=>runCmsImport({ useFile:true });
+document.getElementById("runTaxonomyValidationBtn").onclick=runTaxonomyValidation;
 
 /* INIT */
 
 loadStats();
 loadStaticRsmRegistration();
+loadTaxonomyValidation();
 
 </script>
 
