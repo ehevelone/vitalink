@@ -749,29 +749,32 @@ async function saveClientPatch(patch){
 
   patch.id = clientId;
 
-  const res = await fetch(
-    "/.netlify/functions/update-crm-client",
-    {
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify(patch)
+  try{
+    const res = await fetch(
+      "/.netlify/functions/update-crm-client",
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify(patch)
+      }
+    );
+
+    const data = await res.json();
+
+    if(!res.ok || !data.success){
+      alert(data.error || `Failed to update client (HTTP ${res.status}).`);
+      return false;
     }
-  );
 
-  const data = await res.json();
-
-  if(!data.success){
-
-    alert("Failed to update client.");
+    await loadClient();
+    return true;
+  }catch(err){
+    console.error("Client update failed", err);
+    alert("Unable to save the client right now. Please try again.");
     return false;
-
   }
-
-  loadClient();
-
-  return true;
 
 }
 
@@ -1056,6 +1059,14 @@ async function saveLead(){
   const leadSourceDetail =
     document.getElementById("leadSourceDetail").value;
 
+  const leadCost =
+    document.getElementById("leadCost").value.trim();
+
+  if(leadCost && !/^\$?\s*(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d{1,2})?$/.test(leadCost)){
+    alert("Enter a valid lead cost, such as 25 or $1,250.00.");
+    return;
+  }
+
   const saved = await saveClientPatch({
     lead_source:leadSource,
     lead_source_detail:leadSourceDetail,
@@ -1063,8 +1074,7 @@ async function saveLead(){
       leadSource === "Referral" ? leadSourceDetail : "",
     seminar_event:
       leadSource === "Seminar/Event" ? leadSourceDetail : "",
-    lead_cost:
-      document.getElementById("leadCost").value,
+    lead_cost:leadCost,
     date_added:
       document.getElementById("dateAdded").value
   });

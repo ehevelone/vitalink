@@ -62,6 +62,17 @@ function normalizeUsPhone(value){
   return value || null;
 }
 
+function normalizeLeadCost(value){
+  const text = String(value ?? "").trim();
+  if(!text) return null;
+  if(!/^\$?\s*(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d{1,2})?$/.test(text)){
+    const error = new Error("Enter a valid lead cost, such as 25 or $1,250.00.");
+    error.statusCode = 400;
+    throw error;
+  }
+  return text.replace(/[$,\s]/g, "");
+}
+
 async function ensureClientColumns(){
 
   await pool.query(`
@@ -153,6 +164,8 @@ exports.handler = async (event) => {
         const value =
           field === "mobile_phone" || field === "landline_phone"
             ? normalizeUsPhone(body[field])
+            : field === "lead_cost"
+              ? normalizeLeadCost(body[field])
             : body[field] || null;
 
         values.push(value);
@@ -211,10 +224,10 @@ exports.handler = async (event) => {
 
   }catch(err){
 
-    console.error(err);
+    if(!err.statusCode) console.error(err);
 
     return{
-      statusCode:500,
+      statusCode:err.statusCode || 500,
       body:JSON.stringify({
         success:false,
         error:err.message
@@ -224,3 +237,5 @@ exports.handler = async (event) => {
   }
 
 };
+
+exports.normalizeLeadCost = normalizeLeadCost;
