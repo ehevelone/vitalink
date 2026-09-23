@@ -105,7 +105,7 @@ codeEl.innerText = code;
 codeEl.innerText = "Agent Code Ready";
 }
 
-const scheme = code ? `vitalink://activate/${code}` : "vitalink://";
+const scheme = code ? `vitalink://activate?code=${encodeURIComponent(code)}` : "vitalink://";
 
 const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 const isAndroid = /Android/.test(navigator.userAgent);
