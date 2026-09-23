@@ -52,6 +52,7 @@ async function ensureVitalinkImportSchema() {
     ADD COLUMN IF NOT EXISTS last_vitalink_import_at TIMESTAMPTZ,
     ADD COLUMN IF NOT EXISTS hipaa_signed_at TIMESTAMPTZ,
     ADD COLUMN IF NOT EXISTS soa_signed_at TIMESTAMPTZ,
+    ADD COLUMN IF NOT EXISTS authorization_revoked_at TIMESTAMPTZ,
     ADD COLUMN IF NOT EXISTS vitalink_emergency_contacts TEXT,
     ADD COLUMN IF NOT EXISTS vitalink_pharmacy_list TEXT
   `);

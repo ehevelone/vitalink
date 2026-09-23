@@ -1,6 +1,7 @@
 const { requireCrmClient } = require("./crm-auth");
 const db = require("./services/db");
 const { ensureVitalinkImportSchema, DOCUMENT_TYPES } = require("./services/crm-vitalink-import");
+const { getRecordedRevocation } = require("./services/crm-authorization-status");
 
 function reply(statusCode, obj) {
   return {
@@ -52,6 +53,7 @@ exports.handler = async (event) => {
         last_vitalink_import_at,
         hipaa_signed_at,
         soa_signed_at,
+        authorization_revoked_at,
         vitalink_emergency_contacts,
         vitalink_pharmacy_list
       FROM crm_clients
@@ -105,9 +107,13 @@ exports.handler = async (event) => {
       }
     });
 
+    const client = clientResult.rows[0];
+    client.authorization_revoked_at =
+      await getRecordedRevocation(auth.crmAgentId, clientId) || client.authorization_revoked_at;
+
     return reply(200, {
       success: true,
-      client: clientResult.rows[0],
+      client,
       package: packageResult.rows[0] || null,
       documents,
     });

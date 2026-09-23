@@ -359,8 +359,12 @@ async function loadVitalinkStatus(){
     setText("profileLinked", client.vitalink_connected ? "Connected" : "Not Linked");
     setText("lastVitalinkPackage", formatDate(pkg.received_at || client.last_vitalink_package_at) || "Not Received");
     setText("lastSync", formatDate(pkg.imported_at || client.last_vitalink_import_at) || "Not Imported");
-    setText("hipaaSigned", formatDate(client.hipaa_signed_at || vitalinkDocuments.hipaa?.signed_at) || "Not Recorded");
-    setText("soaSigned", formatDate(client.soa_signed_at || vitalinkDocuments.soa?.signed_at) || "Not Recorded");
+    const withdrawnAt = client.authorization_revoked_at;
+    const permissionStatus = withdrawnAt
+      ? `Withdrawn ${formatDate(withdrawnAt)}`
+      : null;
+    setText("hipaaSigned", permissionStatus || formatDate(client.hipaa_signed_at || vitalinkDocuments.hipaa?.signed_at) || "Not Recorded");
+    setText("soaSigned", permissionStatus || formatDate(client.soa_signed_at || vitalinkDocuments.soa?.signed_at) || "Not Recorded");
     setText("vitalinkEmergencyContacts", client.vitalink_emergency_contacts || "Not Received");
     setText("vitalinkPharmacies", client.vitalink_pharmacy_list || "Not Received");
 
@@ -376,14 +380,17 @@ async function loadVitalinkStatus(){
       Boolean(vitalinkDocuments.hipaa?.id) &&
       Boolean(vitalinkDocuments.soa?.id) &&
       Boolean(client.hipaa_signed_at || vitalinkDocuments.hipaa?.signed_at) &&
-      Boolean(client.soa_signed_at || vitalinkDocuments.soa?.signed_at);
+      Boolean(client.soa_signed_at || vitalinkDocuments.soa?.signed_at) &&
+      !withdrawnAt;
 
     setButtonEnabled("prepareSunfireBtn", vitalinkPackageReadyForDestination);
     setButtonEnabled("prepareDrxBtn", vitalinkPackageReadyForDestination);
     setDestinationPrepStatus(
       vitalinkPackageReadyForDestination
         ? "Ready. Agent must review and initiate each destination handoff."
-        : "Requires signed HIPAA/SOA and an imported VitaLink package."
+        : withdrawnAt
+          ? "Permissions withdrawn. New signed forms are required."
+          : "Requires signed HIPAA/SOA and an imported VitaLink package."
     );
 
   }catch(err){

@@ -1,4 +1,5 @@
 const db = require("./db");
+const { getRecordedRevocation } = require("./crm-authorization-status");
 const {
   AUDIT_EVENTS,
   DOCUMENT_TYPES,
@@ -100,6 +101,15 @@ async function prepareDestinationPackage({
   }
 
   const client = clientResult.rows[0];
+
+  if (client.authorization_revoked_at ||
+      await getRecordedRevocation(crmAgentId, crmClientId)) {
+    return {
+      success: false,
+      statusCode: 409,
+      error: 'The client withdrew their VitaLink authorization and Scope of Appointment. Obtain new signed permissions before destination prep.',
+    };
+  }
 
   const packageResult = await db.query(
     `
