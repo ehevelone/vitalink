@@ -73,6 +73,21 @@ button:hover{
 opacity:.9;
 }
 
+.open-app{
+display:none;
+margin-top:20px;
+padding:14px 22px;
+border-radius:6px;
+background:#7cc6e8;
+color:#000;
+font-weight:600;
+text-decoration:none;
+min-height:48px;
+box-sizing:border-box;
+align-items:center;
+justify-content:center;
+}
+
 .instructions{
 margin-top:16px;
 color:#b5b5b5;
@@ -130,19 +145,21 @@ box-sizing:border-box;
 
 <div class="card">
 
-<h1>Agent Activated</h1>
+<h1 id="pageTitle">Agent Activated</h1>
 
-<p>Your VitaLink Agent Activation Code</p>
+<p id="codeLabel">Your VitaLink Agent Activation Code</p>
 
 <div class="code-row">
 <div id="code" class="code">Loading...</div>
 <button id="copyBtn" onclick="copyCode()">Copy Code</button>
 </div>
 
-<div class="instructions">
+<div class="instructions" id="instructions">
 <strong>Save this code</strong> - you'll need it in the VitaLink app under Register &gt; I Have My Activation Code.<br>
 Write it down or take a screenshot before leaving this page.
 </div>
+
+<a id="openAppBtn" class="open-app" href="#">Open VitaLink to Register</a>
 
 <div class="store-buttons">
 
@@ -169,6 +186,14 @@ const sessionId = params.get("session_id");
 if(inviteCode){
 document.getElementById("code").innerText =
 inviteCode.trim().toUpperCase();
+document.title = "VitaLink Client Invitation";
+document.getElementById("pageTitle").innerText = "Your VitaLink Invitation";
+document.getElementById("codeLabel").innerText = "Your client registration code";
+document.getElementById("instructions").innerText =
+  "Open VitaLink to review the terms and register. Keep this code in case you need to enter it manually.";
+const openAppBtn = document.getElementById("openAppBtn");
+openAppBtn.href = `vitalink://activate?code=${encodeURIComponent(inviteCode.trim())}&kind=user`;
+openAppBtn.style.display = "inline-flex";
 return;
 }
 

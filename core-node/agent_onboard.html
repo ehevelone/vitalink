@@ -79,11 +79,11 @@ Open VitaLink App
 
 <div class="store">
 
-<a href="https://play.google.com/store/apps/details?id=YOUR_APP_ID">
+<a href="https://play.google.com/store/apps/details?id=com.etenterprises.vitalink">
 <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg">
 </a>
 
-<a href="https://apps.apple.com/app/idYOUR_APP_ID">
+<a href="https://apps.apple.com/us/app/vitalink-by-et-enterprises/id6759175096">
 <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg">
 </a>
 
@@ -113,7 +113,7 @@ status.innerText =
 "Agent code saved. Opening VitaLink…";
 
 /* 🔹 Route through REGISTER so Terms cannot be skipped */
-const deepLink = `vitalink://register?code=${encodeURIComponent(code)}`;
+const deepLink = `vitalink://register?code=${encodeURIComponent(code)}&kind=agent`;
 
 openBtn.href = deepLink;
 

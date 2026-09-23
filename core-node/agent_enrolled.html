@@ -69,21 +69,21 @@ margin:6px 0;
 
 <div class="container">
 
-<h1>Enrollment Complete</h1>
+<h1>Continue Agent Registration</h1>
 
 <p>Your VitaLink Agent Code:</p>
 
 <div id="agentCode" class="code"></div>
 
-<a id="openAppBtn" class="button">Open VitaLink</a>
+<a id="openAppBtn" class="button">Open VitaLink to Register</a>
 
 <div class="store">
 
-<a href="https://apps.apple.com" target="_blank">
+<a href="https://apps.apple.com/us/app/vitalink-by-et-enterprises/id6759175096" target="_blank">
 <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg">
 </a>
 
-<a href="https://play.google.com/store/apps" target="_blank">
+<a href="https://play.google.com/store/apps/details?id=com.etenterprises.vitalink" target="_blank">
 <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg">
 </a>
 
@@ -105,7 +105,7 @@ codeEl.innerText = code;
 codeEl.innerText = "Agent Code Ready";
 }
 
-const scheme = code ? `vitalink://activate?code=${encodeURIComponent(code)}` : "vitalink://";
+const scheme = code ? `vitalink://activate?code=${encodeURIComponent(code)}&kind=agent` : "vitalink://";
 
 const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 const isAndroid = /Android/.test(navigator.userAgent);
@@ -124,7 +124,7 @@ window.location.href = scheme;
 /* iOS: must tap button (Safari blocks auto redirect) */
 if(isiOS){
 
-openBtn.innerText = "Open VitaLink";
+openBtn.innerText = "Open VitaLink to Register";
 
 }
 
