@@ -101,7 +101,9 @@ async function ensureSchema() {
     ADD COLUMN IF NOT EXISTS vitalink_blood_type TEXT,
     ADD COLUMN IF NOT EXISTS vitalink_implants TEXT,
     ADD COLUMN IF NOT EXISTS vitalink_procedures TEXT,
-    ADD COLUMN IF NOT EXISTS vitalink_organ_donor BOOLEAN DEFAULT false
+    ADD COLUMN IF NOT EXISTS vitalink_organ_donor BOOLEAN DEFAULT false,
+    ADD COLUMN IF NOT EXISTS vitalink_veteran BOOLEAN DEFAULT false,
+    ADD COLUMN IF NOT EXISTS vitalink_uses_va_healthcare BOOLEAN DEFAULT false
   `);
 
   await db.query(`
@@ -140,9 +142,11 @@ async function saveCrmClient({ crmAgentId, profile, emergency, status }) {
       vitalink_blood_type,
       vitalink_implants,
       vitalink_procedures,
-      vitalink_organ_donor
+      vitalink_organ_donor,
+      vitalink_veteran,
+      vitalink_uses_va_healthcare
     )
-    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18)
+    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20)
     RETURNING *
     `,
     [
@@ -164,6 +168,8 @@ async function saveCrmClient({ crmAgentId, profile, emergency, status }) {
       clean(emergency.implants),
       clean(emergency.procedures),
       Boolean(emergency.organDonor),
+      Boolean(profile.isVeteran),
+      Boolean(profile.usesVaHealthcare),
     ]
   );
 
@@ -230,7 +236,12 @@ exports.handler = async (event) => {
       city: clean(body.profile?.city || body.city),
       state: clean(body.profile?.state || body.state),
       zip: clean(body.profile?.zip || body.zip),
+      isVeteran: body.profile?.isVeteran === true || body.isVeteran === true,
+      usesVaHealthcare:
+        body.profile?.usesVaHealthcare === true || body.usesVaHealthcare === true,
     };
+
+    if (!profile.isVeteran) profile.usesVaHealthcare = false;
 
     if (!profile.fullName || !profile.userPhone) {
       return reply(400, {

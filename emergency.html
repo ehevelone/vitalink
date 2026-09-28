@@ -278,6 +278,21 @@ app.innerHTML = `
 </div>
 
 <div class="section">
+<div class="label">Veteran</div>
+<div class="value">${decoded.isVeteran ? "YES" : "NO"}</div>
+</div>
+
+${decoded.isVeteran && decoded.usesVaHealthcare ? `
+<div class="section alert">
+<div class="label">VA Health Care Patient</div>
+<div class="value">
+For emergency care at a non-VA hospital, notify the VA as soon as possible and within 72 hours of when emergency care begins. Do not delay emergency treatment.<br><br>
+<a href="tel:18447247842">Call VA: 844-724-7842</a>
+</div>
+</div>
+` : ""}
+
+<div class="section">
 <div class="label">Emergency Contacts</div>
 <div class="value">
 ${
@@ -406,6 +421,8 @@ implants: e.implants,
 procedures: e.procedures,
 bloodType: e.bloodType,
 organDonor: e.organDonor,
+isVeteran: e.isVeteran,
+usesVaHealthcare: e.usesVaHealthcare,
 emergencyContactName: e.emergencyContactName || e.contact || "",
 emergencyContactPhone: e.emergencyContactPhone || e.phone || "",
 emergencyContacts: e.emergencyContacts || e.contacts || [],

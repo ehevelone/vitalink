@@ -277,6 +277,14 @@ button.primary{
         <input id="onboardOrganDonor" type="checkbox">
         <span>Organ Donor</span>
       </label>
+      <label class="checkbox-row">
+        <input id="onboardVeteran" type="checkbox" onchange="toggleOnboardVaHealthcare()">
+        <span>Veteran</span>
+      </label>
+      <label class="checkbox-row" id="onboardUsesVaHealthcareRow" style="display:none;">
+        <input id="onboardUsesVaHealthcare" type="checkbox">
+        <span>Uses VA health care</span>
+      </label>
       <input id="onboardAllergies" type="text" placeholder="Allergies" class="wide">
       <input id="onboardConditions" type="text" placeholder="Conditions" class="wide">
       <input id="onboardImplants" type="text" placeholder="Implanted Devices" class="wide">
@@ -543,7 +551,17 @@ function clearOnboardingForm(){
   });
 
   document.getElementById("onboardOrganDonor").checked=false;
+  document.getElementById("onboardVeteran").checked=false;
+  toggleOnboardVaHealthcare();
   document.getElementById("onboardResult").style.display="none";
+}
+
+function toggleOnboardVaHealthcare(){
+  const veteran = document.getElementById("onboardVeteran")?.checked === true;
+  const row = document.getElementById("onboardUsesVaHealthcareRow");
+  const input = document.getElementById("onboardUsesVaHealthcare");
+  if(row) row.style.display = veteran ? "flex" : "none";
+  if(input && !veteran) input.checked = false;
 }
 
 async function copyOnboardingLink(link){
@@ -598,7 +616,9 @@ async function createAssistedOnboarding(){
           address:onboardValue("onboardAddress"),
           city:onboardValue("onboardCity"),
           state:onboardValue("onboardState"),
-          zip:onboardValue("onboardZip")
+          zip:onboardValue("onboardZip"),
+          isVeteran:document.getElementById("onboardVeteran").checked,
+          usesVaHealthcare:document.getElementById("onboardUsesVaHealthcare").checked
         },
         emergency:{
           contacts:collectOnboardEmergencyContacts(),

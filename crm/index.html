@@ -14,7 +14,7 @@
 <body>
 
 <script src="crm.js"></script>
-<script src="index.js?v=assisted-onboarding-20260802"></script>
+<script src="index.js?v=aep-readiness-20260825"></script>
 
 <!-- =========================================
      SIDEBAR
@@ -194,6 +194,57 @@
 
   </div>
 
+  <!-- AEP READINESS -->
+
+  <div class="section-title">
+    AEP Readiness
+  </div>
+
+  <div class="table-card aep-readiness-card">
+
+    <div class="aep-readiness-toolbar">
+      <div>
+        <strong>Client Readiness Score</strong>
+        <div class="muted">
+          Lowest scores appear first so agents can see who needs attention.
+        </div>
+      </div>
+      <div class="aep-sort-control">
+        <label for="aepSort">Sort</label>
+        <select id="aepSort" onchange="renderAepReadinessTable()">
+          <option value="score_asc">Lowest Score</option>
+          <option value="score_desc">Highest Score</option>
+          <option value="stale_first">Stale First</option>
+          <option value="name_asc">Client Name</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="aep-readiness-summary" id="aepReadinessSummary"></div>
+
+    <div class="aep-table-wrap">
+      <table>
+
+        <thead>
+          <tr>
+            <th>Client</th>
+            <th>Score</th>
+            <th>Meds Reviewed</th>
+            <th>Doctors Reviewed</th>
+            <th>Last App Check</th>
+            <th>Contact</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody id="aepReadinessTable">
+        </tbody>
+
+      </table>
+    </div>
+
+  </div>
+
   <!-- CLIENTS -->
 
   <div class="section-title">
@@ -264,6 +315,14 @@
       <label class="checkbox-row">
         <input id="onboardOrganDonor" type="checkbox">
         <span>Organ Donor</span>
+      </label>
+      <label class="checkbox-row">
+        <input id="onboardVeteran" type="checkbox" onchange="toggleOnboardVaHealthcare()">
+        <span>Veteran</span>
+      </label>
+      <label id="onboardUsesVaHealthcareRow" class="checkbox-row" style="display:none;">
+        <input id="onboardUsesVaHealthcare" type="checkbox">
+        <span>Uses VA health care</span>
       </label>
       <input id="onboardAllergies" type="text" placeholder="Allergies" style="grid-column:1/3;">
       <input id="onboardConditions" type="text" placeholder="Conditions" style="grid-column:1/3;">
