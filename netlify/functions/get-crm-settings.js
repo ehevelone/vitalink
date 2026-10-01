@@ -111,7 +111,7 @@ exports.handler = async (event) => {
       `
       SELECT *
       FROM crm_agent_settings
-      WHERE agent_id = $1
+      WHERE agent_id::text = $1::text
       LIMIT 1
       `,
       [String(agentId)]

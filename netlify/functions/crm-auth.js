@@ -37,7 +37,7 @@ async function requireCrmAgent(event, requestedAgentId) {
     `
     SELECT id, crm_uuid, email, name, crm_subscription_status, crm_subscription_valid
     FROM agents
-    WHERE crm_uuid = $1
+    WHERE crm_uuid::text = $1::text
       AND session_token = $2
       AND session_expires > NOW()
       AND (active = TRUE OR (billing_owner IS NOT NULL AND subscription_status IN ('active', 'admin_override')))
@@ -75,8 +75,8 @@ async function requireCrmClient(event, clientId, requestedAgentId) {
     `
     SELECT id
     FROM crm_clients
-    WHERE id = $1
-      AND agent_id = $2
+    WHERE id::text = $1::text
+      AND agent_id::text = $2::text
     LIMIT 1
     `,
     [clientId, auth.crmAgentId]

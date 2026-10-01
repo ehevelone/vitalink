@@ -99,7 +99,7 @@ exports.handler = async (event) => {
             WHERE document_type = $3
           ) AS latest_hipaa_signed_at
         FROM crm_client_documents
-        WHERE crm_agent_id = $1
+        WHERE crm_agent_id = $1::text
         GROUP BY crm_client_id
       ) doc_counts
         ON doc_counts.crm_client_id = c.id::TEXT
@@ -114,8 +114,8 @@ exports.handler = async (event) => {
           AND LOWER(c.email) = LOWER(u.email)
         )
       LEFT JOIN user_devices ud
-        ON ud.user_id = u.id
-      WHERE c.agent_id = $1
+        ON ud.user_id::text = u.id::text
+      WHERE c.agent_id::text = $1::text
       ORDER BY c.created_at DESC
       `,
 
