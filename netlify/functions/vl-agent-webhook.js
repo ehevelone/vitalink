@@ -111,10 +111,35 @@ async function handleAgentCheckout(session) {
     session.customer_email ||
     "";
 
+  const agentId = session.metadata?.agentId || session.client_reference_id || "";
   const customerId = session.customer;
   const subscriptionId = session.subscription;
   const agentCode = generateAgentCode();
   const clientCode = generateClientCode();
+
+  if (agentId) {
+    const updated = await db.query(
+      `
+      UPDATE agents
+      SET stripe_customer_id = $1,
+          stripe_subscription_id = $2,
+          subscription_status = 'active',
+          subscription_valid = true,
+          billing_owner = 'agent',
+          active = true,
+          promo_code = COALESCE(promo_code, $3),
+          unlock_code = COALESCE(unlock_code, $4)
+      WHERE id = $5
+      RETURNING id
+      `,
+      [customerId, subscriptionId, agentCode, clientCode, agentId]
+    );
+
+    if (updated.rows.length > 0) {
+      console.log("Agent subscription activated:", agentId);
+      return;
+    }
+  }
 
   await db.query(
     `
@@ -150,8 +175,8 @@ async function handleAgentCheckout(session) {
     DO UPDATE SET
       stripe_customer_id = EXCLUDED.stripe_customer_id,
       stripe_subscription_id = EXCLUDED.stripe_subscription_id,
-      promo_code = COALESCE(agents.promo_code, EXCLUDED.promo_code),
-      unlock_code = COALESCE(agents.unlock_code, EXCLUDED.unlock_code),
+      promo_code = EXCLUDED.promo_code,
+      unlock_code = EXCLUDED.unlock_code,
       subscription_status = 'active',
       subscription_valid = true,
       billing_owner = 'agent',
