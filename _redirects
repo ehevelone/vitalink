@@ -2,6 +2,12 @@
 /robots.txt /robots.txt 200
 /privacy /privacy.html 200
 /terms /terms.html 200
+/guardog /guardog/ 301
+/GuarDog /guardog/ 301
+/GuarDog/* /guardog/:splat 301
+/guardog/privacy /guardog/privacy.html 200
+/guardog/terms /guardog/terms.html 200
+/guardog/delete-account /guardog/delete-account.html 200
 /emergency.html   /emergency.html   200
 /index.html       /index.html       200
 /agents /agents.html 200
