@@ -38,6 +38,12 @@
 /referral/:token /referral.html 200
 /marketing-crm /marketing-crm/index.html 200
 /crm/vitalink-notifications /crm/vitalink-notifications.html 200
+/guardog /guardog/ 301
+/GuarDog /guardog/ 301
+/GuarDog/* /guardog/:splat 301
+/guardog/privacy /guardog/privacy.html 200
+/guardog/terms /guardog/terms.html 200
+/guardog/delete-account /guardog/delete-account.html 200
 /*                /404.html         404
 
 

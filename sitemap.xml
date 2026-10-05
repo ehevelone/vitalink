@@ -135,4 +135,24 @@
     <lastmod>2026-08-04</lastmod>
     <priority>0.5</priority>
   </url>
+  <url>
+    <loc>https://myvitalink.app/guardog/</loc>
+    <lastmod>2026-10-04</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://myvitalink.app/guardog/privacy</loc>
+    <lastmod>2026-10-04</lastmod>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://myvitalink.app/guardog/terms</loc>
+    <lastmod>2026-10-04</lastmod>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://myvitalink.app/guardog/delete-account</loc>
+    <lastmod>2026-10-04</lastmod>
+    <priority>0.5</priority>
+  </url>
 </urlset>
