@@ -22,7 +22,7 @@
     <header class="legal-hero">
       <img src="assets/guarddog-logo.png" alt="VitaLink GuarDog bulldog shield">
       <h1>Privacy Policy</h1>
-      <p>Effective October 3, 2026</p>
+      <p>Effective October 4, 2026</p>
     </header>
     <article class="legal-content">
       <p>This Privacy Policy explains what the VitaLink GuarDog Android app ("GuarDog") collects, how it is used, and the choices available to you. GuarDog is part of the VitaLink family and is operated by ET Naturals, doing business as VitaLink ("VitaLink," "we," or "us").</p>
@@ -33,7 +33,8 @@
 
       <h3>QR codes and web links</h3>
       <p>The camera view is processed on your device to recognize a QR code. Camera frames are not uploaded or saved by VitaLink. When a code contains a web link, GuarDog sends that link to our Cloudflare-hosted checking service. The service follows redirects in isolation and may send the final destination to Google Web Risk to check for known threats. Destination websites receive a request from the checking service, not your phone, and do not receive your browser cookies from GuarDog.</p>
-      <p>To speed up repeated checks, a result may be cached for up to three hours. The cached result can contain the destination and redirect addresses and is automatically removed when the cache expires. Long-term usage statistics use one-way hashes rather than readable links.</p>
+      <p>For selected scans that have warning signals or need an additional review, GuarDog may use Anthropic's artificial-intelligence service to analyze the final destination, redirect chain, automated findings, and a limited portion of the destination page's content. We do not send your name, phone number, account identifier, or subscription information to Anthropic. This analysis helps identify signs of scams, phishing, or brand impersonation. It does not certify that a page is safe, and GuarDog's existing security checks continue to apply if the AI analysis is unavailable.</p>
+      <p>After a scan, the service keeps a temporary opening-authorization record for up to 30 minutes. This record connects the scan to the exact destination GuarDog inspected so the app does not silently open a different address. It may contain the destination, redirect addresses, verdict, and findings, but not the page content sent for AI analysis. Long-term usage statistics use one-way hashes rather than readable links.</p>
 
       <h3>Scan history</h3>
       <p>Your visible scan history is stored only on your phone. It is not synchronized to a VitaLink account. You can clear it in GuarDog or remove it by uninstalling the app.</p>
@@ -47,7 +48,7 @@
       <h2>How We Use Information</h2>
       <ul>
         <li>Authenticate your account and restore access on returning visits.</li>
-        <li>Check QR-code destinations and explain possible risks.</li>
+        <li>Check QR-code destinations, including selected AI-assisted analysis, and explain possible risks.</li>
         <li>Verify trial, subscription, Family-plan, or owner-granted access.</li>
         <li>Prevent fraud, abuse, duplicate purchase assignment, and attacks on the service.</li>
         <li>Diagnose failures and improve reliability.</li>
@@ -56,8 +57,9 @@
       <h2>Service Providers</h2>
       <ul>
         <li><strong>Google Firebase</strong> for phone authentication, app-integrity checks, and account/access records.</li>
-        <li><strong>Cloudflare</strong> for the isolated checking service, temporary result cache, rate limits, and service analytics.</li>
+        <li><strong>Cloudflare</strong> for the isolated checking service, temporary opening-authorization records, rate limits, and service analytics.</li>
         <li><strong>Google Web Risk</strong> for known threat-reputation checks on web destinations.</li>
+        <li><strong>Anthropic</strong> for AI-assisted analysis of selected destinations, redirect information, automated findings, and limited page content.</li>
         <li><strong>Google Play</strong> for subscription billing and purchase status.</li>
       </ul>
       <p>These providers process information under their own terms and privacy policies. We share only the information needed to provide the relevant function.</p>
@@ -71,7 +73,7 @@
       </ul>
 
       <h2>Retention</h2>
-      <p>Account identity, trial, access, and subscription records are kept while needed to provide the service and meet legal, security, fraud-prevention, and accounting obligations. Cached scan results expire within three hours. On-device history remains until you clear it or uninstall. Pseudonymous security and service statistics may be retained for fraud prevention, reliability, and aggregate analysis.</p>
+      <p>Account identity, trial, access, and subscription records are kept while needed to provide the service and meet legal, security, fraud-prevention, and accounting obligations. Temporary opening-authorization records expire within 30 minutes. Page content used for AI-assisted analysis is not retained in that opening record. On-device history remains until you clear it or uninstall. Pseudonymous security and service statistics may be retained for fraud prevention, reliability, and aggregate analysis.</p>
 
       <h2>Your Choices and Deletion</h2>
       <p>You can delete your GuarDog account from the Account screen. You can also request deletion without the app through our <a href="delete-account.html">GuarDog account-deletion page</a>. In-app deletion removes the Firebase sign-in account and requests deletion of the account's entitlement, purchase association, and trial state. For removal of a phone number stored in a Family-plan or owner-granted access list, use the external request process so we can verify and remove the associated record.</p>
