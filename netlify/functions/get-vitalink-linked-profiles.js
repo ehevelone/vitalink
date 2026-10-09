@@ -1,5 +1,6 @@
 const { Pool } = require("pg");
 const { requireCrmAgent } = require("./crm-auth");
+const { ensureClientArchiveColumns } = require("./services/crm-client-archive");
 
 const pool = new Pool({
   connectionString:process.env.SUPABASE_URL,
@@ -47,6 +48,7 @@ exports.handler = async (event) => {
       ADD COLUMN IF NOT EXISTS profile_linked TEXT,
       ADD COLUMN IF NOT EXISTS last_sync TIMESTAMPTZ
     `);
+    await ensureClientArchiveColumns();
 
     const appAgent = await pool.query(
       `
@@ -74,6 +76,7 @@ exports.handler = async (event) => {
         last_sync
       FROM crm_clients
       WHERE agent_id = $1
+        AND archived_at IS NULL
       ORDER BY last_sync DESC NULLS LAST, created_at DESC
       `,
       [auth.crmAgentId]

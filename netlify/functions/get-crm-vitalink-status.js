@@ -93,19 +93,37 @@ exports.handler = async (event) => {
       FROM crm_client_documents
       WHERE crm_client_id = $1
         AND crm_agent_id = $2
-        AND document_type IN ($3, $4)
+        AND document_type IN ($3, $4, $5)
       ORDER BY received_at DESC
       `,
-      [clientId, auth.crmAgentId, DOCUMENT_TYPES.HIPAA, DOCUMENT_TYPES.SOA]
+      [
+        clientId,
+        auth.crmAgentId,
+        DOCUMENT_TYPES.HIPAA,
+        DOCUMENT_TYPES.SOA,
+        DOCUMENT_TYPES.HIPAA_SOA,
+      ]
     );
 
     const documents = {};
 
     documentsResult.rows.forEach((doc) => {
+      if (doc.document_type === DOCUMENT_TYPES.HIPAA_SOA) {
+        documents.hipaa ||= doc;
+        documents.soa ||= doc;
+        documents.hipaa_soa ||= doc;
+        return;
+      }
+
       if (!documents[doc.document_type]) {
         documents[doc.document_type] = doc;
       }
     });
+
+    const soaHistory = documentsResult.rows.filter((doc) =>
+      doc.document_type === DOCUMENT_TYPES.SOA ||
+      doc.document_type === DOCUMENT_TYPES.HIPAA_SOA
+    );
 
     const client = clientResult.rows[0];
     client.authorization_revoked_at =
@@ -116,6 +134,7 @@ exports.handler = async (event) => {
       client,
       package: packageResult.rows[0] || null,
       documents,
+      soaHistory,
     });
   } catch (err) {
     console.error("get-crm-vitalink-status error:", err);

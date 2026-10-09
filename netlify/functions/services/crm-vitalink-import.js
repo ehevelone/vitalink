@@ -12,12 +12,15 @@ const AUDIT_EVENTS = Object.freeze({
   SOA_RECEIVED: "soa_received",
   CLIENT_ACCESS_GRANTED: "client_access_granted",
   CLIENT_ACCESS_REVOKED: "client_access_revoked",
+  CLIENT_ARCHIVED: "client_archived",
+  CLIENT_RESTORED: "client_restored",
   PLATFORM_PUSH_STARTED: "platform_push_started",
 });
 
 const DOCUMENT_TYPES = Object.freeze({
   HIPAA: "hipaa",
   SOA: "soa",
+  HIPAA_SOA: "hipaa_soa",
   VITALINK_CSV: "vitalink_csv",
   OTHER: "other",
 });
@@ -53,6 +56,8 @@ async function ensureVitalinkImportSchema() {
     ADD COLUMN IF NOT EXISTS hipaa_signed_at TIMESTAMPTZ,
     ADD COLUMN IF NOT EXISTS soa_signed_at TIMESTAMPTZ,
     ADD COLUMN IF NOT EXISTS authorization_revoked_at TIMESTAMPTZ,
+    ADD COLUMN IF NOT EXISTS archived_at TIMESTAMPTZ,
+    ADD COLUMN IF NOT EXISTS archived_by TEXT,
     ADD COLUMN IF NOT EXISTS vitalink_emergency_contacts TEXT,
     ADD COLUMN IF NOT EXISTS vitalink_pharmacy_list TEXT
   `);
@@ -76,10 +81,16 @@ async function ensureVitalinkImportSchema() {
       hipaa_signed_at TIMESTAMPTZ,
       soa_signed_at TIMESTAMPTZ,
       source TEXT NOT NULL DEFAULT 'vitalink_app',
+      import_key TEXT,
       metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )
+  `);
+
+  await db.query(`
+    ALTER TABLE crm_vitalink_packages
+    ADD COLUMN IF NOT EXISTS import_key TEXT
   `);
 
   await db.query(`
@@ -107,6 +118,37 @@ async function ensureVitalinkImportSchema() {
     ALTER TABLE crm_client_documents
     ADD COLUMN IF NOT EXISTS document_data BYTEA,
     ADD COLUMN IF NOT EXISTS document_size_bytes INTEGER
+  `);
+
+  await db.query(`
+    DO $$
+    DECLARE
+      current_definition TEXT;
+    BEGIN
+      SELECT pg_get_constraintdef(oid)
+      INTO current_definition
+      FROM pg_constraint
+      WHERE conrelid = 'crm_client_documents'::regclass
+        AND conname = 'crm_client_documents_type_check';
+
+      IF current_definition IS NULL OR current_definition NOT LIKE '%hipaa_soa%' THEN
+        ALTER TABLE crm_client_documents
+        DROP CONSTRAINT IF EXISTS crm_client_documents_type_check;
+
+        ALTER TABLE crm_client_documents
+        ADD CONSTRAINT crm_client_documents_type_check
+        CHECK (document_type IN (
+          'hipaa',
+          'soa',
+          'hipaa_soa',
+          'vitalink_csv',
+          'other',
+          'insurance',
+          'insurance_card',
+          'insurance_cards'
+        )) NOT VALID;
+      END IF;
+    END $$
   `);
 
   await db.query(`
@@ -138,6 +180,12 @@ async function ensureVitalinkImportSchema() {
   await db.query(`
     CREATE INDEX IF NOT EXISTS idx_crm_vitalink_packages_app_user
     ON crm_vitalink_packages (app_user_id, app_profile_id)
+  `);
+
+  await db.query(`
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_crm_vitalink_packages_import_key
+    ON crm_vitalink_packages (import_key)
+    WHERE import_key IS NOT NULL
   `);
 
   await db.query(`
@@ -226,6 +274,7 @@ async function recordVitalinkPackageReceived({
   clientPhone,
   hipaaSignedAt,
   soaSignedAt,
+  importKey,
   metadata,
 }) {
   await ensureVitalinkImportSchema();
@@ -243,9 +292,10 @@ async function recordVitalinkPackageReceived({
       client_phone,
       hipaa_signed_at,
       soa_signed_at,
+      import_key,
       metadata
     )
-    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11::jsonb)
+    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12::jsonb)
     RETURNING *
     `,
     [
@@ -259,6 +309,7 @@ async function recordVitalinkPackageReceived({
       normalizePhone(clientPhone),
       clean(hipaaSignedAt),
       clean(soaSignedAt),
+      clean(importKey),
       JSON.stringify(toJson(metadata)),
     ]
   );
@@ -327,7 +378,12 @@ async function recordCrmClientDocument({
   let documentSizeBytes = null;
   let documentHash = clean(sha256);
 
-  if ((safeType === DOCUMENT_TYPES.HIPAA || safeType === DOCUMENT_TYPES.SOA) && !documentBase64) {
+  if (
+    (safeType === DOCUMENT_TYPES.HIPAA ||
+      safeType === DOCUMENT_TYPES.SOA ||
+      safeType === DOCUMENT_TYPES.HIPAA_SOA) &&
+    !documentBase64
+  ) {
     throw new Error("VitaLink HIPAA/SOA documents must include PDF data");
   }
 

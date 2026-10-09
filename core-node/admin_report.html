@@ -475,9 +475,20 @@ tr:nth-child(even){
 
 <h2>Notifications</h2>
 
-<button class="primary" onclick="sendUpdateNotification()">
+<p>Tell every client and agent phone that a new VitaLink version is ready. Phones on older app versions see it too. Send only after the new version is live in the store.</p>
+
+<label for="updatePlatform">Send to</label>
+<select id="updatePlatform" style="margin:0 10px 10px 6px;padding:8px;border-radius:8px;">
+<option value="all">All phones</option>
+<option value="android">Android only (Play Store updated)</option>
+<option value="ios">iPhone only (App Store updated)</option>
+</select>
+
+<button class="primary" id="sendUpdateBtn" onclick="sendUpdateNotification()">
 Send App Update Notification
 </button>
+
+<div id="updateNotificationResult" style="margin-top:10px;"></div>
 
 </div>
 
@@ -866,25 +877,65 @@ loadStats();
 
 };
 
-async function sendUpdateNotification(){
-
-const res = await fetch(BACKEND + "/send_notification",{
+async function postUpdateNotification(payload){
+const res = await fetch(BACKEND + "/send_app_update_notification",{
 method:"POST",
 headers:{
-"Content-Type":"application/json"
+"Content-Type":"application/json",
+"x-admin-session":token
 },
-body:JSON.stringify({
-agentEmail:"ehevelone@gmail.com",
-campaign:"UPDATE"
-})
+body:JSON.stringify(payload)
 });
+const data=await res.json().catch(()=>({}));
+if(res.status===401){
+sessionStorage.clear();
+window.location.href="admin.html";
+}
+return { status:res.status, data };
+}
 
-const data = await res.json();
+async function sendUpdateNotification(){
+const button=document.getElementById("sendUpdateBtn");
+const result=document.getElementById("updateNotificationResult");
+const platform=document.getElementById("updatePlatform").value;
+const label=platform==="all" ? "all phones" : (platform==="ios" ? "iPhones" : "Android phones");
 
-if(data.success){
-alert("Update notification sent!");
+button.disabled=true;
+result.textContent="Counting phones...";
+try{
+const preview=await postUpdateNotification({ platform, dryRun:true });
+if(!preview.data.success){
+result.textContent=preview.data.error || "Could not count phones.";
+return;
+}
+const count=preview.data.devicesTargeted || 0;
+if(count===0){
+result.textContent="No registered "+label+" to notify.";
+return;
+}
+const spanish=preview.data.spanishDevices || 0;
+const spanishNote=spanish ? "\n\n"+spanish+" of them are set to Spanish and will get the Spanish version." : "";
+if(!confirm("Send the update notification to "+count+" "+label+"?"+spanishNote)){
+result.textContent="Not sent.";
+return;
+}
+
+result.textContent="Sending...";
+let send=await postUpdateNotification({ platform });
+if(send.status===429 && confirm(send.data.error+"\n\nSend again anyway?")){
+send=await postUpdateNotification({ platform, force:true });
+}
+if(send.data.success){
+result.textContent="Sent to "+send.data.successCount+" of "+send.data.devicesTargeted+" phones"+
+(send.data.uninstalledRemoved ? " ("+send.data.uninstalledRemoved+" uninstalled phones removed)." : ".");
 }else{
-alert("Failed to send notification");
+result.textContent=send.data.error || "Failed to send notification.";
+}
+}catch(err){
+result.textContent="Failed to send notification.";
+}finally{
+button.disabled=false;
+}
 }
 
 function taxonomyStatusClass(status){
@@ -985,8 +1036,6 @@ document.getElementById("taxonomyValidationResult").innerHTML=
 button.disabled=false;
 spinner.classList.remove("active");
 }
-}
-
 }
 
 function statValue(stats, name){

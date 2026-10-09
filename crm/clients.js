@@ -8,6 +8,7 @@ let clients = [];
 let appointments = [];
 let crmSettings = {};
 let importRows = [];
+let showingArchivedClients = false;
 
 function normalizeClientStatus(status){
 
@@ -405,6 +406,8 @@ async function loadClients(){
 
   const agent_id =
     sessionStorage.getItem("crm_uuid");
+  showingArchivedClients =
+    document.getElementById("clientArchiveFilter")?.value === "archived";
 
   const [
     clientsRes,
@@ -412,7 +415,7 @@ async function loadClients(){
   ] = await Promise.all([
 
     fetch(
-      `/.netlify/functions/get-crm-clients?agent_id=${agent_id}`,
+      `/.netlify/functions/get-crm-clients?agent_id=${agent_id}&archived=${showingArchivedClients}`,
       {
         headers:clientRequestHeaders()
       }
@@ -962,6 +965,13 @@ function renderClients(){
             View
           </button>
 
+          <button
+            class="secondary"
+            onclick="${showingArchivedClients ? "restoreClient" : "deleteClient"}('${client.id}')"
+          >
+            ${showingArchivedClients ? "Restore" : "Archive"}
+          </button>
+
         </td>
 
       </tr>
@@ -1091,7 +1101,7 @@ function viewClient(id){
 async function deleteClient(id){
 
   const confirmed = confirm(
-    "Remove this client?"
+    "Archive this client? Their records and signed forms will be retained."
   );
 
   if(!confirmed){
@@ -1113,13 +1123,34 @@ async function deleteClient(id){
 
   if(!data.success){
 
-    alert("Failed to remove client.");
+    alert("Failed to archive client.");
     return;
 
   }
 
   loadClients();
 
+}
+
+async function restoreClient(id){
+
+  const confirmed = confirm("Restore this client to the active list?");
+  if(!confirmed) return;
+
+  const res = await fetch(
+    "/.netlify/functions/restore-crm-client",
+    {
+      method:"POST",
+      headers:clientRequestHeaders({ "Content-Type":"application/json" }),
+      body:JSON.stringify({ id })
+    }
+  );
+  const data = await res.json();
+  if(!data.success){
+    alert(data.error || "Failed to restore client.");
+    return;
+  }
+  loadClients();
 }
 
 window.onclick = function(event){
@@ -1152,6 +1183,9 @@ document.getElementById("clientStatusFilter")
 
 document.getElementById("clientScheduleFilter")
   ?.addEventListener("change", renderClients);
+
+document.getElementById("clientArchiveFilter")
+  ?.addEventListener("change", loadClients);
 
 loadCrmSettings().then(() => {
   loadClients();

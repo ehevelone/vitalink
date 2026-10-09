@@ -1,5 +1,6 @@
 const { Pool } = require("pg");
 const { requireCrmClient } = require("./crm-auth");
+const { ensureVitalinkImportSchema } = require("./services/crm-vitalink-import");
 
 const pool = new Pool({
   connectionString: process.env.SUPABASE_URL,
@@ -23,6 +24,8 @@ exports.handler = async (event) => {
   }
 
   try{
+
+    await ensureVitalinkImportSchema();
 
     const body =
       JSON.parse(event.body || "{}");
@@ -58,30 +61,15 @@ exports.handler = async (event) => {
 
       await client.query("BEGIN");
 
-      await client.query(
-        `
-        DELETE FROM crm_tasks
-        WHERE client_id = $1
-          AND agent_id = $2
-        `,
-        [body.id, auth.crmAgentId]
-      );
-
-      await client.query(
-        `
-        DELETE FROM crm_appointments
-        WHERE client_id = $1
-          AND agent_id = $2
-        `,
-        [body.id, auth.crmAgentId]
-      );
-
       const result = await client.query(
         `
-        DELETE FROM crm_clients
+        UPDATE crm_clients
+        SET archived_at = COALESCE(archived_at, NOW()),
+            archived_by = COALESCE(archived_by, $2),
+            updated_at = NOW()
         WHERE id = $1
           AND agent_id = $2
-        RETURNING id
+        RETURNING id, archived_at, archived_by
         `,
         [body.id, auth.crmAgentId]
       );
@@ -100,6 +88,30 @@ exports.handler = async (event) => {
 
       }
 
+      await client.query(
+        `
+        INSERT INTO crm_audit_log (
+          crm_agent_id,
+          crm_client_id,
+          actor_type,
+          actor_id,
+          event_type,
+          ip_address,
+          user_agent,
+          metadata
+        )
+        VALUES ($1,$2,'agent',$3,'client_archived',$4,$5,$6::jsonb)
+        `,
+        [
+          auth.crmAgentId,
+          body.id,
+          auth.agent?.id || auth.crmAgentId,
+          event.headers?.["x-nf-client-connection-ip"] || event.headers?.["client-ip"] || null,
+          event.headers?.["user-agent"] || null,
+          JSON.stringify({ previousAction: "delete_client" }),
+        ]
+      );
+
       await client.query("COMMIT");
 
     }catch(err){
@@ -116,7 +128,8 @@ exports.handler = async (event) => {
     return{
       statusCode:200,
       body:JSON.stringify({
-        success:true
+        success:true,
+        archived:true
       })
     };
 

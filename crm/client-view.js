@@ -10,6 +10,7 @@ const clientId = params.get("id");
 let currentClient = null;
 let clientPolicies = [];
 let vitalinkDocuments = {};
+let vitalinkSoaHistory = [];
 let vitalinkPackageReadyForDestination = false;
 
 console.log("VitaLink client view loaded: notes sync enabled");
@@ -209,8 +210,8 @@ async function loadClient(){
   setText("profileLinked", client.vitalink_connected ? "Connected" : (client.profile_linked || "Not Linked"));
   setText("emergencyProfile", client.emergency_profile || "Not Recorded");
   setText("insuranceCardsUploaded", client.insurance_cards_uploaded || "Not Recorded");
-  setValue("medicationList", client.medication_list);
-  setValue("doctorList", client.doctor_list);
+  renderMedicationList(client.medication_list);
+  renderDoctorList(client.doctor_list);
   setText("lastSync", formatDate(client.last_vitalink_import_at || client.last_sync) || "Not Imported");
   setText("lastVitalinkPackage", formatDate(client.last_vitalink_package_at) || "Not Received");
   setText("vitalinkEmergencyContacts", client.vitalink_emergency_contacts || "Not Received");
@@ -330,6 +331,72 @@ function setDestinationPrepStatus(message){
 
 }
 
+function formatDateTime(value){
+
+  if(!value){
+    return "";
+  }
+
+  const date = new Date(value);
+
+  if(Number.isNaN(date.getTime())){
+    return String(value);
+  }
+
+  return date.toLocaleString([], {
+    year:"numeric",
+    month:"2-digit",
+    day:"2-digit",
+    hour:"numeric",
+    minute:"2-digit"
+  });
+
+}
+
+function renderSoaHistory(){
+
+  const list = document.getElementById("soaHistoryList");
+
+  if(!list){
+    return;
+  }
+
+  list.replaceChildren();
+
+  if(!vitalinkSoaHistory.length){
+    const empty = document.createElement("div");
+    empty.className = "client-sub";
+    empty.textContent = "No signed SOAs received.";
+    list.appendChild(empty);
+    return;
+  }
+
+  vitalinkSoaHistory.forEach((doc, index) => {
+    const row = document.createElement("div");
+    row.className = "soa-history-row";
+
+    const details = document.createElement("div");
+    const title = document.createElement("div");
+    const timestamp = document.createElement("div");
+    const button = document.createElement("button");
+
+    title.className = "value";
+    title.textContent = index === 0 ? "Current signed SOA" : "Signed SOA";
+    timestamp.className = "client-sub";
+    timestamp.textContent = formatDateTime(doc.signed_at || doc.received_at) || "Date unavailable";
+
+    button.className = "edit-btn secondary";
+    button.type = "button";
+    button.textContent = "View";
+    button.addEventListener("click", () => viewVitalinkDocumentById(doc.id));
+
+    details.append(title, timestamp);
+    row.append(details, button);
+    list.appendChild(row);
+  });
+
+}
+
 async function loadVitalinkStatus(){
 
   const agentId =
@@ -356,15 +423,16 @@ async function loadVitalinkStatus(){
     vitalinkDocuments =
       data.documents || {};
 
+    vitalinkSoaHistory =
+      Array.isArray(data.soaHistory) ? data.soaHistory : [];
+
+    renderSoaHistory();
+
     setText("profileLinked", client.vitalink_connected ? "Connected" : "Not Linked");
     setText("lastVitalinkPackage", formatDate(pkg.received_at || client.last_vitalink_package_at) || "Not Received");
     setText("lastSync", formatDate(pkg.imported_at || client.last_vitalink_import_at) || "Not Imported");
-    const withdrawnAt = client.authorization_revoked_at;
-    const permissionStatus = withdrawnAt
-      ? `Withdrawn ${formatDate(withdrawnAt)}`
-      : null;
-    setText("hipaaSigned", permissionStatus || formatDate(client.hipaa_signed_at || vitalinkDocuments.hipaa?.signed_at) || "Not Recorded");
-    setText("soaSigned", permissionStatus || formatDate(client.soa_signed_at || vitalinkDocuments.soa?.signed_at) || "Not Recorded");
+    setText("hipaaSigned", formatDate(client.hipaa_signed_at || vitalinkDocuments.hipaa?.signed_at) || "Not Recorded");
+    setText("soaSigned", formatDate(client.soa_signed_at || vitalinkDocuments.soa?.signed_at) || "Not Recorded");
     setText("vitalinkEmergencyContacts", client.vitalink_emergency_contacts || "Not Received");
     setText("vitalinkPharmacies", client.vitalink_pharmacy_list || "Not Received");
 
@@ -380,17 +448,14 @@ async function loadVitalinkStatus(){
       Boolean(vitalinkDocuments.hipaa?.id) &&
       Boolean(vitalinkDocuments.soa?.id) &&
       Boolean(client.hipaa_signed_at || vitalinkDocuments.hipaa?.signed_at) &&
-      Boolean(client.soa_signed_at || vitalinkDocuments.soa?.signed_at) &&
-      !withdrawnAt;
+      Boolean(client.soa_signed_at || vitalinkDocuments.soa?.signed_at);
 
     setButtonEnabled("prepareSunfireBtn", vitalinkPackageReadyForDestination);
     setButtonEnabled("prepareDrxBtn", vitalinkPackageReadyForDestination);
     setDestinationPrepStatus(
       vitalinkPackageReadyForDestination
         ? "Ready. Agent must review and initiate each destination handoff."
-        : withdrawnAt
-          ? "Permissions withdrawn. New signed forms are required."
-          : "Requires signed HIPAA/SOA and an imported VitaLink package."
+        : "Requires signed HIPAA/SOA and an imported VitaLink package."
     );
 
   }catch(err){
@@ -427,6 +492,41 @@ async function fetchVitalinkDocumentBlob(type){
   }
 
   return res.blob();
+
+}
+
+async function fetchVitalinkDocumentBlobById(documentId){
+
+  if(!documentId){
+    alert("No VitaLink document is stored for this client yet.");
+    return null;
+  }
+
+  const agentId = sessionStorage.getItem("crm_uuid");
+  const res = await fetch(
+    `/.netlify/functions/get-crm-client-document?agent_id=${agentId}&client_id=${clientId}&document_id=${documentId}`
+  );
+
+  if(!res.ok){
+    alert("Unable to open this VitaLink document.");
+    return null;
+  }
+
+  return res.blob();
+
+}
+
+async function viewVitalinkDocumentById(documentId){
+
+  const blob = await fetchVitalinkDocumentBlobById(documentId);
+
+  if(!blob){
+    return;
+  }
+
+  const url = URL.createObjectURL(blob);
+  window.open(url, "_blank", "noopener");
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
 
 }
 
@@ -756,32 +856,29 @@ async function saveClientPatch(patch){
 
   patch.id = clientId;
 
-  try{
-    const res = await fetch(
-      "/.netlify/functions/update-crm-client",
-      {
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json"
-        },
-        body:JSON.stringify(patch)
-      }
-    );
-
-    const data = await res.json();
-
-    if(!res.ok || !data.success){
-      alert(data.error || `Failed to update client (HTTP ${res.status}).`);
-      return false;
+  const res = await fetch(
+    "/.netlify/functions/update-crm-client",
+    {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify(patch)
     }
+  );
 
-    await loadClient();
-    return true;
-  }catch(err){
-    console.error("Client update failed", err);
-    alert("Unable to save the client right now. Please try again.");
+  const data = await res.json();
+
+  if(!data.success){
+
+    alert("Failed to update client.");
     return false;
+
   }
+
+  loadClient();
+
+  return true;
 
 }
 
@@ -860,19 +957,150 @@ async function saveClientInfo(){
 
 let clinicalEdit = false;
 
+const clinicalListConfig = {
+  medication: {
+    listId: "medicationList",
+    addButtonId: "addMedicationBtn",
+    label: "Medication",
+    emptyText: "No medications recorded."
+  },
+  doctor: {
+    listId: "doctorList",
+    addButtonId: "addDoctorBtn",
+    label: "Doctor",
+    emptyText: "No doctors recorded."
+  }
+};
+
+function splitClinicalEntries(value){
+  return String(value || "")
+    .split(/\r?\n|;/)
+    .map(entry => entry.trim())
+    .filter(Boolean);
+}
+
+function createClinicalEntry(kind, value = ""){
+  const config = clinicalListConfig[kind];
+  const row = document.createElement("div");
+  row.className = "clinical-entry";
+
+  const input = document.createElement("textarea");
+  input.className = "clinical-entry-input";
+  input.rows = 2;
+  input.value = value;
+  input.disabled = !clinicalEdit;
+  input.setAttribute("aria-label", config.label);
+
+  const removeButton = document.createElement("button");
+  removeButton.type = "button";
+  removeButton.className = "clinical-remove-btn";
+  removeButton.textContent = "\u00d7";
+  removeButton.title = `Remove ${config.label.toLowerCase()}`;
+  removeButton.setAttribute("aria-label", removeButton.title);
+  removeButton.hidden = !clinicalEdit;
+  removeButton.addEventListener("click", () => {
+    row.remove();
+    ensureClinicalEntry(kind);
+  });
+
+  row.append(input, removeButton);
+  return row;
+}
+
+function ensureClinicalEntry(kind){
+  const config = clinicalListConfig[kind];
+  const list = document.getElementById(config.listId);
+  if(clinicalEdit && list && !list.querySelector(".clinical-entry")){
+    list.appendChild(createClinicalEntry(kind));
+  }
+}
+
+function renderClinicalList(kind, value){
+  const config = clinicalListConfig[kind];
+  const list = document.getElementById(config.listId);
+  if(!list) return;
+
+  const entries = splitClinicalEntries(value);
+  list.replaceChildren();
+
+  if(!entries.length && !clinicalEdit){
+    const empty = document.createElement("div");
+    empty.className = "clinical-entry-empty";
+    empty.textContent = config.emptyText;
+    list.appendChild(empty);
+    return;
+  }
+
+  (entries.length ? entries : [""]).forEach(entry => {
+    list.appendChild(createClinicalEntry(kind, entry));
+  });
+}
+
+function renderMedicationList(value){
+  renderClinicalList("medication", value);
+}
+
+function renderDoctorList(value){
+  renderClinicalList("doctor", value);
+}
+
+function addClinicalEntry(kind){
+  const config = clinicalListConfig[kind];
+  const list = document.getElementById(config.listId);
+  if(!list || !clinicalEdit) return;
+
+  const empty = list.querySelector(".clinical-entry-empty");
+  if(empty) empty.remove();
+
+  const row = createClinicalEntry(kind);
+  list.appendChild(row);
+  row.querySelector("textarea")?.focus();
+}
+
+function addMedicationEntry(){
+  addClinicalEntry("medication");
+}
+
+function addDoctorEntry(){
+  addClinicalEntry("doctor");
+}
+
+function setClinicalEditState(){
+  Object.entries(clinicalListConfig).forEach(([kind, config]) => {
+    const list = document.getElementById(config.listId);
+    if(!list) return;
+
+    const empty = list.querySelector(".clinical-entry-empty");
+    if(clinicalEdit && empty) empty.remove();
+
+    list.querySelectorAll(".clinical-entry-input").forEach(input => {
+      input.disabled = !clinicalEdit;
+    });
+    list.querySelectorAll(".clinical-remove-btn").forEach(button => {
+      button.hidden = !clinicalEdit;
+    });
+
+    document.getElementById(config.addButtonId).style.display =
+      clinicalEdit ? "inline-flex" : "none";
+    ensureClinicalEntry(kind);
+  });
+}
+
+function clinicalListValue(kind){
+  const config = clinicalListConfig[kind];
+  return Array.from(
+    document.querySelectorAll(`#${config.listId} .clinical-entry-input`)
+  )
+    .map(input => input.value.trim())
+    .filter(Boolean)
+    .join("\n");
+}
+
 function toggleClinicalEdit(){
 
   clinicalEdit = !clinicalEdit;
 
-  [
-    "medicationList",
-    "doctorList"
-  ].forEach(id => {
-
-    document.getElementById(id).disabled =
-      !clinicalEdit;
-
-  });
+  setClinicalEditState();
 
   document.getElementById(
     "saveClinicalBtn"
@@ -885,9 +1113,9 @@ async function saveClinicalInfo(){
 
   const saved = await saveClientPatch({
     medication_list:
-      document.getElementById("medicationList").value,
+      clinicalListValue("medication"),
     doctor_list:
-      document.getElementById("doctorList").value
+      clinicalListValue("doctor")
   });
 
   if(saved){
@@ -1066,14 +1294,6 @@ async function saveLead(){
   const leadSourceDetail =
     document.getElementById("leadSourceDetail").value;
 
-  const leadCost =
-    document.getElementById("leadCost").value.trim();
-
-  if(leadCost && !/^\$?\s*(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d{1,2})?$/.test(leadCost)){
-    alert("Enter a valid lead cost, such as 25 or $1,250.00.");
-    return;
-  }
-
   const saved = await saveClientPatch({
     lead_source:leadSource,
     lead_source_detail:leadSourceDetail,
@@ -1081,7 +1301,8 @@ async function saveLead(){
       leadSource === "Referral" ? leadSourceDetail : "",
     seminar_event:
       leadSource === "Seminar/Event" ? leadSourceDetail : "",
-    lead_cost:leadCost,
+    lead_cost:
+      document.getElementById("leadCost").value,
     date_added:
       document.getElementById("dateAdded").value
   });

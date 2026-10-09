@@ -37,6 +37,7 @@ exports.handler = async (event) => {
     `);
 
     const agent_id = event.queryStringParameters.agent_id;
+    const archived = event.queryStringParameters.archived === "true";
     const auth = await requireCrmAgent(event, agent_id);
 
     if(auth.error){
@@ -87,16 +88,16 @@ exports.handler = async (event) => {
             WHERE document_type IN ('insurance_card', 'insurance_cards', 'insurance')
           ) AS insurance_card_count,
           COUNT(*) FILTER (
-            WHERE document_type = $2
+            WHERE document_type IN ($2, $4)
           ) AS soa_document_count,
           COUNT(*) FILTER (
-            WHERE document_type = $3
+            WHERE document_type IN ($3, $4)
           ) AS hipaa_document_count,
           MAX(signed_at) FILTER (
-            WHERE document_type = $2
+            WHERE document_type IN ($2, $4)
           ) AS latest_soa_signed_at,
           MAX(signed_at) FILTER (
-            WHERE document_type = $3
+            WHERE document_type IN ($3, $4)
           ) AS latest_hipaa_signed_at
         FROM crm_client_documents
         WHERE crm_agent_id = $1::text
@@ -116,10 +117,16 @@ exports.handler = async (event) => {
       LEFT JOIN user_devices ud
         ON ud.user_id::text = u.id::text
       WHERE c.agent_id::text = $1::text
+        AND ${archived ? "c.archived_at IS NOT NULL" : "c.archived_at IS NULL"}
       ORDER BY c.created_at DESC
       `,
 
-      [agent_id, DOCUMENT_TYPES.SOA, DOCUMENT_TYPES.HIPAA]
+      [
+        agent_id,
+        DOCUMENT_TYPES.SOA,
+        DOCUMENT_TYPES.HIPAA,
+        DOCUMENT_TYPES.HIPAA_SOA,
+      ]
 
     );
 

@@ -1,11 +1,13 @@
 const { requireCrmAgent } = require("./crm-auth");
 const { pool, ensurePolicyTable } = require("./policy-utils");
+const { ensureClientArchiveColumns } = require("./services/crm-client-archive");
 
 exports.handler = async (event) => {
 
   try{
 
     await ensurePolicyTable();
+    await ensureClientArchiveColumns();
 
     const agent_id =
       event.queryStringParameters.agent_id;
@@ -40,7 +42,7 @@ exports.handler = async (event) => {
       [auth.crmAgentId];
 
     let where =
-      "WHERE p.agent_id::TEXT = $1::TEXT";
+      "WHERE p.agent_id::TEXT = $1::TEXT AND (p.client_id IS NULL OR c.archived_at IS NULL)";
 
     if(client_id){
       values.push(String(client_id));

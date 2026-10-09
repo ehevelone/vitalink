@@ -4,11 +4,11 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <link rel="stylesheet" href="crm.css">
+<link rel="stylesheet" href="clinical-lists.css?v=20261006">
 
 <title>Client View - VitaLink CRM</title>
 
 
-<link rel="stylesheet" href="../typography.css">
 </head>
 
 <body>
@@ -812,6 +812,16 @@
     </button>
   </div>
 
+  <div class="soa-history-panel">
+    <div class="label">SOA History</div>
+    <div class="client-sub">
+      Every signed SOA received from VitaLink, newest first.
+    </div>
+    <div class="soa-history-list" id="soaHistoryList">
+      <div class="client-sub">No signed SOAs received.</div>
+    </div>
+  </div>
+
   <div class="destination-prep-panel">
     <div>
       <div class="label">Destination Prep</div>
@@ -871,11 +881,19 @@
       Medications
     </div>
 
-    <textarea
-      class="edit-textarea"
+    <div
+      class="clinical-entry-list"
       id="medicationList"
-      disabled
-    ></textarea>
+    ></div>
+
+    <button
+      class="clinical-add-btn"
+      id="addMedicationBtn"
+      type="button"
+      onclick="addMedicationEntry()"
+    >
+      + Add Medication
+    </button>
 
   </div>
 
@@ -885,11 +903,19 @@
       Doctors
     </div>
 
-    <textarea
-      class="edit-textarea"
+    <div
+      class="clinical-entry-list"
       id="doctorList"
-      disabled
-    ></textarea>
+    ></div>
+
+    <button
+      class="clinical-add-btn"
+      id="addDoctorBtn"
+      type="button"
+      onclick="addDoctorEntry()"
+    >
+      + Add Doctor
+    </button>
 
   </div>
 
@@ -947,7 +973,7 @@
 </div>
 
 <script src="crm.js"></script>
-<script src="client-view.js?v=crm-lead-save-20260922"></script>
+<script src="client-view.js?v=medication-list-20261006"></script>
 
 <script src="../site-traffic.js" defer></script>
 </body>

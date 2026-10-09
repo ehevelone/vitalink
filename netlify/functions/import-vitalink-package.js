@@ -1,4 +1,5 @@
 const db = require("./services/db");
+const crypto = require("crypto");
 const { requireCrmAgent } = require("./crm-auth");
 const {
   AUDIT_EVENTS,
@@ -42,6 +43,15 @@ function normalizePhone(value) {
 function safeDate(value) {
   const text = clean(value);
   return text || null;
+}
+
+function importKeyFor(body, crmAgentId) {
+  const supplied = clean(body.import_key || body.importKey || body.package_id || body.packageId);
+  const source = supplied || JSON.stringify(body);
+  return crypto
+    .createHash("sha256")
+    .update(`${crmAgentId}:${source}`)
+    .digest("hex");
 }
 
 function splitName(client) {
@@ -318,6 +328,18 @@ async function updateCrmClient({ crmClientId, client, appUserId, appProfileId, s
       last_vitalink_import_at = NOW(),
       hipaa_signed_at = COALESCE($16, hipaa_signed_at),
       soa_signed_at = COALESCE($17, soa_signed_at),
+      authorization_revoked_at = CASE
+        WHEN $16::timestamptz IS NOT NULL OR $17::timestamptz IS NOT NULL THEN NULL
+        ELSE authorization_revoked_at
+      END,
+      archived_at = CASE
+        WHEN $16::timestamptz IS NOT NULL OR $17::timestamptz IS NOT NULL THEN NULL
+        ELSE archived_at
+      END,
+      archived_by = CASE
+        WHEN $16::timestamptz IS NOT NULL OR $17::timestamptz IS NOT NULL THEN NULL
+        ELSE archived_by
+      END,
       vitalink_emergency_contacts = COALESCE($18, vitalink_emergency_contacts),
       vitalink_pharmacy_list = COALESCE($19, vitalink_pharmacy_list),
       updated_at = NOW()
@@ -365,16 +387,30 @@ async function recordDocuments({ crmAgentId, crmClientId, packageId, documents, 
     return saved;
   }
 
+  const hipaaSource = documentMap.hipaa || documentMap.HIPAA;
+  const soaSource = documentMap.soa || documentMap.SOA;
+  const combinedSource = documentMap.hipaaSoa || documentMap.hipaa_soa;
+  const sourcesMatch =
+    hipaaSource &&
+    soaSource &&
+    JSON.stringify(hipaaSource) === JSON.stringify(soaSource);
+
   const specs = [
     {
+      type: DOCUMENT_TYPES.HIPAA_SOA,
+      source: combinedSource || (sourcesMatch ? hipaaSource : null),
+      signedAt: hipaaSignedAt || soaSignedAt,
+      defaultName: "VitaLink HIPAA Authorization and Scope of Appointment",
+    },
+    {
       type: DOCUMENT_TYPES.HIPAA,
-      source: documentMap.hipaa || documentMap.HIPAA,
+      source: combinedSource || sourcesMatch ? null : hipaaSource,
       signedAt: hipaaSignedAt,
       defaultName: "VitaLink HIPAA Authorization",
     },
     {
       type: DOCUMENT_TYPES.SOA,
-      source: documentMap.soa || documentMap.SOA,
+      source: combinedSource || sourcesMatch ? null : soaSource,
       signedAt: soaSignedAt,
       defaultName: "VitaLink Scope of Appointment",
     },
@@ -405,7 +441,12 @@ async function recordDocuments({ crmAgentId, crmClientId, packageId, documents, 
       doc.pdfBase64 ||
       doc.contentBase64;
 
-    if ((spec.type === DOCUMENT_TYPES.HIPAA || spec.type === DOCUMENT_TYPES.SOA) && !documentBase64) {
+    if (
+      (spec.type === DOCUMENT_TYPES.HIPAA ||
+        spec.type === DOCUMENT_TYPES.SOA ||
+        spec.type === DOCUMENT_TYPES.HIPAA_SOA) &&
+      !documentBase64
+    ) {
       continue;
     }
 
@@ -457,8 +498,16 @@ exports.handler = async (event) => {
     const client = body.client || {};
     const appUserId = clean(body.app_user_id || body.appUserId || client.app_user_id || client.user_id);
     const appProfileId = clean(body.app_profile_id || body.appProfileId || client.profile_id);
-    const hipaaSignedAt = body.hipaa_signed_at || body.hipaaSignedAt;
-    const soaSignedAt = body.soa_signed_at || body.soaSignedAt;
+    const documentMap = body.documents || {};
+    const combinedDocument = documentMap.hipaaSoa || documentMap.hipaa_soa || {};
+    const hipaaDocument = documentMap.hipaa || documentMap.HIPAA || {};
+    const soaDocument = documentMap.soa || documentMap.SOA || {};
+    const hipaaSignedAt = body.hipaa_signed_at || body.hipaaSignedAt ||
+      combinedDocument.signedAt || combinedDocument.signed_at ||
+      hipaaDocument.signedAt || hipaaDocument.signed_at;
+    const soaSignedAt = body.soa_signed_at || body.soaSignedAt ||
+      combinedDocument.signedAt || combinedDocument.signed_at ||
+      soaDocument.signedAt || soaDocument.signed_at;
 
     const summaries = {
       emergencyStatus: body.emergency_profile_status || body.emergencyProfileStatus || "Received",
@@ -468,95 +517,135 @@ exports.handler = async (event) => {
       pharmacies: formatPharmacyList(body.pharmacies || body.pharmacy),
     };
 
-    const existing = await findCrmClient({
-      crmAgentId: auth.crmAgentId,
-      clientId: body.client_id || body.clientId,
-      appUserId,
-      appProfileId,
-      email: client.email,
-      phone: client.phone || client.mobile_phone || client.mobilePhone,
-    });
+    const importKey = importKeyFor(body, auth.crmAgentId);
 
-    let crmClient;
-    let action;
+    return await db.withTransaction(async () => {
+      await db.query("SELECT pg_advisory_xact_lock(hashtext($1))", [importKey]);
 
-    if (existing) {
-      crmClient = await updateCrmClient({
-        crmClientId: existing.id,
-        client,
-        appUserId,
-        appProfileId,
-        summaries,
-        hipaaSignedAt,
-        soaSignedAt,
-      });
-      action = "updated";
-    } else {
-      crmClient = await createCrmClient({
+      const prior = await db.query(
+        `SELECT * FROM crm_vitalink_packages WHERE import_key=$1 LIMIT 1`,
+        [importKey],
+      );
+      if (prior.rows[0]) {
+        const priorDocuments = await db.query(
+          `SELECT * FROM crm_client_documents
+           WHERE package_id=$1 ORDER BY created_at`,
+          [prior.rows[0].id],
+        );
+        return reply(200, {
+          success: true,
+          action: "already_imported",
+          package: prior.rows[0],
+          documents: priorDocuments.rows,
+        });
+      }
+
+      const existing = await findCrmClient({
         crmAgentId: auth.crmAgentId,
-        client,
+        clientId: body.client_id || body.clientId,
         appUserId,
         appProfileId,
-        summaries,
+        email: client.email,
+        phone: client.phone || client.mobile_phone || client.mobilePhone,
+      });
+
+      let crmClient;
+      let action;
+
+      if (existing) {
+        crmClient = await updateCrmClient({
+          crmClientId: existing.id,
+          client,
+          appUserId,
+          appProfileId,
+          summaries,
+          hipaaSignedAt,
+          soaSignedAt,
+        });
+        const restoredFromArchive = Boolean(
+          existing.archived_at && (hipaaSignedAt || soaSignedAt)
+        );
+        if (restoredFromArchive) {
+          await logCrmAuditEvent({
+            crmAgentId: auth.crmAgentId,
+            crmClientId: existing.id,
+            actorType: "system",
+            eventType: AUDIT_EVENTS.CLIENT_RESTORED,
+            metadata: {
+              source: "new_signed_vitalink_package",
+              previousArchivedAt: existing.archived_at,
+            },
+          });
+        }
+        action = restoredFromArchive ? "restored" : "updated";
+      } else {
+        crmClient = await createCrmClient({
+          crmAgentId: auth.crmAgentId,
+          client,
+          appUserId,
+          appProfileId,
+          summaries,
+          hipaaSignedAt,
+          soaSignedAt,
+        });
+        action = "created";
+      }
+
+      const pkg = await recordVitalinkPackageReceived({
+        crmAgentId: auth.crmAgentId,
+        crmClientId: crmClient.id,
+        appUserId,
+        appProfileId,
+        clientName: clean(client.name || client.fullName || `${crmClient.first_name || ""} ${crmClient.last_name || ""}`),
+        clientDob: client.dob || client.dateOfBirth,
+        clientEmail: client.email,
+        clientPhone: client.phone || client.mobile_phone || client.mobilePhone,
+        hipaaSignedAt,
+        soaSignedAt,
+        importKey,
+        metadata: {
+          source: "intentional_vitalink_package",
+          receivedBy: "crm_import_endpoint",
+        },
+      });
+
+      const documents = await recordDocuments({
+        crmAgentId: auth.crmAgentId,
+        crmClientId: crmClient.id,
+        packageId: pkg.id,
+        documents: body.documents,
         hipaaSignedAt,
         soaSignedAt,
       });
-      action = "created";
-    }
 
-    const pkg = await recordVitalinkPackageReceived({
-      crmAgentId: auth.crmAgentId,
-      crmClientId: crmClient.id,
-      appUserId,
-      appProfileId,
-      clientName: clean(client.name || client.fullName || `${crmClient.first_name || ""} ${crmClient.last_name || ""}`),
-      clientDob: client.dob || client.dateOfBirth,
-      clientEmail: client.email,
-      clientPhone: client.phone || client.mobile_phone || client.mobilePhone,
-      hipaaSignedAt,
-      soaSignedAt,
-      metadata: {
-        source: "intentional_vitalink_package",
-        receivedBy: "crm_import_endpoint",
-      },
-    });
+      await logCrmAuditEvent({
+        crmAgentId: auth.crmAgentId,
+        crmClientId: crmClient.id,
+        actorType: "agent",
+        actorId: auth.agent?.id,
+        eventType: AUDIT_EVENTS.IMPORT_COMPLETED,
+        packageId: pkg.id,
+        ipAddress: event.headers?.["x-nf-client-connection-ip"] || event.headers?.["client-ip"],
+        userAgent: event.headers?.["user-agent"],
+        metadata: {
+          action,
+          documents: documents.map(doc => doc.document_type),
+        },
+      });
 
-    const documents = await recordDocuments({
-      crmAgentId: auth.crmAgentId,
-      crmClientId: crmClient.id,
-      packageId: pkg.id,
-      documents: body.documents,
-      hipaaSignedAt,
-      soaSignedAt,
-    });
-
-    await logCrmAuditEvent({
-      crmAgentId: auth.crmAgentId,
-      crmClientId: crmClient.id,
-      actorType: "agent",
-      actorId: auth.agent?.id,
-      eventType: AUDIT_EVENTS.IMPORT_COMPLETED,
-      packageId: pkg.id,
-      ipAddress: event.headers?.["x-nf-client-connection-ip"] || event.headers?.["client-ip"],
-      userAgent: event.headers?.["user-agent"],
-      metadata: {
+      return reply(200, {
+        success: true,
         action,
-        documents: documents.map(doc => doc.document_type),
-      },
-    });
-
-    return reply(200, {
-      success: true,
-      action,
-      client: crmClient,
-      package: pkg,
-      documents,
+        client: crmClient,
+        package: pkg,
+        documents,
+      });
     });
   } catch (err) {
     console.error("import-vitalink-package error:", err);
     return reply(500, {
       success: false,
-      error: err.message || "Server error",
+      error: "Unable to import the VitaLink package. Please try again.",
     });
   }
 };

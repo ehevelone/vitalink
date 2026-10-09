@@ -63,8 +63,46 @@ CREATE TABLE IF NOT EXISTS crm_client_documents (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
   CONSTRAINT crm_client_documents_type_check
-    CHECK (document_type IN ('hipaa', 'soa', 'vitalink_csv', 'other'))
+    CHECK (document_type IN (
+      'hipaa',
+      'soa',
+      'hipaa_soa',
+      'vitalink_csv',
+      'other',
+      'insurance',
+      'insurance_card',
+      'insurance_cards'
+    ))
 );
+
+DO $$
+DECLARE
+  current_definition TEXT;
+BEGIN
+  SELECT pg_get_constraintdef(oid)
+  INTO current_definition
+  FROM pg_constraint
+  WHERE conrelid = 'crm_client_documents'::regclass
+    AND conname = 'crm_client_documents_type_check';
+
+  IF current_definition IS NULL OR current_definition NOT LIKE '%hipaa_soa%' THEN
+    ALTER TABLE crm_client_documents
+    DROP CONSTRAINT IF EXISTS crm_client_documents_type_check;
+
+    ALTER TABLE crm_client_documents
+    ADD CONSTRAINT crm_client_documents_type_check
+    CHECK (document_type IN (
+      'hipaa',
+      'soa',
+      'hipaa_soa',
+      'vitalink_csv',
+      'other',
+      'insurance',
+      'insurance_card',
+      'insurance_cards'
+    )) NOT VALID;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_crm_client_documents_client
 ON crm_client_documents (crm_client_id, document_type, received_at DESC);

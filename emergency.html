@@ -277,6 +277,15 @@ app.innerHTML = `
 <div class="value">${decoded.organDonor ? "YES" : "NO"}</div>
 </div>
 
+<div class="section ${decoded.dnrPolstOnFile ? "alert" : ""}">
+<div class="label">DNR / POLST on file</div>
+<div class="value">${decoded.dnrPolstOnFile ? "YES" : "NO"}</div>
+${decoded.dnrPolstOnFile ? `
+<div class="value"><strong>Location of signed form:</strong> ${safeText(decoded.dnrPolstLocation) || "Not provided"}</div>
+<div class="hint">VitaLink is not a legal DNR/POLST order and does not replace the signed form.</div>
+` : ""}
+</div>
+
 <div class="section">
 <div class="label">Veteran</div>
 <div class="value">${decoded.isVeteran ? "YES" : "NO"}</div>
@@ -421,6 +430,8 @@ implants: e.implants,
 procedures: e.procedures,
 bloodType: e.bloodType,
 organDonor: e.organDonor,
+dnrPolstOnFile: e.dnrPolstOnFile === true,
+dnrPolstLocation: e.dnrPolstLocation || "",
 isVeteran: e.isVeteran,
 usesVaHealthcare: e.usesVaHealthcare,
 emergencyContactName: e.emergencyContactName || e.contact || "",

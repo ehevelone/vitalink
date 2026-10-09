@@ -51,11 +51,11 @@ async function getLatestDocument({ crmAgentId, crmClientId, type }) {
     FROM crm_client_documents
     WHERE crm_agent_id = $1
       AND crm_client_id = $2
-      AND document_type = $3
+      AND document_type IN ($3, $4)
     ORDER BY received_at DESC
     LIMIT 1
     `,
-    [crmAgentId, crmClientId, type]
+    [crmAgentId, crmClientId, type, DOCUMENT_TYPES.HIPAA_SOA]
   );
 
   return result.rows[0] || null;
@@ -87,6 +87,7 @@ async function prepareDestinationPackage({
     FROM crm_clients
     WHERE id = $1
       AND agent_id = $2
+      AND archived_at IS NULL
     LIMIT 1
     `,
     [crmClientId, crmAgentId]

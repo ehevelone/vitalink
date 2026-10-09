@@ -1,5 +1,6 @@
 const { Pool } = require("pg");
 const { requireCrmAgent } = require("./crm-auth");
+const { ensureClientArchiveColumns } = require("./services/crm-client-archive");
 
 const pool = new Pool({
   connectionString: process.env.SUPABASE_URL,
@@ -173,6 +174,7 @@ exports.handler = async (event) => {
     }
 
     await ensureTaskAutomationColumns();
+    await ensureClientArchiveColumns();
 
     const clientsResult = await pool.query(
       `
@@ -185,6 +187,7 @@ exports.handler = async (event) => {
         spouse_dob
       FROM crm_clients
       WHERE agent_id = $1
+        AND archived_at IS NULL
       `,
       [auth.crmAgentId]
     );

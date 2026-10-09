@@ -1,5 +1,6 @@
 const { Pool } = require("pg");
 const { requireCrmAgent } = require("./crm-auth");
+const { ensureClientArchiveColumns } = require("./services/crm-client-archive");
 
 const pool = new Pool({
   connectionString: process.env.SUPABASE_URL,
@@ -11,6 +12,8 @@ const pool = new Pool({
 exports.handler = async (event) => {
 
   try{
+
+    await ensureClientArchiveColumns();
 
     const agent_id =
       event.queryStringParameters.agent_id;
@@ -55,6 +58,7 @@ exports.handler = async (event) => {
         ON c.id = a.client_id
 
       WHERE a.agent_id = $1
+        AND (a.client_id IS NULL OR c.archived_at IS NULL)
 
       ORDER BY
         a.appointment_date ASC,
